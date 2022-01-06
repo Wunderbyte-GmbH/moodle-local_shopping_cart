@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template enrol_fee/payment_region
+
+    This template will render information about course fee along with a button for payment.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * data-component
+    * data-paymentarea
+    * data-itemid
+    * data-cost
+    * data-description
+    * data-successurl
+
+    Context variables required for this template:
+    * price - Human readable price string including amount and currency
+    * instanceid - Id of the enrolment instance
+    * description - The description for this purchase
+    * successurl - The URL of the course
+
+    Example context (json):
+    {
+        "price": "$108.50",
+        "instanceid": 11,
+        "description": "Enrolment in course Introduction to algorithms",
+        "successurl": "https://moodlesite/course/view.php?id=2",
+        "isguestuser": false
+    }
+
+}}
+<div class="shopping_cart_payment_region text-center">
+    {{#isguestuser}}
+        <div class="mdl-align">
+            <p>{{# str }} paymentrequired {{/ str}}</p>
+            <p><b>{{price}}</b></p>
+            <p><a href="{{config.wwwroot}}/login/">{{# str }} loginsite {{/ str }}</a></p>
+        </div>
+    {{/isguestuser}}
+    {{^isguestuser}}
+        <button
+            class="btn btn-primary pull-right mr-3"
+            type="button"
+            id="gateways-modal-trigger-{{ uniqid }}"
+            data-action="core_payment/triggerPayment"
+            data-component="local_shopping_cart"
+            data-paymentarea="shopping_cart"
+            data-itemid="2"
+            data-cost="{{price}} EUR"
+            data-successurl="https://wunderbyte.at"
+            data-description="my shopping cart checkout"
+        >
+            {{# str }} sendpaymentbutton, local_shopping_cart {{/ str }}
+        </button>
+    {{/isguestuser}}
+</div>
+{{#js}}
+    require(['core_payment/gateways_modal'], function(modal) {
+        modal.init();
+    });
+{{/js}}

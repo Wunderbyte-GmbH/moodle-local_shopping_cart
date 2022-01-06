@@ -26,3 +26,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Shopping Cart';
+$string['sendpaymentbutton'] = 'Checkout';
