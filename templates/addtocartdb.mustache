@@ -79,30 +79,17 @@
 }
 </style>
 
-<div class="checkoutgrid">
-   <div class="container-fluid checkout">
-      <ul class="list-group">
-         {{#item}}
-         <li class="list-group-item ">    
-            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{name}}</span> 
-            <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" onclick="alert('delete')"></i></span>
-            <span class="item-price pull-right"> {{price}} </span><br> 
-            <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span><span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span><br><span class="lighter"> {{item.shortsummary}} </span>
-         </li>
-         {{/item}}
-      </ul>
-   </div>
-   <aside class="proceed pull-left">
-      <div class="card" style="max-width: 400px;">
-         <ul class="shopping-cart-items px-4">
-         {{#item}}
-          <li id="item-{{id}}" class="clearfix" data-price='{{price}}' data-name='{{name}}'>
-            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{name}}</span>
-            <span class="item-price pull-right">{{price}}€</span>            
-          </li>
-          {{/item}}
-          <li id="litotalprice"> <span class="pull-right">Total: <span id="totalprice">{{price}}</span>€</span></li>
-         </ul>
-      </div>
-</div>
-</aside>
+<button class="btn btn-primary" id="btn-{{id}}" data-id="id" data-objecttable="booking">
+  <i class="fa fa-cart-plus" aria-hidden="true"></i> Add to Cart
+</button>
+
+{{#js}}   
+require(['local_shopping_cart/cart'], function(cart) {
+  document.querySelector('#btn-{{id}}').addEventListener('click', event => {
+        console.log("click");
+        event.preventDefault();
+        event.stopPropagation();
+        cart.addItem();
+    }) 
+});
+{{/js}}

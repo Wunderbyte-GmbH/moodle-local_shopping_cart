@@ -36,7 +36,6 @@ $PAGE->set_context(\context_system::instance());
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
 $PAGE->set_title("Ihr Warenkorb");
 $PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
-$PAGE->requires->js_call_amd('local_shopping_cart/cart','init');
 
 // Set the page layout.
 
@@ -82,6 +81,8 @@ local_shopping_cart\shopping_cart::add_item_to_cart($shopping4);
 $cachedrawdata = $cache->get($userid . '_shopping_cart');
 $data['item'] = array_values($cachedrawdata['item']);
 
+
+echo $OUTPUT->render_from_template('local_shopping_cart/addtocartdb', $shopping4);
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
