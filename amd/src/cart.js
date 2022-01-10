@@ -102,6 +102,7 @@ function addDeleteevent(item) {
         let element = document.querySelector('#' + item.dataset.id);
         let itemprice = element.dataset.price;
         let total = document.getElementById('totalprice');
+        total == "undefined" ? 0 : total;
         total.innerHTML -= itemprice; 
         let id = item.dataset.id.split('-').pop();
         deleteItem(id);
