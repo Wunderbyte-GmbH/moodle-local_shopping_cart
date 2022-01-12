@@ -27,18 +27,19 @@ import Ajax from 'core/ajax';
  */
 export const init = () => {
     document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
+        // eslint-disable-next-line no-console
         console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
         setTimer(listitem.dataset.expirationdate, listitem.dataset.id);
-    })
+    });
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
-    })
+    });
 
     document.querySelector('#nav-shopping_cart-popover-container .btn-primary.addrandom').addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
         addItem();
-    }) 
+    });
 };
 
 
@@ -49,39 +50,41 @@ export const deleteItem = (id) => {
             'id': id,
         },
         done: function() {
+            // eslint-disable-next-line no-console
             console.log(id);
-            let item =  document.querySelector('#item-' + id);
+            let item = document.querySelector('#item-' + id);
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
                 let itemcount2 = document.getElementById("itemcount");
-                itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+                itemcount1.innerHTML = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
                 let itemprice = item.dataset.price;
                 let total = document.getElementById('totalprice');
-                total == "undefined" ? 0 : total;
-                total.innerHTML -= itemprice; 
+                total = total == "undefined" ? 0 : total;
+                total.innerHTML -= itemprice;
             }
         },
         fail: function(ex) {
-            console.log(id);
+            // eslint-disable-next-line no-console
+            console.log(id, ex);
             let item =  document.querySelector('#item-' + id);
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
                 let itemcount2 = document.getElementById("itemcount");
-                itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+                itemcount1.innerHTML = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
                 let itemprice = item.dataset.price;
                 let total = document.getElementById('totalprice');
-                total == "undefined" ? 0 : total;
-                total.innerHTML -= itemprice; 
+                total = total == "undefined" ? 0 : total;
+                total.innerHTML -= itemprice;
             }
         },
-    }]);   
-}
+    }]);
+};
 
 export const addItem = () => {
     Ajax.call([{
@@ -105,29 +108,36 @@ export const addItem = () => {
             itemcount1.innerHTML ++;
             itemcount2.innerHTML ++;
             let totalprice = document.getElementById('totalprice');
-            totalprice.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
+            totalprice.innerHTML = (parseInt(totalprice.innerHTML) || 0) + parseInt(data.price);
             addDeleteevent(document.querySelector('#item-' + data.id + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.id)
+            setTimer(data.expirationdate, data.id);
         },
         fail: function(ex) {
-        } 
+            // eslint-disable-next-line no-console
+            console.log(ex);
+        }
     }], true);
-}; 
+};
 
 /**
- * Add Events.
+ * Delete Event.
+ * @param {*} item
  */
-
 function addDeleteevent(item) {
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
         let id = item.dataset.id.split('-').pop();
         deleteItem(id);
-    })
+    });
 }
 
-
+/**
+ * Start the timer.
+ * @param {int} duration
+ * @param {int} display
+ * @param {int} id
+ */
 function startTimer(duration, display, id) {
     var timer = duration, minutes, seconds;
     setInterval(function () {
@@ -146,12 +156,21 @@ function startTimer(duration, display, id) {
     }, 1000);
 }
 
+/**
+ * Set the timer.
+ * @param {int} expirationdate
+ * @param {int} id
+ */
 function setTimer(expirationdate, id) {
     let delta = 0;
     let now = Date.now('UTC');
     now = (new Date()).getTime() / 1000;
     delta = (expirationdate - now);
-    if (delta < 0) delta = 0;
+    if (delta < 0) {
+        delta = 0;
+    }
     let display = document.querySelector('#time-item-' + id);
-    if (display) startTimer(delta, display, id);
+    if (display) {
+        startTimer(delta, display, id);
+    }
 }
