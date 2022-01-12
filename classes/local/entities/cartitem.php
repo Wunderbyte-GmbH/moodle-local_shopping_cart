@@ -59,7 +59,7 @@ class cartitem {
      *
      * @return array
      */
-    public function get_item():array {
+    public function getitem():array {
         $item = array();
         $item['itemid'] = $this->itemid;
         $item['itemname'] = $this->itemname;
@@ -75,7 +75,7 @@ class cartitem {
      *
      * @return float
      */
-    public function get_price(): float {
+    public function getprice(): float {
         return $this->price;
     }
 
@@ -84,7 +84,7 @@ class cartitem {
      *
      * @return string
      */
-    public function get_currency(): string {
+    public function getcurrency(): string {
         return $this->currency;
     }
 
@@ -93,7 +93,7 @@ class cartitem {
      *
      * @return int
      */
-    public function get_itemid(): int {
+    public function getitemid(): int {
         return $this->itemid;
     }
 }
