@@ -46,8 +46,6 @@ class service_provider implements \core_payment\local\callback\service_provider 
     public static function get_payable(string $paymentarea, int $userid): \core_payment\local\entities\payable {
         global $DB;
 
-        // $instance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $userid], '*', MUST_EXIST);
-
         // We get the sum and description from cache.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
