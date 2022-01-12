@@ -26,23 +26,15 @@ import Ajax from 'core/ajax';
  *
  */
 export const init = () => {
+    document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
+        console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
+        setTimer(listitem.dataset.expirationdate, listitem.dataset.id);
+    })
     document.querySelectorAll('.fa-trash-o').forEach(item => {
-        item.addEventListener('click', event => {
-          event.preventDefault();
-          event.stopPropagation();
-          let element = document.querySelector('#' + item.dataset.id);
-          let itemprice = element.dataset.price;
-          let total = document.getElementById('totalprice');
-          total.innerHTML -= itemprice; 
-          let id = item.dataset.id.split('-').pop();
-          deleteItem(id);
-          document.querySelector('#' + item.dataset.id).remove();
-          document.getElementById("countbadge").innerHTML -= 1;
-          document.getElementById("itemcount").innerHTML -= 1;
-        })
-      })
+        addDeleteevent(item);
+    })
+
     document.querySelector('#nav-shopping_cart-popover-container .btn-primary.addrandom').addEventListener('click', event => {
-        console.log("click");
         event.preventDefault();
         event.stopPropagation();
         addItem();
@@ -57,21 +49,49 @@ export const deleteItem = (id) => {
             'id': id,
         },
         done: function() {
+            console.log(id);
+            let item =  document.querySelector('#item-' + id);
+            if (item) {
+                item.remove();
+                let itemcount1 = document.getElementById("countbadge");
+                let itemcount2 = document.getElementById("itemcount");
+                itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+                let itemprice = item.dataset.price;
+                let total = document.getElementById('totalprice');
+                total == "undefined" ? 0 : total;
+                total.innerHTML -= itemprice; 
+            }
         },
         fail: function(ex) {
+            console.log(id);
+            let item =  document.querySelector('#item-' + id);
+            if (item) {
+                item.remove();
+                let itemcount1 = document.getElementById("countbadge");
+                let itemcount2 = document.getElementById("itemcount");
+                itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+                let itemprice = item.dataset.price;
+                let total = document.getElementById('totalprice');
+                total == "undefined" ? 0 : total;
+                total.innerHTML -= itemprice; 
+            }
         },
     }]);   
 }
 
 export const addItem = () => {
-    console.log("deletestart");
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
             'id': '1',
         },
         done: function(data) {
-           let html = '<li id="item-' + data.id + '" class="clearfix" data-price="' + data.price + '" data-name="' + data.name + '">' +
+           let html = '<li id="item-' + data.id + '" class="clearfix" data-price="' + data.price + '" data-name="' + data.name
+            + '" data-expirationdate="' + data.expirationdate + '" data-id="' + data.id + '">' +
             '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.name + '</span>' +
             '<span class="item-price pull-right">' + data.price + '€</span><br>' +
            '<span class="item-time pl-3">[<span id="time-item-' + data.id + '"></span>]</span>' +
@@ -79,10 +99,13 @@ export const addItem = () => {
             '</li>';
             let lastElem = document.getElementById('litotalprice');
             lastElem.insertAdjacentHTML('beforeBegin', html);
-            document.getElementById("countbadge").innerHTML ++;
-            document.getElementById("itemcount").innerHTML ++;
-            let total = document.getElementById('totalprice');
-            total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
+            let itemcount1 = document.getElementById("countbadge");
+            let itemcount2 = document.getElementById("itemcount");
+            itemcount2.classList.remove("hidden");
+            itemcount1.innerHTML ++;
+            itemcount2.innerHTML ++;
+            let totalprice = document.getElementById('totalprice');
+            totalprice.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
             addDeleteevent(document.querySelector('#item-' + data.id + ' .fa-trash-o'));
             setTimer(data.expirationdate, data.id)
         },
@@ -99,21 +122,13 @@ function addDeleteevent(item) {
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-        let element = document.querySelector('#' + item.dataset.id);
-        let itemprice = element.dataset.price;
-        let total = document.getElementById('totalprice');
-        total == "undefined" ? 0 : total;
-        total.innerHTML -= itemprice; 
         let id = item.dataset.id.split('-').pop();
         deleteItem(id);
-        document.querySelector('#' + item.dataset.id).remove();
-        document.getElementById("countbadge").innerHTML -= 1;
-        document.getElementById("itemcount").innerHTML -= 1;
     })
 }
 
 
-function startTimer(duration, display) {
+function startTimer(duration, display, id) {
     var timer = duration, minutes, seconds;
     setInterval(function () {
         minutes = parseInt(timer / 60, 10);
@@ -125,7 +140,8 @@ function startTimer(duration, display) {
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
-            timer = duration;
+            timer = 0;
+            deleteItem(id);
         }
     }, 1000);
 }
@@ -135,9 +151,7 @@ function setTimer(expirationdate, id) {
     let now = Date.now('UTC');
     now = (new Date()).getTime() / 1000;
     delta = (expirationdate - now);
-    if (delta < 0) {
-    delta = 0;
-    }
+    if (delta < 0) delta = 0;
     let display = document.querySelector('#time-item-' + id);
-    startTimer(delta, display);
+    if (display) startTimer(delta, display, id);
 }

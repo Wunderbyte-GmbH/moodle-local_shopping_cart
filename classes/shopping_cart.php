@@ -76,7 +76,6 @@ class shopping_cart
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
         unset($cachedrawdata['item'][$itemid]);
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
-
         return true;
     }
 
@@ -106,7 +105,7 @@ class shopping_cart
         $itemdata['id'] = time() - $rand + 7 * rand(5, 115);
         $itemdata['name'] = $sports[$rand];
         $itemdata['price'] = rand(5, 115);
-        $itemdata['expirationdate'] = time() + rand(1, 15) * 60;
+        $itemdata['expirationdate'] = time() + rand(1, 1) * 60;
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
@@ -116,5 +115,4 @@ class shopping_cart
         $event->trigger();
         return $itemdata;
     }
-
 }
