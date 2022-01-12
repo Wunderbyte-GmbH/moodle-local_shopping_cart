@@ -112,8 +112,8 @@ export const addItem = (id, componentname) => {
             'itemid': id
         },
         done: function(data) {
-           let html = '<li id="item-' + data.itemid + '" class="clearfix" data-price="' + data.price + '" data-name="' + data.name
-            + '" data-expirationdate="' + data.expirationdate + '" data-id="' + data.itemid + '">' +
+            let html = '<li id="item-' + data.itemid + '" class="clearfix" data-price="'
+                    + data.price + '" data-name="' + data.itemname + '">' +
             '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.itemname + '</span>' +
             '<span class="item-price pull-right">' + data.price + '€</span><br>' +
            '<span class="item-time pl-3">[<span id="time-item-' + data.itemid + '"></span>]</span>' +
@@ -121,15 +121,12 @@ export const addItem = (id, componentname) => {
             '</li>';
             let lastElem = document.getElementById('litotalprice');
             lastElem.insertAdjacentHTML('beforeBegin', html);
-            let itemcount1 = document.getElementById("countbadge");
-            let itemcount2 = document.getElementById("itemcount");
-            itemcount2.classList.remove("hidden");
-            itemcount1.innerHTML++;
-            itemcount2.innerHTML++;
-            let totalprice = document.getElementById('totalprice');
-            totalprice.innerHTML = (parseInt(totalprice.innerHTML) || 0) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + data.itemid + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.itemid);
+            document.getElementById("countbadge").innerHTML++;
+            document.getElementById("itemcount").innerHTML++;
+            let total = document.getElementById('totalprice');
+            total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
+            addDeleteevent(document.querySelector('#item-' + data.id + ' .fa-trash-o'));
+            setTimer(data.expirationdate, data.id);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
