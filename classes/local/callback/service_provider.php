@@ -42,7 +42,7 @@ interface service_provider {
      * @param int $itemid An identifier that is known to the plugin
      * @return cartitem
      */
-    public static function get_cartitem(int $itemid):cartitem;
+    public static function get_cartitem(int $itemid): cartitem;
 
     /**
      * Callback function that is executed when the item is successfully bought.

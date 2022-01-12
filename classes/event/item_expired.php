@@ -81,7 +81,7 @@ class item_expired extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventmessagedeleted', 'message');
+        return get_string('item_expired', 'shopping_cart');
     }
 
     /**
@@ -90,27 +90,7 @@ class item_expired extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        // This is for BC when the event used to take this value into account before group conversations.
-        // We still want the same message to display for older events.
-        if (isset($this->other['useridto'])) {
-            // Check if the person who deleted the message received or sent it.
-            if ($this->userid == $this->other['useridto']) {
-                $str = 'from';
-            } else {
-                $str = 'to';
-            }
-
-            return "The user with id '$this->userid' deleted a message sent $str the user with id '$this->relateduserid'.";
-        }
-
-        $messageid = $this->other['messageid'];
-
-        // Check if the user deleting the message was not the actual user we are deleting for.
-        $str = "The user with id '$this->userid' deleted a message with id '$messageid'";
-        if ($this->userid != $this->relateduserid) {
-            $str .= " for the user with id '$this->relateduserid'";
-        }
-
+        $str = "bla";
         return $str;
     }
 

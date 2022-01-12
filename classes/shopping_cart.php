@@ -115,4 +115,37 @@ class shopping_cart
         $event->trigger();
         return $itemdata;
     }
+
+    /**
+     * Get the name of the service provider class
+     *
+     * @param string $component The component
+     * @return string
+     * @throws \coding_exception
+     */
+    private static function get_service_provider_classname(string $component) {
+        $providerclass = "$component\\shopping_cart\\service_provider";
+
+        if (class_exists($providerclass)) {
+            $rc = new \ReflectionClass($providerclass);
+            if ($rc->implementsInterface(local\callback\service_provider::class)) {
+                return $providerclass;
+            }
+        }
+
+        throw new \coding_exception("$component does not have an eligible implementation of payment service_provider.");
+    }
+    
+    /**
+     * Asks the payable from the related component.
+     *
+     * @param string $component Name of the component that the paymentarea and itemid belong to
+     * @param int $itemid An internal identifier that is used by the component
+     * @return local\entities\cartitem
+     */
+    public static function get_cartitem(string $component, int $itemid): local\entities\cartitem {
+        $providerclass = static::get_service_provider_classname($component);
+
+        return component_class_callback($providerclass, 'get_cartitem', [$itemid]);
+    }
 }
