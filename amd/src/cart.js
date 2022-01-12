@@ -31,7 +31,10 @@ export const buttoninit = (id, componentname) => {
     const addtocartbutton = document.querySelector('#btn-' + id);
 
     addtocartbutton.querySelector('.loadJavascript').remove();
-    addtocartbutton.querySelector('span').classList.remove('hidden');
+    const spanlabel = addtocartbutton.querySelector('span');
+    if (spanlabel) {
+        spanlabel.classList.remove('hidden');
+    }
 
     addtocartbutton.addEventListener('click', event => {
         event.preventDefault();
@@ -125,8 +128,8 @@ export const addItem = (id, componentname) => {
             document.getElementById("itemcount").innerHTML++;
             let total = document.getElementById('totalprice');
             total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + data.id + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.id);
+            addDeleteevent(document.querySelector('#item-' + data.itemid + ' .fa-trash-o'));
+            setTimer(data.expirationdate, data.itemid);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console

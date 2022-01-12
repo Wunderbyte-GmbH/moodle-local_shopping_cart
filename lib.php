@@ -18,7 +18,7 @@
  * @package    local_shopping_cart
  * @copyright  2021 Wunderbyte GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+ */
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -57,7 +57,6 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
         $data['item'] = array_values($cache['item']);
         $data['count'] = $count;
         $data['price'] = array_sum(array_column($data['item'], 'price'));
-        //check price exist else 0;
     }
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;

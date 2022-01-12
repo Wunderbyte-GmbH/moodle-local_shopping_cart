@@ -32,8 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2021 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class shopping_cart
-{
+class shopping_cart {
 
     /**
      * entities constructor.
@@ -43,11 +42,11 @@ class shopping_cart
 
     /**
      *
-     * This is to return all parent entities from the database
+     * Add Item to cart.
      * @param array $itemdata
-     * @return array Object
+     * @return bool
      */
-    public static function add_item_to_cart($itemdata): bool {
+    public static function add_item_to_cart(&$itemdata): bool {
         global $USER;
         $userid = $USER->id;
         if (!isset($itemdata['expirationdate'])) {
@@ -55,7 +54,7 @@ class shopping_cart
         }
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $cachedrawdata['item'][ $itemdata['id'] ] = $itemdata;
+        $cachedrawdata['item'][$itemdata['itemid']] = $itemdata;
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
         /*$event = event\item_added::create(
 
@@ -98,7 +97,7 @@ class shopping_cart
               "Field Hockey", "Curling", "Skiing", "Soccer", "Curling", "Cricket", "Rugby", "Curling", "Bobsleigh", "Cheerleading", "Baseball", "Competitive Swimming",
                "Curling", "Curling", "Horse Racing", "Polo", "Tennis", "Football", "Polo", "Golf", "Volleyball", "Lacrosse", "Golf", "Tennis", "Wrestling", "Cricket",
                 "Endurance Running", "Basketball", "Track", "Polo", "Field Hockey", "Wiffleball", "Rowing", "Lacrosse", "Competitive Swimming", "Endurance Running", "Snowboarding",
-                 "Horse Racing", "Baseball", "Skateboarding", "Pool", "Mixed Martial Arts", "Snowboarding", "Surfing", "Polo", "Skateboarding", "Poker", "Bowling", "Crew", "Ice Hockey", 
+                 "Horse Racing", "Baseball", "Skateboarding", "Pool", "Mixed Martial Arts", "Snowboarding", "Surfing", "Polo", "Skateboarding", "Poker", "Bowling", "Crew", "Ice Hockey",
                  "Wrestling", "Cheerleading", "Polo", "Rugby", "Crew", "Weightlifting", "Skiing", "Skateboarding", "Horse Racing", "Bowling", "Weightlifting", "Rugby",
                   "Roller derby", "Badminton");
         $rand = array_rand($sports, 1);
@@ -132,10 +131,9 @@ class shopping_cart
                 return $providerclass;
             }
         }
-
         throw new \coding_exception("$component does not have an eligible implementation of payment service_provider.");
     }
-    
+
     /**
      * Asks the payable from the related component.
      *
