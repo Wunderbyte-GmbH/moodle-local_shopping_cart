@@ -36,7 +36,7 @@ class local_shopping_cart_external extends external_api {
     /**
      * Webservice for shopping_cart class to fetch data.
      *
-     * @return object 
+     * @return object
      */
     public static function add_item_to_cart($component, $itemid) {
         $params = external_api::validate_parameters(self::add_item_to_cart_parameters(), [
@@ -45,7 +45,13 @@ class local_shopping_cart_external extends external_api {
         ]);
 
         $cartitem = shopping_cart::get_cartitem($params['component'], $params['itemid']);
-        return $cartitem;
+        // We need the cartitem as an array.
+        $item = $cartitem->getitem();
+
+        $shoppingcart = new shopping_cart();
+        $shoppingcart->add_item_to_cart($item);
+
+        return $item;
     }
 
     /**
@@ -54,7 +60,7 @@ class local_shopping_cart_external extends external_api {
      */
     public static function add_item_to_cart_parameters() {
         return new external_function_parameters(array(
-                        'component'  => new external_value(PARAM_PLUGIN, 'component', VALUE_DEFAULT, ''),
+                        'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
                         'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, ''),
 
                 )
@@ -67,11 +73,12 @@ class local_shopping_cart_external extends external_api {
      */
     public static function add_item_to_cart_returns() {
         return new external_single_structure(array(
-                    'id' => new external_value(PARAM_RAW, 'html content'),
-                    'name' => new external_value(PARAM_RAW, 'html content'),
-                    'expirationdate' => new external_value(PARAM_RAW, 'html content'),
+                    'itemid' => new external_value(PARAM_RAW, 'html content'),
+                    'itemname' => new external_value(PARAM_RAW, 'html content'),
+                    // 'expirationdate' => new external_value(PARAM_RAW, 'html content'),
                     'price' => new external_value(PARAM_RAW, 'html content'),
-                    'modul' => new external_value(PARAM_RAW, 'html content'),
+                    'componentname' => new external_value(PARAM_RAW, 'html content'),
+                    'description' => new external_value(PARAM_RAW, 'html content'),
                 )
         );
     }
