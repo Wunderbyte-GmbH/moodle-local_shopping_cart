@@ -59,13 +59,13 @@
     {{$content}}
 <ul class="shopping-cart-items">
           {{#item}}
-          <li id="item-{{id}}" class="clearfix" data-price='{{price}}' data-name='{{name}}' data-expirationdate='{{expirationdate}}' data-id='{{id}}'>
-            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{name}}</span>
+          <li id="item-{{itemid}}" class="clearfix" data-price='{{price}}' data-name='{{itemname}}' data-expirationdate='{{expirationdate}}' data-id='{{itemid}}'>
+            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
              <span class="item-price pull-right">{{price}}€</span>
 
             <br>
-            {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{id}}" ></span>]</span>{{/expirationdate}}
-                       <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{id}}"></i></span>
+            {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{itemid}}" ></span>]</span>{{/expirationdate}}
+                       <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{itemid}}"></i></span>
 
           </li>
           {{/item}}

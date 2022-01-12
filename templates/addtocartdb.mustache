@@ -38,59 +38,20 @@
     }
 
 }}
-<style>
-.fa-futbol-o {
-    color: var(--success) !important;
-}
-
-.checkout .row {
-  height: 2em;
-}
-
-.checkout .row:nth-child("even") {
-    background: ABB0BE;
-}
-
-.lighter {
-  color: #ABB0BE;
-}
-
-.checkoutgrid {
-  display: grid; 
-  grid-template-columns: 2fr 1fr; 
-  grid-template-rows: 1fr; 
-  gap: 10px 10px; 
-  grid-template-areas: 
-    "checkout proceed"; 
-}
-
-.checkout { grid-area: checkout; }
-.proceed { grid-area: proceed; }
-.proceed ul {
-  list-style-type: none;
-  padding:10px;
-}
-
-.checkoutgrid .checkout ul.list-group {
-  padding: 0px;
-}
-
-.secondarynavigation {
-  display: none;
-}
-</style>
-
-<button class="btn btn-primary" id="btn-{{id}}" data-id="id" data-objecttable="booking">
-  <i class="fa fa-cart-plus" aria-hidden="true"></i> Add to Cart
+<button class="btn btn-primary wb_shopping_cart" id="btn-{{id}}" data-id="id" data-objecttable="booking">
+  <i class="fa fa-cart-plus" aria-hidden="true"></i>
+  {{! This span element is just backup. In some cases the JS in the template won't be loaded.
+  If that's the case, init can be triggered by a (automatic) click. }}
+  <span class="loadJavascript" onclick="require(['local_shopping_cart/cart'], function(cart) {
+    cart.buttoninit({{id}}, '{{componentname}}');
+    }); return false;">
+      Loading...
+  </span>
+  <span class="hidden">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
 </button>
 
-{{#js}}   
-require(['local_shopping_cart/cart'], function(cart) {
-  document.querySelector('#btn-{{id}}').addEventListener('click', event => {
-        console.log("click");
-        event.preventDefault();
-        event.stopPropagation();
-        cart.addItem();
-    }) 
-});
+{{#js}}
+    require(['local_shopping_cart/cart'], function(cart) {
+    cart.buttoninit({{id}}, '{{componentname}}'');
+    });
 {{/js}}
