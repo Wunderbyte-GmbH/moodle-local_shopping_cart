@@ -21,11 +21,30 @@
 
 import Ajax from 'core/ajax';
 
+
+export const buttoninit = (id, componentname) => {
+
+    // eslint-disable-next-line no-console
+    console.log('initialized', id, componentname);
+
+    // First we get the button and delete the helper-span to secure js loading.
+    const addtocartbutton = document.querySelector('#btn-' + id);
+
+    addtocartbutton.querySelector('.loadJavascript').remove();
+    addtocartbutton.querySelector('span').classList.remove('hidden');
+
+    addtocartbutton.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        addItem(id, componentname);
+    });
+};
+
 /**
  * Gets called from mustache template.
  *
  */
-export const init = () => {
+ export const init = () => {
     document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
         // eslint-disable-next-line no-console
         console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
@@ -41,7 +60,6 @@ export const init = () => {
         addItem();
     });
 };
-
 
 export const deleteItem = (id) => {
     Ajax.call([{
@@ -86,38 +104,41 @@ export const deleteItem = (id) => {
     }]);
 };
 
-export const addItem = () => {
+export const addItem = (id, componentname) => {
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
-            'id': '1',
+            'component': componentname,
+            'itemid': id
         },
         done: function(data) {
-           let html = '<li id="item-' + data.id + '" class="clearfix" data-price="' + data.price + '" data-name="' + data.name
-            + '" data-expirationdate="' + data.expirationdate + '" data-id="' + data.id + '">' +
-            '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.name + '</span>' +
+           let html = '<li id="item-' + data.itemid + '" class="clearfix" data-price="' + data.price + '" data-name="' + data.name
+            + '" data-expirationdate="' + data.expirationdate + '" data-id="' + data.itemid + '">' +
+            '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.itemname + '</span>' +
             '<span class="item-price pull-right">' + data.price + '€</span><br>' +
-           '<span class="item-time pl-3">[<span id="time-item-' + data.id + '"></span>]</span>' +
-            '<span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-' + data.id + '"></i></span>' +
+           '<span class="item-time pl-3">[<span id="time-item-' + data.itemid + '"></span>]</span>' +
+            '<span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-' + data.itemid + '"></i></span>' +
             '</li>';
             let lastElem = document.getElementById('litotalprice');
             lastElem.insertAdjacentHTML('beforeBegin', html);
             let itemcount1 = document.getElementById("countbadge");
             let itemcount2 = document.getElementById("itemcount");
             itemcount2.classList.remove("hidden");
-            itemcount1.innerHTML ++;
-            itemcount2.innerHTML ++;
+            itemcount1.innerHTML++;
+            itemcount2.innerHTML++;
             let totalprice = document.getElementById('totalprice');
             totalprice.innerHTML = (parseInt(totalprice.innerHTML) || 0) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + data.id + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.id);
+            addDeleteevent(document.querySelector('#item-' + data.itemid + ' .fa-trash-o'));
+            setTimer(data.expirationdate, data.itemid);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
-            console.log(ex);
+            console.log('error', ex);
         }
     }], true);
 };
+
+
 
 /**
  * Delete Event.
