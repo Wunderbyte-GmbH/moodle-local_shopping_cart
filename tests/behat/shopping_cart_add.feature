@@ -34,3 +34,15 @@ Feature: Test purchase process in shopping cart.
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item"
+
+  @javascript
+  Scenario: Add an item to the shopping cart and delete it again
+    Given I log in as "user1"
+    When I am on "Course 1" course homepage
+    And I visit "http://webserver/local/shopping_cart/test.php"
+    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I wait "1" seconds
+    And I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "my test item"
+    And I click on "#item-local_shopping_cart-1 i.fa.fa-trash-o" "css_element"
+    Then I should not see "my test item"
