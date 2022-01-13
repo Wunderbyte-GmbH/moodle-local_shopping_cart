@@ -22,24 +22,44 @@
 import Ajax from 'core/ajax';
 
 
-export const buttoninit = (id, componentname) => {
+export const buttoninit = (id, component) => {
 
     // eslint-disable-next-line no-console
-    console.log('initialized', id, componentname);
+    console.log('initialized', id, component);
 
     // First we get the button and delete the helper-span to secure js loading.
-    const addtocartbutton = document.querySelector('#btn-' + id);
+    const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
 
+    // If we don't find the button, we abort.
+    if (!addtocartbutton) {
+        return;
+    }
+
+    // We remove the backup span element, as we don't need it anymore.
     addtocartbutton.querySelector('.loadJavascript').remove();
+    // We show the potentially hidden second span element with the button text.
     const spanlabel = addtocartbutton.querySelector('span');
     if (spanlabel) {
         spanlabel.classList.remove('hidden');
     }
 
+    // Make sure item is not yet in shopping cart. If so, add disabled class.
+    const shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+    if (shoppingcart) {
+        const cartitem = shoppingcart.querySelector('#item-' + component + '-' + id);
+        if (cartitem) {
+            addtocartbutton.classList.add('disabled');
+        }
+    }
+    // Add click eventlistern to oneself.
     addtocartbutton.addEventListener('click', event => {
+        // If we find the disabled class, the click event is aborted.
+        if (addtocartbutton.classList.contains('disabled')) {
+            return;
+        }
         event.preventDefault();
         event.stopPropagation();
-        addItem(id, componentname);
+        addItem(id, component);
     });
 };
 
@@ -51,33 +71,29 @@ export const buttoninit = (id, componentname) => {
     document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
         // eslint-disable-next-line no-console
         console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
-        setTimer(listitem.dataset.expirationdate, listitem.dataset.id);
+        setTimer(listitem.dataset.expirationdate, listitem.dataset.id, listitem.dataset.component);
     });
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
     });
-
-    document.querySelector('#nav-shopping_cart-popover-container .btn-primary.addrandom').addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
-        addItem();
-    });
 };
 
-export const deleteItem = (id) => {
+export const deleteItem = (id, component) => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
-            'id': id,
+            'itemid': id,
+            'component': component
         },
         done: function() {
             // eslint-disable-next-line no-console
             console.log(id);
-            let item = document.querySelector('#item-' + id);
+            let item = document.querySelector('#item-' + component + '-' + id);
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
                 let itemcount2 = document.getElementById("itemcount");
+
                 itemcount1.innerHTML = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
                 itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
                 itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
@@ -85,12 +101,18 @@ export const deleteItem = (id) => {
                 let total = document.getElementById('totalprice');
                 total = total == "undefined" ? 0 : total;
                 total.innerHTML -= itemprice;
+
+                // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
+                const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
+                if (addtocartbutton) {
+                    addtocartbutton.classList.remove('disabled');
+                }
             }
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
             console.log(id, ex);
-            let item =  document.querySelector('#item-' + id);
+            let item = document.querySelector('#item-' + component + '-' + id);
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
@@ -107,29 +129,42 @@ export const deleteItem = (id) => {
     }]);
 };
 
-export const addItem = (id, componentname) => {
+export const addItem = (id, component) => {
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
-            'component': componentname,
+            'component': component,
             'itemid': id
         },
         done: function(data) {
-            let html = '<li id="item-' + data.itemid + '" class="clearfix" data-price="'
+            let html = '<li id="item-' + data.component + '-' + data.itemid + '" class="clearfix" data-price="'
                     + data.price + '" data-name="' + data.itemname + '">' +
             '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.itemname + '</span>' +
-            '<span class="item-price pull-right">' + data.price + '€</span><br>' +
-           '<span class="item-time pl-3">[<span id="time-item-' + data.itemid + '"></span>]</span>' +
-            '<span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-' + data.itemid + '"></i></span>' +
+            '<span class="item-price pull-right">' + data.price + ' ' + data.currency + '</span><br>' +
+           '<span class="item-time pl-3">[<span id="time-item-' + data.component + '-' + data.itemid + '"></span>]</span>' +
+            '<span class="pull-right"><i class="fa fa-trash-o lighter-text"data-id="item-'
+                    + data.component + '-'
+                    + data.itemid
+                    + '"></i></span>' +
             '</li>';
             let lastElem = document.getElementById('litotalprice');
             lastElem.insertAdjacentHTML('beforeBegin', html);
             document.getElementById("countbadge").innerHTML++;
-            document.getElementById("itemcount").innerHTML++;
+
+            const badge = document.getElementById("itemcount");
+            badge.innerHTML++;
+            badge.classList.remove('hidden');
+
             let total = document.getElementById('totalprice');
             total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + data.itemid + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.itemid);
+            addDeleteevent(document.querySelector('#item-' + data.component + '-' + data.itemid + ' .fa-trash-o'));
+            setTimer(data.expirationdate, data.itemid, data.component);
+
+            // Make sure addtocartbutton is disabled once the item is in the shopping cart.
+            const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
+            if (addtocartbutton) {
+                addtocartbutton.classList.add('disabled');
+            }
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -137,8 +172,6 @@ export const addItem = (id, componentname) => {
         }
     }], true);
 };
-
-
 
 /**
  * Delete Event.
@@ -149,8 +182,8 @@ function addDeleteevent(item) {
         event.preventDefault();
         event.stopPropagation();
         let id = item.dataset.id.split('-').pop();
-        console.log(id);
-        deleteItem(id);
+        let component = item.dataset.id.split('-').pop();
+        deleteItem(id, component);
     });
 }
 
@@ -161,8 +194,10 @@ function addDeleteevent(item) {
  * @param {int} id
  */
 function startTimer(duration, display, id) {
-    var timer = duration, minutes, seconds;
-    setInterval(function () {
+    var timer = duration,
+                minutes,
+                seconds;
+    setInterval(function() {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -182,8 +217,9 @@ function startTimer(duration, display, id) {
  * Set the timer.
  * @param {int} expirationdate
  * @param {int} id
+ * @param {string} component
  */
-function setTimer(expirationdate, id) {
+function setTimer(expirationdate, id, component) {
     let delta = 0;
     let now = Date.now('UTC');
     now = (new Date()).getTime() / 1000;
@@ -191,7 +227,7 @@ function setTimer(expirationdate, id) {
     if (delta < 0) {
         delta = 0;
     }
-    let display = document.querySelector('#time-item-' + id);
+    let display = document.querySelector('#time-item-' + component + '-' + id);
     if (display) {
         startTimer(delta, display, id);
     }

@@ -58,17 +58,23 @@
 
     {{$content}}
 <ul class="shopping-cart-items">
-          {{#item}}
-          <li id="item-{{itemid}}" class="clearfix" data-price='{{price}}' data-name='{{itemname}}' data-expirationdate='{{expirationdate}}' data-id='{{itemid}}'>
+          {{#items}}
+          <li id="item-{{componentname}}-{{itemid}}"
+                        class="clearfix"
+                        data-price='{{price}}'
+                        data-name='{{itemname}}'
+                        data-component='{{componentname}}'
+                        data-expirationdate='{{expirationdate}}'
+                        data-id='{{itemid}}'>
             <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
              <span class="item-price pull-right">{{price}}€</span>
 
             <br>
-            {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{itemid}}" ></span>]</span>{{/expirationdate}}
-                       <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{itemid}}"></i></span>
+            {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{componentname}}-{{itemid}}" ></span>]</span>{{/expirationdate}}
+                       <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{componentname}}-{{itemid}}"></i></span>
 
           </li>
-          {{/item}}
+          {{/items}}
           <li id="litotalprice"> <span class="pull-right">Total: <span id="totalprice">{{price}}</span>€</span></li>
         </ul>
         <a href="#" class="btn btn-primary addrandom ml-3"><i class="fa fa-plus"></i></a>

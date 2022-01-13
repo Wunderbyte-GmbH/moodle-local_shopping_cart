@@ -54,12 +54,17 @@ class shopping_cart {
         }
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $cachedrawdata['item'][$itemdata['itemid']] = $itemdata;
-        $cache->set($userid . '_shopping_cart', $cachedrawdata);
-        /*$event = event\item_added::create(
 
-        );
-        $event->trigger();*/
+        $cachekey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
+
+        if (isset($cachedrawdata['items'][$cachekey])) {
+            // Todo: Admin setting could allow for more than one item. Right now, only one.
+            return false;
+        }
+
+        $cachedrawdata['items'][$cachekey] = $itemdata;
+        $cache->set($userid . '_shopping_cart', $cachedrawdata);
+
         return true;
     }
     /**

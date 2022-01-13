@@ -53,10 +53,10 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     $data = [];
     $cache = local_shopping_cart_get_cache();
     if ($cache) {
-        $count = count($cache['item']);
-        $data['item'] = array_values($cache['item']);
+        $count = count($cache['items']);
+        $data['items'] = array_values($cache['items']);
         $data['count'] = $count;
-        $data['price'] = array_sum(array_column($data['item'], 'price'));
+        $data['price'] = array_sum(array_column($data['items'], 'price'));
     }
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;
