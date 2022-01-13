@@ -73,13 +73,16 @@ class shopping_cart {
      * @param int $itemid
      * @return bool
      */
-    public static function delete_item_from_cart($itemid): bool {
+    public static function delete_item_from_cart($itemid, $component): bool {
         global $USER;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        unset($cachedrawdata['item'][$itemid]);
-        $cache->set($userid . '_shopping_cart', $cachedrawdata);
+        if ($cachedrawdata) {
+            $cachekey = $component . '-' . $itemid;
+            unset($cachedrawdata['items'][$cachekey]);
+            $cache->set($userid . '_shopping_cart', $cachedrawdata);
+        }
         return true;
     }
 

@@ -137,13 +137,13 @@ export const addItem = (id, component) => {
             'itemid': id
         },
         done: function(data) {
-            let html = '<li id="item-' + data.component + '-' + data.itemid + '" class="clearfix" data-price="'
-                    + data.price + '" data-name="' + data.itemname + '">' +
+            let html = '<li id="item-' + component + '-' + data.itemid + '" class="clearfix" data-price="'
+                    + data.price + '" data-name="' + data.itemname + '" data-component="' + component + '">' +
             '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.itemname + '</span>' +
             '<span class="item-price pull-right">' + data.price + ' ' + data.currency + '</span><br>' +
-           '<span class="item-time pl-3">[<span id="time-item-' + data.component + '-' + data.itemid + '"></span>]</span>' +
+           '<span class="item-time pl-3">[<span id="time-item-' + component + '-' + data.itemid + '"></span>]</span>' +
             '<span class="pull-right"><i class="fa fa-trash-o lighter-text"data-id="item-'
-                    + data.component + '-'
+                    + component + '-'
                     + data.itemid
                     + '"></i></span>' +
             '</li>';
@@ -157,8 +157,8 @@ export const addItem = (id, component) => {
 
             let total = document.getElementById('totalprice');
             total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + data.component + '-' + data.itemid + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.itemid, data.component);
+            addDeleteevent(document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o'));
+            setTimer(data.expirationdate, data.itemid, component);
 
             // Make sure addtocartbutton is disabled once the item is in the shopping cart.
             const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
@@ -181,8 +181,14 @@ function addDeleteevent(item) {
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-        let id = item.dataset.id.split('-').pop();
-        let component = item.dataset.id.split('-').pop();
+
+        // eslint-disable-next-line no-console
+        console.log('delete clicked', item.dataset.id);
+
+        let idarray = item.dataset.id.split('-');
+
+        let id = idarray.pop();
+        let component = idarray.pop();
         deleteItem(id, component);
     });
 }
@@ -192,12 +198,13 @@ function addDeleteevent(item) {
  * @param {int} duration
  * @param {int} display
  * @param {int} id
+ * @param {string} component
  */
-function startTimer(duration, display, id) {
+function startTimer(duration, display, id, component) {
     var timer = duration,
                 minutes,
                 seconds;
-    setInterval(function() {
+    let interval = setInterval(function() {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -208,7 +215,8 @@ function startTimer(duration, display, id) {
 
         if (--timer < 0) {
             timer = 0;
-            deleteItem(id);
+            deleteItem(id, component);
+            clearInterval(interval);
         }
     }, 1000);
 }
@@ -229,6 +237,6 @@ function setTimer(expirationdate, id, component) {
     }
     let display = document.querySelector('#time-item-' + component + '-' + id);
     if (display) {
-        startTimer(delta, display, id);
+        startTimer(delta, display, id, component);
     }
 }

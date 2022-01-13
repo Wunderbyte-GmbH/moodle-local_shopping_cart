@@ -90,7 +90,7 @@ class local_shopping_cart_external extends external_api {
      */
     public static function delete_item_from_cart($itemid, $component) {
 
-        $params = external_api::validate_parameters(self::add_item_to_cart_parameters(), [
+        $params = external_api::validate_parameters(self::delete_item_from_cart_parameters(), [
             'itemid' => $itemid,
             'component' => $component
         ]);
