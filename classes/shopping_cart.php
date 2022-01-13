@@ -93,18 +93,28 @@ class shopping_cart {
         global $USER;
         $userid = $USER->id;
         $itemdata['modul'] = "booking";
-        $sports = array("Lacrosse", "Roller derby", "Basketball", "Tennis", "Rugby", "Bowling", "Fencing", "Baseball", "Crew", "Cheerleading",
-         "Baseball", "Roller derby", "Baseball", "Baseball", "Boxing", "Endurance Running", "Ultimate", "Curling",
-          "Wrestling", "Surfing", "Horse Racing", "Auto Racing", "Soccer", "Fencing", "Gynastics", "Lacrosse", "Skateboarding",
-           "Track", "Soccer", "Crew", "Skiing", "Poker", "Lacrosse", "Auto Racing", "Endurance Running", "Curling", "Cricket", "Wiffleball",
-            "Wrestling", "Snowboarding", "Skateboarding", "Skateboarding", "Poker", "Mixed Martial Arts", "Ice Hockey", "Badminton", "Surfing",
-             "Field Hockey", "Endurance Running", "Horse Racing", "Bowling", "Bobsleigh", "Bobsleigh", "Basketball", "Cheerleading", "Mixed Martial Arts",
-              "Field Hockey", "Curling", "Skiing", "Soccer", "Curling", "Cricket", "Rugby", "Curling", "Bobsleigh", "Cheerleading", "Baseball", "Competitive Swimming",
-               "Curling", "Curling", "Horse Racing", "Polo", "Tennis", "Football", "Polo", "Golf", "Volleyball", "Lacrosse", "Golf", "Tennis", "Wrestling", "Cricket",
-                "Endurance Running", "Basketball", "Track", "Polo", "Field Hockey", "Wiffleball", "Rowing", "Lacrosse", "Competitive Swimming", "Endurance Running", "Snowboarding",
-                 "Horse Racing", "Baseball", "Skateboarding", "Pool", "Mixed Martial Arts", "Snowboarding", "Surfing", "Polo", "Skateboarding", "Poker", "Bowling", "Crew", "Ice Hockey",
-                 "Wrestling", "Cheerleading", "Polo", "Rugby", "Crew", "Weightlifting", "Skiing", "Skateboarding", "Horse Racing", "Bowling", "Weightlifting", "Rugby",
-                  "Roller derby", "Badminton");
+        $sports = array("Lacrosse", "Roller derby", "Basketball", "Tennis",
+                        "Rugby", "Bowling", "Fencing", "Baseball", "Crew", "Cheerleading",
+                        "Baseball", "Roller derby", "Baseball", "Baseball", "Boxing", "Endurance Running",
+                        "Ultimate", "Curling", "Wrestling", "Surfing", "Horse Racing", "Auto Racing",
+                        "Soccer", "Fencing", "Gynastics", "Lacrosse", "Skateboarding",
+                        "Track", "Soccer", "Crew", "Skiing", "Poker", "Lacrosse", "Auto Racing",
+                        "Endurance Running", "Curling", "Cricket", "Wiffleball",
+                        "Wrestling", "Snowboarding", "Skateboarding", "Skateboarding",
+                        "Poker", "Mixed Martial Arts", "Ice Hockey", "Badminton", "Surfing",
+                        "Field Hockey", "Endurance Running", "Horse Racing", "Bowling", "Bobsleigh",
+                        "Bobsleigh", "Basketball", "Cheerleading", "Mixed Martial Arts", "Field Hockey",
+                        "Curling", "Skiing", "Soccer", "Curling", "Cricket", "Rugby", "Curling",
+                        "Bobsleigh", "Cheerleading", "Baseball", "Competitive Swimming",
+                        "Curling", "Curling", "Horse Racing", "Polo", "Tennis", "Football",
+                        "Polo", "Golf", "Volleyball", "Lacrosse", "Golf", "Tennis", "Wrestling",
+                        "Cricket", "Endurance Running", "Basketball", "Track", "Polo", "Field Hockey",
+                        "Wiffleball", "Rowing", "Lacrosse", "Competitive Swimming", "Endurance Running",
+                        "Snowboarding", "Horse Racing", "Baseball", "Skateboarding", "Pool",
+                        "Mixed Martial Arts", "Snowboarding", "Surfing", "Polo", "Skateboarding",
+                        "Poker", "Bowling", "Crew", "Ice Hockey", "Wrestling", "Cheerleading", "Polo",
+                        "Rugby", "Crew", "Weightlifting", "Skiing", "Skateboarding", "Horse Racing",
+                        "Bowling", "Weightlifting", "Rugby", "Roller derby", "Badminton");
         $rand = array_rand($sports, 1);
         $itemdata['itemid'] = time() - $rand + 7 * rand(5, 115);
         $itemdata['itemname'] = $sports[$rand];

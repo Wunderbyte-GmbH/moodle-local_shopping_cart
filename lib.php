@@ -74,14 +74,25 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
  * @param bool $forcedownload
  * @param array $options
  */
-function local_shopping_cart_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function local_shopping_cart_pluginfile($course,
+                                        $birecordorcm,
+                                        $context,
+                                        $filearea,
+                                        $args,
+                                        $forcedownload,
+                                        array $options = array()) {
     $fs = get_file_storage();
 
     $filename = array_pop($args);
     $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
 
     if ($filearea === 'description') {
-        if (!$file = $fs->get_file($context->id, 'local_entities', 'entitycontent', 0, $filepath, $filename) or $file->is_directory()) {
+        if (!$file = $fs->get_file($context->id,
+                                    'local_entities',
+                                    'entitycontent',
+                                    0,
+                                    $filepath,
+                                    $filename) or $file->is_directory()) {
             send_file_not_found();
         }
     } else if ($filearea === 'image') {
