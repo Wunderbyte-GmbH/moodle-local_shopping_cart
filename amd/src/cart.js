@@ -149,6 +149,7 @@ function addDeleteevent(item) {
         event.preventDefault();
         event.stopPropagation();
         let id = item.dataset.id.split('-').pop();
+        console.log(id);
         deleteItem(id);
     });
 }

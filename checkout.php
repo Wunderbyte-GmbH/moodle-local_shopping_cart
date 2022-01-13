@@ -25,6 +25,8 @@
 
 use cache_helper;
 use local_shopping_cart;
+use local_shopping_cart\shopping_cart;
+
 global $USER;
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
@@ -44,45 +46,15 @@ require_login();
 
 $PAGE->set_pagelayout('standard');
 
+
+shopping_cart::add_random_item();
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
 $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-
-$shopping1['id'] = "1";
-$shopping1['modul'] = "booking";
-$shopping1['name'] = "Basketball";
-$shopping1['price'] = "515.00";
-$shopping1['expirationdate'] = time() + 30 * 60;
-local_shopping_cart\shopping_cart::add_item_to_cart($shopping1);
-for ($i = 0; $i <= 6; $i++) {
-    local_shopping_cart\shopping_cart::add_random_item();
-}
-$shopping2['id'] = "3";
-$shopping2['modul'] = "booking";
-$shopping2['name'] = "Volleyball";
-$shopping2['price'] = "25.00";
-$shopping2['expirationdate'] = time() + 15 * 60;
-local_shopping_cart\shopping_cart::add_item_to_cart($shopping2);
-local_shopping_cart\shopping_cart::delete_item_from_cart(3);
-$shopping3['id'] = "2";
-$shopping3['modul'] = "booking";
-$shopping3['name'] = "Basketball";
-$shopping3['price'] = "75.00";
-$shopping3['expirationdate'] = time() + 7 * 60;
-local_shopping_cart\shopping_cart::add_item_to_cart($shopping3);
-$shopping4['id'] = "11";
-$shopping4['modul'] = "booking";
-$shopping4['name'] = "Volleyball";
-$shopping4['price'] = "25.00";
-$shopping4['expirationdate'] = time() + 7 * 15;
-$shoppings['item'][$shopping4['id']] = $shopping4;
-local_shopping_cart\shopping_cart::add_item_to_cart($shopping4);
 $cachedrawdata = $cache->get($userid . '_shopping_cart');
 $data['item'] = array_values($cachedrawdata['item']);
 
-
-echo $OUTPUT->render_from_template('local_shopping_cart/addtocartdb', $shopping4);
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

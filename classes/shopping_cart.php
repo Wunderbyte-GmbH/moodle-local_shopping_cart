@@ -101,14 +101,14 @@ class shopping_cart {
                  "Wrestling", "Cheerleading", "Polo", "Rugby", "Crew", "Weightlifting", "Skiing", "Skateboarding", "Horse Racing", "Bowling", "Weightlifting", "Rugby",
                   "Roller derby", "Badminton");
         $rand = array_rand($sports, 1);
-        $itemdata['id'] = time() - $rand + 7 * rand(5, 115);
-        $itemdata['name'] = $sports[$rand];
+        $itemdata['itemid'] = time() - $rand + 7 * rand(5, 115);
+        $itemdata['itemname'] = $sports[$rand];
         $itemdata['price'] = rand(5, 115);
         $itemdata['expirationdate'] = time() + rand(1, 1) * 60;
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $cachedrawdata['item'][ $itemdata['id'] ] = $itemdata;
+        $cachedrawdata['item'][ $itemdata['itemid'] ] = $itemdata;
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
         $event = event\item_added::create_from_ids($userid, $itemdata);
         $event->trigger();

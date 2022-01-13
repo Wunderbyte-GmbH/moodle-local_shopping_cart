@@ -77,16 +77,117 @@
 .secondarynavigation {
   display: none;
 }
+
+.payment
+	{
+		border:1px solid #f2f2f2;
+		height:280px;
+        border-radius:20px;
+        background:#fff;
+	}
+.payment.payment-success .payment_header
+   {
+	   background:var(--success);
+	   padding:20px;
+       border-radius:20px 20px 0px 0px;
+	   
+   }
+.payment.payment-failure .payment_header  
+{
+	   background:var(--danger);
+	   padding:20px;
+       border-radius:20px 20px 0px 0px;
+	   
+   } 
+   .check
+   {
+	   margin:0px auto;
+	   width:50px;
+	   height:50px;
+	   border-radius:100%;
+	   background:#fff;
+	   text-align:center;
+   }
+   
+   .check i
+   {
+	   vertical-align:middle;
+	   line-height:50px;
+	   font-size:30px;
+   }
+
+    .content 
+    {
+        text-align:center;
+    }
+
+    .content  h1
+    {
+        font-size:25px;
+        padding-top:25px;
+    }
+
+    .content a
+    {
+        width:200px;
+        height:35px;
+        color:#fff;
+        border-radius:30px;
+        padding:5px 10px;
+        background:var(--success);
+        transition:all ease-in-out 0.3s;
+    }
+
+    .content a:hover
+    {
+        text-decoration:none;
+        background:#000;
+    }
 </style>
 
+<div class="container">
+   <div class="row">
+      <div class="col-md-6 mx-auto mt-5">
+         <div class="payment payment-success">
+            <div class="payment_header">
+               <div class="check"><i class="fa fa-check" aria-hidden="true"></i></div>
+            </div>
+            <div class="content">
+               <h1>Payment Success !</h1>
+               <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. </p>
+               <a href="#">Go to Home</a>
+            </div>
+            
+         </div>
+      </div>
+   </div>
+</div>
 
 
-<div class="checkoutgrid">
-   <div class="container-fluid checkout">
+<div class="container">
+   <div class="row">
+      <div class="col-md-6 mx-auto mt-5">
+         <div class="payment payment-failure">
+            <div class="payment_header">
+               <div class="check"><i class="fa fa-times" aria-hidden="true"></i></div>
+            </div>
+            <div class="content">
+               <h1>Payment Unsuccessfull !</h1>
+               <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. </p>
+               <a href="#">Go to Home</a>
+            </div>
+            
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="checkoutgrid checkout">
+   <div class="container-fluid">
       <ul class="list-group">
          {{#item}}
          <li class="list-group-item ">    
-            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{name}}</span> 
+            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span> 
             <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" onclick="alert('delete')"></i></span>
             <span class="item-price pull-right"> {{price}} </span><br> 
             <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span><span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span><br><span class="lighter"> {{item.shortsummary}} </span>
@@ -94,27 +195,19 @@
          {{/item}}
       </ul>
    </div>
-   <aside class="proceed pull-left">
-      <div class="card" style="max-width: 400px;">
-      
-         <ul class="shopping-cart-items px-4">
-            <li class="clearfix">
-               <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> Volleyball</span>
-               <span class="item-price pull-right">45€</span>            
-            </li>
-            <li class="clearfix">
-               <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> Basketball</span>
-               <span class="item-price pull-right">25€</span>
-            </li>
-            <li class="clearfix">
-               <div class="pull-right">   <span class="lighter-text">Total:</span>
-                  <span class="main-color-text total">70€</span>
-               </div>
-            </li>
-            <li class="mt-2">
-               <a href="#" class="btn btn-primary pull-right">Proceed <i class="fa fa-chevron-right"></i></a>
-            </li>
-         </ul>
+   <ul class="shopping-cart-items">
+      {{#item}}
+      <li id="item-{{id}}" class="clearfix" data-price='{{price}}' data-name='{{name}}' data-expirationdate='{{expirationdate}}' data-id='{{id}}'>
+        <span class="item-name"><i class="fa fa-futbol-o pr-1" aria-hidden="true"></i> {{itemname}}</span>
+         <span class="item-price pull-right">{{price}}€</span>
+      </li>
+      {{/item}}
+      <li id="litotalprice" class="text-right"> <span>Total: 2134<span id="totalprice">{{price}}</span>€</span></li>
+      {{! <a href="#" class="btn btn-primary pull-right mr-3">Procceed with payment <i class="fa fa-chevron-right"></i></a></li> }}
+     <li> {{> local_shopping_cart/payment_region }} </li>
+   </ul>
+</div>
+</div>
       </div>
 </div>
 </aside>
