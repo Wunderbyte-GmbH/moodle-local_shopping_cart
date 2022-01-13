@@ -46,3 +46,6 @@ Feature: Test purchase process in shopping cart.
     Then I should see "my test item"
     And I click on "#item-local_shopping_cart-1 i.fa.fa-trash-o" "css_element"
     Then I should not see "my test item"
+    And I reload the page
+    And I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should not see "my test item"
