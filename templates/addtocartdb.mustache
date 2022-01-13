@@ -38,7 +38,11 @@
     }
 
 }}
-<button class="btn btn-primary wb_shopping_cart" id="btn-{{id}}" data-id="id" data-objecttable="booking">
+<button class="btn wb_shopping_cart"
+        id="btn-{{componentname}}-{{itemid}}"
+        data-id="id"
+        data-objecttable="booking"
+        data-component="{{componentname}}">
   <i class="fa fa-cart-plus" aria-hidden="true"></i>
   {{! This span element is just backup. In some cases the JS in the template won't be loaded.
   If that's the case, init can be triggered by a (automatic) click. }}
@@ -52,6 +56,6 @@
 
 {{#js}}
     require(['local_shopping_cart/cart'], function(cart) {
-    cart.buttoninit({{id}}, '{{componentname}}'');
+    cart.buttoninit({{itemid}}, "{{componentname}}");
     });
 {{/js}}

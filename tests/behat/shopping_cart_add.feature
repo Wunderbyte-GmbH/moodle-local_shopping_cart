@@ -25,11 +25,12 @@ Feature: Test purchase process in shopping cart.
   Scenario: Add an item to the shopping cart
     Given I log in as "user1"
     When I am on "Course 1" course homepage
-    And I put "my test item" in my cart
+    And I visit "http://webserver/local/shopping_cart/test.php"
+    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I wait "1" seconds
+    And I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "my test item"
     And I wait "1" seconds
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "5" seconds
-    And I reload the page
-    And I wait "5" seconds
     Then I should see "my test item"
