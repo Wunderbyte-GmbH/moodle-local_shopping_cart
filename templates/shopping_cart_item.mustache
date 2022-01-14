@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template message_output_popup/shopping_cart_popover
+
+    This template will render the shopping_cart popover for the navigation bar.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+        "itemid": 3,
+        "componentname": 'mod_booking',
+        "price": 133,
+        "expirationdate": 1642155164,
+        "itemname": Tenniscourse
+    }
+
+}}
+
+<li id="item-{{componentname}}-{{itemid}}"
+class="clearfix"
+data-price='{{price}}'
+data-name='{{itemname}}'
+data-component='{{componentname}}'
+data-expirationdate='{{expirationdate}}'
+data-id='{{itemid}}'>
+    <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
+    <span class="item-price pull-right">{{price}}€</span>
+    <br>
+    {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{componentname}}-{{itemid}}" ></span>]</span>{{/expirationdate}}
+    <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{componentname}}-{{itemid}}"></i></span>
+</li>

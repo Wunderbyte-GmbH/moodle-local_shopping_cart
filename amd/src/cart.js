@@ -20,6 +20,7 @@
  */
 
 import Ajax from 'core/ajax';
+import Templates from 'core/templates';
 
 
 export const buttoninit = (id, component) => {
@@ -94,12 +95,12 @@ export const deleteItem = (id, component) => {
                 let itemcount1 = document.getElementById("countbadge");
                 let itemcount2 = document.getElementById("itemcount");
 
-                itemcount1.innerHTML = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+                itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
                 itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
                 itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
                 let itemprice = item.dataset.price;
                 let total = document.getElementById('totalprice');
-                total = total == "undefined" ? 0 : total;
+                total = total == "undefined" ? total = 0 : total;
                 total.innerHTML -= itemprice;
 
                 // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
@@ -122,7 +123,7 @@ export const deleteItem = (id, component) => {
                 itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
                 let itemprice = item.dataset.price;
                 let total = document.getElementById('totalprice');
-                total = total == "undefined" ? 0 : total;
+                total = total == "undefined" ? total = 0 : total;
                 total.innerHTML -= itemprice;
             }
         },
@@ -137,34 +138,27 @@ export const addItem = (id, component) => {
             'itemid': id
         },
         done: function(data) {
-            let html = '<li id="item-' + component + '-' + data.itemid + '" class="clearfix" data-price="'
-                    + data.price + '" data-name="' + data.itemname + '" data-component="' + component + '">' +
-            '<span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i>' + data.itemname + '</span>' +
-            '<span class="item-price pull-right">' + data.price + ' ' + data.currency + '</span><br>' +
-           '<span class="item-time pl-3">[<span id="time-item-' + component + '-' + data.itemid + '"></span>]</span>' +
-            '<span class="pull-right"><i class="fa fa-trash-o lighter-text"data-id="item-'
-                    + component + '-'
-                    + data.itemid
-                    + '"></i></span>' +
-            '</li>';
-            let lastElem = document.getElementById('litotalprice');
-            lastElem.insertAdjacentHTML('beforeBegin', html);
-            document.getElementById("countbadge").innerHTML++;
+            data.component = component;
+            data.id = id;
+            Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
+                let lastElem = document.getElementById('litotalprice');
+                lastElem.insertAdjacentHTML('beforeBegin', html);
+                document.getElementById("countbadge").innerHTML++;
+                const badge = document.getElementById("itemcount");
+                badge.innerHTML++;
+                badge.classList.remove('hidden');
+                let total = document.getElementById('totalprice');
+                total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
+                let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                addDeleteevent(item);
+                setTimer(data.expirationdate, data.itemid, component);
 
-            const badge = document.getElementById("itemcount");
-            badge.innerHTML++;
-            badge.classList.remove('hidden');
-
-            let total = document.getElementById('totalprice');
-            total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
-            addDeleteevent(document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o'));
-            setTimer(data.expirationdate, data.itemid, component);
-
-            // Make sure addtocartbutton is disabled once the item is in the shopping cart.
-            const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
-            if (addtocartbutton) {
-                addtocartbutton.classList.add('disabled');
-            }
+                // Make sure addtocartbutton is disabled once the item is in the shopping cart.
+                const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
+                if (addtocartbutton) {
+                    addtocartbutton.classList.add('disabled');
+                }
+            });
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
