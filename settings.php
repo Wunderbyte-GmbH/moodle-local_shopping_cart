@@ -25,9 +25,53 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$componentname = 'local_shopping_cart';
+
+// Default for users that have site config.
 if ($hassiteconfig) {
-    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-    if ($ADMIN->fulltree) {
-        // TODO: Define the plugin settings page - {@link https://docs.moodle.org/dev/Admin_settings}.
-    }
+    // Add the category to the local plugin branch.
+    $settings = new admin_settingpage('local_shopping_cart_settings', '');
+    $ADMIN->add('localplugins', new admin_category($componentname, get_string('pluginname', $componentname)));
+    $ADMIN->add($componentname, $settings);
+
+    // Max items in cart.
+    $settings->add(
+        new admin_setting_configtext(
+            $componentname .'/maxitems',
+            get_string('maxitems', $componentname),
+            get_string('maxitems:description', $componentname),
+            10,
+            PARAM_INT
+        )
+    );
+    // Allow duplicate items in cart.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            $componentname . '/duplicates',
+            get_string('duplicates', $componentname),
+            get_string('duplicates:description', $componentname),
+            0
+        )
+    );
+
+    // Item expiriation time in minutes.
+    $settings->add(
+        new admin_setting_configtext(
+            $componentname . '/expiriation',
+            get_string('expiriation', $componentname),
+            15,
+            PARAM_INT
+        )
+    );
+
+    // Item expiriation time additon after checkout in minutes.
+    $settings->add(
+        new admin_setting_configtext(
+            $componentname .'/addon',
+            get_string('addon', $componentname),
+            get_string('addon:description', $componentname),
+            15,
+            PARAM_INT
+        )
+    );
 }

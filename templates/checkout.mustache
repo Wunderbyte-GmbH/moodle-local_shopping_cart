@@ -45,10 +45,6 @@
     color: var(--success) !important;
 }
 
-.checkout .row {
-  height: 2em;
-
-}
 .checkout .row:nth-child("even") {
     background: ABB0BE;
 }
@@ -145,69 +141,36 @@
     }
 </style>
 
-<div class="container">
-   <div class="row">
-      <div class="col-md-6 mx-auto mt-5">
-         <div class="payment payment-success">
-            <div class="payment_header">
-               <div class="check"><i class="fa fa-check" aria-hidden="true"></i></div>
-            </div>
-            <div class="content">
-               <h1>Payment Success !</h1>
-               <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. </p>
-               <a href="#">Go to Home</a>
-            </div>
-            
-         </div>
-      </div>
-   </div>
-</div>
-
-
-<div class="container">
-   <div class="row">
-      <div class="col-md-6 mx-auto mt-5">
-         <div class="payment payment-failure">
-            <div class="payment_header">
-               <div class="check"><i class="fa fa-times" aria-hidden="true"></i></div>
-            </div>
-            <div class="content">
-               <h1>Payment Unsuccessfull !</h1>
-               <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. </p>
-               <a href="#">Go to Home</a>
-            </div>
-            
-         </div>
-      </div>
-   </div>
-</div>
-
 <div class="checkoutgrid checkout">
    <div class="container-fluid">
       <ul class="list-group">
          {{#item}}
          <li class="list-group-item ">    
-            <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span> 
-            <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" onclick="alert('delete')"></i></span>
-            <span class="item-price pull-right"> {{price}} </span><br> 
-            <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span><span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span><br><span class="lighter"> {{item.shortsummary}} </span>
+            <div class="row">
+               <div class="col-md-2">
+                  <img class="w-100" src="/local/shopping_cart/pix/cart.png">
+               </div>
+               <div class="col"> 
+               <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span> 
+               <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" onclick="alert('delete')"></i></span>
+               <span class="item-price pull-right"> {{price}} </span><br> 
+               <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span><span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span><br><span class="lighter"> {{item.shortsummary}} </span>
+               </div>
+            </div>
+            <div>
+               {{{description}}}
+            </div>
+            
          </li>
          {{/item}}
       </ul>
    </div>
    <ul class="shopping-cart-items">
       {{#item}}
-      <li id="item-{{id}}" class="clearfix" data-price='{{price}}' data-name='{{name}}' data-expirationdate='{{expirationdate}}' data-id='{{id}}'>
-        <span class="item-name"><i class="fa fa-futbol-o pr-1" aria-hidden="true"></i> {{itemname}}</span>
-         <span class="item-price pull-right">{{price}}€</span>
-      </li>
+         {{> local_shopping_cart/shopping_cart_item }} 
       {{/item}}
       <li id="litotalprice" class="text-right"> <span>Total: 2134<span id="totalprice">{{price}}</span>€</span></li>
       {{! <a href="#" class="btn btn-primary pull-right mr-3">Procceed with payment <i class="fa fa-chevron-right"></i></a></li> }}
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>
 </div>
-</div>
-      </div>
-</div>
-</aside>

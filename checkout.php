@@ -55,7 +55,6 @@ $cache = \cache::make('local_shopping_cart', 'cacheshopping');
 $cachedrawdata = $cache->get($userid . '_shopping_cart');
 $data['item'] = array_values($cachedrawdata['item']);
 
-
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

@@ -29,3 +29,14 @@ $string['pluginname'] = 'Warenkorb';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 
 $string['addtocart'] = 'In den Warenkorb';
+// Settings.
+$string['maxitems'] = 'Max items in the shopping cart';
+$string['maxitems:description'] = 'Set max items for the user shopping cart';
+$string['duplicates'] = 'Allow items to be bought more than once';
+$string['duplicates:description'] = 'Allow items to be bought more than once';
+$string['maxitems'] = 'Add to cart';
+$string['maxitems:description'] = 'Add to cart';
+$string['expiriation'] = 'Set expiration time in minutes';
+$string['expiriation:description'] = 'How long should the item be in the cart';
+$string['addon'] = 'Set addon time';
+$string['addon:description'] = 'Addition to the expiration time after checkout process is initation';

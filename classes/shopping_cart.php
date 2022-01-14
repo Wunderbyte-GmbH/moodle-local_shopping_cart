@@ -123,7 +123,7 @@ class shopping_cart {
         $itemdata['itemname'] = $sports[$rand];
         $itemdata['price'] = rand(5, 115);
         $itemdata['expirationdate'] = time() + rand(1, 1) * 60;
-
+        $itemdata['description'] = "asdadasdsad";
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
         $cachedrawdata['item'][ $itemdata['itemid'] ] = $itemdata;
