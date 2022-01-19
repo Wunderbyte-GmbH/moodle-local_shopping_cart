@@ -50,7 +50,7 @@ class local_shopping_cart_external extends external_api {
 
         $shoppingcart = new shopping_cart();
         $shoppingcart->add_item_to_cart($item);
-
+        $item['expirationdate'] = $shoppingcart->get_expirationdate();
         return $item;
     }
 
@@ -78,6 +78,7 @@ class local_shopping_cart_external extends external_api {
                     'price' => new external_value(PARAM_RAW, 'html content'),
                     'currency' => new external_value(PARAM_RAW, 'currency'),
                     'componentname' => new external_value(PARAM_RAW, 'html content'),
+                    'expirationdate' => new external_value(PARAM_RAW, 'html content'),
                     'description' => new external_value(PARAM_RAW, 'html content'),
                 )
         );

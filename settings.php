@@ -57,8 +57,8 @@ if ($hassiteconfig) {
     // Item expiriation time in minutes.
     $settings->add(
         new admin_setting_configtext(
-            $componentname . '/expiriationtime',
-            get_string('expiriationtime', $componentname),
+            $componentname . '/expirationtime',
+            get_string('expirationtime', $componentname),
             15,
             PARAM_INT
         )

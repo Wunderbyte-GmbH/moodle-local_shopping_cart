@@ -45,11 +45,9 @@ class="clearfix"
 data-price='{{price}}'
 data-name='{{itemname}}'
 data-component='{{componentname}}'
-data-expirationdate='{{expirationdate}}'
 data-id='{{itemid}}'>
     <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
     <span class="item-price pull-right">{{price}}€</span>
     <br>
-    {{#expirationdate}}<span class="item-time pl-3">[<span id="time-item-{{componentname}}-{{itemid}}" ></span>]</span>{{/expirationdate}}
     <span class="pull-right"><i class="fa fa-trash-o lighter-text" data-id="item-{{componentname}}-{{itemid}}"></i></span>
 </li>

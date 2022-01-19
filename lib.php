@@ -107,11 +107,13 @@ function local_shopping_cart_get_cache_data() {
     if ($cachedrawdata['expirationdate'] > time()) {
         shopping_cart::delete_all_items_from_cart();
     }
+    $data = [];
     if ($cachedrawdata) {
         $count = count($cachedrawdata['items']);
         $data['items'] = array_values($cachedrawdata['items']);
         $data['count'] = $count;
         $data['price'] = array_sum(array_column($data['items'], 'price'));
+        $data['expirationdate'] = $cachedrawdata['expirationdate'];
     }
     return $data;
 }

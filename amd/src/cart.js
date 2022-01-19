@@ -22,6 +22,7 @@
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 
+export var interval = null;
 export const buttoninit = (id, component) => {
 
     // eslint-disable-next-line no-console
@@ -68,15 +69,11 @@ export const buttoninit = (id, component) => {
  *
  */
  export const init = () => {
-
-    document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
-        // eslint-disable-next-line no-console
-        console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
-        setTimer(listitem.dataset.expirationdate, listitem.dataset.id, listitem.dataset.component);
-    });
+    initTimer();
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
     });
+
 };
 
 export const deleteItem = (id, component) => {
@@ -94,8 +91,7 @@ export const deleteItem = (id, component) => {
             item.forEach(item => {
                 if (item) {
                     item.remove();
-                    
-                } 
+                }
             });
             let total = document.querySelectorAll('#totalprice');
             total.forEach(total => {
@@ -152,11 +148,12 @@ export const addItem = (id, component) => {
                 badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
                 badge.classList.remove('hidden');
                 let total = document.getElementById('totalprice');
-                console.log(data.price);
                 total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
                 let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                 addDeleteevent(item);
-                setTimer(data.expirationdate, data.itemid, component);
+                clearInterval(interval);
+                setExpirationDate(data.expirationdate);
+                initTimer();
 
                 // Make sure addtocartbutton is disabled once the item is in the shopping cart.
                 const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
@@ -192,18 +189,21 @@ function addDeleteevent(item) {
     });
 }
 
+
+
 /**
  * Start the timer.
+ * @param {bool} duration
  * @param {int} duration
  * @param {int} display
- * @param {int} id
- * @param {string} component
  */
-function startTimer(duration, display, id, component) {
+function startTimer(flag, duration, display) {
+ 
     var timer = duration,
                 minutes,
                 seconds;
-    let interval = setInterval(function() {
+    interval = setInterval(function() {
+        
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -212,30 +212,37 @@ function startTimer(duration, display, id, component) {
 
         display.textContent = minutes + ":" + seconds;
 
-        if (--timer < 0) {
+        if (--timer < 0 || !flag) {
             timer = 0;
-            deleteItem(id, component);
+            //deleteItem(id, component);
             clearInterval(interval);
         }
     }, 1000);
 }
 
+
 /**
  * Set the timer.
- * @param {int} expirationdate
- * @param {int} id
- * @param {string} component
  */
-function setTimer(expirationdate, id, component) {
-    let delta = 0;
-    let now = Date.now('UTC');
-    now = (new Date()).getTime() / 1000;
-    delta = (expirationdate - now);
-    if (delta < 0) {
-        delta = 0;
-    }
-    let display = document.querySelector('#time-item-' + component + '-' + id);
-    if (display) {
-        startTimer(delta, display, id, component);
-    }
+function initTimer() {
+    document.querySelectorAll('.expirationdate').forEach(timer => {
+        let delta = 0;
+        let now = Date.now('UTC');
+        now = (new Date()).getTime() / 1000;
+        delta = (timer.dataset.expirationdate - now);
+        if (delta < 0) {
+            delta = 0;
+        }
+        startTimer(1, delta, timer);
+    });
+}
+
+/**
+ * Set dataset from timer.
+ * @param {int} expirationdate
+ */
+function setExpirationDate(expirationdate) {
+    document.querySelectorAll('.expirationdate').forEach(timer => {
+        timer.dataset.expirationdate = expirationdate;
+    });
 }

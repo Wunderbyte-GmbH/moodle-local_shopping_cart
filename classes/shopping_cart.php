@@ -62,11 +62,17 @@ class shopping_cart {
 
         $cachedrawdata['items'][$cachekey] = $itemdata;
         // Set expirationdate current time + time in settings (from min to s).
-        $cachedrawdata['expirationdate'] = time() + get_config('local_shopping_cart', 'expirationtime') * 60;
+        $expirationtime = get_config('local_shopping_cart', 'expirationtime');
+        $cachedrawdata['expirationdate'] = time() + $expirationtime * 60;
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
 
         return true;
     }
+
+    public static function get_expirationdate(): int {
+        return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
+    }
+
     /**
      *
      * This is to return all parent entities from the database
