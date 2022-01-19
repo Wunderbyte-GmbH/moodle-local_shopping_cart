@@ -57,19 +57,8 @@ if ($hassiteconfig) {
     // Item expiriation time in minutes.
     $settings->add(
         new admin_setting_configtext(
-            $componentname . '/expiriation',
-            get_string('expiriation', $componentname),
-            15,
-            PARAM_INT
-        )
-    );
-
-    // Item expiriation time additon after checkout in minutes.
-    $settings->add(
-        new admin_setting_configtext(
-            $componentname .'/addon',
-            get_string('addon', $componentname),
-            get_string('addon:description', $componentname),
+            $componentname . '/expiriationtime',
+            get_string('expiriationtime', $componentname),
             15,
             PARAM_INT
         )

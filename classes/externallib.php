@@ -75,7 +75,6 @@ class local_shopping_cart_external extends external_api {
         return new external_single_structure(array(
                     'itemid' => new external_value(PARAM_RAW, 'html content'),
                     'itemname' => new external_value(PARAM_RAW, 'html content'),
-                    'expirationdate' => new external_value(PARAM_RAW, 'html content'),
                     'price' => new external_value(PARAM_RAW, 'html content'),
                     'currency' => new external_value(PARAM_RAW, 'currency'),
                     'componentname' => new external_value(PARAM_RAW, 'html content'),

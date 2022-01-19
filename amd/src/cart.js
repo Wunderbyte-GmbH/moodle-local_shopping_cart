@@ -22,7 +22,6 @@
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 
-
 export const buttoninit = (id, component) => {
 
     // eslint-disable-next-line no-console
@@ -69,6 +68,7 @@ export const buttoninit = (id, component) => {
  *
  */
  export const init = () => {
+
     document.querySelectorAll('.shopping-cart-items [id^=item]').forEach(listitem => {
         // eslint-disable-next-line no-console
         console.log(listitem.dataset.expirationdate + " asd a" + listitem.dataset.id);
@@ -89,25 +89,29 @@ export const deleteItem = (id, component) => {
         done: function() {
             // eslint-disable-next-line no-console
             console.log(id);
-            let item = document.querySelector('#item-' + component + '-' + id);
-            if (item) {
-                item.remove();
-                let itemcount1 = document.getElementById("countbadge");
-                let itemcount2 = document.getElementById("itemcount");
-
-                itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
-                let itemprice = item.dataset.price;
-                let total = document.getElementById('totalprice');
+            let item = document.querySelectorAll('#item-' + component + '-' + id);
+            let itemprice = item[0].dataset.price;
+            item.forEach(item => {
+                if (item) {
+                    item.remove();
+                    
+                } 
+            });
+            let total = document.querySelectorAll('#totalprice');
+            total.forEach(total => {
                 total = total == "undefined" ? total = 0 : total;
                 total.innerHTML -= itemprice;
+            });
+            let itemcount1 = document.getElementById("countbadge");
+            let itemcount2 = document.getElementById("itemcount");
 
-                // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
-                const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
-                if (addtocartbutton) {
-                    addtocartbutton.classList.remove('disabled');
-                }
+            itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
+            itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
+            itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+            // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
+            const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
+            if (addtocartbutton) {
+                addtocartbutton.classList.remove('disabled');
             }
         },
         fail: function(ex) {
@@ -145,10 +149,11 @@ export const addItem = (id, component) => {
                 lastElem.insertAdjacentHTML('beforeBegin', html);
                 document.getElementById("countbadge").innerHTML++;
                 const badge = document.getElementById("itemcount");
-                badge.innerHTML++;
+                badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
                 badge.classList.remove('hidden');
                 let total = document.getElementById('totalprice');
-                total.innerHTML = parseInt(total.innerHTML) + parseInt(data.price);
+                console.log(data.price);
+                total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
                 let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                 addDeleteevent(item);
                 setTimer(data.expirationdate, data.itemid, component);

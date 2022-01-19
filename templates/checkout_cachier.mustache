@@ -40,16 +40,21 @@
 }}
 
 <div class="row">
-    <div class="col-md-6 mx-auto mt-5">
-        <div class="card payment payment-success">
-        <div class="card-header payment_header">
-            <div class="check"><i class="fa fa-check-o" aria-hidden="true"></i></div>
-        </div>
-        <div class="card-body">
-            <h1>Payment Successfull !</h1>
-            <p>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. </p>
-            <a href="#" class="btn btn-success">Go to Home</a>
-        </div>
-        </div>
-    </div>
+   <div class="col-md-6 mx-auto mt-5">
+       <div class="card payment payment-success">
+       <div class="card-header payment_header text-white">
+            <h3>AdminUser</h3>
+            <h4>winkler_t@gmx.at</h4>
+       </div>
+       <div class="card-body">
+        <ul class="shopping-cart-items">
+            {{#items}}
+                {{> local_shopping_cart/shopping_cart_item }} 
+            {{/items}}
+        </ul>
+           <h1 class="text-center"><b>354 €</b></h1>
+           <p class="pull-right"><a href="#" class="btn btn-success">checkout</a></p>
+       </div>
+       </div>
+   </div>
 </div>

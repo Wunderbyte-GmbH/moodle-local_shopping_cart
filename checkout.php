@@ -27,11 +27,12 @@ use cache_helper;
 use local_shopping_cart;
 use local_shopping_cart\shopping_cart;
 
-global $USER;
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-
+require_once($CFG->dirroot.'/local/shopping_cart/lib.php');
+global $USER;
 // Get the id of the page to be displayed.
-$id = optional_param('id', 0, PARAM_INT);
+$success = optional_param('success', null, PARAM_INT);
+
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
@@ -47,13 +48,19 @@ require_login();
 $PAGE->set_pagelayout('standard');
 
 
-shopping_cart::add_random_item();
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
-$cache = \cache::make('local_shopping_cart', 'cacheshopping');
-$cachedrawdata = $cache->get($userid . '_shopping_cart');
-$data['item'] = array_values($cachedrawdata['item']);
+$data = local_shopping_cart_get_cache_data();
+$data["mail"] = $USER->email;
+$data["name"] = $USER->firstname . $USER->lastname;
+if (isset($success)) {
+    if ($success) {
+        $data['success'] = 1;
+    } else {
+        $data['failed'] = 1;
+    }
+}
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

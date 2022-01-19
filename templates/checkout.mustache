@@ -77,7 +77,6 @@
 .payment
 	{
 		border:1px solid #f2f2f2;
-		height:280px;
         border-radius:20px;
         background:#fff;
 	}
@@ -142,10 +141,19 @@
 </style>
 
 <div class="checkoutgrid checkout">
+
    <div class="container-fluid">
+    {{#success}}
+    {{> local_shopping_cart/checkout_success }}
+    {{/success}}
+    {{#failed}}
+    {{> local_shopping_cart/checkout_cachier }} 
+    {{> local_shopping_cart/checkout_failed }} 
+    {{/failed}}
+
       <ul class="list-group">
-         {{#item}}
-         <li class="list-group-item ">    
+         {{#items}}
+         <li id="item-{{componentname}}-{{itemid}}" class="list-group-item">    
             <div class="row">
                <div class="col-md-2">
                   <img class="w-100" src="/local/shopping_cart/pix/cart.png">
@@ -162,14 +170,19 @@
             </div>
             
          </li>
-         {{/item}}
+         {{/items}}
       </ul>
    </div>
    <ul class="shopping-cart-items">
-      {{#item}}
+    <li class="user-card mb-2">
+        <h2>{{name}}</h2><p>
+        {{mail}}
+        </p>
+</li>
+      {{#items}}
          {{> local_shopping_cart/shopping_cart_item }} 
-      {{/item}}
-      <li id="litotalprice" class="text-right"> <span>Total: 2134<span id="totalprice">{{price}}</span>€</span></li>
+      {{/items}}
+      <li id="litotalprice" class="text-right"> <span>Total:<span id="totalprice">{{price}}</span>€</span></li>
       {{! <a href="#" class="btn btn-primary pull-right mr-3">Procceed with payment <i class="fa fa-chevron-right"></i></a></li> }}
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>

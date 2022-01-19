@@ -34,6 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class shopping_cart {
 
+
     /**
      * entities constructor.
      */
@@ -49,12 +50,9 @@ class shopping_cart {
     public static function add_item_to_cart(&$itemdata): bool {
         global $USER;
         $userid = $USER->id;
-        if (!isset($itemdata['expirationdate'])) {
-            $itemdata['expirationdate'] = time() + 15 * 60;
-        }
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-
+ 
         $cachekey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
 
         if (isset($cachedrawdata['items'][$cachekey])) {
@@ -63,6 +61,8 @@ class shopping_cart {
         }
 
         $cachedrawdata['items'][$cachekey] = $itemdata;
+        // Set expirationdate current time + time in settings (from min to s).
+        $cachedrawdata['expirationdate'] = time() + get_config('local_shopping_cart', 'expirationtime') * 60;
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
 
         return true;
@@ -89,13 +89,32 @@ class shopping_cart {
     /**
      *
      * This is to return all parent entities from the database
+     * 
+     * @return bool
+     */
+    public static function delete_all_items_from_cart(): bool {
+        global $USER;
+        $userid = $USER->id;
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        if ($cachedrawdata) {
+            $cache->set($userid . '_shopping_cart', null);
+        }
+        return true;
+    }
+
+
+
+    /**
+     *
+     * This is to return all parent entities from the database
      * @param int $itemid
      * @return bool
      */
     public static function add_random_item() {
         global $USER;
         $userid = $USER->id;
-        $itemdata['modul'] = "booking";
+        $itemdata['componentname'] = "componentname";
         $sports = array("Lacrosse", "Roller derby", "Basketball", "Tennis",
                         "Rugby", "Bowling", "Fencing", "Baseball", "Crew", "Cheerleading",
                         "Baseball", "Roller derby", "Baseball", "Baseball", "Boxing", "Endurance Running",
@@ -126,7 +145,7 @@ class shopping_cart {
         $itemdata['description'] = "asdadasdsad";
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $cachedrawdata['item'][ $itemdata['itemid'] ] = $itemdata;
+        $cachedrawdata['items'][ $itemdata['itemid'] ] = $itemdata;
         $cache->set($userid . '_shopping_cart', $cachedrawdata);
         $event = event\item_added::create_from_ids($userid, $itemdata);
         $event->trigger();
