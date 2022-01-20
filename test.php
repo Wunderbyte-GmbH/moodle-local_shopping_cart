@@ -41,11 +41,11 @@ echo $OUTPUT->header();
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
-$item = new cartitem(1, 'local_shopping_cart', 10, 'EUR', 'local_shopping_cart', 'item description');
+$item = new cartitem(1, 'Testitem 1', 10, 'EUR', 'local_shopping_cart', 'My Testitem 1 description');
 $data = $item->getitem();
 $data = new button($data);
 echo $renderer->render_button($data);
-$item = new cartitem(2, 'local_shopping_cart', 20, 'EUR', 'local_shopping_cart', 'item description');
+$item = new cartitem(2, 'Testitem 2', 20, 'EUR', 'local_shopping_cart', 'My Testitem 2 description');
 $data = $item->getitem();
 $data = new button($data);
 echo $renderer->render_button($data);

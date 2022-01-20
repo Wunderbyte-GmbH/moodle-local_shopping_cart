@@ -48,8 +48,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     public static function get_cartitem(int $optionid): cartitem {
         global $DB;
 
-        return new cartitem(1,
-                            'my test item',
+        return new cartitem($optionid,
+                            'my test item ' . $optionid,
                             10,
                             'EUR',
                             'local_shopping_cart',
