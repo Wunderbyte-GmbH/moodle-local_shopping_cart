@@ -116,4 +116,27 @@ class local_shopping_cart_external extends external_api {
      */
     public static function delete_item_from_cart_returns() {
     }
+
+    /**
+     * Webservice for shopping_cart class to  delete all items.
+     *
+     *
+     */
+    public static function delete_all_items_from_cart() {
+        shopping_cart::delete_all_items_from_cart();
+    }
+
+    /**
+     * Describes the paramters for delete_item_from_cart.
+     * @return external_function_parameters
+     */
+    public static function delete_all_items_from_cartparameters() {
+        return new external_function_parameters(array());
+    }
+    /**
+     * Describes the return values for delete_item_from_cart.
+     * @return external_multiple_structure
+     */
+    public static function delete_all_items_from_cart_returns() {
+    }
 }

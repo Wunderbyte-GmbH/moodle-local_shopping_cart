@@ -76,6 +76,43 @@ export const buttoninit = (id, component) => {
 
 };
 
+export const deleteAllItems = () => {
+    Ajax.call([{
+        methodname: "delete_all_items_from_cart",
+        args: {
+        },
+        done: function() {
+            let item = document.querySelectorAll('[id^=item-]');
+            item.forEach(item => {
+                if (item) {
+                    item.remove();
+                }
+            });
+            let total = document.querySelectorAll('#totalprice');
+            total.forEach(total => {
+                total.innerHTML = 0;
+            });
+            let itemcount1 = document.getElementById("countbadge");
+            let itemcount2 = document.getElementById("itemcount");
+
+            itemcount1.innerHTML = 0;
+            itemcount2.innerHTML = 0;
+            itemcount2.classList.add("hidden");
+
+            // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
+            const addtocartbutton = document.querySelectorAll('[id^=btn-].disabled');
+            addtocartbutton.forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('disabled');
+                }
+            });
+
+        },
+        fail: function() {
+        },
+    }]);
+};
+
 export const deleteItem = (id, component) => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
@@ -193,17 +230,17 @@ function addDeleteevent(item) {
 
 /**
  * Start the timer.
- * @param {bool} duration
+ * @param {bool} flag
  * @param {int} duration
  * @param {int} display
  */
 function startTimer(flag, duration, display) {
- 
+
     var timer = duration,
                 minutes,
                 seconds;
     interval = setInterval(function() {
-        
+
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -212,9 +249,18 @@ function startTimer(flag, duration, display) {
 
         display.textContent = minutes + ":" + seconds;
 
-        if (--timer < 0 || !flag) {
+        if (--timer < 0) {
+            deleteAllItems();
+            console.log("delete");
+            clearInterval(interval);
+            timer = 3000;
+            display.classList.add("hidden");
+        }
+        if (flag) {
+            display.classList.remove("hidden");
+        }
+        if (!flag) {
             timer = 0;
-            //deleteItem(id, component);
             clearInterval(interval);
         }
     }, 1000);
@@ -237,7 +283,7 @@ function initTimer() {
     });
 }
 
-/**
+/**a
  * Set dataset from timer.
  * @param {int} expirationdate
  */

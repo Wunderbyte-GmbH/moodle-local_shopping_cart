@@ -45,5 +45,8 @@ $item = new cartitem(1, 'local_shopping_cart', 10, 'EUR', 'local_shopping_cart',
 $data = $item->getitem();
 $data = new button($data);
 echo $renderer->render_button($data);
-
+$item = new cartitem(2, 'local_shopping_cart', 20, 'EUR', 'local_shopping_cart', 'item description');
+$data = $item->getitem();
+$data = new button($data);
+echo $renderer->render_button($data);
 echo $OUTPUT->footer();

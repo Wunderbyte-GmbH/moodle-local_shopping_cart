@@ -87,11 +87,13 @@ class shopping_cart_history {
         return $data;
     }
 
+
     /**
-     * Write data into db.
+     * write_to_db.
      *
+     * @access private
      * @param int $userid
-     * @return int
+     * @return integer
      */
     private function write_to_db(int $userid): int {
         return 1;

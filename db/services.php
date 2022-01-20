@@ -43,6 +43,15 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
+        ),
+        'local_shopping_cart_delete_all_items_from_cart' => array(
+                'classname' => 'local_shopping_cart_external',
+                'methodname' => 'delete_all_items_from_cart',
+                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'description' => 'Delete All Items from cart',
+                'type' => 'write',
+                'capabilities' => '',
+                'ajax' => 1
         )
 );
 

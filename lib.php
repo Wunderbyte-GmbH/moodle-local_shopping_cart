@@ -99,12 +99,18 @@ function local_shopping_cart_pluginfile($course,
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
+/**
+ * local_shopping_cart_get_cache_data.
+ *
+ * @global
+ * @return mixed
+ */
 function local_shopping_cart_get_cache_data() {
     global $USER;
     $userid = $USER->id;
     $cache = \cache::make('local_shopping_cart', 'cacheshopping');
     $cachedrawdata = $cache->get($userid . '_shopping_cart');
-    if ($cachedrawdata['expirationdate'] > time()) {
+    if ($cachedrawdata['expirationdate'] < time()) {
         shopping_cart::delete_all_items_from_cart();
     }
     $data = [];

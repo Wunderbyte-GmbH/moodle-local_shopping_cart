@@ -52,7 +52,7 @@ class shopping_cart {
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
- 
+
         $cachekey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
 
         if (isset($cachedrawdata['items'][$cachekey])) {
@@ -95,7 +95,7 @@ class shopping_cart {
     /**
      *
      * This is to return all parent entities from the database
-     * 
+     *
      * @return bool
      */
     public static function delete_all_items_from_cart(): bool {
