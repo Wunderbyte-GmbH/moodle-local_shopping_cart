@@ -23,15 +23,11 @@ import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 import Notification from 'core/notification';
 
-
 export var countdownelement = null;
 export var interval = null;
 export var maxitems = null;
 export var itemsleft = null;
 export const buttoninit = (id, component) => {
-
-    // eslint-disable-next-line no-console
-    console.log('initialized', id, component);
 
     // First we get the button and delete the helper-span to secure js loading.
     const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
@@ -81,7 +77,7 @@ export const buttoninit = (id, component) => {
     maxitems = cfgmaxitems;
     count = parseInt(count) ? parseInt(count) : 0;
     itemsleft = maxitems - count;
-    console.log(maxitems + " " + itemsleft);
+
     initTimer(expirationdate);
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
@@ -121,6 +117,7 @@ export const deleteAllItems = () => {
             });
         },
         fail: function(ex) {
+            // eslint-disable-next-line no-console
             console.log(ex);
         },
     }]);
@@ -134,9 +131,8 @@ export const deleteItem = (id, component) => {
             'component': component
         },
         done: function() {
-            // eslint-disable-next-line no-console
             itemsleft = itemsleft + 1;
-            console.log(id);
+
             let item = document.querySelectorAll('#item-' + component + '-' + id);
             let itemprice = item[0].dataset.price;
             item.forEach(item => {
@@ -182,14 +178,19 @@ export const deleteItem = (id, component) => {
 };
 
 export const addItem = (id, component) => {
-    console.log(itemsleft);
+
     if (itemsleft == 0) {
         Notification.addNotification({
             message: "Cart is full",
             type: "danger"
         });
-        return;
     }
+
+    setTimeout(() => {
+        let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
+        const notificatonelement = notificationslist[notificationslist.length - 1];
+        notificatonelement.remove();
+    }, 5000);
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
@@ -200,9 +201,17 @@ export const addItem = (id, component) => {
             data.component = component;
             data.id = id;
             Notification.addNotification({
-                message: data.name + " added to cart",
+                message: data.itemname + " added to cart",
                 type: "success"
             });
+
+            setTimeout(() => {
+                let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-success');
+
+                const notificatonelement = notificationslist[notificationslist.length - 1];
+
+                notificatonelement.remove();
+            }, 5000);
             Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
                 let lastElem = document.getElementById('litotalprice');
                 lastElem.insertAdjacentHTML('beforeBegin', html);
@@ -223,6 +232,10 @@ export const addItem = (id, component) => {
                 if (addtocartbutton) {
                     addtocartbutton.classList.add('disabled');
                 }
+                return true;
+            }).catch((e) => {
+                // eslint-disable-next-line no-console
+                console.log(e);
             });
         },
         fail: function(ex) {
@@ -241,9 +254,6 @@ function addDeleteevent(item) {
         event.preventDefault();
         event.stopPropagation();
 
-        // eslint-disable-next-line no-console
-        console.log('delete clicked', item.dataset.id);
-
         let idarray = item.dataset.id.split('-');
 
         let id = idarray.pop();
@@ -251,8 +261,6 @@ function addDeleteevent(item) {
         deleteItem(id, component);
     });
 }
-
-
 
 /**
  * Start the timer.
@@ -272,12 +280,12 @@ function startTimer(duration, display) {
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
-        console.log(minutes + " " + seconds);
+
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
             deleteAllItems();
-            console.log("delete");
+
             clearInterval(interval);
         }
     }, 1000);
@@ -291,27 +299,17 @@ function startTimer(duration, display) {
  *
  */
 function initTimer(expirationdate) {
-        if(interval) {
+        if (interval) {
             clearInterval(interval);
         }
         let delta = 0;
         let now = Date.now('UTC');
         now = (new Date()).getTime() / 1000;
         delta = (expirationdate - now);
-        console.log(delta);
+
         if (delta < 0) {
             delta = 0;
         }
         startTimer(delta, countdownelement);
 }
 
-/**
- * Set dataset from timer.
- *
- * @param {integer} expirationdate
- */
-function setExpirationDate(expirationdate) {
-    document.querySelectorAll('.expirationdate').forEach(timer => {
-        timer.dataset.expirationdate = expirationdate;
-    });
-}
