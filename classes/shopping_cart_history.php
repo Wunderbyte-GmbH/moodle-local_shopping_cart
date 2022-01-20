@@ -47,11 +47,6 @@ class shopping_cart_history {
     private $moduleid;
 
     /**
-     * @var int
-     */
-    private $userid;
-
-    /**
      * @var string
      */
     private $name;

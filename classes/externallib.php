@@ -130,7 +130,7 @@ class local_shopping_cart_external extends external_api {
      * Describes the paramters for delete_item_from_cart.
      * @return external_function_parameters
      */
-    public static function delete_all_items_from_cartparameters() {
+    public static function delete_all_items_from_cart_parameters() {
         return new external_function_parameters(array());
     }
     /**

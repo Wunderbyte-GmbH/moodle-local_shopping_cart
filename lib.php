@@ -120,6 +120,11 @@ function local_shopping_cart_get_cache_data() {
         $data['count'] = $count;
         $data['price'] = array_sum(array_column($data['items'], 'price'));
         $data['expirationdate'] = $cachedrawdata['expirationdate'];
+        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+    } else {
+        $data['count'] = 0;
+        $data['expirationdate'] = time();
+        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
     }
     return $data;
 }

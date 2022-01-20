@@ -21,8 +21,12 @@
 
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
+import Notification from 'core/notification';
 
+
+export var countdownelement = null;
 export var interval = null;
+export var maxitems = null;
 export const buttoninit = (id, component) => {
 
     // eslint-disable-next-line no-console
@@ -65,20 +69,25 @@ export const buttoninit = (id, component) => {
 };
 
 /**
- * Gets called from mustache template.
  *
+ * @param {*} expirationdate
+ * @param {*} cfgmaxitems
+ * @param {*} count
  */
- export const init = () => {
-    initTimer();
+
+ export const init = (expirationdate, cfgmaxitems, count) => {
+    countdownelement = document.querySelector('.expirationdate');
+    maxitems = cfgmaxitems;
+    console.log(expirationdate);
+    initTimer(expirationdate);
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
     });
-
 };
 
 export const deleteAllItems = () => {
     Ajax.call([{
-        methodname: "delete_all_items_from_cart",
+        methodname: "local_shopping_cart_delete_all_items_from_cart",
         args: {
         },
         done: function() {
@@ -106,9 +115,9 @@ export const deleteAllItems = () => {
                     btn.classList.remove('disabled');
                 }
             });
-
         },
-        fail: function() {
+        fail: function(ex) {
+            console.log(ex);
         },
     }]);
 };
@@ -177,6 +186,10 @@ export const addItem = (id, component) => {
         done: function(data) {
             data.component = component;
             data.id = id;
+            Notification.addNotification({
+                message: "Your message here",
+                type: "info"
+              });
             Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
                 let lastElem = document.getElementById('litotalprice');
                 lastElem.insertAdjacentHTML('beforeBegin', html);
@@ -189,8 +202,7 @@ export const addItem = (id, component) => {
                 let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                 addDeleteevent(item);
                 clearInterval(interval);
-                setExpirationDate(data.expirationdate);
-                initTimer();
+                initTimer(data.expirationdate);
 
                 // Make sure addtocartbutton is disabled once the item is in the shopping cart.
                 const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
@@ -208,7 +220,7 @@ export const addItem = (id, component) => {
 
 /**
  * Delete Event.
- * @param {*} item
+ * @param {HTMLElement} item
  */
 function addDeleteevent(item) {
     item.addEventListener('click', event => {
@@ -230,11 +242,11 @@ function addDeleteevent(item) {
 
 /**
  * Start the timer.
- * @param {bool} flag
- * @param {int} duration
- * @param {int} display
+ *
+ * @param {integer} duration
+ * @param {integer} display
  */
-function startTimer(flag, duration, display) {
+function startTimer(duration, display) {
 
     var timer = duration,
                 minutes,
@@ -246,21 +258,12 @@ function startTimer(flag, duration, display) {
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
-
+        console.log(minutes + " " + seconds);
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
             deleteAllItems();
             console.log("delete");
-            clearInterval(interval);
-            timer = 3000;
-            display.classList.add("hidden");
-        }
-        if (flag) {
-            display.classList.remove("hidden");
-        }
-        if (!flag) {
-            timer = 0;
             clearInterval(interval);
         }
     }, 1000);
@@ -268,24 +271,30 @@ function startTimer(flag, duration, display) {
 
 
 /**
- * Set the timer.
+ * Initialize Timer.
+ *
+ * @param {integer} expirationdate
+ *
  */
-function initTimer() {
-    document.querySelectorAll('.expirationdate').forEach(timer => {
+function initTimer(expirationdate) {
+        if(interval) {
+            clearInterval(interval);
+        }
         let delta = 0;
         let now = Date.now('UTC');
         now = (new Date()).getTime() / 1000;
-        delta = (timer.dataset.expirationdate - now);
+        delta = (expirationdate - now);
+        console.log(delta);
         if (delta < 0) {
             delta = 0;
         }
-        startTimer(1, delta, timer);
-    });
+        startTimer(delta, countdownelement);
 }
 
-/**a
+/**
  * Set dataset from timer.
- * @param {int} expirationdate
+ *
+ * @param {integer} expirationdate
  */
 function setExpirationDate(expirationdate) {
     document.querySelectorAll('.expirationdate').forEach(timer => {

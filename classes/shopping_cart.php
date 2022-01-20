@@ -50,6 +50,7 @@ class shopping_cart {
     public static function add_item_to_cart(&$itemdata): bool {
         global $USER;
         $userid = $USER->id;
+        $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
 

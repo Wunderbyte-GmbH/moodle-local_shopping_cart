@@ -33,8 +33,6 @@ $string['addtocart'] = 'Add to cart';
 // Settings.
 $string['maxitems'] = 'Max items in the shopping cart';
 $string['maxitems:description'] = 'Set max items for the user shopping cart';
-$string['duplicates'] = 'Allow items to be bought more than once';
-$string['duplicates:description'] = 'Allow items to be bought more than once';
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart';
 $string['addon'] = 'Set addon time';

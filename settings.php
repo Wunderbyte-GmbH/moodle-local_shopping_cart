@@ -44,21 +44,13 @@ if ($hassiteconfig) {
             PARAM_INT
         )
     );
-    // Allow duplicate items in cart.
-    $settings->add(
-        new admin_setting_configcheckbox(
-            $componentname . '/duplicates',
-            get_string('duplicates', $componentname),
-            get_string('duplicates:description', $componentname),
-            0
-        )
-    );
 
     // Item expiriation time in minutes.
     $settings->add(
         new admin_setting_configtext(
             $componentname . '/expirationtime',
             get_string('expirationtime', $componentname),
+            get_string('expirationtime:description', $componentname),
             15,
             PARAM_INT
         )
