@@ -27,6 +27,7 @@ import Notification from 'core/notification';
 export var countdownelement = null;
 export var interval = null;
 export var maxitems = null;
+export var itemsleft = null;
 export const buttoninit = (id, component) => {
 
     // eslint-disable-next-line no-console
@@ -78,7 +79,9 @@ export const buttoninit = (id, component) => {
  export const init = (expirationdate, cfgmaxitems, count) => {
     countdownelement = document.querySelector('.expirationdate');
     maxitems = cfgmaxitems;
-    console.log(expirationdate);
+    count = parseInt(count) ? parseInt(count) : 0;
+    itemsleft = maxitems - count;
+    console.log(maxitems + " " + itemsleft);
     initTimer(expirationdate);
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
@@ -177,6 +180,14 @@ export const deleteItem = (id, component) => {
 };
 
 export const addItem = (id, component) => {
+    console.log(itemsleft);
+    if (itemsleft == 0) {
+        Notification.addNotification({
+            message: "Cart is full",
+            type: "danger"
+        });
+        return;
+    }
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
@@ -187,9 +198,9 @@ export const addItem = (id, component) => {
             data.component = component;
             data.id = id;
             Notification.addNotification({
-                message: "Your message here",
-                type: "info"
-              });
+                message: data.name + " added to cart",
+                type: "success"
+            });
             Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
                 let lastElem = document.getElementById('litotalprice');
                 lastElem.insertAdjacentHTML('beforeBegin', html);
@@ -200,6 +211,7 @@ export const addItem = (id, component) => {
                 let total = document.getElementById('totalprice');
                 total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
                 let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                itemsleft -= 1;
                 addDeleteevent(item);
                 clearInterval(interval);
                 initTimer(data.expirationdate);
