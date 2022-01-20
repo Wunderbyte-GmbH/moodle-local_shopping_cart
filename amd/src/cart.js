@@ -97,10 +97,10 @@ export const deleteAllItems = () => {
             let item = document.querySelectorAll('[id^=item-]');
             item.forEach(item => {
                 if (item) {
-                    itemsleft = itemsleft + 1;
                     item.remove();
                 }
             });
+            itemsleft = maxitems;
             let total = document.querySelectorAll('#totalprice');
             total.forEach(total => {
                 total.innerHTML = 0;
