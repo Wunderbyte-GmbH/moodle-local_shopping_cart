@@ -97,6 +97,7 @@ export const deleteAllItems = () => {
             let item = document.querySelectorAll('[id^=item-]');
             item.forEach(item => {
                 if (item) {
+                    itemsleft = itemsleft + 1;
                     item.remove();
                 }
             });
@@ -134,6 +135,7 @@ export const deleteItem = (id, component) => {
         },
         done: function() {
             // eslint-disable-next-line no-console
+            itemsleft = itemsleft + 1;
             console.log(id);
             let item = document.querySelectorAll('#item-' + component + '-' + id);
             let itemprice = item[0].dataset.price;
