@@ -108,7 +108,8 @@ export const reinit = () => {
             console.log("ex:" + ex);
         },
     }]);
-}
+};
+
 export const deleteAllItems = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",
@@ -175,7 +176,16 @@ export const deleteItem = (id, component) => {
 
             itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
             itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-            itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
+
+            // If we have only one item left, we set back the expiration date.
+            if (itemcount2.innerHTML == 0) {
+                itemcount2.classList.add("hidden");
+
+                // We clear the countdown and set back the timer.
+                clearInterval(interval);
+                initTimer();
+            }
+
             // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
             const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
             if (addtocartbutton) {
@@ -323,14 +333,17 @@ function startTimer(duration, display) {
  * @param {integer} expirationdate
  *
  */
-function initTimer(expirationdate) {
+function initTimer(expirationdate = null) {
         if (interval) {
             clearInterval(interval);
         }
         let delta = 0;
         let now = Date.now('UTC');
         now = (new Date()).getTime() / 1000;
-        delta = (expirationdate - now);
+
+        if (expirationdate) {
+            delta = (expirationdate - now);
+        }
 
         if (delta < 0) {
             delta = 0;
