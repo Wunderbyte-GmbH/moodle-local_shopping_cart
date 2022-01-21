@@ -49,12 +49,12 @@ class service_provider implements \core_payment\local\callback\service_provider 
         // We get the sum and description from cache.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $data['item'] = array_values($cachedrawdata['item']);
+        $data['items'] = array_values($cachedrawdata['items']);
 
         $instance = new stdClass();
         $instance->cost = 0;
 
-        foreach ($data['item'] as $item) {
+        foreach ($data['items'] as $item) {
             $instance->cost += $item['price'];
         }
 
