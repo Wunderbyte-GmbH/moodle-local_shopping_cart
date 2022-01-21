@@ -23,16 +23,14 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-use cache_helper;
-use local_shopping_cart;
-use local_shopping_cart\shopping_cart;
-
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->dirroot.'/local/shopping_cart/lib.php');
+
+require_login();
+
 global $USER;
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
-
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
@@ -41,9 +39,6 @@ $PAGE->set_title("Ihr Warenkorb");
 $PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
 
 // Set the page layout.
-
-
-require_login();
 
 $PAGE->set_pagelayout('standard');
 
