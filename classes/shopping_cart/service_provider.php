@@ -53,7 +53,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                             10,
                             'EUR',
                             'local_shopping_cart',
-                            'item description');
+                            'item description',
+                            '/local/shopping_cart/pix/edu.png');
     }
 
     /**

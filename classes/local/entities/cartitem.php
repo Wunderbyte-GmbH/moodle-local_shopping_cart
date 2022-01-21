@@ -33,25 +33,70 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cartitem {
+
+    /**
+     * Item id
+     *
+     * @var int
+     */
     private $itemid;
+
+    /**
+     * Name of the item
+     *
+     * @var string
+     */
     private $itemname;
+
+    /**
+     * Price of the item as a float value
+     *
+     * @var float
+     */
     private $price;
+
+    /**
+     * Currency must be the same for all items in cart.
+     *
+     * @var string
+     */
     private $currency;
+
+    /**
+     * Name of component (like local_shopping_cart)
+     *
+     * @var string
+     */
     private $componentname;
+
+    /**
+     * Description of the item
+     *
+     * @var string
+     */
     private $description;
+
+    /**
+     * Link to image
+     *
+     * @var string
+     */
+    private $imageurl;
 
     public function __construct(int $itemid,
                                 string $itemname,
                                 float $price,
                                 string $currency,
                                 string $componentname,
-                                string $description = '') {
+                                string $description = '',
+                                string $imageurl = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
         $this->currency = $currency;
         $this->componentname = $componentname;
         $this->description = $description;
+        $this->imageurl = $imageurl;
     }
 
     /**
@@ -67,6 +112,7 @@ class cartitem {
         $item['currency'] = $this->currency;
         $item['componentname'] = $this->componentname;
         $item['description'] = $this->description;
+        $item['imageurl'] = $this->imageurl;
         return $item;
     }
 
