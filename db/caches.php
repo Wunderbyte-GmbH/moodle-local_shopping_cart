@@ -26,11 +26,10 @@ defined('MOODLE_INTERNAL') || die;
 
 $definitions = array(
     'cacheshopping' => array(
-        'mode' => cache_store::MODE_SESSION,
+        'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
-        'staticaccelerationsize' => 1,
-        'invalidationevents' => ['changesinwunderbytetable']
+        'staticaccelerationsize' => 1
     )
 );
 
