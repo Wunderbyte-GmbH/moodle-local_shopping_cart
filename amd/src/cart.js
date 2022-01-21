@@ -256,9 +256,11 @@ export const addItem = (id, component) => {
                 badge.classList.remove('hidden');
                 let total = document.getElementById('totalprice');
                 total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
-                let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                 itemsleft -= 1;
-                addDeleteevent(item);
+                items.forEach(item => {
+                    addDeleteevent(item);
+                });
                 clearInterval(interval);
                 initTimer(data.expirationdate);
 
@@ -285,6 +287,8 @@ export const addItem = (id, component) => {
  * @param {HTMLElement} item
  */
 function addDeleteevent(item) {
+    // eslint-disable-next-line no-console
+    console.log(item);
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();

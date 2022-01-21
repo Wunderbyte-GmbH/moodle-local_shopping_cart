@@ -165,9 +165,11 @@
                </div>
                <div class="col">
                <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
-               <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" onclick="alert('delete')"></i></span>
+               <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}"></i></span>
                <span class="item-price pull-right"> {{price}} </span><br>
-               <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span><span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span><br><span class="lighter"> {{item.shortsummary}} </span>
+               <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span>
+               <span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span>
+               <br><span class="lighter"> {{item.shortsummary}} </span>
                <div>
                {{{description}}}
             </div>
