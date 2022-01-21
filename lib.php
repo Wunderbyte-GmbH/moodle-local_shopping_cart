@@ -50,8 +50,9 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     if (!isloggedin() || isguestuser()) {
         return '';
     }
+
     $output = '';
-    $cache = local_shopping_cart_get_cache_data();
+    $cache = shopping_cart::local_shopping_cart_get_cache_data();
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $cache);
     return $output;
 }
@@ -91,7 +92,7 @@ function local_shopping_cart_pluginfile($course,
         }
     } else if ($filearea === 'image') {
         $itemid = array_pop($args);
-        $file = $fs->get_file($context->id, 'local_entities', $filearea, $itemid, '/', $filename);
+        $file = $fs->get_file($context->id, 'local_shopping_cart', $filearea, $itemid, '/', $filename);
         // Todo: Maybe put in fall back image.
     }
 
@@ -99,32 +100,3 @@ function local_shopping_cart_pluginfile($course,
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
-/**
- * local_shopping_cart_get_cache_data.
- *
- * @global $USER
- * @return array
- */
-function local_shopping_cart_get_cache_data(): array {
-    global $USER;
-    $userid = $USER->id;
-    $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-    $cachedrawdata = $cache->get($userid . '_shopping_cart');
-    if ($cachedrawdata['expirationdate'] < time()) {
-        shopping_cart::delete_all_items_from_cart();
-    }
-    $data = [];
-    if ($cachedrawdata) {
-        $count = count($cachedrawdata['items']);
-        $data['items'] = array_values($cachedrawdata['items']);
-        $data['count'] = $count;
-        $data['price'] = array_sum(array_column($data['items'], 'price'));
-        $data['expirationdate'] = $cachedrawdata['expirationdate'];
-        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-    } else {
-        $data['count'] = 0;
-        $data['expirationdate'] = time();
-        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-    }
-    return $data;
-}

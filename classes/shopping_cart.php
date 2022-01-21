@@ -193,9 +193,11 @@ class shopping_cart {
 
         return component_class_callback($providerclass, 'get_cartitem', [$itemid]);
     }
+
     /**
-     * Get cached items and other params.
+     * local_shopping_cart_get_cache_data.
      *
+     * @global $USER
      * @return array
      */
     public static function local_shopping_cart_get_cache_data(): array {
@@ -207,20 +209,23 @@ class shopping_cart {
             self::delete_all_items_from_cart();
         }
         $data = [];
+
         $data['count'] = 0;
         $data['expirationdate'] = time();
         $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
         $data['items'] = [];
         $data['price'] = 0;
 
-        if ($cachedrawdata) {
+        if ($cachedrawdata && isset($cachedrawdata['items'])) {
             $count = count($cachedrawdata['items']);
-            $data['items'] = array_values($cachedrawdata['items']);
             $data['count'] = $count;
-            $data['price'] = array_sum(array_column($data['items'], 'price'));
-            $data['expirationdate'] = $cachedrawdata['expirationdate'];
-        }
 
+            if ($count > 0) {
+                $data['items'] = array_values($cachedrawdata['items']);
+                $data['price'] = array_sum(array_column($data['items'], 'price'));
+                $data['expirationdate'] = $cachedrawdata['expirationdate'];
+            }
+        }
         return $data;
     }
 }

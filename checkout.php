@@ -23,6 +23,8 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\shopping_cart;
+
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->dirroot.'/local/shopping_cart/lib.php');
 
@@ -46,7 +48,7 @@ $PAGE->set_pagelayout('standard');
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
-$data = local_shopping_cart_get_cache_data();
+$data = shopping_cart::local_shopping_cart_get_cache_data();
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
 if (isset($success)) {
