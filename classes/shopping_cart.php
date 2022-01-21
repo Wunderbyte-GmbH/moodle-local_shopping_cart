@@ -210,6 +210,8 @@ class shopping_cart {
         $data['count'] = 0;
         $data['expirationdate'] = time();
         $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+        $data['items'] = [];
+        $data['price'] = 0;
 
         if ($cachedrawdata) {
             $count = count($cachedrawdata['items']);
