@@ -87,10 +87,13 @@ class shopping_cart {
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
         if ($cachedrawdata) {
             $cachekey = $component . '-' . $itemid;
-            unset($cachedrawdata['items'][$cachekey]);
-            $cache->set($userid . '_shopping_cart', $cachedrawdata);
+            if (isset($cachedrawdata['items'][$cachekey])) {
+                unset($cachedrawdata['items'][$cachekey]);
+                $cache->set($userid . '_shopping_cart', $cachedrawdata);
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -204,18 +207,18 @@ class shopping_cart {
             self::delete_all_items_from_cart();
         }
         $data = [];
+        $data['count'] = 0;
+        $data['expirationdate'] = time();
+        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+
         if ($cachedrawdata) {
             $count = count($cachedrawdata['items']);
             $data['items'] = array_values($cachedrawdata['items']);
             $data['count'] = $count;
             $data['price'] = array_sum(array_column($data['items'], 'price'));
             $data['expirationdate'] = $cachedrawdata['expirationdate'];
-            $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-        } else {
-            $data['count'] = 0;
-            $data['expirationdate'] = time();
-            $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
         }
+
         return $data;
     }
 }

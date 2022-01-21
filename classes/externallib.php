@@ -96,7 +96,10 @@ class local_shopping_cart_external extends external_api {
             'component' => $component
         ]);
 
-        shopping_cart::delete_item_from_cart($params['itemid'], $params['component']);
+        if (shopping_cart::delete_item_from_cart($params['itemid'], $params['component'])) {
+            return ['success' => 1];
+        }
+        return ['success' => 0];
     }
 
     /**
@@ -116,6 +119,9 @@ class local_shopping_cart_external extends external_api {
      * @return external_multiple_structure
      */
     public static function delete_item_from_cart_returns() {
+        return new external_single_structure(array(
+            'success'  => new external_value(PARAM_INT, 'id'),
+        ));
     }
 
     /**
@@ -147,12 +153,8 @@ class local_shopping_cart_external extends external_api {
      *
      */
     public static function get_shopping_cart_items() {
-        $cartitems = shopping_cart::local_shopping_cart_get_cache_data();
-        isset($cartitems['count']) ?: $cartitems['count'] = 0;
-        isset($cartitems['price']) ?: $cartitems['price'] = 0;
-        isset($cartitems['expirationdate']) ?: $cartitems['expirationdate'] = 0;
-        isset($cartitems['items']) ?: $cartitems['items'] = [];
-        $a = "test";
+
+        return shopping_cart::local_shopping_cart_get_cache_data();
     }
 
     /**
@@ -169,22 +171,21 @@ class local_shopping_cart_external extends external_api {
     public static function get_shopping_cart_items_returns() {
         return new external_single_structure(
             array(
-                'count' => new external_value(PARAM_RAW, 'html content'),
-                'price' => new external_value(PARAM_RAW, 'html content'),
-                'expirationdate' => new external_value(PARAM_RAW, 'html content'),
-                'maxitems' => new external_value(PARAM_RAW, 'currency'),
-                'items' => new external_single_structure (
-                        array( new external_single_structure(
+                'count' => new external_value(PARAM_INT, 'Number of items'),
+                'price' => new external_value(PARAM_RAW, 'Total price'),
+                'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
+                'maxitems' => new external_value(PARAM_INT, 'Currency'),
+                'items' => new external_multiple_structure (
+                        new external_single_structure(
                             array(
-                            'itemid' => new external_value(PARAM_RAW, 'html content'),
-                            'itemname' => new external_value(PARAM_RAW, 'html content'),
-                            'price' => new external_value(PARAM_RAW, 'html content'),
-                            'currency' => new external_value(PARAM_RAW, 'currency'),
-                            'componentname' => new external_value(PARAM_RAW, 'html content'),
-                            'description' => new external_value(PARAM_RAW, 'html content'),
+                            'itemid' => new external_value(PARAM_RAW, 'Item id'),
+                            'itemname' => new external_value(PARAM_RAW, 'Item name'),
+                            'price' => new external_value(PARAM_RAW, 'Price of item'),
+                            'currency' => new external_value(PARAM_RAW, 'Currency'),
+                            'componentname' => new external_value(PARAM_RAW, 'Component name'),
+                            'description' => new external_value(PARAM_RAW, 'Item description'),
                             )
                         )
-                    )
                 )
             )
         );
