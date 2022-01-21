@@ -82,8 +82,33 @@ export const buttoninit = (id, component) => {
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
     });
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState === 'visible') {
+            // eslint-disable-next-line no-console
+            console.log("vis");
+            reinit();
+        } else {
+            // eslint-disable-next-line no-console
+            console.log("hid");
+        }
+    });
 };
 
+export const reinit = () => {
+    Ajax.call([{
+        methodname: "local_shopping_cart_get_shopping_cart_items",
+        args: {
+        },
+        done: function() {
+           // eslint-disable-next-line no-console
+           console.log("done");
+        },
+        fail: function(ex) {
+            // eslint-disable-next-line no-console
+            console.log("ex:" + ex);
+        },
+    }]);
+}
 export const deleteAllItems = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",

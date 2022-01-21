@@ -52,6 +52,15 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
+        ),
+        'local_shopping_cart_get_shopping_cart_items' => array(
+                'classname' => 'local_shopping_cart_external',
+                'methodname' => 'get_shopping_cart_items',
+                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'description' => 'Get shopping cart items',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
         )
 );
 

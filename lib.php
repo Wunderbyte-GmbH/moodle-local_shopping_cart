@@ -102,10 +102,10 @@ function local_shopping_cart_pluginfile($course,
 /**
  * local_shopping_cart_get_cache_data.
  *
- * @global
- * @return mixed
+ * @global $USER
+ * @return array
  */
-function local_shopping_cart_get_cache_data() {
+function local_shopping_cart_get_cache_data(): array {
     global $USER;
     $userid = $USER->id;
     $cache = \cache::make('local_shopping_cart', 'cacheshopping');

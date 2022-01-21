@@ -23,6 +23,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shopping_cart\lib;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -69,7 +70,7 @@ class local_shopping_cart_external extends external_api {
 
     /**
      * Describes the return values for add_item_to_cart.
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
     public static function add_item_to_cart_returns() {
         return new external_single_structure(array(
@@ -138,5 +139,54 @@ class local_shopping_cart_external extends external_api {
      * @return external_multiple_structure
      */
     public static function delete_all_items_from_cart_returns() {
+    }
+
+    /**
+     * Webservice for shopping_cart class to  delete all items.
+     *
+     *
+     */
+    public static function get_shopping_cart_items() {
+        $cartitems = shopping_cart::local_shopping_cart_get_cache_data();
+        isset($cartitems['count']) ?: $cartitems['count'] = 0;
+        isset($cartitems['price']) ?: $cartitems['price'] = 0;
+        isset($cartitems['expirationdate']) ?: $cartitems['expirationdate'] = 0;
+        isset($cartitems['items']) ?: $cartitems['items'] = [];
+        $a = "test";
+    }
+
+    /**
+     * Describes the paramters for delete_item_from_cart.
+     * @return external_function_parameters
+     */
+    public static function get_shopping_cart_items_parameters() {
+        return new external_function_parameters(array());
+    }
+    /**
+     * Describes the return values for delete_item_from_cart.
+     * @return external_single_structure
+     */
+    public static function get_shopping_cart_items_returns() {
+        return new external_single_structure(
+            array(
+                'count' => new external_value(PARAM_RAW, 'html content'),
+                'price' => new external_value(PARAM_RAW, 'html content'),
+                'expirationdate' => new external_value(PARAM_RAW, 'html content'),
+                'maxitems' => new external_value(PARAM_RAW, 'currency'),
+                'items' => new external_single_structure (
+                        array( new external_single_structure(
+                            array(
+                            'itemid' => new external_value(PARAM_RAW, 'html content'),
+                            'itemname' => new external_value(PARAM_RAW, 'html content'),
+                            'price' => new external_value(PARAM_RAW, 'html content'),
+                            'currency' => new external_value(PARAM_RAW, 'currency'),
+                            'componentname' => new external_value(PARAM_RAW, 'html content'),
+                            'description' => new external_value(PARAM_RAW, 'html content'),
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 }

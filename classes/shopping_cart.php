@@ -190,4 +190,32 @@ class shopping_cart {
 
         return component_class_callback($providerclass, 'get_cartitem', [$itemid]);
     }
+    /**
+     * Get cached items and other params.
+     *
+     * @return array
+     */
+    public static function local_shopping_cart_get_cache_data(): array {
+        global $USER;
+        $userid = $USER->id;
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        if ($cachedrawdata['expirationdate'] < time()) {
+            self::delete_all_items_from_cart();
+        }
+        $data = [];
+        if ($cachedrawdata) {
+            $count = count($cachedrawdata['items']);
+            $data['items'] = array_values($cachedrawdata['items']);
+            $data['count'] = $count;
+            $data['price'] = array_sum(array_column($data['items'], 'price'));
+            $data['expirationdate'] = $cachedrawdata['expirationdate'];
+            $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+        } else {
+            $data['count'] = 0;
+            $data['expirationdate'] = time();
+            $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+        }
+        return $data;
+    }
 }
