@@ -25,6 +25,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$services = array(
+        'Wunderbyte shopping_cart external' => array(
+                'functions' => array (
+                        'local_shopping_cart_add_item',
+                        'local_shopping_cart_delete_item',
+                        'local_shopping_cart_delete_all_items_from_cart',
+                        'local_shopping_cart_get_shopping_cart_items'
+                ),
+                'restrictedusers' => 1,
+                'shortname' => 'local_shopping_cart_external',
+                'enabled' => 1
+        )
+);
+
 $functions = array(
         'local_shopping_cart_add_item' => array(
                 'classname' => 'local_shopping_cart_external',
