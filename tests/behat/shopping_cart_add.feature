@@ -24,8 +24,7 @@ Feature: Test purchase process in shopping cart.
   @javascript
   Scenario: Add an item to the shopping cart
     Given I log in as "user1"
-    When I am on "Course 1" course homepage
-    And I visit "/local/shopping_cart/test.php"
+    And I am on "/local/shopping_cart/test.php"
     And I click on "#btn-local_shopping_cart-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "#item-local_shopping_cart-1" "css_element"
@@ -40,8 +39,7 @@ Feature: Test purchase process in shopping cart.
   @javascript
   Scenario: Delete item from the shopping cart
     Given I log in as "user1"
-    When I am on "Course 1" course homepage
-    And I visit "/local/shopping_cart/test.php"
+    And I go to "/local/shopping_cart/test.php"
     And I click on "#btn-local_shopping_cart-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
