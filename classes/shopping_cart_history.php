@@ -61,15 +61,13 @@ class shopping_cart_history {
      */
     private $timecreated;
 
-
     /**
      * Entity constructor.
      *
      * @param array $data
      */
-    public function __construct(int $id = null) {
+    public function __construct() {
     }
-
 
     /**
      * Prepare submitted form data for writing to db.
@@ -81,7 +79,6 @@ class shopping_cart_history {
         $data = new stdClass();
         return $data;
     }
-
 
     /**
      * write_to_db.

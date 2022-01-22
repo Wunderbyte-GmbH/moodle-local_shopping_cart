@@ -15,25 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Moodle hooks for local_shopping_cart
  * @package    local_shopping_cart
  * @copyright  2021 Wunderbyte GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_shopping_cart\shopping_cart;
-
 defined('MOODLE_INTERNAL') || die;
+
+use local_shopping_cart\shopping_cart;
 
 /**
  * Adds module specific settings to the settings block
  *
- * @param settings_navigation $settings The settings navigation object
  * @param navigation_node $modnode The node to add module settings to
- *
- * $settings is unused, but API requires it. Suppress PHPMD warning.
- *
+ * @return void
  */
-function local_shopping_cart_extend_navigation($navigation) {
+function local_shopping_cart_extend_navigation(navigation_node $navigation) {
 
 }
 

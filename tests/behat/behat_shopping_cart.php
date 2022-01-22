@@ -36,13 +36,13 @@ use local_shopping_cart\shopping_cart;
  * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_shopping_cart extends behat_base
-{
+class behat_shopping_cart extends behat_base {
 
     /**
      * Put item in my cart.
      * This ads a dummy item to the cache. After reloading the page, the item will be visible.
      * @Given /^I put "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
+     * @param string $itemname
      * @return void
      */
     public function i_put_item_in_my_cart(string $itemname) {

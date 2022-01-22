@@ -18,7 +18,6 @@
  * Shopping_cart subsystem callback implementation for local_shopping_cart.
  *
  * @package    local_shopping_cart
- * @category   booking
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,8 +29,7 @@ use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\price;
 
 /**
- * Shopping_cart subsystem callback implementation for local_shopping_cart.
- * This is just useful for testing to generate dummy data.
+ * Shopping_cart subsystem callback implementation for local_shopping_cart for Testing.
  *
  * @copyright  22022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

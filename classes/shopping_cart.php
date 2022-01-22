@@ -70,6 +70,11 @@ class shopping_cart {
         return true;
     }
 
+    /**
+     * Get expiration date time plus delta from config.
+     *
+     * @return integer
+     */
     public static function get_expirationdate(): int {
         return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
     }
@@ -78,7 +83,8 @@ class shopping_cart {
      *
      * This is to return all parent entities from the database
      * @param int $itemid
-     * @return bool
+     * @param string $component
+     * @return boolean
      */
     public static function delete_item_from_cart($itemid, $component): bool {
         global $USER;
@@ -98,7 +104,7 @@ class shopping_cart {
 
     /**
      *
-     * This is to return all parent entities from the database
+     * This is to delete all items from cart.
      *
      * @return bool
      */
@@ -117,8 +123,7 @@ class shopping_cart {
 
     /**
      *
-     * This is to return all parent entities from the database
-     * @param int $itemid
+     * A possibility to easily add random items for testing.
      * @return bool
      */
     public static function add_random_item() {
@@ -197,7 +202,6 @@ class shopping_cart {
     /**
      * local_shopping_cart_get_cache_data.
      *
-     * @global $USER
      * @return array
      */
     public static function local_shopping_cart_get_cache_data(): array {

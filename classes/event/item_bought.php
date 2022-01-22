@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Message deleted event.
+ * Item bought event.
  *
- * @package    core
- * @copyright  2015 Mark Nelson <markn@moodle.com>
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,17 +27,16 @@ namespace local_shopping_cart\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Message deleted event class.
+ * Item bought class.
  *
  * @property-read array $other {
  *      Extra information about event.
  *
- *      - int messageid: the id of the message.
+ *      - int itemid: the id of the item.
  * }
  *
- * @package    core
- * @since      Moodle 3.0
- * @copyright  2015 Mark Nelson <markn@moodle.com>
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_bought extends \core\event\base {

@@ -17,8 +17,8 @@
 /**
  * Mobile cache definitions.
  *
- * @package    local_wunderbyte_table
- * @copyright  2021 Georg Maißer <info@wudnerbyte.at>
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

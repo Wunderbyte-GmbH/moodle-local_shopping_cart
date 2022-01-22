@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Message deleted event.
+ * Item deleted event.
  *
- * @package    core
- * @copyright  2015 Mark Nelson <markn@moodle.com>
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,10 +32,9 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read array $other {
  *      Extra information about event.
  *
- *      - int messageid: the id of the message.
+ *      - int itemid: the id of the item.
  * }
  *
- * @package    core
  * @package    local_shopping_cart
  * @copyright  2021 Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -17,23 +17,24 @@
 /**
  * Message deleted event.
  *
- * @package    core
- * @copyright  2015 Mark Nelson <markn@moodle.com>
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_shopping_cart\event;
 
+use core\event\base;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Message deleted event class.
- *
  * @property-read array $other {
  *      Extra information about event.
  *
  *      - int messageid: the id of the message.
  * }
+ * Item expired class
  *
  * @package    local_shopping_cart
  * @copyright  2021 Wunderbyte GmbH <info@wunderbyte.at>
@@ -112,10 +113,20 @@ class item_expired extends \core\event\base {
         }
     }
 
+    /**
+     * get object mapping id
+     *
+     * @return void
+     */
     public static function get_objectid_mapping() {
         return array('db' => 'message_user_actions', 'restore' => base::NOT_MAPPED);
     }
 
+    /**
+     * Get other mapping
+     *
+     * @return void
+     */
     public static function get_other_mapping() {
         // Messages are not backed up, so no need to map them on restore.
         $othermapped = [];
