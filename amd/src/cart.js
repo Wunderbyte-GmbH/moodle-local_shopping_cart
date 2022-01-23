@@ -27,6 +27,7 @@ export var countdownelement = null;
 export var interval = null;
 export var maxitems = null;
 export var itemsleft = null;
+export var visbilityevent = false;
 export const buttoninit = (id, component) => {
 
     // First we get the button and delete the helper-span to secure js loading.
@@ -79,27 +80,42 @@ export const buttoninit = (id, component) => {
     itemsleft = maxitems - count;
 
     initTimer(expirationdate);
+
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
+        // eslint-disable-next-line no-console
+        console.log("setdel");
     });
-    document.addEventListener("visibilitychange", function() {
-        if (document.visibilityState === 'visible') {
-            // eslint-disable-next-line no-console
-            console.log("vis");
-            reinit();
-        } else {
-            // eslint-disable-next-line no-console
-            console.log("hid");
-        }
-    });
+    if (visbilityevent == false) {
+        document.addEventListener("visibilitychange", function() {
+            visbilityevent = true;
+            if (document.visibilityState === 'visible') {
+                // eslint-disable-next-line no-console
+                console.log("vis");
+                reinit();
+            } else {
+                // eslint-disable-next-line no-console
+                console.log("hid");
+            }
+        });
+    }
 };
-
+/**
+ * Reinit cart after Tabswitch.
+ */
 export const reinit = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
         args: {
         },
-        done: function() {
+        done: function(data) {
+            Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html}) => {
+                document.querySelector('.shopping-cart-items').remove();
+                let container = document.querySelector('#nav-shopping_cart-popover-container .popover-region-content-container');
+                container.insertAdjacentHTML('afterbegin', html);
+            });
+            init(data.expirationdate, data.maxitems, data.count);
+
            // eslint-disable-next-line no-console
            console.log("done");
         },
@@ -108,8 +124,10 @@ export const reinit = () => {
             console.log("ex:" + ex);
         },
     }]);
-};
-
+}
+/**
+ * Delete all Items (e.g. gets called after expirationtime is reached).
+ */
 export const deleteAllItems = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",
@@ -176,16 +194,7 @@ export const deleteItem = (id, component) => {
 
             itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
             itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-
-            // If we have only one item left, we set back the expiration date.
-            if (itemcount2.innerHTML == 0) {
-                itemcount2.classList.add("hidden");
-
-                // We clear the countdown and set back the timer.
-                clearInterval(interval);
-                initTimer();
-            }
-
+            itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
             // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
             const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
             if (addtocartbutton) {
@@ -219,13 +228,16 @@ export const addItem = (id, component) => {
             message: "Cart is full",
             type: "danger"
         });
+        setTimeout(() => {
+            let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
+            const notificatonelement = notificationslist[notificationslist.length - 1];
+            notificatonelement.remove();
+        }, 5000);
+        return;
+    } else {
+        itemsleft -= 1;
     }
 
-    setTimeout(() => {
-        let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
-        const notificatonelement = notificationslist[notificationslist.length - 1];
-        notificatonelement.remove();
-    }, 5000);
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
@@ -256,11 +268,8 @@ export const addItem = (id, component) => {
                 badge.classList.remove('hidden');
                 let total = document.getElementById('totalprice');
                 total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
-                let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
-                itemsleft -= 1;
-                items.forEach(item => {
-                    addDeleteevent(item);
-                });
+                let item = document.querySelector('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                addDeleteevent(item);
                 clearInterval(interval);
                 initTimer(data.expirationdate);
 
@@ -276,6 +285,7 @@ export const addItem = (id, component) => {
             });
         },
         fail: function(ex) {
+            itemsleft = itemsleft + 1;
             // eslint-disable-next-line no-console
             console.log('error', ex);
         }
@@ -287,8 +297,6 @@ export const addItem = (id, component) => {
  * @param {HTMLElement} item
  */
 function addDeleteevent(item) {
-    // eslint-disable-next-line no-console
-    console.log(item);
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
@@ -337,17 +345,14 @@ function startTimer(duration, display) {
  * @param {integer} expirationdate
  *
  */
-function initTimer(expirationdate = null) {
+function initTimer(expirationdate) {
         if (interval) {
             clearInterval(interval);
         }
         let delta = 0;
         let now = Date.now('UTC');
         now = (new Date()).getTime() / 1000;
-
-        if (expirationdate) {
-            delta = (expirationdate - now);
-        }
+        delta = (expirationdate - now);
 
         if (delta < 0) {
             delta = 0;

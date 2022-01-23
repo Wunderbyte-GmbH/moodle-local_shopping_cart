@@ -189,7 +189,7 @@ class local_shopping_cart_external extends external_api {
                 'count' => new external_value(PARAM_INT, 'Number of items'),
                 'price' => new external_value(PARAM_RAW, 'Total price'),
                 'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
-                'maxitems' => new external_value(PARAM_INT, 'Currency'),
+                'maxitems' => new external_value(PARAM_INT, 'Max Items'),
                 'items' => new external_multiple_structure (
                         new external_single_structure(
                             array(
