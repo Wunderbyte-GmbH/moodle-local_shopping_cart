@@ -80,8 +80,11 @@ export const buttoninit = (id, component) => {
     itemsleft = maxitems - count;
 
     initTimer(expirationdate);
+
     document.querySelectorAll('.fa-trash-o').forEach(item => {
         addDeleteevent(item);
+        // eslint-disable-next-line no-console
+        console.log("setdel");
     });
     if (visbilityevent == false) {
         document.addEventListener("visibilitychange", function() {
@@ -108,6 +111,10 @@ export const reinit = () => {
                 document.querySelector('.shopping-cart-items').remove();
                 let container = document.querySelector('#nav-shopping_cart-popover-container .popover-region-content-container');
                 container.insertAdjacentHTML('afterbegin', html);
+                return;
+            }).catch((e) => {
+                // eslint-disable-next-line no-console
+                console.log(e);
             });
 
             let itemcount = document.getElementById("itemcount");
@@ -240,13 +247,16 @@ export const addItem = (id, component) => {
             message: "Cart is full",
             type: "danger"
         });
+        setTimeout(() => {
+            let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
+            const notificatonelement = notificationslist[notificationslist.length - 1];
+            notificatonelement.remove();
+        }, 5000);
+        return;
+    } else {
+        itemsleft -= 1;
     }
 
-    setTimeout(() => {
-        let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
-        const notificatonelement = notificationslist[notificationslist.length - 1];
-        notificatonelement.remove();
-    }, 5000);
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
@@ -297,6 +307,7 @@ export const addItem = (id, component) => {
             });
         },
         fail: function(ex) {
+            itemsleft = itemsleft + 1;
             // eslint-disable-next-line no-console
             console.log('error', ex);
         }
@@ -308,8 +319,6 @@ export const addItem = (id, component) => {
  * @param {HTMLElement} item
  */
 function addDeleteevent(item) {
-    // eslint-disable-next-line no-console
-    console.log(item);
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
