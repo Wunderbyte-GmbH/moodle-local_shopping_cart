@@ -56,6 +56,16 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     }
 
     /**
+     * Callback function that unloads a cart item and thus frees
+     * @param int $itemid An identifier that is known to the plugin
+     * @return bool
+     */
+    public static function unload_cartitem(int $itemid):bool {
+
+        return true;
+    }
+
+    /**
      * Callback function that handles inscripiton after fee was paid.
      * @param integer $itemid
      * @param integer $paymentid

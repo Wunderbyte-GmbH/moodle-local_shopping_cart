@@ -23,6 +23,10 @@
  */
 namespace local_shopping_cart;
 
+use local_shopping_cart\task\delete_item_task;
+
+use function PHPUnit\Framework\isEmpty;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -52,20 +56,29 @@ class shopping_cart {
         $userid = $USER->id;
         $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        $cachekey = $userid . '_shopping_cart';
 
-        $cachekey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
+        $cachedrawdata = $cache->get($cachekey);
 
-        if (isset($cachedrawdata['items'][$cachekey])) {
+        $cacheitemkey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
+
+        if (isset($cachedrawdata['items'][$cacheitemkey])) {
             // Todo: Admin setting could allow for more than one item. Right now, only one.
+            // Therefore: if the item is already in the cart, we just return false.
             return false;
         }
 
-        $cachedrawdata['items'][$cachekey] = $itemdata;
-        // Set expirationdate current time + time in settings (from min to s).
-        $expirationtime = get_config('local_shopping_cart', 'expirationtime');
-        $cachedrawdata['expirationdate'] = time() + $expirationtime * 60;
-        $cache->set($userid . '_shopping_cart', $cachedrawdata);
+        // Get expirationtimestamp current time + time in settings (from min to s).
+        $expirationtimedelta = get_config('local_shopping_cart', 'expirationtime');
+        $expirationtimestamp = time() + $expirationtimedelta * 60;
+
+        // Then we set item in Cache.
+        $cachedrawdata['items'][$cacheitemkey] = $itemdata;
+        $cachedrawdata['expirationdate'] = $expirationtimestamp;
+        $cache->set($cachekey, $cachedrawdata);
+
+        // Add or reschedule all delete_item_tasks for all the items in the cart.
+        self::add_or_reschedule_addhoc_tasks($expirationtimestamp);
 
         return true;
     }
@@ -90,12 +103,14 @@ class shopping_cart {
         global $USER;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $cachekey = $component . '-' . $itemid;
-            if (isset($cachedrawdata['items'][$cachekey])) {
-                unset($cachedrawdata['items'][$cachekey]);
-                $cache->set($userid . '_shopping_cart', $cachedrawdata);
+            $cacheitemkey = $component . '-' . $itemid;
+            if (isset($cachedrawdata['items'][$cacheitemkey])) {
+                unset($cachedrawdata['items'][$cacheitemkey]);
+                $cache->set($cachekey, $cachedrawdata);
                 return true;
             }
         }
@@ -112,9 +127,11 @@ class shopping_cart {
         global $USER;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $cache->set($userid . '_shopping_cart', null);
+            $cache->set($cachekey, null);
         }
         return true;
     }
@@ -231,5 +248,36 @@ class shopping_cart {
             }
         }
         return $data;
+    }
+
+    /**
+     * To add or reschedule addhoc tasks to delete all the items once the shopping cart is expired.
+     * As the expiration date is always calculated by the cart, not the item, this always updates the whole cart.
+     *
+     * @param int $expirationtimestamp
+     * @return void
+     */
+    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp) {
+        global $USER;
+        $userid = $USER->id;
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
+
+        if (!$cachedrawdata
+            || !isset($cachedrawdata['items'])
+            || (count($cachedrawdata['items']) < 1)) {
+                return;
+        }
+        // Now we schedule tasks to delete item from cart after some time.
+        foreach ($cachedrawdata['items'] as $taskdata) {
+            $deleteitemtask = new delete_item_task();
+            $deleteitemtask->set_userid($userid);
+            $deleteitemtask->set_next_run_time($expirationtimestamp);
+            $deleteitemtask->set_custom_data($taskdata);
+            \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
+        }
     }
 }

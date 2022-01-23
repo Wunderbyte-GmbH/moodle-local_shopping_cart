@@ -45,6 +45,15 @@ interface service_provider {
     public static function get_cartitem(int $itemid): cartitem;
 
     /**
+     * Callback function that unloads an item from the cart.
+     * This has to be implemented in case of limited ressources where...
+     * ... one reserved item can't be booked by another user.
+     * @param int $itemid An identifier that is known to the plugin
+     * @return bool
+     */
+    public static function unload_cartitem(int $itemid): bool;
+
+    /**
      * Callback function that is executed when the item is successfully bought.
      * @param int $itemid An identifier that is known to the plugin
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
