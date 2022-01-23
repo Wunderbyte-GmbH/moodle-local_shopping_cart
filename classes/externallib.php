@@ -23,7 +23,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_shopping_cart\lib;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();

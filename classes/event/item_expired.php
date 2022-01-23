@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read array $other {
  *      Extra information about event.
  *
- *      - int messageid: the id of the message.
+ *      - int itemid: the id of the item.
  * }
  * Item expired class
  *

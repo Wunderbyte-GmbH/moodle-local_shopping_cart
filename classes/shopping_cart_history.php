@@ -66,6 +66,9 @@ class shopping_cart_history {
      *
      * @param array $data
      */
+    /**
+     * History constructor
+     */
     public function __construct() {
     }
 
