@@ -67,6 +67,9 @@ class shopping_cart {
             // Therefore: if the item is already in the cart, we just return false.
             return false;
         }
+        if (isset($maxitems) && (count($cachedrawdata['items']) >= $maxitems)) {
+            return false;
+        }
 
         // Get expirationtimestamp current time + time in settings (from min to s).
         $expirationtimedelta = get_config('local_shopping_cart', 'expirationtime');

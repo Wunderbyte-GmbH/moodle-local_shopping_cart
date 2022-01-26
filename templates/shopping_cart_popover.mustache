@@ -59,14 +59,13 @@
         <div class="shopping-cart-total">
         </div>
     {{/headertext}}
-
     {{$content}}
     <ul class="shopping-cart-items">
           {{#items}}
           {{> local_shopping_cart/shopping_cart_item }}
           {{/items}}
           <li id="litotalprice"> <span class="pull-right">Total: <span id="totalprice">{{price}}</span>€</span></li>
-        </ul>
+    </ul>
     <a href="/local/shopping_cart/checkout.php" class="btn btn-primary pull-right mr-3">Checkout <i class="fa fa-chevron-right"></i></a>
     {{/content}}
 {{/ core/popover_region }}

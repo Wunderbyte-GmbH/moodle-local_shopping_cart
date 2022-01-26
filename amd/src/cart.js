@@ -25,9 +25,15 @@ import Notification from 'core/notification';
 
 export var countdownelement = null;
 export var interval = null;
-export var maxitems = null;
-export var itemsleft = null;
 export var visbilityevent = false;
+
+export const reloadAllButtons = () => {
+    const addtocartbuttons = document.querySelectorAll('[id^=btn-]');
+    addtocartbuttons.forEach(button => {
+        button.classList.remove('disabled');
+    });
+}
+
 export const buttoninit = (id, component) => {
 
     // First we get the button and delete the helper-span to secure js loading.
@@ -69,39 +75,28 @@ export const buttoninit = (id, component) => {
 /**
  *
  * @param {*} expirationdate
- * @param {*} cfgmaxitems
- * @param {*} count
  */
 
- export const init = (expirationdate, cfgmaxitems, count) => {
+ export const init = (expirationdate) => {
     countdownelement = document.querySelector('.expirationdate');
-    maxitems = cfgmaxitems;
-    count = parseInt(count) ? parseInt(count) : 0;
-    itemsleft = maxitems - count;
-
     initTimer(expirationdate);
-
-    document.querySelectorAll('.fa-trash-o').forEach(item => {
-        addDeleteevent(item);
-        // eslint-disable-next-line no-console
-        console.log("setdel");
-    });
     if (visbilityevent == false) {
+        let items = document.querySelectorAll('[id^=item-] .fa-trash-o');
+        items.forEach(item => {
+            addDeleteevent(item);
+        });
         document.addEventListener("visibilitychange", function() {
             visbilityevent = true;
             if (document.visibilityState === 'visible') {
-                // eslint-disable-next-line no-console
-                console.log("vis");
                 reinit();
             } else {
-                // eslint-disable-next-line no-console
-                console.log("hid");
             }
         });
     }
 };
 
 export const reinit = () => {
+    reloadAllButtons();
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
         args: {
@@ -111,25 +106,29 @@ export const reinit = () => {
                 document.querySelector('.shopping-cart-items').remove();
                 let container = document.querySelector('#nav-shopping_cart-popover-container .popover-region-content-container');
                 container.insertAdjacentHTML('afterbegin', html);
-                return;
+                data.items.forEach(item => {
+                    buttoninit(item.itemid, item.itemcomponent);
+                });
+                let deleteaction = document.querySelectorAll('.fa-trash-o');
+                deleteaction.forEach(item => {
+                    addDeleteevent(item);
+                });
+                let itemcount = document.getElementById("itemcount");
+                itemcount.innerHTML = data.count;
+                document.getElementById("countbadge").innerHTML = data.count;
+                if (data.count > 0) {
+                    itemcount.classList.remove("hidden");
+                } else {
+                    itemcount.classList.add("hidden");
+                }
+                initTimer(data.expirationdate);
+
+                // eslint-disable-next-line no-console
+                console.log(data.count);
             }).catch((e) => {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
-
-            let itemcount = document.getElementById("itemcount");
-            itemcount.innerHTML = data.count;
-            document.getElementById("countbadge").innerHTML = data.count;
-            if (data.count > 0) {
-                itemcount.classList.remove("hidden");
-            } else {
-                itemcount.classList.add("hidden");
-            }
-
-            init(data.expirationdate, data.maxitems, data.count);
-
-            // eslint-disable-next-line no-console
-            console.log(data.count);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -150,7 +149,6 @@ export const deleteAllItems = () => {
                     item.remove();
                 }
             });
-            itemsleft = maxitems;
             let total = document.querySelectorAll('#totalprice');
             total.forEach(total => {
                 total.innerHTML = 0;
@@ -185,7 +183,6 @@ export const deleteItem = (id, component) => {
             'component': component
         },
         done: function() {
-            itemsleft = itemsleft + 1;
 
             let item = document.querySelectorAll('#item-' + component + '-' + id);
             let itemprice = item[0].dataset.price;
@@ -242,21 +239,6 @@ export const deleteItem = (id, component) => {
 
 export const addItem = (id, component) => {
 
-    if (itemsleft == 0) {
-        Notification.addNotification({
-            message: "Cart is full",
-            type: "danger"
-        });
-        setTimeout(() => {
-            let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
-            const notificatonelement = notificationslist[notificationslist.length - 1];
-            notificatonelement.remove();
-        }, 5000);
-        return;
-    } else {
-        itemsleft -= 1;
-    }
-
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
@@ -266,48 +248,60 @@ export const addItem = (id, component) => {
         done: function(data) {
             data.component = component;
             data.id = id;
-            Notification.addNotification({
-                message: data.itemname + " added to cart",
-                type: "success"
-            });
 
-            setTimeout(() => {
-                let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-success');
-
-                const notificatonelement = notificationslist[notificationslist.length - 1];
-
-                notificatonelement.remove();
-            }, 5000);
-            Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                let lastElem = document.getElementById('litotalprice');
-                lastElem.insertAdjacentHTML('beforeBegin', html);
-                document.getElementById("countbadge").innerHTML++;
-                const badge = document.getElementById("itemcount");
-                badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
-                badge.classList.remove('hidden');
-                let total = document.getElementById('totalprice');
-                total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
-                let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
-                itemsleft -= 1;
-                items.forEach(item => {
-                    addDeleteevent(item);
+            if (data.success == 0) {
+                Notification.addNotification({
+                    message: "Cart is full",
+                    type: "danger"
                 });
-                clearInterval(interval);
-                initTimer(data.expirationdate);
+                setTimeout(() => {
+                    let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
+                    const notificatonelement = notificationslist[notificationslist.length - 1];
+                    notificatonelement.remove();
+                }, 5000);
+                return;
+            } else if (data.success == 1) {
+                Notification.addNotification({
+                    message: data.itemname + " added to cart",
+                    type: "success"
+                });
 
-                // Make sure addtocartbutton is disabled once the item is in the shopping cart.
-                const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
-                if (addtocartbutton) {
-                    addtocartbutton.classList.add('disabled');
-                }
-                return true;
-            }).catch((e) => {
-                // eslint-disable-next-line no-console
-                console.log(e);
-            });
+                setTimeout(() => {
+                    let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-success');
+
+                    const notificatonelement = notificationslist[notificationslist.length - 1];
+
+                    notificatonelement.remove();
+                }, 5000);
+                Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
+                    let lastElem = document.getElementById('litotalprice');
+                    lastElem.insertAdjacentHTML('beforeBegin', html);
+                    document.getElementById("countbadge").innerHTML++;
+                    const badge = document.getElementById("itemcount");
+                    badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
+                    badge.classList.remove('hidden');
+                    let total = document.getElementById('totalprice');
+                    total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
+                    let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                    items.forEach(item => {
+                        addDeleteevent(item);
+                    });
+                    clearInterval(interval);
+                    initTimer(data.expirationdate);
+
+                    // Make sure addtocartbutton is disabled once the item is in the shopping cart.
+                    const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
+                    if (addtocartbutton) {
+                        addtocartbutton.classList.add('disabled');
+                    }
+                    return true;
+                }).catch((e) => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+            }
         },
         fail: function(ex) {
-            itemsleft = itemsleft + 1;
             // eslint-disable-next-line no-console
             console.log('error', ex);
         }
@@ -322,10 +316,11 @@ function addDeleteevent(item) {
     item.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-
+        // Item comes as #item-booking-213123.
         let idarray = item.dataset.id.split('-');
-
+        // First pop gets the id.
         let id = idarray.pop();
+        // Second pop gets the component.
         let component = idarray.pop();
         deleteItem(id, component);
     });
@@ -368,20 +363,21 @@ function startTimer(duration, display) {
  *
  */
 function initTimer(expirationdate = null) {
-        if (interval) {
-            clearInterval(interval);
-        }
-        let delta = 0;
-        let now = Date.now('UTC');
-        now = (new Date()).getTime() / 1000;
-
-        if (expirationdate) {
-            delta = (expirationdate - now);
-        }
-
-        if (delta < 0) {
-            delta = 0;
-        }
+    if (interval) {
+        clearInterval(interval);
+    }
+    let delta = 0;
+    let now = Date.now('UTC');
+    now = (new Date()).getTime() / 1000;
+    if (expirationdate) {
+        delta = (expirationdate - now);
+    }
+    if (delta <= 0) {
+        delta = 0;
+        countdownelement.classList.add("hidden");
+    } else if (delta > 0) {
+        countdownelement.classList.remove("hidden");
         startTimer(delta, countdownelement);
+    }
 }
 

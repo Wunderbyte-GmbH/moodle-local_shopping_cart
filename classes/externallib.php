@@ -77,7 +77,6 @@ class local_shopping_cart_external extends external_api {
         return new external_function_parameters(array(
                         'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
                         'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, ''),
-
                 )
         );
     }
