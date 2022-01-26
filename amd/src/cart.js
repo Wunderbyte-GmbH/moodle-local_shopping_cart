@@ -32,7 +32,7 @@ export const reloadAllButtons = () => {
     addtocartbuttons.forEach(button => {
         button.classList.remove('disabled');
     });
-}
+};
 
 export const buttoninit = (id, component) => {
 

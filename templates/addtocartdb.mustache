@@ -47,7 +47,7 @@
   {{! This span element is just backup. In some cases the JS in the template won't be loaded.
   If that's the case, init can be triggered by a (automatic) click. }}
   <span class="loadJavascript" onclick="require(['local_shopping_cart/cart'], function(cart) {
-    cart.buttoninit({{id}}, '{{componentname}}');
+    cart.buttoninit({{itemid}}, '{{componentname}}');
     }); return false;">
       Loading...
   </span>
