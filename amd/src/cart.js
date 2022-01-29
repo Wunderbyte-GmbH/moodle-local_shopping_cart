@@ -36,20 +36,28 @@ export const reloadAllButtons = () => {
 
 export const buttoninit = (id, component) => {
 
+    // If there is no id, we browse the whole document and init all buttons individually.
+    if (!id) {
+
+        const buttons = document.querySelectorAll("[id^='btn-" + component + "']");
+
+        buttons.forEach(button => {
+            // We have to get only the last part of the id, the number.
+            const number = button.id.split(/[\s-]+/).pop();
+
+            // eslint-disable-next-line no-console
+            console.log(number);
+            buttoninit(number, component);
+        });
+        return;
+    }
+
     // First we get the button and delete the helper-span to secure js loading.
     const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
 
     // If we don't find the button, we abort.
     if (!addtocartbutton) {
         return;
-    }
-
-    // We remove the backup span element, as we don't need it anymore.
-    addtocartbutton.querySelector('.loadJavascript').remove();
-    // We show the potentially hidden second span element with the button text.
-    const spanlabel = addtocartbutton.querySelector('span');
-    if (spanlabel) {
-        spanlabel.classList.remove('hidden');
     }
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
@@ -89,7 +97,6 @@ export const buttoninit = (id, component) => {
             visbilityevent = true;
             if (document.visibilityState === 'visible') {
                 reinit();
-            } else {
             }
         });
     }
@@ -125,6 +132,7 @@ export const reinit = () => {
 
                 // eslint-disable-next-line no-console
                 console.log(data.count);
+                return true;
             }).catch((e) => {
                 // eslint-disable-next-line no-console
                 console.log(e);

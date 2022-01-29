@@ -44,13 +44,6 @@
         data-objecttable="booking"
         data-component="{{componentname}}">
   <i class="fa fa-cart-plus" aria-hidden="true"></i>
-  {{! This span element is just backup. In some cases the JS in the template won't be loaded.
-  If that's the case, init can be triggered by a (automatic) click. }}
-  <span class="loadJavascript" onclick="require(['local_shopping_cart/cart'], function(cart) {
-    cart.buttoninit({{itemid}}, '{{componentname}}');
-    }); return false;">
-      Loading...
-  </span>
   <span class="hidden">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
 </button>
 
