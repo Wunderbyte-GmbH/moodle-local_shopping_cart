@@ -42,7 +42,7 @@ interface service_provider {
      * @param int $itemid An identifier that is known to the plugin
      * @return cartitem
      */
-    public static function get_cartitem(int $itemid): cartitem;
+    public static function load_cartitem(int $itemid, int $userid = 0): cartitem;
 
     /**
      * Callback function that unloads an item from the cart.
@@ -51,7 +51,7 @@ interface service_provider {
      * @param int $itemid An identifier that is known to the plugin
      * @return bool
      */
-    public static function unload_cartitem(int $itemid): bool;
+    public static function unload_cartitem(int $itemid, int $userid = 0): bool;
 
     /**
      * Callback function that is executed when the item is successfully bought.

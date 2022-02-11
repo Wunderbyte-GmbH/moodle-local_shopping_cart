@@ -49,31 +49,42 @@ class shopping_cart {
      *
      * Add Item to cart.
      * @param array $itemdata
-     * @return bool
+     * @return array
      */
-    public static function add_item_to_cart(&$itemdata): bool {
+    public static function add_item_to_cart($component, $itemid, $userid): array {
+
         global $USER;
-        $userid = $USER->id;
+
+        $userid = $userid == 0 ? $USER->id : $userid;
+
+        // This gets the data from the componennt and also triggers reserveration.
+        $cartitem = self::load_cartitem($component, $itemid, $userid);
+
+        // get the itemdata as array.
+        $itemdata = $cartitem->getitem();
+
         $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
 
-        $cacheitemkey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
+        $cacheitemkey = $component . '-' . $itemid;
 
         if (isset($cachedrawdata['items'][$cacheitemkey])) {
             // Todo: Admin setting could allow for more than one item. Right now, only one.
             // Therefore: if the item is already in the cart, we just return false.
-            return false;
+            $itemdata['success'] = 0;
+            $item['expirationdate'] = 0;
+            return $itemdata;
         }
         if (isset($maxitems) && (count($cachedrawdata['items']) >= $maxitems)) {
-            return false;
+            $itemdata['success'] = 0;
+            $item['expirationdate'] = 0;
+            return $itemdata;
         }
 
-        // Get expirationtimestamp current time + time in settings (from min to s).
-        $expirationtimedelta = get_config('local_shopping_cart', 'expirationtime');
-        $expirationtimestamp = time() + $expirationtimedelta * 60;
+        $expirationtimestamp = self::get_expirationdate();
 
         // Then we set item in Cache.
         $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -83,7 +94,10 @@ class shopping_cart {
         // Add or reschedule all delete_item_tasks for all the items in the cart.
         self::add_or_reschedule_addhoc_tasks($expirationtimestamp);
 
-        return true;
+        $itemdata['expirationdate'] = $expirationtimestamp;
+        $itemdata['success'] = 1;
+
+        return $itemdata;
     }
 
     /**
@@ -102,9 +116,12 @@ class shopping_cart {
      * @param string $component
      * @return boolean
      */
-    public static function delete_item_from_cart($itemid, $component): bool {
+    public static function delete_item_from_cart($component, $itemid, $userid): bool {
+
         global $USER;
-        $userid = $USER->id;
+
+        $userid = $userid == 0 ? $USER->id : $userid;
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
@@ -114,10 +131,13 @@ class shopping_cart {
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
                 $cache->set($cachekey, $cachedrawdata);
-                return true;
             }
         }
-        return false;
+
+        // This treats the related component side.
+        self::unload_cartitem($component, $itemid, $userid);
+
+        return true;
     }
 
     /**
@@ -207,16 +227,29 @@ class shopping_cart {
     }
 
     /**
-     * Asks the payable from the related component.
+     * Asks the cartitem from the related component.
      *
-     * @param string $component Name of the component that the paymentarea and itemid belong to
+     * @param string $component Name of the component that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @return local\entities\cartitem
      */
-    public static function get_cartitem(string $component, int $itemid): local\entities\cartitem {
+    public static function load_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'get_cartitem', [$itemid]);
+        return component_class_callback($providerclass, 'load_cartitem', [$itemid, $userid]);
+    }
+
+    /**
+     * Unloads the cartitem from the related component.
+     *
+     * @param string $component Name of the component that the cartitems belong to
+     * @param int $itemid An internal identifier that is used by the component
+     * @return local\entities\cartitem
+     */
+    public static function unload_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
+        $providerclass = static::get_service_provider_classname($component);
+
+        return component_class_callback($providerclass, 'unload_cartitem', [$itemid, $userid]);
     }
 
     /**

@@ -38,17 +38,21 @@ class local_shopping_cart_external extends external_api {
      * Webservice for shopping_cart class to add a new item to the cart.
      * @param string $component
      * @param int $itemid
-     * @return void
+     * @return array
      */
-    public static function add_item_to_cart($component, $itemid) {
+    public static function add_item_to_cart($component, $itemid, $userid): array {
         $params = external_api::validate_parameters(self::add_item_to_cart_parameters(), [
             'component' => $component,
             'itemid' => $itemid,
+            'userid' => $userid
         ]);
 
-        // TODO: We might not be able to add item because there can only be one.
-        // We should prepare for this case.
-        $cartitem = shopping_cart::get_cartitem($params['component'], $params['itemid']);
+
+        return shopping_cart::add_item_to_cart($params['component'], $params['itemid'], $params['userid']);
+
+        // This treats the related component side.
+        // TODO: Treat case where we receive false, because no item available anymore from component.
+        $cartitem = shopping_cart::load_cartitem($params['component'], $params['itemid'], $params['userid']);
 
         // We need the cartitem as an array.
         $item = $cartitem->getitem();
@@ -57,6 +61,7 @@ class local_shopping_cart_external extends external_api {
 
         // TODO: React on full cart.
         // If the cart is full, this returns false.
+        // TODO: if we receive false at this stage, we also need to unload cartitem from component again!
         if ($shoppingcart->add_item_to_cart($item)) {
             $item['expirationdate'] = $shoppingcart->get_expirationdate();
             $item['success'] = 1;
@@ -76,7 +81,8 @@ class local_shopping_cart_external extends external_api {
     public static function add_item_to_cart_parameters() {
         return new external_function_parameters(array(
                         'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
-                        'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, ''),
+                        'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
+                        'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                 )
         );
     }
@@ -104,14 +110,17 @@ class local_shopping_cart_external extends external_api {
      * @param string $component
      * @return void
      */
-    public static function delete_item_from_cart($itemid, $component) {
+    public static function delete_item_from_cart($component, $itemid, $userid) {
 
         $params = external_api::validate_parameters(self::delete_item_from_cart_parameters(), [
+            'component' => $component,
             'itemid' => $itemid,
-            'component' => $component
+            'userid' => $userid
         ]);
 
-        if (shopping_cart::delete_item_from_cart($params['itemid'], $params['component'])) {
+
+        // This treats the cache side.
+        if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $params['userid'])) {
             return ['success' => 1];
         }
         return ['success' => 0];
@@ -123,8 +132,9 @@ class local_shopping_cart_external extends external_api {
      */
     public static function delete_item_from_cart_parameters() {
         return new external_function_parameters(array(
-                        'itemid'  => new external_value(PARAM_INT, 'id', VALUE_DEFAULT, '0'),
                         'component'  => new external_value(PARAM_RAW, 'component name like mod_booking', VALUE_DEFAULT, ''),
+                        'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, '0'),
+                        'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
                 )
         );
     }
