@@ -48,6 +48,10 @@ class shopping_cart {
     /**
      *
      * Add Item to cart.
+     * - First we check if we are below maxitems from the shopping_cart isde.
+     * - Then we check if the item is already in the cart and can be add it again the shopping_cart side.
+     * - Now we check if the component has the product still available
+     * - For any fail, we return success 0.
      * @param array $itemdata
      * @return array
      */
@@ -55,47 +59,56 @@ class shopping_cart {
 
         global $USER;
 
+        // Determine the right userid to use.
         $userid = $userid == 0 ? $USER->id : $userid;
 
-        // This gets the data from the componennt and also triggers reserveration.
-        $cartitem = self::load_cartitem($component, $itemid, $userid);
+        $success = true;
 
-        // get the itemdata as array.
-        $itemdata = $cartitem->getitem();
-
+        // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
-
         $cacheitemkey = $component . '-' . $itemid;
 
-        if (isset($cachedrawdata['items'][$cacheitemkey])) {
-            // Todo: Admin setting could allow for more than one item. Right now, only one.
-            // Therefore: if the item is already in the cart, we just return false.
-            $itemdata['success'] = 0;
-            $item['expirationdate'] = 0;
-            return $itemdata;
-        }
+        // Check if maxitems is exceeded.
         if (isset($maxitems) && (count($cachedrawdata['items']) >= $maxitems)) {
-            $itemdata['success'] = 0;
-            $item['expirationdate'] = 0;
-            return $itemdata;
+            $success = false;
         }
 
-        $expirationtimestamp = self::get_expirationdate();
+        // Todo: Admin setting could allow for more than one item. Right now, only one.
+        // Therefore: if the item is already in the cart, we just return false.
+        if ($success && isset($cachedrawdata['items'][$cacheitemkey])) {
+            $success = false;
+        }
 
-        // Then we set item in Cache.
-        $cachedrawdata['items'][$cacheitemkey] = $itemdata;
-        $cachedrawdata['expirationdate'] = $expirationtimestamp;
-        $cache->set($cachekey, $cachedrawdata);
+        if ($success) {
+            // This gets the data from the componennt and also triggers reserveration.
+            // If reserveration is not successful, we have to react here.
+            if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
+                // Get the itemdata as array.
+                $itemdata = $cartitem->getitem();
+
+                $expirationtimestamp = self::get_expirationdate();
+
+                // Then we set item in Cache.
+                $cachedrawdata['items'][$cacheitemkey] = $itemdata;
+                $cachedrawdata['expirationdate'] = $expirationtimestamp;
+                $cache->set($cachekey, $cachedrawdata);
+
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['success'] = 1;
+            } else {
+                $success = false;
+                $itemdata = [];
+                $itemdata['success'] = 0;
+                $itemdata['expirationdate'] = 0;
+            }
+        }
 
         // Add or reschedule all delete_item_tasks for all the items in the cart.
-        self::add_or_reschedule_addhoc_tasks($expirationtimestamp);
-
-        $itemdata['expirationdate'] = $expirationtimestamp;
-        $itemdata['success'] = 1;
+        self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
 
         return $itemdata;
     }
@@ -146,9 +159,8 @@ class shopping_cart {
      *
      * @return bool
      */
-    public static function delete_all_items_from_cart(): bool {
-        global $USER;
-        $userid = $USER->id;
+    public static function delete_all_items_from_cart($userid): bool {
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
@@ -257,13 +269,12 @@ class shopping_cart {
      *
      * @return array
      */
-    public static function local_shopping_cart_get_cache_data(): array {
-        global $USER;
-        $userid = $USER->id;
+    public static function local_shopping_cart_get_cache_data($userid): array {
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
         if ($cachedrawdata['expirationdate'] < time()) {
-            self::delete_all_items_from_cart();
+            self::delete_all_items_from_cart($userid);
         }
         $data = [];
 
@@ -293,9 +304,7 @@ class shopping_cart {
      * @param int $expirationtimestamp
      * @return void
      */
-    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp) {
-        global $USER;
-        $userid = $USER->id;
+    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';

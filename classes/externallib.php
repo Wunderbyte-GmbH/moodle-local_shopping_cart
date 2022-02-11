@@ -47,31 +47,7 @@ class local_shopping_cart_external extends external_api {
             'userid' => $userid
         ]);
 
-
         return shopping_cart::add_item_to_cart($params['component'], $params['itemid'], $params['userid']);
-
-        // This treats the related component side.
-        // TODO: Treat case where we receive false, because no item available anymore from component.
-        $cartitem = shopping_cart::load_cartitem($params['component'], $params['itemid'], $params['userid']);
-
-        // We need the cartitem as an array.
-        $item = $cartitem->getitem();
-
-        $shoppingcart = new shopping_cart();
-
-        // TODO: React on full cart.
-        // If the cart is full, this returns false.
-        // TODO: if we receive false at this stage, we also need to unload cartitem from component again!
-        if ($shoppingcart->add_item_to_cart($item)) {
-            $item['expirationdate'] = $shoppingcart->get_expirationdate();
-            $item['success'] = 1;
-        } else {
-            $item['expirationdate'] = 0;
-            $item['success'] = 0;
-        }
-
-        // Right now, we always return the item, no matter if it's added to cart or not.
-        return $item;
     }
 
     /**
@@ -118,7 +94,6 @@ class local_shopping_cart_external extends external_api {
             'userid' => $userid
         ]);
 
-
         // This treats the cache side.
         if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $params['userid'])) {
             return ['success' => 1];
@@ -151,11 +126,12 @@ class local_shopping_cart_external extends external_api {
 
     /**
      * Webservice for shopping_cart class to  delete all items.
-     *
-     *
      */
     public static function delete_all_items_from_cart() {
-        shopping_cart::delete_all_items_from_cart();
+        global $USER;
+
+        $userid = $USER->id;
+        shopping_cart::delete_all_items_from_cart($userid);
     }
 
     /**
@@ -176,8 +152,9 @@ class local_shopping_cart_external extends external_api {
      * Webservice for shopping_cart class to  delete all items.
      */
     public static function get_shopping_cart_items() {
+        global $USER;
 
-        return shopping_cart::local_shopping_cart_get_cache_data();
+        return shopping_cart::local_shopping_cart_get_cache_data($USER->id);
     }
 
     /**
