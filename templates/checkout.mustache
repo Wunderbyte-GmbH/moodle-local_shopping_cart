@@ -143,6 +143,10 @@
 <div class="checkoutgrid checkout">
 
    <div class="container-fluid">
+    {{#additonalcashiersection}}
+        <div class="row"><p class="text-center"><a class="btn btn-primary" data-action="checkoutuser">Checkout for Customer</a></p></div>
+    {{/additonalcashiersection}}
+
     {{#success}}
     {{> local_shopping_cart/checkout_success }}
     {{/success}}
@@ -194,3 +198,4 @@
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>
 </div>
+

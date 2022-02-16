@@ -283,4 +283,16 @@ class shopping_cart {
             \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
         }
     }
+
+    /**
+     * Add the selected user to cache in chachiermode
+     *
+     * @param int $userid
+     * @return int
+     */
+    public static function buy_for_user($userid) {
+        $cache = \cache::make('local_shopping_cart', 'cashier');
+        $cache->set('buyforuser', $userid);
+        return $cache->get('buyforuser');
+    }
 }

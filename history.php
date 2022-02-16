@@ -59,12 +59,9 @@ if (isset($success)) {
         $data['failed'] = 1;
     }
 }
-$context = context_system::instance();
-if (has_capability('local/shopping_cart:cachier', $context)) {
-    $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
-}
+$data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
 
-$test = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname');
+$test = get_users(true, '', '', array(), '', '', '', '', $recordsperpage = 21);
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

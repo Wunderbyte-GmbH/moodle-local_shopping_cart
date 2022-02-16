@@ -37,3 +37,10 @@ $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart';
 $string['addon'] = 'Set addon time';
 $string['addon:description'] = 'Addition to the expiration time after checkout process is initation';
+$string['additonalcashiersection'] = 'Add text for Cashiersection';
+$string['additonalcashiersection:description'] = 'Add HTML Shortcodes or Items to buy for the Cashier shopping tab';
+
+// Capabilities
+$string['shopping_cart:canbuy'] = 'Can buy';
+$string['shopping_cart:history'] = 'See History';
+$string['shopping_cart:cachier'] = 'Is a cachier';

@@ -1,0 +1,330 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template message_output_popup/shopping_cart_popover
+
+    This template will render the shopping_cart popover for the navigation bar.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+        "userid": 3,
+        "urls": {
+            "preferences": "http://www.moodle.com"
+        }
+    }
+
+}}
+<style>
+#cachiertabs a.nav-link {
+    outline: 0;
+    box-shadow: none !important;
+}
+#cachiertabs .active {
+    color: #000000
+}
+
+#cachiertabs li {
+    list-style-type: none;
+    font-size: 12px;
+    width: 25%;
+    float: left;
+    position: relative
+}
+
+#cachiertabs li a:before {
+    position:relative;
+    z-index: 3;
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: lightgray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+    text-align: center;
+}
+
+#cachiertabs li a:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: lightgray;
+    position: absolute;
+    left: 0;
+    top: 34px;
+    z-index: 2;
+}
+
+#cachiertabs {
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: lightgrey
+}
+
+#cachiertabs #user-tab:before {
+    font-family: FontAwesome;
+    content: "\f007";
+}
+
+#cachiertabs #cart-tab:before {
+    font-family: FontAwesome;
+    content: "\f07a";
+}
+
+#cachiertabs #checkout-tab:before {
+    font-family: FontAwesome;
+    content: "\f09d"
+}
+
+
+#cachiertabs #success-tab:before {
+    font-family: FontAwesome;
+    content: "\f00c"
+}
+
+#cachiertabs li a.active:before,
+#cachiertabs li a.active:after,
+#cachiertabs li a.success:before,
+#cachiertabs li a.success:after {
+    background: var(--success);
+}
+
+.shopping-cart-items {
+    list-style: none;
+    padding-left: 0px;
+}
+.autocomplete {
+    width: max-content;
+}
+
+</style>
+<div class="container">
+   <div class="row">
+      <div class="col-md-8">
+         <div class="card">
+            <div class="card-header p-0">
+               {{#userid}}
+               <div class="text-center bg-primary text-white">
+                  <h2 class="label label-info">{{userfirstname}} {{userlastname}} </h2>
+                  <p>{{useremail}}</p>
+               </div>
+               {{/userid}}
+                {{^userid}}
+               <div class="text-center bg-primary text-white">
+                  <h2 class="label label-info">No User selected</h2>
+                  <p>Select a user ...</p>
+               </div>
+               {{/userid}}
+               <ul class="nav m-0" id="cachiertabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                     <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="home" aria-selected="true"></a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a class="nav-link {{#userid}}active{{/userid}}" id="cart-tab" data-toggle="tab" href="#cart" role="tab" aria-controls="cart" aria-selected="false"></a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a class="nav-link" id="checkout-tab" data-toggle="tab" id="checkout-tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false"></a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a class="nav-link" id="success-tab" data-toggle="tab" id="success-tab" href="#success" role="tab" aria-controls="success" aria-selected="false"></a>
+                  </li>
+               </ul>
+            </div>
+            <div class="card-body">
+               <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade {{^userid}}show active{{/userid}}" id="user" role="tabpanel" aria-labelledby="home-tab">
+                     Select user
+                     <div class="autocomplete" style="width:300px;">
+                        <form  method="get" action="#cart">
+                           <input id="myInput" autocomplete="off"  type="text" name="user" placeholder="User">
+                           <input id="useridfield" type="hidden" name="userid"/>
+                           <input type="submit" name="submit"/>
+                        </form>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="profile-tab">
+                     {{#additonalcashiersection}}
+                     {{{additonalcashiersection}}}
+                     {{/additonalcashiersection}}
+                  </div>
+                  <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="contact-tab">
+                     {{> local_shopping_cart/shopping_cart_items }}
+                  </div>
+                  <div class="tab-pane fade" id="success" role="tabpanel" aria-labelledby="contact-tab">
+                     <div class="row">
+                        <div class="col">
+                           <div>
+                              <h2>Payment Successfull !</h2>
+                              <a href="#" class="btn btn-success">Go to Home</a>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      {{#userid}}
+      <div class="col-md-4">
+         <div class="card">
+            <div class="card-header text-center bg-primary text-white">
+               <i class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
+               <b class="d-block">Shopping Cart</b>
+            </div>
+            <div class="card-body">
+                {{> local_shopping_cart/shopping_cart_items }}
+            </div>
+         </div>
+         <div class="card mt-4">
+            <div class="card-header text-center bg-primary text-white">
+               <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+               <b class="d-block">Previous purchases</b>
+            </div>
+            <div class="card-body">
+               <div class="history">
+                  {{> local_shopping_cart/history }}
+               </div>
+            </div>
+         </div>
+      </div>
+      {{/userid}}
+   </div>
+</div>
+
+
+<script>
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  const useridfield = document.getElementById('useridfield');
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              useridfield.value = this.getElementsByTagName("input")[0].value.split('uid:')[1];
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+/*An array containing all the country names in the world:*/
+var users = {{{users}}};
+
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("myInput"), users);
+
+/*presubmit value to userid*/
+</script>
+

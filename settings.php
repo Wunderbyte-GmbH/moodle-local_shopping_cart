@@ -55,4 +55,24 @@ if ($hassiteconfig) {
             PARAM_INT
         )
     );
+
+    $settings->add(
+        new admin_setting_configtext(
+            $componentname . '/expirationtime',
+            get_string('expirationtime', $componentname),
+            get_string('expirationtime:description', $componentname),
+            15,
+            PARAM_INT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_confightmleditor(
+            $componentname . '/additonalcashiersection',
+            get_string('additonalcashiersection', $componentname),
+            get_string('additonalcashiersection:description', $componentname),
+            15,
+            PARAM_RAW
+        )
+    );
 }

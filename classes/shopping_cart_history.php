@@ -42,34 +42,48 @@ class shopping_cart_history {
     private $id;
 
     /**
+     *
      * @var int
      */
-    private $moduleid;
+    private $uid;
 
     /**
+     *
+     * @var int
+     */
+    private $itemid;
+
+    /**
+     *
      * @var string
      */
-    private $name;
+    private $itemname;
 
     /**
+     * @var int
+     */
+    private $componentname;
+
+    /**
+     * pending,online or cash.
      * @var string
      */
     private $paymenttype;
 
-    /**
-     * @var int
-     */
-    private $timecreated;
 
-    /**
-     * Entity constructor.
-     *
-     * @param array $data
-     */
+
+
     /**
      * History constructor
      */
-    public function __construct() {
+    public function __construct(stdClass $data = null) {
+        if ($data) {
+            $this->uid = $data->uid;
+            $this->itemid = $data->itemid;
+            $this->itemname = $data->itemname;
+            $this->componentname = $data->componentname;
+            $this->paymenttype = $data->paymenttype;
+        }  
     }
 
     /**
@@ -83,14 +97,73 @@ class shopping_cart_history {
         return $data;
     }
 
+    public function create_history($userid) {
+        $prepareddata = $this->prepare_data_from_cache($userid);
+        $this->write_to_db($prepareddata);
+    }
     /**
      * write_to_db.
      *
      * @access private
      * @param int $userid
+     * @param stdClass $data
      * @return integer
      */
-    private function write_to_db(int $userid): int {
-        return 1;
+    private function write_to_db($data): array {
+        global $DB;
+        return $DB->insert_records('local_shopping_cart_history', $data);
     }
+
+    public function prepare_data_from_cache($userid): array {
+        global $USER;
+        $identifier = $this->create_unique_cart_identifier($userid);
+        $userfromid = $USER->id;
+        $userid = $USER->id;
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+        echo $this->create_unique_cart_identifier($userid);
+        $dataarr = [];
+        foreach ($cachedrawdata["items"] as $item) {
+            $data = $item;
+            $data['expirationtime'] = $cachedrawdata["expirationdate"];
+            $data['identifier'] = $identifier;
+            $data['uid'] = $userfromid;
+            $data['userfromid'] = $userid;
+            $data['paymenttype'] = 'bar';
+            $dataarr[] = $data;
+        }
+        return $dataarr;
+    }
+    
+    private function create_unique_cart_identifier($userid): string {
+        return $userid.'_'.time();
+    }
+
+
+    private function validate_data() {
+        if (!isset($this->uid)) {
+            throw new \coding_exception('The \'relateduserid\' must be set.');
+        }
+
+        if (!isset($this->other['assignid'])) {
+            throw new \coding_exception('The \'assignid\' value must be set in other.');
+        }
+        if (!isset($this->relateduserid)) {
+            throw new \coding_exception('The \'relateduserid\' must be set.');
+        }
+
+        if (!isset($this->other['assignid'])) {
+            throw new \coding_exception('The \'assignid\' value must be set in other.');
+        }
+        if (!isset($this->relateduserid)) {
+            throw new \coding_exception('The \'relateduserid\' must be set.');
+        }
+
+        if (!isset($this->other['assignid'])) {
+            throw new \coding_exception('The \'assignid\' value must be set in other.');
+        }
+    }
+
+
 }

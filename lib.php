@@ -32,8 +32,42 @@ use local_shopping_cart\shopping_cart;
  * @return void
  */
 function local_shopping_cart_extend_navigation(navigation_node $navigation) {
-
+    $context = context_system::instance();
+    if (has_capability('local/shopping_cart:cachier', $context)) {
+        $nodehome = $navigation->get('home');
+        if (empty($nodehome)) {
+            $nodehome = $navigation;
+        }
+        $pluginname = get_string('pluginname', 'local_shopping_cart');
+        $link = new moodle_url('/local/shopping_cart/cashier.php', array());
+        $icon = new pix_icon('i/shopping_cart', $pluginname, 'local_shopping_cart');
+        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF, $pluginname, 'shopping_cart_cashier', $icon);
+        $nodecreatecourse->showinflatnavigation = true;
+    }
 }
+
+function local_shopping_cart_extend_settings_navigation($settingsnav, $context) {
+    global $CFG, $PAGE;
+
+
+    if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
+        $strfoo = get_string('foo', 'local_myplugin');
+        $url = new moodle_url('/local/myplugin/foo.php', array('id' => $PAGE->course->id));
+        $foonode = navigation_node::create(
+            $strfoo,
+            $url,
+            navigation_node::NODETYPE_LEAF,
+            'myplugin',
+            'myplugin',
+            new pix_icon('t/addcontact', $strfoo)
+        );
+        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+            $foonode->make_active();
+        }
+        $settingnode->add_node($foonode);
+    }
+}
+
 
 /**
  * Renders the popup.
@@ -98,3 +132,17 @@ function local_shopping_cart_pluginfile($course,
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
+/**
+ * Get icon mapping for font-awesome.
+ *
+ * @return  array
+ */
+function local_shopping_cart_get_fontawesome_icon_map() {
+    return [
+        'local_shopping_cart:i/shopping_cart' => 'fa-shopping-cart',
+        'local_shopping_cart:t/selected' => 'fa-check',
+        'local_shopping_cart:t/subscribed' => 'fa-envelope-o',
+        'local_shopping_cart:t/unsubscribed' => 'fa-envelope-open-o',
+        'local_shopping_cart:t/star' => 'fa-star',
+    ];
+}

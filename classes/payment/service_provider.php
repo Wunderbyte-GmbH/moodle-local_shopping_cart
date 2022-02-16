@@ -30,7 +30,7 @@ use stdClass;
 /**
  * Payment subsystem callback implementation for local_shopping_cart.
  *
- * @copyright  22022 Georg Maißer <info@wunderbyte.at>
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class service_provider implements \core_payment\local\callback\service_provider {

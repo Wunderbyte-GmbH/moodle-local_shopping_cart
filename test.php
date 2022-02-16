@@ -24,7 +24,7 @@
 
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\output\button;
-
+use local_shopping_cart\shopping_cart_history;
 require_once(__DIR__ . '/../../config.php');
 require_login();
 
@@ -41,12 +41,15 @@ echo $OUTPUT->header();
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
-$item = new cartitem(1, 'Testitem 1', 10, 'EUR', 'local_shopping_cart', 'My Testitem 1 description');
+$item = new cartitem(1, 'Testitem 1', 10.00, 'EUR', 'local_shopping_cart', 'My Testitem 1 description');
 $data = $item->getitem();
 $data = new button($data);
 echo $renderer->render_button($data);
-$item = new cartitem(2, 'Testitem 2', 20, 'EUR', 'local_shopping_cart', 'My Testitem 2 description');
+$item = new cartitem(2, 'asdsad 2', 20.3, 'EUR', 'local_shopping_cart', 'My Testitem 2 description');
 $data = $item->getitem();
 $data = new button($data);
+global $USER;
+$history = new shopping_cart_history();
+$data = $history->prepare_data_from_cache($USER->id);
 echo $renderer->render_button($data);
 echo $OUTPUT->footer();

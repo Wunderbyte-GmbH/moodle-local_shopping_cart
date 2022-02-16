@@ -24,8 +24,6 @@
  */
 
 use local_shopping_cart\shopping_cart;
-use core_user_external;
-
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
@@ -33,13 +31,23 @@ require_login();
 
 global $USER;
 // Get the id of the page to be displayed.
-$success = optional_param('success', null, PARAM_INT);
+$userid = optional_param('userid', null, PARAM_INT);
 
+$data = shopping_cart::local_shopping_cart_get_cache_data();
+if (isset($userid)) {
+    $data['buyforuserid'] = $userid;
+    $user = core_user::get_user($userid, 'id, lastname, firstname, email');
+    $data['userid'] = $user->id;
+    $data['userlastname'] = $user->lastname;
+    $data['userfirstname'] = $user->firstname;
+    $data['useremail'] = $user->email;
+    shopping_cart::buy_for_user($userid);
+}
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title("Ihr Warenkorb");
-$PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
+$PAGE->set_title("Kassa");
+$PAGE->set_heading("Kassa");
 
 // Set the page layout.
 
@@ -48,8 +56,8 @@ $PAGE->set_pagelayout('standard');
 
 // Output the header.
 echo $OUTPUT->header();
-$userid = $USER->id;
-$data = shopping_cart::local_shopping_cart_get_cache_data();
+
+
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
 if (isset($success)) {
@@ -63,8 +71,20 @@ $context = context_system::instance();
 if (has_capability('local/shopping_cart:cachier', $context)) {
     $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
 }
+if (isset($userid)) {
 
-$test = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname');
-echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+}
+
+$data['userid'] = $userid;
+// TODO mod/label:view local/shopping_cart:canbuy.
+
+$users = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname, u.firstname, u.email');
+$data['users'] = [];
+foreach ($users as $user) {
+    $data['users'][] = $user->lastname . ' ' . $user->firstname . '(' . $user->email . ')' . ' uid:' .$user->id; 
+}
+$data['users'] = json_encode($data['users']);
+
+echo $OUTPUT->render_from_template('local_shopping_cart/cachier', $data);
 // Now output the footer.
 echo $OUTPUT->footer();
