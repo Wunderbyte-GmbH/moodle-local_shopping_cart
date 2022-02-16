@@ -258,7 +258,7 @@ class shopping_cart {
      * @param int $itemid An internal identifier that is used by the component
      * @return local\entities\cartitem
      */
-    public static function unload_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
+    public static function unload_cartitem(string $component, int $itemid, int $userid): bool {
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'unload_cartitem', [$itemid, $userid]);
