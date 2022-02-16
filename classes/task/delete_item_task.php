@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace local_shopping_cart\task;
 
+use local_shopping_cart\shopping_cart;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -47,8 +49,11 @@ class delete_item_task extends \core\task\adhoc_task
 
         $taskdata = $this->get_custom_data();
 
-        // Call the delete item from cart function.
-        // This triggers the callback to the module where the item came from.
+        $userid = $this->get_userid();
+
+        shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->itemid, $userid);
+
+        mtrace('Deleted item ' . $taskdata->itemid . ' from ' . $taskdata->componentname . ' for user .' . $userid);
 
     }
 }

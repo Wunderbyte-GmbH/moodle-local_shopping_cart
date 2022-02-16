@@ -84,7 +84,7 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     }
 
     $output = '';
-    $cache = shopping_cart::local_shopping_cart_get_cache_data();
+    $cache = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $cache);
     return $output;
 }

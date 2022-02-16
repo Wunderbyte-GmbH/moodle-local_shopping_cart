@@ -48,42 +48,69 @@ class shopping_cart {
     /**
      *
      * Add Item to cart.
+     * - First we check if we are below maxitems from the shopping_cart isde.
+     * - Then we check if the item is already in the cart and can be add it again the shopping_cart side.
+     * - Now we check if the component has the product still available
+     * - For any fail, we return success 0.
      * @param array $itemdata
-     * @return bool
+     * @return array
      */
-    public static function add_item_to_cart(&$itemdata): bool {
+    public static function add_item_to_cart($component, $itemid, $userid): array {
+
         global $USER;
-        $userid = $USER->id;
+
+        // Determine the right userid to use.
+        $userid = $userid == 0 ? $USER->id : $userid;
+
+        $success = true;
+
+        // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
+        $cacheitemkey = $component . '-' . $itemid;
 
-        $cacheitemkey = $itemdata['componentname'] . '-' . $itemdata['itemid'];
-
-        if (isset($cachedrawdata['items'][$cacheitemkey])) {
-            // Todo: Admin setting could allow for more than one item. Right now, only one.
-            // Therefore: if the item is already in the cart, we just return false.
-            return false;
-        }
+        // Check if maxitems is exceeded.
         if (isset($maxitems) && (count($cachedrawdata['items']) >= $maxitems)) {
-            return false;
+            $success = false;
         }
 
-        // Get expirationtimestamp current time + time in settings (from min to s).
-        $expirationtimedelta = get_config('local_shopping_cart', 'expirationtime');
-        $expirationtimestamp = time() + $expirationtimedelta * 60;
+        // Todo: Admin setting could allow for more than one item. Right now, only one.
+        // Therefore: if the item is already in the cart, we just return false.
+        if ($success && isset($cachedrawdata['items'][$cacheitemkey])) {
+            $success = false;
+        }
 
-        // Then we set item in Cache.
-        $cachedrawdata['items'][$cacheitemkey] = $itemdata;
-        $cachedrawdata['expirationdate'] = $expirationtimestamp;
-        $cache->set($cachekey, $cachedrawdata);
+        if ($success) {
+            // This gets the data from the componennt and also triggers reserveration.
+            // If reserveration is not successful, we have to react here.
+            if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
+                // Get the itemdata as array.
+                $itemdata = $cartitem->getitem();
+
+                $expirationtimestamp = self::get_expirationdate();
+
+                // Then we set item in Cache.
+                $cachedrawdata['items'][$cacheitemkey] = $itemdata;
+                $cachedrawdata['expirationdate'] = $expirationtimestamp;
+                $cache->set($cachekey, $cachedrawdata);
+
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['success'] = 1;
+            } else {
+                $success = false;
+                $itemdata = [];
+                $itemdata['success'] = 0;
+                $itemdata['expirationdate'] = 0;
+            }
+        }
 
         // Add or reschedule all delete_item_tasks for all the items in the cart.
-        self::add_or_reschedule_addhoc_tasks($expirationtimestamp);
+        self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
 
-        return true;
+        return $itemdata;
     }
 
     /**
@@ -102,9 +129,12 @@ class shopping_cart {
      * @param string $component
      * @return boolean
      */
-    public static function delete_item_from_cart($itemid, $component): bool {
+    public static function delete_item_from_cart($component, $itemid, $userid): bool {
+
         global $USER;
-        $userid = $USER->id;
+
+        $userid = $userid == 0 ? $USER->id : $userid;
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
@@ -114,10 +144,13 @@ class shopping_cart {
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
                 $cache->set($cachekey, $cachedrawdata);
-                return true;
             }
         }
-        return false;
+
+        // This treats the related component side.
+        self::unload_cartitem($component, $itemid, $userid);
+
+        return true;
     }
 
     /**
@@ -126,9 +159,8 @@ class shopping_cart {
      *
      * @return bool
      */
-    public static function delete_all_items_from_cart(): bool {
-        global $USER;
-        $userid = $USER->id;
+    public static function delete_all_items_from_cart($userid): bool {
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
@@ -207,16 +239,29 @@ class shopping_cart {
     }
 
     /**
-     * Asks the payable from the related component.
+     * Asks the cartitem from the related component.
      *
-     * @param string $component Name of the component that the paymentarea and itemid belong to
+     * @param string $component Name of the component that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @return local\entities\cartitem
      */
-    public static function get_cartitem(string $component, int $itemid): local\entities\cartitem {
+    public static function load_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'get_cartitem', [$itemid]);
+        return component_class_callback($providerclass, 'load_cartitem', [$itemid, $userid]);
+    }
+
+    /**
+     * Unloads the cartitem from the related component.
+     *
+     * @param string $component Name of the component that the cartitems belong to
+     * @param int $itemid An internal identifier that is used by the component
+     * @return local\entities\cartitem
+     */
+    public static function unload_cartitem(string $component, int $itemid, int $userid): bool {
+        $providerclass = static::get_service_provider_classname($component);
+
+        return component_class_callback($providerclass, 'unload_cartitem', [$itemid, $userid]);
     }
 
     /**
@@ -224,13 +269,12 @@ class shopping_cart {
      *
      * @return array
      */
-    public static function local_shopping_cart_get_cache_data(): array {
-        global $USER;
-        $userid = $USER->id;
+    public static function local_shopping_cart_get_cache_data($userid): array {
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
         if ($cachedrawdata['expirationdate'] < time()) {
-            self::delete_all_items_from_cart();
+            self::delete_all_items_from_cart($userid);
         }
         $data = [];
 
@@ -260,9 +304,7 @@ class shopping_cart {
      * @param int $expirationtimestamp
      * @return void
      */
-    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp) {
-        global $USER;
-        $userid = $USER->id;
+    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
