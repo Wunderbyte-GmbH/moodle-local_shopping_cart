@@ -49,7 +49,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_field('componentname', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('identifier', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('payment', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('payment', XMLDB_TYPE_TEXT, '10', null, null, null, null);
 
         // Adding keys to table local_shopping_cart_history.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -61,6 +61,19 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022021607, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2022021610) {
+        // Changing precision of field
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null,
+                null, null, 'componentname');
+
+        // Launch change of precision for field enablecompletion.
+        $dbman->change_field_precision($table, $field);
+
+        // Booking savepoint reached.
+        upgrade_mod_savepoint(true, 2022021610, 'local_shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.

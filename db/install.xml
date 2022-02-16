@@ -8,7 +8,7 @@
                 <FIELD NAME="itemid" TYPE="text" NOTNULL="false" SEQUENCE="false" />
                 <FIELD NAME="itemprice" TYPE="text"  NOTNULL="false" SEQUENCE="false" />
                 <FIELD NAME="componentname" TYPE="text"  NOTNULL="false" SEQUENCE="false" />
-				<FIELD NAME="timecreated" TYPE="int"  NOTNULL="false"  SEQUENCE="false" />
+				<FIELD NAME="timecreated" TYPE="int" LENGTH="10"  NOTNULL="false"  SEQUENCE="false" />
 				<FIELD NAME="identifier" TYPE="text" LENGTH="20" NOTNULL="false"  SEQUENCE="false" />
 				<FIELD NAME="payment" TYPE="text" LENGTH="10" NOTNULL="false" SEQUENCE="false" />
             </FIELDS>
