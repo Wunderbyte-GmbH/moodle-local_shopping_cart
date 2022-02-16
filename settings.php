@@ -71,7 +71,7 @@ if ($hassiteconfig) {
             $componentname . '/additonalcashiersection',
             get_string('additonalcashiersection', $componentname),
             get_string('additonalcashiersection:description', $componentname),
-            15,
+            '..',
             PARAM_RAW
         )
     );

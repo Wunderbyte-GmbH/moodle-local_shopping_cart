@@ -316,29 +316,6 @@ export const addItem = (id, component) => {
     }], true);
 };
 
-
-export const checkoutforcustomer = (userid) => {
-    Ajax.call([{
-        methodname: "local_shopping_cart_checkout_for_customer",
-        args: {
-            'userid': userid
-        },
-        done: function(data) {
-            data.component = component;
-            data.id = id;
-                    return true;
-                }).catch((e) => {
-                    // eslint-disable-next-line no-console
-                    console.log(e);
-                });
-            }
-        },
-        fail: function(ex) {
-            // eslint-disable-next-line no-console
-            console.log('error', ex);
-        }
-    }], true);
-};
 /**
  * Delete Event.
  * @param {HTMLElement} item

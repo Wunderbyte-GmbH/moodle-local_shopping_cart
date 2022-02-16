@@ -33,7 +33,7 @@ global $USER;
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
 
-$data = shopping_cart::local_shopping_cart_get_cache_data();
+$data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
 if (isset($userid)) {
     $data['buyforuserid'] = $userid;
     $user = core_user::get_user($userid, 'id, lastname, firstname, email');
@@ -69,10 +69,7 @@ if (isset($success)) {
 }
 $context = context_system::instance();
 if (has_capability('local/shopping_cart:cachier', $context)) {
-    $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
-}
-if (isset($userid)) {
-
+    $data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
 }
 
 $data['userid'] = $userid;
@@ -81,7 +78,7 @@ $data['userid'] = $userid;
 $users = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname, u.firstname, u.email');
 $data['users'] = [];
 foreach ($users as $user) {
-    $data['users'][] = $user->lastname . ' ' . $user->firstname . '(' . $user->email . ')' . ' uid:' .$user->id; 
+    $data['users'][] = $user->lastname . ' ' . $user->firstname . '(' . $user->email . ')' . ' uid:' .$user->id;
 }
 $data['users'] = json_encode($data['users']);
 
