@@ -273,8 +273,10 @@ class shopping_cart {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        if ($cachedrawdata['expirationdate'] < time()) {
-            self::delete_all_items_from_cart($userid);
+        if ($cachedrawdata) {
+            if ($cachedrawdata['expirationdate'] < time()) {
+                self::delete_all_items_from_cart($userid);
+            }
         }
         $data = [];
 
