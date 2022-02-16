@@ -34,7 +34,7 @@ global $USER;
 $userid = optional_param('userid', null, PARAM_INT);
 
 $data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-if (isset($userid)) {
+if (isset($userid) && $userid > 0) {
     $data['buyforuserid'] = $userid;
     $user = core_user::get_user($userid, 'id, lastname, firstname, email');
     $data['userid'] = $user->id;
@@ -60,13 +60,6 @@ echo $OUTPUT->header();
 
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
-if (isset($success)) {
-    if ($success) {
-        $data['success'] = 1;
-    } else {
-        $data['failed'] = 1;
-    }
-}
 $context = context_system::instance();
 if (has_capability('local/shopping_cart:cachier', $context)) {
     $data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
