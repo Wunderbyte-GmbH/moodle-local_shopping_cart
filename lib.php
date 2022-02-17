@@ -41,14 +41,14 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
         $pluginname = get_string('pluginname', 'local_shopping_cart');
         $link = new moodle_url('/local/shopping_cart/cashier.php', array());
         $icon = new pix_icon('i/shopping_cart', $pluginname, 'local_shopping_cart');
-        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF, $pluginname, 'shopping_cart_cashier', $icon);
+        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF, $pluginname,
+            'shopping_cart_cashier', $icon);
         $nodecreatecourse->showinflatnavigation = true;
     }
 }
 
 function local_shopping_cart_extend_settings_navigation($settingsnav, $context) {
-    global $CFG, $PAGE;
-
+    global $PAGE;
 
     if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
         $strfoo = get_string('foo', 'local_myplugin');

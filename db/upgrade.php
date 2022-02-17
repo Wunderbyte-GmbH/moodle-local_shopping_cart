@@ -64,7 +64,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022021611) {
-        // Changing precision of field
+        // Changing precision of field.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null,
                 null, null, 'componentname');

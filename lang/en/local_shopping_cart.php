@@ -40,7 +40,7 @@ $string['addon:description'] = 'Addition to the expiration time after checkout p
 $string['additonalcashiersection'] = 'Add text for Cashiersection';
 $string['additonalcashiersection:description'] = 'Add HTML Shortcodes or Items to buy for the Cashier shopping tab';
 
-// Capabilities
+// Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cachier'] = 'Is a cachier';

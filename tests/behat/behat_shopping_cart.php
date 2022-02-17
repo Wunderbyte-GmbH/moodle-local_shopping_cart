@@ -46,12 +46,11 @@ class behat_shopping_cart extends behat_base {
      * @return void
      */
     public function i_put_item_in_my_cart(string $itemname) {
-        global $DB;
 
         $item = new cartitem(1, $itemname, 10, 'EUR', 'mod_quiz', 'item description');
         $data = $item->getitem();
 
         $shoppingcart = new shopping_cart();
-        $shoppingcart->add_item_to_cart($data);
+        $shoppingcart->add_item_to_cart($data); // TODO: Fix this with the correct params!
     }
 }

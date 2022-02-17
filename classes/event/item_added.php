@@ -88,14 +88,4 @@ class item_added extends \core\event\base {
         $str = "bla";
         return $str;
     }
-
-    /**
-     * Custom validation.
-     *
-     * @throws \coding_exception
-     * @return void
-     */
-    protected function validate_data() {
-        parent::validate_data();
-    }
 }

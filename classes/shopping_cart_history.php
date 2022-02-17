@@ -83,7 +83,7 @@ class shopping_cart_history {
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
             $this->paymenttype = $data->paymenttype;
-        }  
+        }
     }
 
     /**
@@ -135,7 +135,7 @@ class shopping_cart_history {
         }
         return $dataarr;
     }
-    
+
     private function create_unique_cart_identifier($userid): string {
         return $userid.'_'.time();
     }
