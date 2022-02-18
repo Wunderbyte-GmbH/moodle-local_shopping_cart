@@ -26,8 +26,6 @@ namespace local_shopping_cart;
 
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Class shopping_cart_history.
  * @author      Thomas Winkler
@@ -70,11 +68,10 @@ class shopping_cart_history {
      */
     private $paymenttype;
 
-
-
-
     /**
      * History constructor
+     * @param stdClass $data
+     * @return void
      */
     public function __construct(stdClass $data = null) {
         if ($data) {
@@ -97,24 +94,33 @@ class shopping_cart_history {
         return $data;
     }
 
-    public function create_history($userid) {
-        $prepareddata = $this->prepare_data_from_cache($userid);
+    /**
+     * Function create_history
+     * @param int $userid
+     * @return void
+     */
+    public function create_history(int $userid) {
+        $prepareddata = (object)$this->prepare_data_from_cache($userid);
         $this->write_to_db($prepareddata);
     }
     /**
      * write_to_db.
      *
-     * @access private
-     * @param int $userid
      * @param stdClass $data
      * @return integer
      */
-    private function write_to_db($data): array {
+    private function write_to_db(stdClass $data): array {
         global $DB;
         return $DB->insert_records('local_shopping_cart_history', $data);
     }
 
-    public function prepare_data_from_cache($userid): array {
+    /**
+     * Function prepare_data_from_cache
+     *
+     * @param int $userid
+     * @return array
+     */
+    public function prepare_data_from_cache(int $userid): array {
         global $USER;
         $identifier = $this->create_unique_cart_identifier($userid);
         $userfromid = $USER->id;
@@ -136,12 +142,22 @@ class shopping_cart_history {
         return $dataarr;
     }
 
-    private function create_unique_cart_identifier($userid): string {
+    /**
+     * create_unique_cart_identifier
+     *
+     * @param int $userid
+     * @return string
+     */
+    private function create_unique_cart_identifier(int $userid): string {
         return $userid.'_'.time();
     }
 
 
-    private function validate_data() {
+    /**
+     * Validate data.
+     * @return void
+     */
+    public function validate_data() {
         if (!isset($this->uid)) {
             throw new \coding_exception('The \'relateduserid\' must be set.');
         }
@@ -164,6 +180,4 @@ class shopping_cart_history {
             throw new \coding_exception('The \'assignid\' value must be set in other.');
         }
     }
-
-
 }

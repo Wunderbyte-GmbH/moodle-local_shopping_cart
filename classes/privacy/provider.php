@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for local_entities
+ * Privacy subsystem implementation for local_shopping_cart
  *
  * @package    local_shopping_cart
  * @copyright  Wunderbyte <info@wunderbyte.at>
@@ -24,12 +24,12 @@
  */
 namespace local_entities\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * The local_shopping_cart
+ * Privacy subsystem implementation for local_shopping_cart
  *
- * @copyright  2022  Thomas Winkler <info@wunderbyte.at>
+ * @package    local_shopping_cart
+ * @copyright  Wunderbyte <info@wunderbyte.at>
+ * @author     Thomas Winkler
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

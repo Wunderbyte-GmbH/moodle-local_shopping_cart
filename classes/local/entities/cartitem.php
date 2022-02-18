@@ -24,8 +24,6 @@
 
 namespace local_shopping_cart\local\entities;
 
-use stdClass;
-
 /**
  * The cartitem class.
  *
@@ -83,6 +81,17 @@ class cartitem {
      */
     private $imageurl;
 
+    /**
+     * Cunstructor.
+     *
+     * @param int $itemid
+     * @param string $itemname
+     * @param float $price
+     * @param string $currency
+     * @param string $componentname
+     * @param string $description
+     * @param string $imageurl
+     */
     public function __construct(int $itemid,
                                 string $itemname,
                                 float $price,

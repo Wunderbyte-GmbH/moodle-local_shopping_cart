@@ -24,8 +24,6 @@
 
 namespace local_shopping_cart\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Message deleted event class.
  *
@@ -42,15 +40,14 @@ defined('MOODLE_INTERNAL') || die();
 class item_added extends \core\event\base {
 
     /**
-     * Create event using ids.
+     * Create event using id
      *
-     * @param int $userid the user who the we are deleting the message for.
-     * @param int $userdeleting the user who deleted it (it's possible that an admin may delete a message on someones behalf)
-     * @param int $messageid the id of the message that was deleted.
-     * @param int $muaid The id in the message_user_actions table.
+     * @param int $userid
+     * @param array $item
+     *
      * @return item_added
      */
-    public static function create_from_ids($userid, $item) : item_added {
+    public static function create_from_ids(int $userid, array $item) : item_added {
         // We set the userid to the user who deleted the message, nothing to do
         // with whether or not they sent or received the message.
         $event = self::create(array(

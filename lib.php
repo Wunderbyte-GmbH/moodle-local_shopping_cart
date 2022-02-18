@@ -21,14 +21,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 use local_shopping_cart\shopping_cart;
 
 /**
  * Adds module specific settings to the settings block
  *
- * @param navigation_node $modnode The node to add module settings to
+ * @param navigation_node $navigation The node to add module settings to
  * @return void
  */
 function local_shopping_cart_extend_navigation(navigation_node $navigation) {
@@ -47,7 +45,14 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
     }
 }
 
-function local_shopping_cart_extend_settings_navigation($settingsnav, $context) {
+/**
+ * Function local_shopping_cart_extend_settings_navigation
+ *
+ * @param settings_navigation $settingsnav
+ * @param context $context
+ * @return void
+ */
+function local_shopping_cart_extend_settings_navigation(settings_navigation $settingsnav, context $context) {
     global $PAGE;
 
     if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {

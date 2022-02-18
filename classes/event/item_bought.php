@@ -24,8 +24,6 @@
 
 namespace local_shopping_cart\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Item bought class.
  *
