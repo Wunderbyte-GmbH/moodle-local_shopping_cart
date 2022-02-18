@@ -56,7 +56,7 @@ function local_shopping_cart_extend_settings_navigation(settings_navigation $set
     global $PAGE;
 
     if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
-        $strfoo = get_string('foo', 'local_myplugin');
+        $strfoo = get_string('foo', 'local_shopping_cart');
         $url = new moodle_url('/local/myplugin/foo.php', array('id' => $PAGE->course->id));
         $foonode = navigation_node::create(
             $strfoo,

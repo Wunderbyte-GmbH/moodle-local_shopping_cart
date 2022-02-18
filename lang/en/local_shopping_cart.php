@@ -31,16 +31,19 @@ $string['sendpaymentbutton'] = 'Checkout';
 $string['addtocart'] = 'Add to cart';
 
 // Settings.
-$string['maxitems'] = 'Max items in the shopping cart';
-$string['maxitems:description'] = 'Set max items for the user shopping cart';
+$string['maxitems'] = 'Max. items in the shopping cart';
+$string['maxitems:description'] = 'Set max. items for the user shopping cart';
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart';
 $string['addon'] = 'Set addon time';
-$string['addon:description'] = 'Addition to the expiration time after checkout process is initation';
-$string['additonalcashiersection'] = 'Add text for Cashiersection';
-$string['additonalcashiersection:description'] = 'Add HTML Shortcodes or Items to buy for the Cashier shopping tab';
+$string['addon:description'] = 'Addition to the expiration time after checkout process is initiated';
+$string['additonalcashiersection'] = 'Add text for cashier section';
+$string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cachier'] = 'Is a cachier';
+
+// File: lib.php.
+$string['foo'] = 'foo';
