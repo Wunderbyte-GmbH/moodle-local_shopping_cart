@@ -26,15 +26,14 @@ namespace local_shopping_cart\event;
 
 use core\event\base;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
+ * Item expired class
+ *
  * @property-read array $other {
  *      Extra information about event.
  *
  *      - int itemid: the id of the item.
  * }
- * Item expired class
  *
  * @package    local_shopping_cart
  * @copyright  2021 Wunderbyte GmbH <info@wunderbyte.at>

@@ -27,7 +27,6 @@
 namespace local_shopping_cart\local\callback;
 
 use local_shopping_cart\local\entities\cartitem;
-use local_shopping_cart\shopping_cart;
 
 /**
  * The service_provider interface for plugins to provide callbacks which are needed by the shopping_cart subsystem.
@@ -38,8 +37,11 @@ use local_shopping_cart\shopping_cart;
 interface service_provider {
 
     /**
-     * Callback function that returns the price and description of the given item in the specified area,
+     * Callback function that returns the price and description of the given item in the specified area
+     *
      * @param int $itemid An identifier that is known to the plugin
+     * @param int $userid
+     *
      * @return cartitem
      */
     public static function load_cartitem(int $itemid, int $userid = 0): cartitem;
@@ -48,13 +50,17 @@ interface service_provider {
      * Callback function that unloads an item from the cart.
      * This has to be implemented in case of limited ressources where...
      * ... one reserved item can't be booked by another user.
+     *
      * @param int $itemid An identifier that is known to the plugin
+     * @param int $userid
+     *
      * @return bool
      */
     public static function unload_cartitem(int $itemid, int $userid = 0): bool;
 
     /**
      * Callback function that is executed when the item is successfully bought.
+     *
      * @param int $itemid An identifier that is known to the plugin
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to

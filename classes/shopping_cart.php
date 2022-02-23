@@ -25,10 +25,6 @@ namespace local_shopping_cart;
 
 use local_shopping_cart\task\delete_item_task;
 
-use function PHPUnit\Framework\isEmpty;
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class shopping_cart
  *
@@ -37,7 +33,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart {
-
 
     /**
      * entities constructor.
@@ -52,10 +47,14 @@ class shopping_cart {
      * - Then we check if the item is already in the cart and can be add it again the shopping_cart side.
      * - Now we check if the component has the product still available
      * - For any fail, we return success 0.
-     * @param array $itemdata
+     *
+     * @param string $component
+     * @param int $itemid
+     * @param int $userid
+     *
      * @return array
      */
-    public static function add_item_to_cart($component, $itemid, $userid): array {
+    public static function add_item_to_cart(string $component, int $itemid, int $userid): array {
 
         global $USER;
 
@@ -123,10 +122,11 @@ class shopping_cart {
     }
 
     /**
-     *
      * This is to return all parent entities from the database
-     * @param int $itemid
+     *
      * @param string $component
+     * @param int $itemid
+     * @param int $userid
      * @return boolean
      */
     public static function delete_item_from_cart($component, $itemid, $userid): bool {
@@ -157,6 +157,7 @@ class shopping_cart {
      *
      * This is to delete all items from cart.
      *
+     * @param int $userid
      * @return bool
      */
     public static function delete_all_items_from_cart($userid): bool {
@@ -243,6 +244,7 @@ class shopping_cart {
      *
      * @param string $component Name of the component that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
+     * @param int $userid
      * @return local\entities\cartitem
      */
     public static function load_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
@@ -256,6 +258,7 @@ class shopping_cart {
      *
      * @param string $component Name of the component that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
+     * @param int $userid
      * @return local\entities\cartitem
      */
     public static function unload_cartitem(string $component, int $itemid, int $userid): bool {
@@ -265,8 +268,8 @@ class shopping_cart {
     }
 
     /**
-     * local_shopping_cart_get_cache_data.
-     *
+     * Function local_shopping_cart_get_cache_data
+     * @param int $userid
      * @return array
      */
     public static function local_shopping_cart_get_cache_data($userid): array {
@@ -304,6 +307,7 @@ class shopping_cart {
      * As the expiration date is always calculated by the cart, not the item, this always updates the whole cart.
      *
      * @param int $expirationtimestamp
+     * @param int $userid
      * @return void
      */
     private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {

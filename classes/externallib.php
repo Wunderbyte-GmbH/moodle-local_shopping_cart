@@ -36,11 +36,14 @@ class local_shopping_cart_external extends external_api {
 
     /**
      * Webservice for shopping_cart class to add a new item to the cart.
+     *
      * @param string $component
      * @param int $itemid
+     * @param int $userid
+     *
      * @return array
      */
-    public static function add_item_to_cart($component, $itemid, $userid): array {
+    public static function add_item_to_cart(string $component, int $itemid, int $userid): array {
         $params = external_api::validate_parameters(self::add_item_to_cart_parameters(), [
             'component' => $component,
             'itemid' => $itemid,
@@ -82,11 +85,12 @@ class local_shopping_cart_external extends external_api {
     }
     /**
      * Webservice for shopping_cart class for delete_item_from_cart.
-     * @param int $itemid
      * @param string $component
+     * @param int $itemid
+     * @param int $userid
      * @return void
      */
-    public static function delete_item_from_cart($component, $itemid, $userid) {
+    public static function delete_item_from_cart(string $component, int $itemid, int $userid) {
 
         $params = external_api::validate_parameters(self::delete_item_from_cart_parameters(), [
             'component' => $component,

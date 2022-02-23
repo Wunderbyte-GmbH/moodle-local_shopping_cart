@@ -23,8 +23,6 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Execute local_shopping_cart upgrade from the given old version.
  *
@@ -62,8 +60,9 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022021607, 'local', 'shopping_cart');
     }
-    if ($oldversion < 2022021610) {
-        // Changing precision of field
+
+    if ($oldversion < 2022021611) {
+        // Changing precision of field.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null,
                 null, null, 'componentname');
@@ -71,10 +70,9 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Launch change of precision for field enablecompletion.
         $dbman->change_field_precision($table, $field);
 
-        // Booking savepoint reached.
-        upgrade_mod_savepoint(true, 2022021610, 'local_shopping_cart');
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022021611, 'local', 'shopping_cart');
     }
-
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //

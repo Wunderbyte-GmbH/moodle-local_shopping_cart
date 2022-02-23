@@ -29,8 +29,6 @@ use renderable;
 use renderer_base;
 use templatable;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * viewtable class to display view.php
  * @package local_shopping_cart
@@ -47,9 +45,9 @@ class button implements renderable, templatable {
 
     /**
      * Constructor.
-     * @param [type] $table
+     * @param array $data
      */
-    public function __construct($data) {
+    public function __construct(array $data) {
         $this->data = $data;
     }
 

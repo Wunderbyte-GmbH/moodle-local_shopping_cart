@@ -13,6 +13,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Adhoc Task to remove expired items from the shopping cart.
+ *
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_shopping_cart\task;
 
 use local_shopping_cart\shopping_cart;
@@ -23,9 +32,12 @@ global $CFG;
 
 /**
  * Adhoc Task to remove expired items from the shopping cart.
+ *
+ * @package    local_shopping_cart
+ * @copyright  2022 Georg Maißer <info@wunderbyte.at>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class delete_item_task extends \core\task\adhoc_task
-{
+class delete_item_task extends \core\task\adhoc_task {
 
     /**
      * Get name of Module.

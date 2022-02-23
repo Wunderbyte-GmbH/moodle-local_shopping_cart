@@ -27,8 +27,6 @@ namespace local_shopping_cart\output;
 use plugin_renderer_base;
 use templatable;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Renderer class.
  * @package local_shopping_cart
