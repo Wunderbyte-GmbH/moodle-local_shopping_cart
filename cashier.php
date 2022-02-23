@@ -32,9 +32,9 @@ require_login();
 global $USER;
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
-
+shopping_cart::delete_all_items_from_cart($USER->id);
 $data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-if (isset($userid) && $userid > 0) {
+if (isset($userid) && $userid > 0 ) {
     $data['buyforuserid'] = $userid;
     $user = core_user::get_user($userid, 'id, lastname, firstname, email');
     $data['userid'] = $user->id;

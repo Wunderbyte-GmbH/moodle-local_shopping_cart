@@ -46,28 +46,6 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
     }
 }
 
-function local_shopping_cart_extend_settings_navigation($settingsnav, $context) {
-    global $CFG, $PAGE;
-
-
-    if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
-        $strfoo = get_string('foo', 'local_myplugin');
-        $url = new moodle_url('/local/myplugin/foo.php', array('id' => $PAGE->course->id));
-        $foonode = navigation_node::create(
-            $strfoo,
-            $url,
-            navigation_node::NODETYPE_LEAF,
-            'myplugin',
-            'myplugin',
-            new pix_icon('t/addcontact', $strfoo)
-        );
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $foonode->make_active();
-        }
-        $settingnode->add_node($foonode);
-    }
-}
-
 
 /**
  * Renders the popup.

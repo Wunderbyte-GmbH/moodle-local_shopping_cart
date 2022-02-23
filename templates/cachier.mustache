@@ -39,7 +39,7 @@
 
 }}
 <style>
-#cachiertabs a.nav-link {
+#cachiertabs span.nav-link {
     outline: 0;
     box-shadow: none !important;
 }
@@ -55,7 +55,7 @@
     position: relative
 }
 
-#cachiertabs li a:before {
+#cachiertabs li span:before {
     position:relative;
     z-index: 3;
     width: 50px;
@@ -71,7 +71,7 @@
     text-align: center;
 }
 
-#cachiertabs li a:after {
+#cachiertabs li span:after {
     content: '';
     width: 100%;
     height: 2px;
@@ -109,10 +109,10 @@
     content: "\f00c"
 }
 
-#cachiertabs li a.active:before,
-#cachiertabs li a.active:after,
-#cachiertabs li a.success:before,
-#cachiertabs li a.success:after {
+#cachiertabs li span.active:before,
+#cachiertabs li span.active:after,
+#cachiertabs li span.success:before,
+#cachiertabs li span.success:after {
     background: var(--success);
 }
 
@@ -124,8 +124,38 @@
     width: max-content;
 }
 
-#cachiertabs a.disabled {
+#cachiertabs span.disabled {
    font-style: normal;
+}
+
+#page-local-shopping_cart-checkout #region-main-box {
+   border: none !important;
+}
+
+#page-local-shopping_cart-checkout .wunderbyteTableJavascript ul {
+  padding: 0;
+  border-top: 1px solid var(--primary);
+}
+#page-local-shopping_cart-checkout #courseName {
+    margin-top:20px;
+    width: 200px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+}
+
+#page-local-shopping_cart-checkout #checkout .shopping-cart-items{
+  padding:20px;
+  margin: 20px;
+  border-top: 1px dashed black;
+}
+
+#page-local-shopping_cart-checkout #region-main-box #litotalprice {
+  font-size:20px;
+  color: var(--warning);
+}
+
+#page-local-shopping_cart-checkout #region-main-box #success #litotalprice {
+  color: var(--success);
 }
 
 </style>
@@ -148,16 +178,16 @@
                {{/userid}}
                <ul class="nav m-0" id="cachiertabs" role="tablist">
                   <li class="nav-item" role="presentation">
-                     <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="home" aria-selected="true"></a>
+                     <span class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="home" aria-selected="true"></span>
                   </li>
                   <li class="nav-item" role="presentation">
-                     <a class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}}" id="cart-tab" data-toggle="tab" href="#cart" role="tab" aria-controls="cart" aria-selected="false"></a>
+                     <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}}" id="cart-tab" data-toggle="tab" href="#cart" role="tab" aria-controls="cart" aria-selected="false"></span>
                   </li>
                   <li class="nav-item" role="presentation">
-                     <a class="nav-link disabled" id="checkout-tab" data-toggle="tab" id="checkout-tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false"></a>
+                     <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" id="checkout-tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false"></span>
                   </li>
                   <li class="nav-item" role="presentation">
-                     <a class="nav-link disabled" id="success-tab" data-toggle="tab" id="success-tab" href="#success" role="tab" aria-controls="success" aria-selected="false"></a>
+                     <span class="nav-link disabled" id="success-tab" data-toggle="tab" id="success-tab" href="#success" role="tab" aria-controls="success" aria-selected="false"></span>
                   </li>
                </ul>
             </div>
@@ -174,19 +204,26 @@
                      </div>
                   </div>
                   <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="profile-tab">
+                     <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" id="checkout-tab" href="#checkout" role="tab" aria-controls="checkout" onclick="validateCart()" aria-selected="false">Checkout</a>
+                     <p><input type="text" id="courseName" onkeyup="itemSearch()" placeholder="Search for item.."></p>
                      {{#additonalcashiersection}}
                      {{{additonalcashiersection}}}
                      {{/additonalcashiersection}}
                   </div>
                   <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="contact-tab">
+                     <h2 id="totalprice" class="text-warning text-center"><b>{{price}}</b></h2>
+                     <a class="btn btn-danger" id="checkout-btn" data-toggle="tab" id="checkout-tab" href="/local/shopping_cart/cashier.php" role="tab" aria-controls="checkout" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> Verwerfen</a>
+                     <a class="btn btn-success" id="buy-btn" data-toggle="tab" id="checkout-tab" href="#success" role="tab" aria-controls="checkout" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> Bezahlt</a>
                      {{> local_shopping_cart/shopping_cart_items }}
                   </div>
                   <div class="tab-pane fade" id="success" role="tabpanel" aria-labelledby="contact-tab">
                      <div class="row">
                         <div class="col">
                            <div>
-                              <h2>Payment Successfull !</h2>
-                              <a href="#" class="btn btn-success">Go to Home</a>
+                              <h2 id="totalprice" class="text-success text-center"><b>{{price}}</b></h2>
+                              <p class="text-center">bezahlt und verbucht</p>
+                              <a onclick="window.print();return false;" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
+                              <a href="/local/shopping_cart/cashier.php" class="btn btn-success">Restart</a>
                            </div>
                         </div>
                      </div>
@@ -199,7 +236,7 @@
       <div class="col-md-4">
          <div class="card">
             <div class="card-header text-center bg-primary text-white">
-               <i class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
+               <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                <b class="d-block">Shopping Cart</b>
             </div>
             <div class="card-body">
@@ -225,7 +262,40 @@
 
 <script>
 
+document.addEventListener("DOMContentLoaded", function(event) {
+   document.getElementById('buy-btn').addEventListener('click', function (e) {
+   document.getElementById('success-tab').classList.add('success');
+   });
 
+   document.getElementById('checkout-btn').addEventListener('click', function (e) {
+   if(!!document.querySelector(".shopping-cart-items [id^='item']")) {
+      document.getElementById('checkout-tab').classList.add('success');
+   }
+   else {
+      e.preventDefault();
+      e.stopPropagation();
+   }
+   });
+});
+
+
+
+function itemSearch() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("courseName");
+        filter = input.value.toUpperCase();
+        li = document.querySelectorAll(".list-group-item.wunderbyteTableJavascript");
+        for (i = 0; i < li.length; i++) {
+            a = li[i];
+            txtValue = a.textContent || a.innerText;
+            console.log(txtValue);
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
 
 function autocomplete(inp, arr) {
   /*the autocomplete function takes two arguments,

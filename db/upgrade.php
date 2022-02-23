@@ -62,7 +62,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022021607, 'local', 'shopping_cart');
     }
-
     if ($oldversion < 2022021610) {
         // Changing precision of field
         $table = new xmldb_table('local_shopping_cart_history');
@@ -75,6 +74,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Booking savepoint reached.
         upgrade_mod_savepoint(true, 2022021610, 'local_shopping_cart');
     }
+
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //

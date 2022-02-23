@@ -282,14 +282,20 @@ export const addItem = (id, component) => {
                     notificatonelement.remove();
                 }, 5000);
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                    let lastElem = document.getElementById('litotalprice');
-                    lastElem.insertAdjacentHTML('beforeBegin', html);
+                    let lastElem = document.querySelectorAll('#litotalprice');
+                    lastElem.forEach(lastElem => {
+                        lastElem.insertAdjacentHTML('beforeBegin', html);
+                    });
+                    // let lastElem = document.getElementById('litotalprice');
+                    // lastElem.insertAdjacentHTML('beforeBegin', html);
                     document.getElementById("countbadge").innerHTML++;
                     const badge = document.getElementById("itemcount");
                     badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
                     badge.classList.remove('hidden');
-                    let total = document.getElementById('totalprice');
-                    total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
+                    let total = document.querySelectorAll('#totalprice');
+                    total.forEach(total => {
+                        total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
+                    });
                     let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                     items.forEach(item => {
                         addDeleteevent(item);
