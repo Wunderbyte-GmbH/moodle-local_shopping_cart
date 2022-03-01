@@ -47,3 +47,7 @@ $string['shopping_cart:cachier'] = 'Ist berechtigt für die Kassa';
 
 // File: lib.php.
 $string['foo'] = 'foo';
+
+// Cache.
+$string['cachedef_cashier'] = 'Cashier cache';
+$string['cachedef_cacheshopping'] = 'Shopping cache';
