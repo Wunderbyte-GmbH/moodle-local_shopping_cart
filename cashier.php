@@ -66,9 +66,8 @@ if (has_capability('local/shopping_cart:cachier', $context)) {
 }
 
 $data['userid'] = $userid;
-// TODO mod/label:view local/shopping_cart:canbuy.
 
-$users = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname, u.firstname, u.email');
+$users = get_users_by_capability($context, 'local/shopping_cart:canbuy', 'u.id, u.lastname, u.firstname, u.email');
 $data['users'] = [];
 foreach ($users as $user) {
     $data['users'][] = $user->lastname . ' ' . $user->firstname . '(' . $user->email . ')' . ' uid:' .$user->id;
