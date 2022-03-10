@@ -44,9 +44,6 @@ export const buttoninit = (id, component) => {
         buttons.forEach(button => {
             // We have to get only the last part of the id, the number.
             const number = button.id.split(/[\s-]+/).pop();
-
-            // eslint-disable-next-line no-console
-            console.log(number);
             buttoninit(number, component);
         });
         return;
@@ -130,8 +127,6 @@ export const reinit = () => {
                 }
                 initTimer(data.expirationdate);
 
-                // eslint-disable-next-line no-console
-                console.log(data.count);
                 return true;
             }).catch((e) => {
                 // eslint-disable-next-line no-console

@@ -341,6 +341,17 @@ class shopping_cart {
     public static function buy_for_user($userid) {
         $cache = \cache::make('local_shopping_cart', 'cashier');
         $cache->set('buyforuser', $userid);
-        return $cache->get('buyforuser');
+        return $userid;
+    }
+
+    /**
+     * Return userid from cache.
+     *
+     * @return int
+     */
+    public static function return_buy_for_userid() {
+        $cache = \cache::make('local_shopping_cart', 'cashier');
+        $userid = $cache->get('buyforuser');
+        return $userid;
     }
 }
