@@ -51,3 +51,19 @@ $string['foo'] = 'foo';
 // Cache.
 $string['cachedef_cashier'] = 'Cashier cache';
 $string['cachedef_cacheshopping'] = 'Shopping cache';
+
+// Errors.
+
+$string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
+$string['noitemsincart'] = 'There are no items in the cart';
+
+// Cart.
+$string['total'] = 'Total:';
+
+// Cashier.
+$string['paid'] = 'Paid';
+$string['paymentconfirmed'] = 'Payment confirmed';
+$string['restart'] = "Next customer";
+$string['print'] = "Print";
+$string['previouspurchases'] = "Previous purchases";
+$string['checkout'] = "Checkout";

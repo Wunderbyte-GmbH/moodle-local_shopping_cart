@@ -80,6 +80,7 @@ class local_shopping_cart_external extends external_api {
                     'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
                     'description' => new external_value(PARAM_RAW, 'Item description'),
                     'success' => new external_value(PARAM_INT, 'Successfully added'),
+                    'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself')
                 )
         );
     }
@@ -191,6 +192,41 @@ class local_shopping_cart_external extends external_api {
                             )
                         )
                 )
+            )
+        );
+    }
+
+
+    /**
+     * Webservice for shopping_cart class to confirm a cash paiment of a user.
+     */
+    public static function confirm_cash_payment(int $userid) {
+
+        $params = external_api::validate_parameters(self::confirm_cash_payment_parameters(), [
+            'userid' => $userid
+        ]);
+
+        return shopping_cart::confirm_payment($params['userid']);
+    }
+
+    /**
+     * Describes the paramters for confirm_cash_payment.
+     * @return external_function_parameters
+     */
+    public static function confirm_cash_payment_parameters() {
+        return new external_function_parameters(array(
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
+        ));
+    }
+    /**
+     * Describes the return values for confirm_cash_payment.
+     * @return external_single_structure
+     */
+    public static function confirm_cash_payment_returns() {
+        return new external_single_structure(
+            array(
+                'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
+                'error' => new external_value(PARAM_RAW, 'Error message.')
             )
         );
     }

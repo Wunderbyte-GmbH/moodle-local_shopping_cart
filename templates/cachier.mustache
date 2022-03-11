@@ -221,9 +221,9 @@
                         <div class="col">
                            <div>
                               <h2 id="totalprice" class="text-success text-center"><b>{{price}}</b></h2>
-                              <p class="text-center">bezahlt und verbucht</p>
+                              <p class="text-center">{{#str}} paymentconfirmed, local_shopping_cart {{/str}}</p>
                               <a onclick="window.print();return false;" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
-                              <a href="/local/shopping_cart/cashier.php" class="btn btn-success">Restart</a>
+                              <a href="/local/shopping_cart/cashier.php" class="btn btn-success">{{#str}} restart, local_shopping_cart {{/str}}</a>
                            </div>
                         </div>
                      </div>
@@ -246,7 +246,7 @@
          <div class="card mt-4">
             <div class="card-header text-center bg-primary text-white">
                <i class="fa fa-history fa-2x" aria-hidden="true"></i>
-               <b class="d-block">Previous purchases</b>
+               <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
             </div>
             <div class="card-body">
                <div class="history">
@@ -261,7 +261,7 @@
 
 {{#js}}
     require(['local_shopping_cart/cachier'], function(cachier) {
-      cachier.init({{{users}}});
+      cachier.init({{{users}}}, {{userid}});
     });
 {{/js}}
 

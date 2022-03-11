@@ -23,6 +23,7 @@
  */
 namespace local_shopping_cart;
 
+use context_system;
 use local_shopping_cart\task\delete_item_task;
 
 /**
@@ -58,8 +59,15 @@ class shopping_cart {
 
         global $USER;
 
-        // Determine the right userid to use.
-        $userid = $userid == 0 ? $USER->id : $userid;
+        // If there is no user specified, we determine it automatically.
+        if ($userid == 0) {
+            $context = context_system::instance();
+            if (has_capability('local/shopping_cart:cachier', $context)) {
+                $userid = self::return_buy_for_userid();
+            } else {
+                $userid = $USER->id;
+            }
+        }
 
         $success = true;
 
@@ -82,14 +90,14 @@ class shopping_cart {
             $success = false;
         }
 
+        $expirationtimestamp = self::get_expirationdate();
+
         if ($success) {
             // This gets the data from the componennt and also triggers reserveration.
             // If reserveration is not successful, we have to react here.
             if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
                 // Get the itemdata as array.
                 $itemdata = $cartitem->getitem();
-
-                $expirationtimestamp = self::get_expirationdate();
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -98,6 +106,10 @@ class shopping_cart {
 
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 $itemdata['success'] = 1;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : 1;
+
+                // Add or reschedule all delete_item_tasks for all the items in the cart.
+                self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
             } else {
                 $success = false;
                 $itemdata = [];
@@ -105,9 +117,6 @@ class shopping_cart {
                 $itemdata['expirationdate'] = 0;
             }
         }
-
-        // Add or reschedule all delete_item_tasks for all the items in the cart.
-        self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
 
         return $itemdata;
     }
@@ -268,6 +277,20 @@ class shopping_cart {
     }
 
     /**
+     * Confirms Payment and successful checkout for item.
+     *
+     * @param string $component Name of the component that the cartitems belong to
+     * @param int $itemid An internal identifier that is used by the component
+     * @param int $userid
+     * @return local\entities\cartitem
+     */
+    public static function successful_checkout(string $component, int $itemid, int $userid): bool {
+        $providerclass = static::get_service_provider_classname($component);
+
+        return component_class_callback($providerclass, 'successful_checkout', [$itemid, 'cash', $userid]);
+    }
+
+    /**
      * Function local_shopping_cart_get_cache_data
      * @param int $userid
      * @return array
@@ -340,18 +363,83 @@ class shopping_cart {
      */
     public static function buy_for_user($userid) {
         $cache = \cache::make('local_shopping_cart', 'cashier');
-        $cache->set('buyforuser', $userid);
+
+        if ($userid == 0) {
+            $cache->delete('buyforuser');
+        } else {
+            $cache->set('buyforuser', $userid);
+        }
         return $userid;
     }
 
     /**
-     * Return userid from cache.
+     * Return userid from cache. global userid if not to be found.
      *
      * @return int
      */
     public static function return_buy_for_userid() {
+        global $USER;
+
         $cache = \cache::make('local_shopping_cart', 'cashier');
         $userid = $cache->get('buyforuser');
+
+        if (!$userid) {
+            $userid = $USER->id;
+        }
         return $userid;
+    }
+
+    /**
+     * This function confirms that a user has paid for the items which are currently in her shopping cart.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function confirm_payment($userid) {
+        global $USER;
+
+        // Make sure the user has the rights to access this function.
+        $context = context_system::instance();
+        if (!has_capability('local/shopping_cart:cachier', $context)) {
+            return [
+                'status' => 0,
+                'error' => get_string('nopermission', 'local_shopping_cart')
+            ];
+        }
+
+        // Retrieve items from cache.
+        $data = self::local_shopping_cart_get_cache_data($userid);
+
+        // Check if we have items for this user.
+        if (!isset($data['items'])
+            || count($data['items']) < 1) {
+            return [
+                'status' => 0,
+                'error' => get_string('noitemsincart', 'local_shopping_cart')
+            ];
+        }
+
+        $success = true;
+        $error = [];
+
+        // Run through all items still in the cart and confirm payment.
+        foreach ($data['items'] as $item) {
+            if (!self::successful_checkout($item['componentname'], $item['itemid'], $userid)) {
+                $success = false;
+                $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
+            }
+        }
+
+        if ($success) {
+            return [
+                'status' => 1,
+                'error' => ''
+            ];
+        } else {
+            return [
+                'status' => 0,
+                'error' => implode('<br>', $error)
+            ];
+        }
     }
 }

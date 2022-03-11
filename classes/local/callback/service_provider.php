@@ -67,5 +67,5 @@ interface service_provider {
      *
      * @return bool Whether successful or not
      */
-    public static function successful_checkout(int $itemid, int $paymentid, int $userid): bool;
+    public static function successful_checkout(int $itemid, string $paymentid, int $userid): bool;
 }

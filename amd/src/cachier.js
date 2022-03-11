@@ -19,6 +19,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import Ajax from 'core/ajax';
+
 export const init = (users) => {
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('buy-btn').addEventListener('click', function() {
@@ -31,13 +33,14 @@ export const init = (users) => {
             } else {
                 e.preventDefault();
                 e.stopPropagation();
+
+                confirmPayment();
             }
         });
      });
      autocomplete(document.getElementById("myInput"), users);
 
      attachFilterFuntion();
-
 
      /**
       * Attach filter function.
@@ -58,15 +61,37 @@ export const init = (users) => {
             }
         });
     }
+
+    /**
+     * Confirm successful payment via ajax.
+     * @param {integer} userid
+     */
+    function confirmPayment(userid) {
+        Ajax.call([{
+            methodname: "local_shopping_cart_confirm_payment",
+            args: {
+                'userid': userid
+            },
+            done: function(data) {
+
+                if (data.success == 1) {
+                    // eslint-disable-next-line no-console
+                    console.log('payment confirmed');
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.log('payment denied');
+                }
+            },
+            fail: function(ex) {
+                // eslint-disable-next-line no-console
+                console.log(ex);
+            },
+        }]);
+    }
 };
 
 export const validateCart = ($userid) => {
     // eslint-disable-next-line no-alert
-    alert($userid);
- };
-
- export const checkout = ($userid) => {
-     // eslint-disable-next-line no-alert
     alert($userid);
  };
 

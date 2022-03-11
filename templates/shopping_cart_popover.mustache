@@ -64,7 +64,7 @@
           {{#items}}
           {{> local_shopping_cart/shopping_cart_item }}
           {{/items}}
-          <li id="litotalprice"> <span class="pull-right">Total: <span id="totalprice">{{price}}</span>€</span></li>
+          <li id="litotalprice_navbar"> <span class="pull-right">{{#str}} total, local_shopping_cart {{/str}} <span id="totalprice">{{price}}</span>€</span></li>
     </ul>
     <a href="/local/shopping_cart/checkout.php" class="btn btn-primary pull-right mr-3">Checkout <i class="fa fa-chevron-right"></i></a>
     {{/content}}

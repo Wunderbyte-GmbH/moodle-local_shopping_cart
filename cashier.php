@@ -29,11 +29,16 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
-global $USER;
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
-shopping_cart::delete_all_items_from_cart($USER->id);
-$data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+
+if (!$userid) {
+    // We unset the buy for user variable.
+    shopping_cart::buy_for_user(0);
+    shopping_cart::delete_all_items_from_cart($USER->id);
+}
+
+$data = shopping_cart::local_shopping_cart_get_cache_data($userid);
 if (isset($userid) && $userid > 0 ) {
     $data['buyforuserid'] = $userid;
     $user = core_user::get_user($userid, 'id, lastname, firstname, email');
@@ -57,9 +62,6 @@ $PAGE->set_pagelayout('standard');
 // Output the header.
 echo $OUTPUT->header();
 
-
-$data["mail"] = $USER->email;
-$data["name"] = $USER->firstname . $USER->lastname;
 $context = context_system::instance();
 if (has_capability('local/shopping_cart:cachier', $context)) {
     $data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
@@ -70,6 +72,10 @@ $data['userid'] = $userid;
 $users = get_users_by_capability($context, 'local/shopping_cart:canbuy', 'u.id, u.lastname, u.firstname, u.email');
 $data['users'] = [];
 foreach ($users as $user) {
+    if ($userid == $user->id) {
+        $data["mail"] = $user->email;
+        $data["name"] = $user->firstname . $user->lastname;
+    }
     $data['users'][] = $user->lastname . ' ' . $user->firstname . '(' . $user->email . ')' . ' uid:' .$user->id;
 }
 $data['users'] = json_encode($data['users']);

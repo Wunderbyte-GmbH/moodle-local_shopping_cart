@@ -178,12 +178,13 @@ export const deleteAllItems = () => {
     }]);
 };
 
-export const deleteItem = (id, component) => {
+export const deleteItem = (id, component, userid) => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
             'itemid': id,
-            'component': component
+            'component': component,
+            'userid': userid
         },
         done: function() {
 
@@ -251,6 +252,7 @@ export const addItem = (id, component) => {
         done: function(data) {
             data.component = component;
             data.id = id;
+            data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
 
             if (data.success == 0) {
                 Notification.addNotification({
@@ -276,13 +278,26 @@ export const addItem = (id, component) => {
 
                     notificatonelement.remove();
                 }, 5000);
+
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                    let lastElem = document.querySelectorAll('#litotalprice');
+                    let lastElem = document.querySelectorAll("[id^='litotalprice']");
                     lastElem.forEach(lastElem => {
-                        lastElem.insertAdjacentHTML('beforeBegin', html);
+                        // If we buy for a user, we only want to interact with the cashiers section.
+                        if ((data.buyforuser == 0)
+                            || (lastElem.id === "litotalprice_cashier")) {
+                            lastElem.insertAdjacentHTML('beforeBegin', html);
+                        }
                     });
-                    // let lastElem = document.getElementById('litotalprice');
-                    // lastElem.insertAdjacentHTML('beforeBegin', html);
+
+                    // Make sure addtocartbutton is disabled once the item is in the shopping cart.
+                    const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
+                    if (addtocartbutton) {
+                        addtocartbutton.classList.add('disabled');
+                    }
+                    // If we buy for a user, we don't have to do the navbar stuff below.
+                    if (data.buyforuser != 0) {
+                        return;
+                    }
                     document.getElementById("countbadge").innerHTML++;
                     const badge = document.getElementById("itemcount");
                     badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
@@ -297,13 +312,7 @@ export const addItem = (id, component) => {
                     });
                     clearInterval(interval);
                     initTimer(data.expirationdate);
-
-                    // Make sure addtocartbutton is disabled once the item is in the shopping cart.
-                    const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
-                    if (addtocartbutton) {
-                        addtocartbutton.classList.add('disabled');
-                    }
-                    return true;
+                    return;
                 }).catch((e) => {
                     // eslint-disable-next-line no-console
                     console.log(e);
@@ -326,12 +335,13 @@ function addDeleteevent(item) {
         event.preventDefault();
         event.stopPropagation();
         // Item comes as #item-booking-213123.
-        let idarray = item.dataset.id.split('-');
+        const idarray = item.dataset.id.split('-');
         // First pop gets the id.
-        let id = idarray.pop();
+        const id = idarray.pop();
         // Second pop gets the component.
-        let component = idarray.pop();
-        deleteItem(id, component);
+        const component = idarray.pop();
+        const userid = item.dataset.userid;
+        deleteItem(id, component, userid);
     });
 }
 

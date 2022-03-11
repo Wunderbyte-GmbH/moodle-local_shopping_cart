@@ -32,7 +32,8 @@ $services = array(
                         'local_shopping_cart_delete_item',
                         'local_shopping_cart_delete_all_items_from_cart',
                         'local_shopping_cart_get_shopping_cart_items',
-                        'local_shopping_cart_checkout_for_customer'
+                        'local_shopping_cart_checkout_for_customer',
+                        'local_shopping_cart_confirm_cash_payment'
                 ),
                 'restrictedusers' => 1,
                 'shortname' => 'local_shopping_cart_external',
@@ -77,12 +78,21 @@ $functions = array(
                 'capabilities' => '',
                 'ajax' => 1
         ),
-        'local_shopping_cart_checkout_for_customer' => array(
+/*         'local_shopping_cart_checkout_for_customer' => array(
                 'classname' => 'local_shopping_cart_external',
                 'methodname' => 'get_shopping_cart_items',
                 'classpath' => 'local/shopping_cart/classes/externallib.php',
                 'description' => 'Get shopping cart items',
                 'type' => 'read',
+                'capabilities' => 'local/shopping_cart:cachier',
+                'ajax' => 1
+        ), */
+        'local_shopping_cart_confirm_cash_payment' => array(
+                'classname' => 'local_shopping_cart_external',
+                'methodname' => 'confirm_cash_payment',
+                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'description' => 'Confirm cash payment by cashier',
+                'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cachier',
                 'ajax' => 1
         )
