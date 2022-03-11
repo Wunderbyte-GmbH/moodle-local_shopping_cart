@@ -21,22 +21,43 @@
 
 import Ajax from 'core/ajax';
 
-export const init = (users) => {
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('buy-btn').addEventListener('click', function() {
-            document.getElementById('success-tab').classList.add('success');
-        });
+export const init = (users, userid = 0) => {
+    // eslint-disable-next-line no-console
+    console.log('run init', userid);
 
-        document.getElementById('checkout-btn').addEventListener('click', function(e) {
+    const buybutton = document.querySelector('#buy-btn');
+        // eslint-disable-next-line no-console
+        console.log(buybutton);
+        if (buybutton) {
+            buybutton.addEventListener('click', function() {
+                document.getElementById('success-tab').classList.add('success');
+                confirmPayment(userid);
+            });
+        }
+
+    const checkoutbutton = document.querySelector('#checkout-btn');
+    // eslint-disable-next-line no-console
+    console.log(checkoutbutton);
+    if (checkoutbutton) {
+        checkoutbutton.addEventListener('click', function(e) {
             if (!document.querySelector(".shopping-cart-items [id^='item']")) {
                 document.getElementById('checkout-tab').classList.add('success');
             } else {
                 e.preventDefault();
                 e.stopPropagation();
-
-                confirmPayment();
             }
         });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function(event) {
+
+        // eslint-disable-next-line no-console
+        console.log('content loaded', event);
+
+
+
+
      });
      autocomplete(document.getElementById("myInput"), users);
 
@@ -68,7 +89,7 @@ export const init = (users) => {
      */
     function confirmPayment(userid) {
         Ajax.call([{
-            methodname: "local_shopping_cart_confirm_payment",
+            methodname: "local_shopping_cart_confirm_cash_payment",
             args: {
                 'userid': userid
             },
