@@ -106,7 +106,7 @@ class shopping_cart {
 
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 $itemdata['success'] = 1;
-                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : 1;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
 
                 // Add or reschedule all delete_item_tasks for all the items in the cart.
                 self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);

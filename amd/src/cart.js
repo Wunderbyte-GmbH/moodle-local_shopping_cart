@@ -58,7 +58,14 @@ export const buttoninit = (id, component) => {
     }
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
-    const shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+
+
+    let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
+
+    if (!shoppingcart) {
+        shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+    }
+
     if (shoppingcart) {
         const cartitem = shoppingcart.querySelector('#item-' + component + '-' + id);
         if (cartitem) {
@@ -179,6 +186,7 @@ export const deleteAllItems = () => {
 };
 
 export const deleteItem = (id, component, userid) => {
+
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
@@ -188,9 +196,9 @@ export const deleteItem = (id, component, userid) => {
         },
         done: function() {
 
-            let item = document.querySelectorAll('#item-' + component + '-' + id);
-            let itemprice = item[0].dataset.price;
-            item.forEach(item => {
+            let items = document.querySelectorAll('#item-' + component + '-' + id);
+            let itemprice = items[0].dataset.price;
+            items.forEach(item => {
                 if (item) {
                     item.remove();
                 }
@@ -219,6 +227,7 @@ export const deleteItem = (id, component, userid) => {
             const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
             if (addtocartbutton) {
                 addtocartbutton.classList.remove('disabled');
+                buttoninit(id, component);
             }
         },
         fail: function(ex) {
@@ -233,6 +242,10 @@ export const deleteItem = (id, component, userid) => {
                 itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
                 itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
                 let itemprice = item.dataset.price;
+
+                // eslint-disable-next-line no-console
+                console.log('itemprice', itemprice);
+
                 let total = document.getElementById('totalprice');
                 total = total == "undefined" ? total = 0 : total;
                 total.innerHTML -= itemprice;
@@ -253,6 +266,9 @@ export const addItem = (id, component) => {
             data.component = component;
             data.id = id;
             data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
+
+            // eslint-disable-next-line no-console
+            console.log('buyforuser', data.buyforuser);
 
             if (data.success == 0) {
                 Notification.addNotification({
@@ -293,7 +309,18 @@ export const addItem = (id, component) => {
                     const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
                     if (addtocartbutton) {
                         addtocartbutton.classList.add('disabled');
+                        addtocartbutton.removeEventListener('click', deleteEvent);
                     }
+
+                    let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                    items.forEach(item => {
+                        // eslint-disable-next-line no-console
+                        console.log('add delete event', item);
+                        // eslint-disable-next-line no-console
+                        console.log('userid ', data.userid);
+                        addDeleteevent(item, data.userid);
+                    });
+
                     // If we buy for a user, we don't have to do the navbar stuff below.
                     if (data.buyforuser != 0) {
                         return;
@@ -305,10 +332,6 @@ export const addItem = (id, component) => {
                     let total = document.querySelectorAll('#totalprice');
                     total.forEach(total => {
                         total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
-                    });
-                    let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
-                    items.forEach(item => {
-                        addDeleteevent(item);
                     });
                     clearInterval(interval);
                     initTimer(data.expirationdate);
@@ -329,21 +352,41 @@ export const addItem = (id, component) => {
 /**
  * Delete Event.
  * @param {HTMLElement} item
+ * @param {int} userid
  */
-function addDeleteevent(item) {
-    item.addEventListener('click', event => {
-        event.preventDefault();
-        event.stopPropagation();
+function addDeleteevent(item, userid = 0) {
+    if (userid != 0) {
+        item.dataset.userid = userid;
+    }
+    item.addEventListener('click', deleteEvent);
+}
+
+/**
+ * Function called in listener,
+ * @param {HTMLElement} item
+ */
+function deleteEvent() {
+
+        const item = this;
+        // eslint-disable-next-line no-console
+        console.log('item', item);
         // Item comes as #item-booking-213123.
         const idarray = item.dataset.id.split('-');
+
+        // eslint-disable-next-line no-console
+        console.log('idarray', idarray);
         // First pop gets the id.
         const id = idarray.pop();
         // Second pop gets the component.
         const component = idarray.pop();
-        const userid = item.dataset.userid;
+        let userid = parseInt(item.dataset.userid);
+
+        if (!userid) {
+            userid = 0;
+        }
+
         deleteItem(id, component, userid);
-    });
-}
+    }
 
 /**
  * Start the timer.

@@ -25,12 +25,13 @@ export const init = (users, userid = 0) => {
     // eslint-disable-next-line no-console
     console.log('run init', userid);
 
+    document.getElementById('checkout-tab').classList.remove('success');
+
     const buybutton = document.querySelector('#buy-btn');
         // eslint-disable-next-line no-console
         console.log(buybutton);
         if (buybutton) {
             buybutton.addEventListener('click', function() {
-                document.getElementById('success-tab').classList.add('success');
                 confirmPayment(userid);
             });
         }
@@ -39,13 +40,11 @@ export const init = (users, userid = 0) => {
     // eslint-disable-next-line no-console
     console.log(checkoutbutton);
     if (checkoutbutton) {
-        checkoutbutton.addEventListener('click', function(e) {
-            if (!document.querySelector(".shopping-cart-items [id^='item']")) {
-                document.getElementById('checkout-tab').classList.add('success');
-            } else {
-                e.preventDefault();
-                e.stopPropagation();
-            }
+        checkoutbutton.addEventListener('click', function() {
+
+            document.getElementById('checkout-tab').classList.add('success');
+            // eslint-disable-next-line no-console
+            console.log('click');
         });
     }
 
@@ -98,9 +97,11 @@ export const init = (users, userid = 0) => {
                 if (data.success == 1) {
                     // eslint-disable-next-line no-console
                     console.log('payment confirmed');
+                    document.getElementById('success-tab').classList.add('success');
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('payment denied');
+                    document.getElementById('success-tab').classList.add('error');
                 }
             },
             fail: function(ex) {
