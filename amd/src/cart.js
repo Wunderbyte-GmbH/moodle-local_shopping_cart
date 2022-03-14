@@ -159,10 +159,9 @@ export const deleteAllItems = () => {
                     item.remove();
                 }
             });
-            let total = document.querySelectorAll('#totalprice');
-            total.forEach(total => {
-                total.innerHTML = 0;
-            });
+
+            updateTotalPrice();
+
             let itemcount1 = document.getElementById("countbadge");
             let itemcount2 = document.getElementById("itemcount");
 
@@ -196,18 +195,17 @@ export const deleteItem = (id, component, userid) => {
         },
         done: function() {
 
+            // We might display the item more often than once.
             let items = document.querySelectorAll('#item-' + component + '-' + id);
-            let itemprice = items[0].dataset.price;
+
             items.forEach(item => {
                 if (item) {
                     item.remove();
                 }
             });
-            let total = document.querySelectorAll('#totalprice');
-            total.forEach(total => {
-                total = total == "undefined" ? total = 0 : total;
-                total.innerHTML -= itemprice;
-            });
+
+            updateTotalPrice();
+
             let itemcount1 = document.getElementById("countbadge");
             let itemcount2 = document.getElementById("itemcount");
 
@@ -246,9 +244,7 @@ export const deleteItem = (id, component, userid) => {
                 // eslint-disable-next-line no-console
                 console.log('itemprice', itemprice);
 
-                let total = document.getElementById('totalprice');
-                total = total == "undefined" ? total = 0 : total;
-                total.innerHTML -= itemprice;
+                updateTotalPrice();
             }
         },
     }]);
@@ -321,6 +317,8 @@ export const addItem = (id, component) => {
                         addDeleteevent(item, data.userid);
                     });
 
+                    updateTotalPrice();
+
                     // If we buy for a user, we don't have to do the navbar stuff below.
                     if (data.buyforuser != 0) {
                         return;
@@ -329,10 +327,7 @@ export const addItem = (id, component) => {
                     const badge = document.getElementById("itemcount");
                     badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
                     badge.classList.remove('hidden');
-                    let total = document.querySelectorAll('#totalprice');
-                    total.forEach(total => {
-                        total.innerHTML = (parseInt(total.innerHTML) || 0) + parseInt(data.price);
-                    });
+                    updateTotalPrice();
                     clearInterval(interval);
                     initTimer(data.expirationdate);
                     return;
@@ -386,6 +381,42 @@ function deleteEvent() {
         }
 
         deleteItem(id, component, userid);
+    }
+
+    /**
+     * Function to update total price in navbar and for cashier.
+     */
+    function updateTotalPrice() {
+
+        let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
+        let cashierssection = null;
+
+        if (!shoppingcart) {
+            shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+        } else {
+            cashierssection = document.querySelector('#shopping_cart-cashiers-section');
+        }
+
+        const items = shoppingcart.querySelectorAll('[id^=item-]');
+        let totalprice = 0;
+
+        items.forEach((item) => {
+            if (item.dataset.price) {
+                totalprice += parseInt(item.dataset.price);
+            }
+        });
+        let totals = [];
+        if (cashierssection) {
+            totals = cashierssection.querySelectorAll('.totalprice');
+        } else {
+            totals = shoppingcart.querySelectorAll('.totalprice');
+        }
+
+        totals.forEach(total => {
+            // eslint-disable-next-line no-console
+            console.log(total);
+            total.innerHTML = totalprice;
+        });
     }
 
 /**

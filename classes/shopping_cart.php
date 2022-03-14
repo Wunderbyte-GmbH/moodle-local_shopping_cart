@@ -136,9 +136,10 @@ class shopping_cart {
      * @param string $component
      * @param int $itemid
      * @param int $userid
+     * @param bool $unload
      * @return boolean
      */
-    public static function delete_item_from_cart($component, $itemid, $userid): bool {
+    public static function delete_item_from_cart($component, $itemid, $userid, $unload = true): bool {
 
         global $USER;
 
@@ -156,8 +157,10 @@ class shopping_cart {
             }
         }
 
-        // This treats the related component side.
-        self::unload_cartitem($component, $itemid, $userid);
+        if ($unload) {
+            // This treats the related component side.
+            self::unload_cartitem($component, $itemid, $userid);
+        }
 
         return true;
     }
@@ -427,6 +430,10 @@ class shopping_cart {
             if (!self::successful_checkout($item['componentname'], $item['itemid'], $userid)) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
+            } else {
+                // Delete Item from cache.
+                // Here, we don't need to unload the component, so the last parameter is false.
+                self::delete_item_from_cart($item['componentname'], $item['itemid'], $userid, false);
             }
         }
 
