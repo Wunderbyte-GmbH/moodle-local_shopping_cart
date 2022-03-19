@@ -33,24 +33,28 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
-    if ($oldversion < 2022021607) {
+
+    if ($oldversion < 2022031900) {
 
         // Define table local_shopping_cart_history to be created.
         $table = new xmldb_table('local_shopping_cart_history');
 
         // Adding fields to table local_shopping_cart_history.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
-        $table->add_field('userfrom', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('itemid', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('itemprice', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('price', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('currency', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('componentname', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('identifier', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('payment', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('identifier', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('payment', XMLDB_TYPE_TEXT, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table local_shopping_cart_history.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
 
         // Conditionally launch create table for local_shopping_cart_history.
         if (!$dbman->table_exists($table)) {
@@ -58,21 +62,9 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2022021607, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2022031900, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2022021611) {
-        // Changing precision of field.
-        $table = new xmldb_table('local_shopping_cart_history');
-        $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null,
-                null, null, 'componentname');
-
-        // Launch change of precision for field enablecompletion.
-        $dbman->change_field_precision($table, $field);
-
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2022021611, 'local', 'shopping_cart');
-    }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //

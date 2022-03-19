@@ -2,18 +2,21 @@
     <TABLES>
         <TABLE NAME="local_shopping_cart_history" COMMENT="Shopping Cart History">
             <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-                <FIELD NAME="userid" TYPE="text" NOTNULL="true" SEQUENCE="false" />
-                <FIELD NAME="userfrom" TYPE="text" NOTNULL="true" SEQUENCE="false" />
-                <FIELD NAME="itemid" TYPE="text" NOTNULL="false" SEQUENCE="false" />
-                <FIELD NAME="itemprice" TYPE="text"  NOTNULL="false" SEQUENCE="false" />
-                <FIELD NAME="componentname" TYPE="text"  NOTNULL="false" SEQUENCE="false" />
-				<FIELD NAME="timecreated" TYPE="int" LENGTH="10"  NOTNULL="false"  SEQUENCE="false" />
-				<FIELD NAME="identifier" TYPE="text" LENGTH="20" NOTNULL="false"  SEQUENCE="false" />
-				<FIELD NAME="payment" TYPE="text" LENGTH="10" NOTNULL="false" SEQUENCE="false" />
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the user who optained something."/>
+                <FIELD NAME="itemid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the itme bought."/>
+                <FIELD NAME="price" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Item price."/>
+                <FIELD NAME="currency" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
+                <FIELD NAME="componentname" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
+                <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
+                <FIELD NAME="payment" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Type of payment."/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
-                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
         </TABLE>
     </TABLES>
