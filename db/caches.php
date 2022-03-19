@@ -36,6 +36,12 @@ $definitions = array(
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1
+    ),
+    'schistory' => array( // Say: Shopping Cart history.
+        'mode' => cache_store::MODE_SESSION,
+        'simplekeys' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 1
     )
 );
 

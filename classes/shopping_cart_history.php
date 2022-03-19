@@ -109,9 +109,66 @@ class shopping_cart_history {
      * @param stdClass $data
      * @return integer
      */
-    private function write_to_db(stdClass $data): array {
+    private function write_to_db(stdClass $data): bool {
         global $DB;
-        return $DB->insert_records('local_shopping_cart_history', $data);
+
+        $now = time();
+
+        foreach ($data->items as $item) {
+            $data = (object)$item;
+            $data->timecreated = $now;
+            $DB->insert_record('local_shopping_cart_history', $data);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Return data from DB via identifier.
+     *
+     * @param integer $identifier
+     * @return null|array
+     */
+    public function return_data_via_identifier(int $identifier):array {
+
+        global $DB;
+
+        if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
+            return $data;
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the payment to success if the payment went successfully through.
+     *
+     * @param stdClass $records
+     * @return boolean
+     */
+    public function set_success_in_db(array $records):bool {
+
+        global $DB;
+
+        $success = true;
+        $identifier = null;
+        foreach ($records as $record) {
+
+            $identifier = $record->identifier;
+            $record->payment = 'success';
+            $record->timemodified = time();
+
+            if (!$DB->update_record('local_shopping_cart_history', $record)) {
+                $success = false;
+            }
+        }
+
+        // Clean the cache here, after successful checkout.
+        $cache = \cache::make('local_shopping_cart', 'schistory');
+        $cache->delete('identifier');
+
+        return $success;
     }
 
     /**
@@ -122,34 +179,95 @@ class shopping_cart_history {
      */
     public function prepare_data_from_cache(int $userid): array {
         global $USER;
-        $identifier = $this->create_unique_cart_identifier($userid);
+        $identifier = self::create_unique_cart_identifier($userid);
         $userfromid = $USER->id;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-        echo $this->create_unique_cart_identifier($userid);
         $dataarr = [];
+
+        if (!$cachedrawdata = $cache->get($cachekey)) {
+            return ['identifier' => ''];
+        }
+
+        $totalprice = 0;
+        $currency = '';
         foreach ($cachedrawdata["items"] as $item) {
             $data = $item;
+            $totalprice += $item['price'];
+            $currency = $item['currency'];
             $data['expirationtime'] = $cachedrawdata["expirationdate"];
-            $data['identifier'] = $identifier;
-            $data['uid'] = $userfromid;
-            $data['userfromid'] = $userid;
-            $data['paymenttype'] = 'bar';
-            $dataarr[] = $data;
+            $data['identifier'] = $identifier; // The identifier of the cart session.
+            $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
+            $data['userid'] = $userid; // The user for which the item was bought.]
+            $data['payment'] = 'paymentprovider';
+            $dataarr['items'][] = $data;
         }
+
+        // As the identifier will always stay the same, we pass it here for easy acces.
+        $dataarr['identifier'] = $identifier;
+        $dataarr['price'] = $totalprice;
+        $dataarr['currency'] = $currency;
         return $dataarr;
+    }
+
+
+    /**
+     * On loading the checkout.php, the shopping cart is stored in the schistory cache.
+     * This is because we don't pass the individual items, but only a total sum and description to the payment provider.
+     * To identify the items in the cart, we have to store them with an identifier.
+     * To avoid clutterin the table with useless data, we store it temporarily in this cache.
+     *
+     * @param array $dataarray
+     * @return bool|null
+     */
+    public function store_in_schistory_cache(array $dataarray) {
+
+        if (!isset($dataarray['identifier'])) {
+            return null;
+        }
+
+        $cache = \cache::make('local_shopping_cart', 'schistory');
+        $identifier = $dataarray['identifier'];
+        $cache->set($identifier, $dataarray);
+
+        return true;
+    }
+
+    /**
+     * Get data from schistory cache.
+     * If the flag is set, we also trigger writing to tb and set the approbiate cache flag to do it only once.
+     * @param string $identifier
+     * @param bool $writetodb
+     * @return mixed|false
+     */
+    public function fetch_data_from_schistory_cache(string $identifier, bool $writetodb = false) {
+
+        $cache = \cache::make('local_shopping_cart', 'schistory');
+
+        $shoppingcart = (object)$cache->get($identifier);
+
+        if (!isset($shoppingcart->storedinhistory)) {
+
+            $this->write_to_db($shoppingcart);
+
+            $shoppingcart->storedinhistory = true;
+            $cache->set($identifier, $shoppingcart);
+        }
+
+
+        return $shoppingcart;
     }
 
     /**
      * create_unique_cart_identifier
+     * By definition, this has to be int.
      *
      * @param int $userid
      * @return string
      */
-    private function create_unique_cart_identifier(int $userid): string {
-        return $userid.'_'.time();
+    public static function create_unique_cart_identifier(int $userid): string {
+        return time();
     }
 
 

@@ -24,7 +24,7 @@
  */
 
 use local_shopping_cart\shopping_cart;
-use core_user_external;
+use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
@@ -59,12 +59,15 @@ if (isset($success)) {
         $data['failed'] = 1;
     }
 }
-$context = context_system::instance();
-if (has_capability('local/shopping_cart:cachier', $context)) {
-    $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
-}
 
-$test = get_users_by_capability($context, 'mod/label:view', 'u.id, u.lastname');
+$schistory = new shopping_cart_history();
+$scdata = $schistory->prepare_data_from_cache($userid);
+
+$schistory->store_in_schistory_cache($scdata);
+
+$data['transactionid'] = $scdata['identifier'];
+$data['currency'] = $scdata['currency'] ?? '';
+
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

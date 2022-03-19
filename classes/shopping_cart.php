@@ -393,25 +393,32 @@ class shopping_cart {
     }
 
     /**
-     * This function confirms that a user has paid for the items which are currently in her shopping cart.
+     * This function confirms that a user has paid for the items which are currently in her shopping cart...
+     * .. or the items passed by shopping cart history.
      *
      * @param int $userid
+     * @param array $datafromhistory
      * @return void
      */
-    public static function confirm_payment($userid) {
+    public static function confirm_payment($userid, $datafromhistory = null) {
         global $USER;
 
-        // Make sure the user has the rights to access this function.
-        $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cachier', $context)) {
-            return [
-                'status' => 0,
-                'error' => get_string('nopermission', 'local_shopping_cart')
-            ];
+        // If the data comes from history, we don't need to check rights.
+        if (!$datafromhistory) {
+            // Make sure the user has the rights to access this function.
+            $context = context_system::instance();
+            if (!has_capability('local/shopping_cart:cachier', $context)) {
+                return [
+                    'status' => 0,
+                    'error' => get_string('nopermission', 'local_shopping_cart')
+                ];
+            }
         }
 
-        // Retrieve items from cache.
-        $data = self::local_shopping_cart_get_cache_data($userid);
+        if (!$data = $datafromhistory) {
+            // Retrieve items from cache.
+            $data = self::local_shopping_cart_get_cache_data($userid);
+        }
 
         // Check if we have items for this user.
         if (!isset($data['items'])
@@ -427,6 +434,16 @@ class shopping_cart {
 
         // Run through all items still in the cart and confirm payment.
         foreach ($data['items'] as $item) {
+
+            // We might retrieve the items from history or via cache. Form history, the come as stdClass.
+
+            $item = (array)$item;
+
+            // In the shoppingcart history, we don't store the name.
+            if (!isset($item['itemname'])) {
+                $item['itemname'] = $item['itemid'];
+            }
+
             if (!self::successful_checkout($item['componentname'], $item['itemid'], $userid)) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);

@@ -62,9 +62,9 @@
             data-action="core_payment/triggerPayment"
             data-component="local_shopping_cart"
             data-paymentarea="shopping_cart"
-            data-itemid="2"
-            data-cost="100 EUR"
-            data-successurl="https://wunderbyte.at"
+            data-itemid="{{transactionid}}"
+            data-cost="{{price}} {{currency}}"
+            data-successurl="{{successurl}}"
             data-description="my shopping cart checkout"
         >
             {{# str }} sendpaymentbutton, local_shopping_cart {{/ str }}

@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\payment;
 
+use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
 use stdClass;
 
 /**
@@ -40,28 +42,20 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * for the course that $userid of the buying user.
      *
      * @param string $paymentarea Payment area
-     * @param int $userid The user id
+     * @param int $cartidentifier
      * @return \core_payment\local\entities\payable
      */
-    public static function get_payable(string $paymentarea, int $userid): \core_payment\local\entities\payable {
+    public static function get_payable(string $paymentarea, int $cartidentifier): \core_payment\local\entities\payable {
         global $DB;
 
-        // We get the sum and description from cache.
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $data['items'] = array_values($cachedrawdata['items']);
+        // Instead of an item or user id, we use a cart identifier which basically is just a timestamp.
+        // This timestamp will give us a key to store the cart of a user in session cache and hold the items of the cart together.
 
-        $instance = new stdClass();
-        $instance->cost = 0;
+        $sc = new shopping_cart_history();
+        $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
 
-        foreach ($data['items'] as $item) {
-            $instance->cost += $item['price'];
-        }
-
-        $instance->currency = 'EUR';
-        $instance->customint1 = 1;
-
-        return new \core_payment\local\entities\payable($instance->cost, $instance->currency, $instance->customint1);
+        // TODO: Accontnumber 1 is hardcoded here, we will be able to select available accounts via config settings.php.
+        return new \core_payment\local\entities\payable($shoppingcart->price, $shoppingcart->currency, 1);
     }
 
     /**
@@ -74,7 +68,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
     public static function get_success_url(string $paymentarea, int $instanceid): \moodle_url {
         global $DB;
 
-        $courseid = $DB->get_field('enrol', 'courseid', ['enrol' => 'fee', 'id' => $instanceid], MUST_EXIST);
+        $courseid = 2;
 
         return new \moodle_url('/course/view.php', ['id' => $courseid]);
     }
@@ -83,28 +77,22 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * Callback function that delivers what the user paid for to them.
      *
      * @param string $paymentarea
-     * @param int $instanceid The enrolment instance id
+     * @param int $transactionid The enrolment instance id
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to
      * @return bool Whether successful or not
      */
-    public static function deliver_order(string $paymentarea, int $instanceid, int $paymentid, int $userid): bool {
+    public static function deliver_order(string $paymentarea, int $transactionid, int $paymentid, int $userid): bool {
         global $DB;
 
-        $instance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $instanceid], '*', MUST_EXIST);
+         // First, look in shopping cart history to identify the payment and what users have bought.
+         // Now run through all the optionids (itemids) and confirm payment.
 
-        $plugin = enrol_get_plugin('fee');
+        $sc = new shopping_cart_history();
+        $data['items'] = $sc->return_data_via_identifier($transactionid);
 
-        if ($instance->enrolperiod) {
-            $timestart = time();
-            $timeend   = $timestart + $instance->enrolperiod;
-        } else {
-            $timestart = 0;
-            $timeend   = 0;
-        }
+        shopping_cart::confirm_payment($userid, $data);
 
-        $plugin->enrol_user($instance, $userid, $instance->roleid, $timestart, $timeend);
-
-        return true;
+        return $sc->set_success_in_db($data['items']);
     }
 }

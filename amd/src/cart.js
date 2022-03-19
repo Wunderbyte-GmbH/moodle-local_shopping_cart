@@ -53,8 +53,14 @@ export const buttoninit = (id, component) => {
     const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
 
     // If we don't find the button, we abort.
-    if (!addtocartbutton) {
+    if (!addtocartbutton
+        || addtocartbutton.dataset.initialized) {
+            // eslint-disable-next-line no-console
+            console.log('button already initialized', id);
         return;
+    } else {
+        // eslint-disable-next-line no-console
+        console.log('button not yet initialized', id);
     }
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
@@ -74,6 +80,10 @@ export const buttoninit = (id, component) => {
     }
     // Add click eventlistern to oneself.
     addtocartbutton.addEventListener('click', event => {
+
+         // eslint-disable-next-line no-console
+         console.log('button clicked', id);
+
         // If we find the disabled class, the click event is aborted.
         if (addtocartbutton.classList.contains('disabled')) {
             return;
@@ -82,6 +92,8 @@ export const buttoninit = (id, component) => {
         event.stopPropagation();
         addItem(id, component);
     });
+
+    addtocartbutton.dataset.initialized = true;
 };
 
 /**
