@@ -42,12 +42,13 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Adding fields to table local_shopping_cart_history.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('itemid', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('price', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('currency', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('componentname', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('itemname', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('price', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('currency', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('componentname', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('identifier', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('payment', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('payment', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
