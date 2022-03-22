@@ -394,7 +394,7 @@ class shopping_cart {
 
     /**
      * This function confirms that a user has paid for the items which are currently in her shopping cart...
-     * .. or the items passed by shopping cart history.
+     * .. or the items passed by shopping cart history. The second option is the case when we use the payment module of moodle.
      *
      * @param int $userid
      * @param array $datafromhistory
@@ -413,6 +413,8 @@ class shopping_cart {
                     'error' => get_string('nopermission', 'local_shopping_cart')
                 ];
             }
+
+            $identifier = time();
         }
 
         if (!$data = $datafromhistory) {
@@ -451,10 +453,25 @@ class shopping_cart {
                 // Delete Item from cache.
                 // Here, we don't need to unload the component, so the last parameter is false.
                 self::delete_item_from_cart($item['componentname'], $item['itemid'], $userid, false);
+
+                // We create this entry only for cash payment, that is when there is no datafromhistory yet.
+                if (!$datafromhistory) {
+                    shopping_cart_history::create_entry_in_history(
+                        $userid,
+                        $item['itemid'],
+                        $item['itemname'],
+                        $item['price'],
+                        $item['currency'],
+                        $item['componentname'],
+                        $identifier,
+                        'cash');
+                }
+
             }
         }
 
         if ($success) {
+
             return [
                 'status' => 1,
                 'error' => ''

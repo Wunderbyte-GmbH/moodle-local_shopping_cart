@@ -61,6 +61,13 @@ $string['noitemsincart'] = 'There are no items in the cart';
 
 // Cart.
 $string['total'] = 'Total:';
+$string['paymentsuccessful'] = 'Payment successful!';
+$string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
+$string['backtohome'] = 'Back to home.';
+
+$string['success'] = 'Success';
+$string['pending'] = 'Pending';
+$string['failure'] = 'Failure';
 
 // Cashier.
 $string['paid'] = 'Paid';

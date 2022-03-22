@@ -61,6 +61,13 @@ $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 
 // Cart.
 $string['total'] = 'Gesamt:';
+$string['paymentsuccessful'] = 'Zahlung erfolgreich!';
+$string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
+$string['backtohome'] = 'Zurück zur Überblicksseite.';
+
+$string['success'] = 'Erfolgreich.';
+$string['pending'] = 'Warten...';
+$string['failure'] = 'Fehler.';
 
 // Cashier.
 $string['paid'] = 'Bezahlt';

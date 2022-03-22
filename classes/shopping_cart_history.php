@@ -87,11 +87,13 @@ class shopping_cart_history {
      * Prepare submitted form data for writing to db.
      *
      * @param int $userid
-     * @return stdClass
+     * @return array
      */
-    public static function get_history_list_for_user(int $userid): stdClass {
-        $data = new stdClass();
-        return $data;
+    public static function get_history_list_for_user(int $userid): array {
+
+        global $DB;
+
+        return $DB->get_records('local_shopping_cart_history', array('userid' => $userid, 'payment' => 'success'));
     }
 
     /**
@@ -101,26 +103,76 @@ class shopping_cart_history {
      */
     public function create_history(int $userid) {
         $prepareddata = (object)$this->prepare_data_from_cache($userid);
-        $this->write_to_db($prepareddata);
+        self::write_to_db($prepareddata);
     }
     /**
      * write_to_db.
      *
      * @param stdClass $data
-     * @return integer
+     * @return bool
      */
-    private function write_to_db(stdClass $data): bool {
+    private static function write_to_db(stdClass $data): bool {
         global $DB;
 
         $now = time();
 
-        foreach ($data->items as $item) {
-            $data = (object)$item;
-            $data->timecreated = $now;
+        if (isset($data->items)) {
+            foreach ($data->items as $item) {
+                $data = (object)$item;
+                $data->timecreated = $now;
+                $DB->insert_record('local_shopping_cart_history', $data);
+            }
+        } else {
             $DB->insert_record('local_shopping_cart_history', $data);
         }
 
         return true;
+    }
+
+    /**
+     * Add new entry to shopping_cart_history.
+     * Use this if you add data manually, to check for validity.
+     *
+     * @param integer $userid
+     * @param integer $itemid
+     * @param string $itemname
+     * @param string $price
+     * @param string $currency
+     * @param string $componentname
+     * @param string $identifier
+     * @param string $payment
+     * @return integer
+     */
+    public static function create_entry_in_history(
+            int $userid,
+            int $itemid,
+            string $itemname,
+            string $price,
+            string $currency,
+            string $componentname,
+            string $identifier,
+            string $payment
+            ) {
+
+        global $USER;
+
+        $data = new stdClass();
+        $now = time();
+
+        $data->userid = $userid;
+        $data->itemid = $itemid;
+        $data->itemname = $itemname;
+        $data->price = $price;
+        $data->currency = $currency;
+        $data->componentname = $componentname;
+        $data->identifier = $identifier;
+        $data->payment = $payment;
+        $data->usermodified = $USER->id;
+        $data->timemodified = $now;
+        $data->timecreated = $now;
+
+        $result = self::write_to_db($data);
+        return $result;
     }
 
 
@@ -130,7 +182,7 @@ class shopping_cart_history {
      * @param integer $identifier
      * @return null|array
      */
-    public function return_data_via_identifier(int $identifier):array {
+    public static function return_data_via_identifier(int $identifier):array {
 
         global $DB;
 
@@ -147,7 +199,7 @@ class shopping_cart_history {
      * @param stdClass $records
      * @return boolean
      */
-    public function set_success_in_db(array $records):bool {
+    public static function set_success_in_db(array $records):bool {
 
         global $DB;
 
@@ -200,7 +252,7 @@ class shopping_cart_history {
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
             $data['userid'] = $userid; // The user for which the item was bought.]
-            $data['payment'] = 'paymentprovider';
+            $data['payment'] = 'pending';
             $dataarr['items'][] = $data;
         }
 
@@ -249,7 +301,7 @@ class shopping_cart_history {
 
         if (!isset($shoppingcart->storedinhistory)) {
 
-            $this->write_to_db($shoppingcart);
+            self::write_to_db($shoppingcart);
 
             $shoppingcart->storedinhistory = true;
             $cache->set($identifier, $shoppingcart);

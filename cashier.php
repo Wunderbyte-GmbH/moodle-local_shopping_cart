@@ -23,7 +23,10 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
@@ -47,6 +50,10 @@ if (isset($userid) && $userid > 0 ) {
     $data['userfirstname'] = $user->firstname;
     $data['useremail'] = $user->email;
     shopping_cart::buy_for_user($userid);
+
+    // We use the template class, but not the renderer here.
+    $sclist = new shoppingcart_history_list($userid);
+    $data['historyitems'] = $sclist->return_list();
 }
 // Setup the page.
 $PAGE->set_context(\context_system::instance());

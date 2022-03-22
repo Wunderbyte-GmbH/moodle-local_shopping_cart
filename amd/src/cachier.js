@@ -94,10 +94,31 @@ export const init = (users, userid = 0) => {
             },
             done: function(data) {
 
-                if (data.success == 1) {
+                if (data.status == 1) {
                     // eslint-disable-next-line no-console
                     console.log('payment confirmed');
                     document.getElementById('success-tab').classList.add('success');
+
+                    // We might display the item more often than once.
+                    let items = document.querySelectorAll('ul.shopping-cart-items li.clearfix');
+
+                    items.forEach(item => {
+                        // eslint-disable-next-line no-console
+                        console.log(item);
+                        if (item) {
+                            item.remove();
+                        }
+                    });
+                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-section .totalprice');
+
+                    totalprices.forEach(item => {
+                        // eslint-disable-next-line no-console
+                        console.log(item);
+                        if (item) {
+                            item.innerText = 0;
+                        }
+                    });
+
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('payment denied');

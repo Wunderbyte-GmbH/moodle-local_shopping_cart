@@ -23,6 +23,8 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\output\shoppingcart_history_list;
+use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 
@@ -34,6 +36,7 @@ require_login();
 global $USER;
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
+$identifier = optional_param('identifier', null, PARAM_INT);
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
@@ -55,6 +58,13 @@ $data["name"] = $USER->firstname . $USER->lastname;
 if (isset($success)) {
     if ($success) {
         $data['success'] = 1;
+
+        // If we have a successful checkout, we show the bought items via transaction id.
+        if (isset($identifier)) {
+            $historylist = new shoppingcart_history_list($userid, $identifier);
+            $data['histoyitems'] = $historylist->return_list();
+        }
+
     } else {
         $data['failed'] = 1;
     }
@@ -65,8 +75,11 @@ $scdata = $schistory->prepare_data_from_cache($userid);
 
 $schistory->store_in_schistory_cache($scdata);
 
-$data['transactionid'] = $scdata['identifier'];
+$sp = new service_provider();
+
+$data['identifier'] = $scdata['identifier'];
 $data['currency'] = $scdata['currency'] ?? '';
+$data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier']);
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

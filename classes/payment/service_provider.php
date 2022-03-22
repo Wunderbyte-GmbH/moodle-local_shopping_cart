@@ -62,37 +62,35 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * Callback function that returns the URL of the page the user should be redirected to in the case of a successful payment.
      *
      * @param string $paymentarea Payment area
-     * @param int $instanceid The enrolment instance id
+     * @param int $identifier The transaction id which was just successfully terminated.
      * @return \moodle_url
      */
-    public static function get_success_url(string $paymentarea, int $instanceid): \moodle_url {
+    public static function get_success_url(string $paymentarea, int $identifier): \moodle_url {
         global $DB;
 
-        $courseid = 2;
-
-        return new \moodle_url('/course/view.php', ['id' => $courseid]);
+        return new \moodle_url('/local/shopping_cart/checkout.php', ['success' => 1, 'identifier' => $identifier]);
     }
 
     /**
      * Callback function that delivers what the user paid for to them.
      *
      * @param string $paymentarea
-     * @param int $transactionid The enrolment instance id
+     * @param int $identifier The id of the transaction
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to
      * @return bool Whether successful or not
      */
-    public static function deliver_order(string $paymentarea, int $transactionid, int $paymentid, int $userid): bool {
+    public static function deliver_order(string $paymentarea, int $identifier, int $paymentid, int $userid): bool {
         global $DB;
 
          // First, look in shopping cart history to identify the payment and what users have bought.
          // Now run through all the optionids (itemids) and confirm payment.
 
-        $sc = new shopping_cart_history();
-        $data['items'] = $sc->return_data_via_identifier($transactionid);
+        $data['items'] = shopping_cart_history::return_data_via_identifier($identifier);
 
         shopping_cart::confirm_payment($userid, $data);
 
-        return $sc->set_success_in_db($data['items']);
+        $success = shopping_cart_history::set_success_in_db($data['items']);
+        return $success;
     }
 }
