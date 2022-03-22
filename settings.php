@@ -34,6 +34,27 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', new admin_category($componentname, get_string('pluginname', $componentname)));
     $ADMIN->add($componentname, $settings);
 
+    $paymentaccountrecords = $DB->get_records_sql("
+        SELECT id, name
+        FROM {payment_accounts}
+        WHERE enabled = 1");
+
+    $paymentaccounts = [];
+    foreach ($paymentaccountrecords as $paymentaccountrecord) {
+        $paymentaccounts[$paymentaccountrecord->id] = $paymentaccountrecord->name;
+    }
+
+    // Connect payment account.
+    $settings->add(
+        new admin_setting_configselect(
+            $componentname .'/accountid',
+            get_string('accountid', $componentname),
+            get_string('accountid:description', $componentname),
+            null,
+            $paymentaccounts
+        )
+    );
+
     // Max items in cart.
     $settings->add(
         new admin_setting_configtext(

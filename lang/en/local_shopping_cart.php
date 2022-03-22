@@ -32,13 +32,15 @@ $string['addtocart'] = 'Add to cart';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
-$string['maxitems:description'] = 'Set max. items for the user shopping cart';
+$string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
 $string['expirationtime'] = 'Set expiration time in minutes';
-$string['expirationtime:description'] = 'How long should the item be in the cart';
+$string['expirationtime:description'] = 'How long should the item be in the cart?';
 $string['addon'] = 'Set addon time';
 $string['addon:description'] = 'Addition to the expiration time after checkout process is initiated';
 $string['additonalcashiersection'] = 'Add text for cashier section';
 $string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';
+$string['accountid'] = 'Payment account';
+$string['accountid:description'] = 'Choose your preferred payment account.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';

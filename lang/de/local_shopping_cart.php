@@ -32,13 +32,15 @@ $string['addtocart'] = 'In den Warenkorb';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
-$string['maxitems:description'] = 'Max. Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
-$string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs festlegen';
+$string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
+$string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
 $string['addon'] = 'Zusätzliche Zeit festlegen';
-$string['addon:description'] = 'Zeit die zur Ablaufzeit hinzugefügt wird, nachdem der Checkout-Prozess gestartet wurde';
-$string['additonalcashiersection'] = 'Text für den Kassa-Bereich hinzufügen';
+$string['addon:description'] = 'Zeit, die zur Ablaufzeit hinzugefügt wird, nachdem der Checkout-Prozess gestartet wurde';
+$string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';
+$string['accountid'] = 'Zahlungsanbieter-Konto';
+$string['accountid:description'] = 'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
