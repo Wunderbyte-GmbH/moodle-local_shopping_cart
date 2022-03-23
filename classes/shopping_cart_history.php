@@ -93,7 +93,13 @@ class shopping_cart_history {
 
         global $DB;
 
-        return $DB->get_records('local_shopping_cart_history', array('userid' => $userid, 'payment' => 'success'));
+        $sql = "SELECT *
+                FROM {local_shopping_cart_history}
+                WHERE userid=:userid
+                AND (payment='success'
+                    OR payment='cash')";
+
+        return $DB->get_records_sql($sql, ['userid' => $userid]);
     }
 
     /**
