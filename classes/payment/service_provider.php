@@ -54,8 +54,12 @@ class service_provider implements \core_payment\local\callback\service_provider 
         $sc = new shopping_cart_history();
         $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
 
+        if (!$accountid = get_config('local_shopping_cart', 'accountid')) {
+            $accountid = 1;
+        }
+
         // TODO: Accontnumber 1 is hardcoded here, we will be able to select available accounts via config settings.php.
-        return new \core_payment\local\entities\payable($shoppingcart->price, $shoppingcart->currency, 1);
+        return new \core_payment\local\entities\payable($shoppingcart->price, $shoppingcart->currency, $accountid);
     }
 
     /**
