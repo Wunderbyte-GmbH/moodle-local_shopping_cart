@@ -88,6 +88,7 @@ class shopping_cart {
         // Therefore: if the item is already in the cart, we just return false.
         if ($success && isset($cachedrawdata['items'][$cacheitemkey])) {
             $success = false;
+            $itemdata = $cachedrawdata['items'][$cacheitemkey];
         }
 
         $expirationtimestamp = self::get_expirationdate();
@@ -116,6 +117,13 @@ class shopping_cart {
                 $itemdata['success'] = 0;
                 $itemdata['expirationdate'] = 0;
             }
+        } else {
+            // This case means that we have the item already in the cart.
+            // Normally, this should not happen, because of JS, but it might occure when a user is...
+            // Logged in on two different devices.
+            $itemdata['success'] = 1;
+            $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+            $itemdata['expirationdate'] = 0;
         }
 
         return $itemdata;
