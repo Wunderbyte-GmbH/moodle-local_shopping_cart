@@ -278,7 +278,7 @@ export const addItem = (id, component) => {
             // eslint-disable-next-line no-console
             console.log('buyforuser', data.buyforuser);
 
-            if (data.success == 0) {
+            if (data.success != 1) {
                 Notification.addNotification({
                     message: "Cart is full",
                     type: "danger"
@@ -402,9 +402,14 @@ function deleteEvent() {
 
         let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
         let cashierssection = null;
+        let checkoutcart = null;
+        let checkouttotals = null;
 
         if (!shoppingcart) {
             shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+            checkoutcart = document.querySelector('div.checkoutgrid.checkout');
+            // eslint-disable-next-line no-console
+            console.log('1', checkoutcart);
         } else {
             cashierssection = document.querySelector('#shopping_cart-cashiers-section');
         }
@@ -421,12 +426,23 @@ function deleteEvent() {
         if (cashierssection) {
             totals = cashierssection.querySelectorAll('.totalprice');
         } else {
+            // First we add the total price from navbar.
             totals = shoppingcart.querySelectorAll('.totalprice');
+
+            // If we are on the checkout site, we deal with the totals there separately.
+            if (checkoutcart) {
+                checkouttotals = checkoutcart.querySelectorAll('.totalprice');
+
+                if (checkouttotals) {
+                    checkouttotals.forEach(total => {
+                        total.innerHTML = totalprice;
+                    });
+                }
+            }
         }
 
+        // Run through the list of total prices and set them to the right one.
         totals.forEach(total => {
-            // eslint-disable-next-line no-console
-            console.log(total);
             total.innerHTML = totalprice;
         });
     }
