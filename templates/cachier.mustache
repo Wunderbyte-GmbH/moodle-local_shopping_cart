@@ -211,7 +211,7 @@
                      {{/additonalcashiersection}}
                   </div>
                   <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">
-                     <h2 class="text-warning text-center totalprice"><b>{{price}}</b></h2>
+                     <h2 class="text-warning text-center totalprice"><b>{{price}} €</b></h2>
                      <a class="btn btn-danger" id="cashpayment-btn" data-toggle="tab" href="/local/shopping_cart/cashier.php" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}} cancel, core {{/str}}</a>
                      <a class="btn btn-success" id="buy-btn" data-toggle="tab" href="#success" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} paid, local_shopping_cart {{/str}}</a>
                      {{> local_shopping_cart/shopping_cart_items }}
@@ -220,7 +220,7 @@
                      <div class="row">
                         <div class="col">
                            <div>
-                              <h2 class="text-success text-center totalprice"><b>{{price}}</b></h2>
+                              <h2 class="text-success text-center totalprice"><b>{{price}} €</b></h2>
                               <p class="text-center">{{#str}} paymentconfirmed, local_shopping_cart {{/str}}</p>
                               <a onclick="window.print();return false;" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
                               <a href="/local/shopping_cart/cashier.php" class="btn btn-success">{{#str}} restart, local_shopping_cart {{/str}}</a>
