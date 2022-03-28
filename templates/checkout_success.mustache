@@ -38,28 +38,33 @@
     }
 
 }}
-
 <div class="row">
-    <div class="col-md-6 mx-auto mt-5">
-        <div class="card payment payment-success">
-        <div class="card-header payment_header">
-            <div class="check"><i class="fa fa-check-o" aria-hidden="true"></i></div>
-        </div>
-        <div class="card-body">
-            <h1>{{#str}} paymentsuccessful, local_shopping_cart {{/str}}</h1>
-            <p>{{#str}} paymentsuccessfultext, local_shopping_cart {{/str}}</p>
-            <p>
-                <ul class="list-group">
-                    {{#histoyitems}}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>{{itemname}}</span>
-                        <span class="bg-success text-white">{{#str}} success, local_shopping_cart {{/str}}</span>
-                    </li>
-                    {{/histoyitems}}
-                </ul>
-            </p>
-            <a href="../../my" class="btn btn-success">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
-        </div>
+    <div class="col-md-12 mx-auto mt-5 text-center">
+        <i class="fa fa-check-circle fa-5x text-info"  aria-hidden="true"></i>
+    </div>
+    <div class="col-md-12 mx-auto mt-5 text-center">
+        <h1>{{#str}} paymentsuccessful, local_shopping_cart {{/str}}</h1>
+        <p>{{#str}} paymentsuccessfultext, local_shopping_cart {{/str}}</p>
+    </div>
+    <div class="col-md-12">
+
+</div>
+    <div class="col-md-12 mx-auto mt-5">
+<div class="card payment payment-success">
+            <div class="card-body">
+                    <h2>Order Details</h2>
+                    <ul class="list-group">
+                        {{#histoyitems}}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{itemname}}</span>
+                            <span class=" text-info"><i class="fa fa-check-circle"  aria-hidden="true"></i> {{#str}} success, local_shopping_cart {{/str}}</span>
+                        </li>
+                        {{/histoyitems}}
+                    </ul>
+                 <br />
+                <a href="../../my" class="btn btn-info">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
+            </div>
         </div>
     </div>
+</div>
 </div>

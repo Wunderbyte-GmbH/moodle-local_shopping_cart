@@ -57,10 +57,9 @@ export const init = (users, userid = 0) => {
 
 
 
-     });
-     autocomplete(document.getElementById("searchuser"), users);
-
-     attachFilterFuntion();
+    });
+    autocomplete(document.getElementById("searchuser"), users);
+    attachFilterFuntion();
 
      /**
       * Attach filter function.
@@ -145,7 +144,6 @@ export const validateCart = ($userid) => {
  * @param {array} arr
  */
  export const autocomplete = (inp, arr) => {
-
     var currentFocus;
     const useridfield = document.querySelector('#useridfield');
     inp.addEventListener("input", function() {
@@ -160,10 +158,15 @@ export const validateCart = ($userid) => {
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            if (arr[i].toUpperCase().indexOf(val.toUpperCase()) > -1) {
+                /*create a DIV element for each matching element:*/
                 b = document.createElement("DIV");
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
+                /*make the matching letters bold:*/
+                let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
+                b.innerHTML = arr[i].substr(0, index);
+                b.innerHTML += "<strong>" + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(index + val.length);
+                /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 b.addEventListener("click", function() {
                     inp.value = this.getElementsByTagName("input")[0].value;

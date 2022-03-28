@@ -247,10 +247,11 @@
             <div class="card-header text-center bg-primary text-white">
                <i class="fa fa-history fa-2x" aria-hidden="true"></i>
                <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
-
-               <p>
-                <ul class="list-group">
-                    {{#historyitems}}
+            </div>
+            <div class="card-body">
+               <div class="history">
+                  <ul class="list-group">
+                  {{#historyitems}}
                     <li class="list-group-item flex-column align-items-start text-dark">
                     <div class="d-flex w-100 justify-content-between">
                         <h5>{{itemname}}</h5>
@@ -261,12 +262,7 @@
                      </div>
                     </li>
                     {{/historyitems}}
-                </ul>
-            </p>
-
-            </div>
-            <div class="card-body">
-               <div class="history">
+                  </ul>
                   {{> local_shopping_cart/history }}
                </div>
             </div>
