@@ -58,7 +58,7 @@ export const init = (users, userid = 0) => {
 
 
      });
-     autocomplete(document.getElementById("myInput"), users);
+     autocomplete(document.getElementById("searchuser"), users);
 
      attachFilterFuntion();
 
