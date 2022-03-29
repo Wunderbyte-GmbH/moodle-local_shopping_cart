@@ -127,7 +127,7 @@ export const reinit = () => {
         done: function(data) {
             Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html}) => {
                 document.querySelector('.shopping-cart-items').remove();
-                let container = document.querySelector('#nav-shopping_cart-popover-container .popover-region-content-container');
+                let container = document.querySelector('#nav-shopping_cart-popover-container .shopping-cart-items-container');
                 container.insertAdjacentHTML('afterbegin', html);
                 data.items.forEach(item => {
                     buttoninit(item.itemid, item.itemcomponent);

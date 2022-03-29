@@ -160,6 +160,10 @@
     padding: 5px;
 }
 
+#shopping_cart-cashiers-cart .fa {
+    font-size: 2em;
+}
+
 @media print {
     body {
         max-height: 800px;
