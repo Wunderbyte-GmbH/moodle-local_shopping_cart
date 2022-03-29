@@ -30,6 +30,7 @@ $string['sendpaymentbutton'] = 'Checkout';
 
 $string['addtocart'] = 'Add to cart';
 
+$string['mycart'] = 'My Cart';
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';

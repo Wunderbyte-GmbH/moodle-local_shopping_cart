@@ -29,6 +29,7 @@ $string['pluginname'] = 'Warenkorb';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 
 $string['addtocart'] = 'In den Warenkorb';
+$string['mycart'] = 'Mein Warenkorb';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';

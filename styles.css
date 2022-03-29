@@ -114,7 +114,7 @@
 }
 
 #nav-shopping_cart-popover-container li {
-    padding-bottom: 5px;
+    padding: 5px 10px;
     border-bottom: 1px #333 dashed;
     list-style-type: none;
     max-width: 90%;
