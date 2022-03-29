@@ -416,11 +416,13 @@ function deleteEvent() {
 
         const items = shoppingcart.querySelectorAll('[id^=item-]');
         let totalprice = 0;
+        let currency = "";
 
         items.forEach((item) => {
             if (item.dataset.price) {
                 totalprice += parseInt(item.dataset.price);
             }
+            currency = item.dataset.currency;
         });
         let totals = [];
         if (cashierssection) {
@@ -435,7 +437,7 @@ function deleteEvent() {
 
                 if (checkouttotals) {
                     checkouttotals.forEach(total => {
-                        total.innerHTML = totalprice;
+                        total.innerHTML = totalprice + " " + currency;
                     });
                 }
             }
@@ -443,7 +445,7 @@ function deleteEvent() {
 
         // Run through the list of total prices and set them to the right one.
         totals.forEach(total => {
-            total.innerHTML = totalprice;
+            total.innerHTML =  totalprice + " " + currency;
         });
     }
 
