@@ -58,6 +58,7 @@ $data["name"] = $USER->firstname . $USER->lastname;
 if (isset($success)) {
     if ($success) {
         $data['success'] = 1;
+        $data['finished'] = 1;
 
         // If we have a successful checkout, we show the bought items via transaction id.
         if (isset($identifier)) {
@@ -79,7 +80,7 @@ $sp = new service_provider();
 
 $data['identifier'] = $scdata['identifier'];
 $data['currency'] = $scdata['currency'] ?? '';
-$data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier']);
+$data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

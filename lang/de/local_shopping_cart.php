@@ -72,6 +72,8 @@ $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
 
+$string['showdescription'] = "Zeige Beschreibung";
+
 // Cashier.
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';

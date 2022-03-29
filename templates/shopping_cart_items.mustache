@@ -44,5 +44,12 @@
     {{#items}}
         {{> local_shopping_cart/shopping_cart_item }}
     {{/items}}
-    <li id="litotalprice_cashier"> <span class="pull-right">{{#str}} total, local_shopping_cart {{/str}} <span class="totalprice">{{price}}</span>{{currency}}</span></li>
+    <li id="litotalprice_cashier">
+        <span class="pull-right">
+            {{#str}} total, local_shopping_cart {{/str}}
+        </span>
+        <span class="totalprice">
+            {{price}} {{currency}}
+        </span>
+    </li>
 </ul>

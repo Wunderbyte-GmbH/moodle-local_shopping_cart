@@ -45,9 +45,9 @@ class="clearfix"
 data-price='{{price}}'
 data-name='{{itemname}}'
 data-component='{{componentname}}'
-data-id='{{itemid}}'>
+data-id='{{itemid}}'
+data-currency='{{currency}}'>
     <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
-    <span class="item-price pull-right">{{price}}€</span>
-    <br>
-    <span class="pull-right"><i class="fa fa-trash-o lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="delete" data-userid={{userid}}></i></span>
+    <span class="pull-right"><i class="fa fa-trash-o lighter-text pl-2" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="delete" data-userid={{userid}}></i></span>
+    <span class="item-price pull-right">{{price}}  {{currency}}</span>
 </li>

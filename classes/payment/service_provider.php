@@ -27,6 +27,7 @@ namespace local_shopping_cart\payment;
 
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use moodle_url;
 use stdClass;
 
 /**
@@ -69,7 +70,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * @param int $identifier The transaction id which was just successfully terminated.
      * @return \moodle_url
      */
-    public static function get_success_url(string $paymentarea, int $identifier): \moodle_url {
+    public static function get_success_url(string $paymentarea, int $identifier): moodle_url {
         global $DB;
 
         return new \moodle_url('/local/shopping_cart/checkout.php', ['success' => 1, 'identifier' => $identifier]);

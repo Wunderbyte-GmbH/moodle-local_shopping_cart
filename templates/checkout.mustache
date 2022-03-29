@@ -140,20 +140,17 @@
     }
 </style>
 
+{{#success}}
+    {{> local_shopping_cart/checkout_success }}
+{{/success}}
+{{#failed}}
+    {{> local_shopping_cart/checkout_failed }}
+{{/failed}}
+
+{{^finished}}
 <div class="checkoutgrid checkout">
 
    <div class="container-fluid">
-    {{#additonalcashiersection}}
-        <div class="row"><p class="text-center"><a class="btn btn-primary" data-action="checkoutuser">Checkout for Customer</a></p></div>
-    {{/additonalcashiersection}}
-
-    {{#success}}
-    {{> local_shopping_cart/checkout_success }}
-    {{/success}}
-    {{#failed}}
-    {{> local_shopping_cart/checkout_cachier }}
-    {{> local_shopping_cart/checkout_failed }}
-    {{/failed}}
 
       <ul class="list-group">
          {{#items}}
@@ -170,16 +167,9 @@
                <div class="col">
                <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
                <span class="pull-right ml-2"><i class="fa fa-trash-o lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}"></i></span>
-               <span class="item-price pull-right"> {{price}} </span><br>
-               <span class="lighter"><i class="fa fa-clock-o" aria-hidden="true"></i>  Do 9:00 - 10:00</span>
-               <span class="pull-right"><i class="fa fa-map-o" aria-hidden="true"></i>  {{item.location}} </span>
-               <br><span class="lighter"> {{item.shortsummary}} </span>
-               <div>
-               {{{description}}}
+               <span class="item-price pull-right"> {{price}} {{currency}}</span><br>
+               <div class="item-description">{{{description}}}</div>
             </div>
-               </div>
-            </div>
-
          </li>
          {{/items}}
       </ul>
@@ -189,13 +179,13 @@
         <h2>{{name}}</h2><p>
         {{mail}}
         </p>
-</li>
+    </li>
       {{#items}}
          {{> local_shopping_cart/shopping_cart_item }}
       {{/items}}
-      <li id="litotalprice" class="text-right"> <span>{{#str}} total, local_shopping_cart {{/str}}<span class="totalprice">{{price}}</span>€</span></li>
+      <li id="litotalprice" class="text-right"> <span>{{#str}} total, local_shopping_cart {{/str}}<span class="totalprice">{{price}} {{currency}}</li>
       {{! <a href="#" class="btn btn-primary pull-right mr-3">Procceed with payment <i class="fa fa-chevron-right"></i></a></li> }}
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>
 </div>
-
+{{/finished}}

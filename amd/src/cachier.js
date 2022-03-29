@@ -48,16 +48,6 @@ export const init = (users, userid = 0) => {
         });
     }
 
-
-    document.addEventListener('DOMContentLoaded', function(event) {
-
-        // eslint-disable-next-line no-console
-        console.log('content loaded', event);
-
-
-
-
-    });
     autocomplete(document.getElementById("searchuser"), users);
     attachFilterFuntion();
 
@@ -147,7 +137,8 @@ export const validateCart = ($userid) => {
     var currentFocus;
     const useridfield = document.querySelector('#useridfield');
     inp.addEventListener("input", function() {
-        var a, b, i, val = this.value;
+        var a, b, i;
+        let val = this.value;
         closeAllLists();
         if (!val) {
             return false;
@@ -159,14 +150,15 @@ export const validateCart = ($userid) => {
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
             if (arr[i].toUpperCase().indexOf(val.toUpperCase()) > -1) {
-                /*create a DIV element for each matching element:*/
+                /* Create a DIV element for each matching element: */
                 b = document.createElement("DIV");
-                /*make the matching letters bold:*/
+                /* Make the matching letters bold: */
                 let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
                 b.innerHTML = arr[i].substr(0, index);
-                b.innerHTML += "<strong>" + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
+                b.innerHTML += "<strong>"
+                        + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
                 b.innerHTML += arr[i].substr(index + val.length);
-                /*insert a input field that will hold the current array item's value:*/
+                /* Insert a input field that will hold the current array item's value: */
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 b.addEventListener("click", function() {
                     inp.value = this.getElementsByTagName("input")[0].value;
@@ -176,6 +168,7 @@ export const validateCart = ($userid) => {
                 a.appendChild(b);
             }
         }
+        return null;
     });
 
     inp.addEventListener("keydown", function(e) {
@@ -239,7 +232,7 @@ export const validateCart = ($userid) => {
             }
         }
     }
-    document.addEventListener("click", function (e) {
+    document.addEventListener("click", function(e) {
         closeAllLists(e.target);
     });
   };

@@ -45,6 +45,8 @@ $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
 
+$string['showdescription'] = "Show description";
+
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
