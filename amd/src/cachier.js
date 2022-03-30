@@ -89,7 +89,7 @@ export const init = (users, userid = 0) => {
                     document.getElementById('success-tab').classList.add('success');
 
                     // We might display the item more often than once.
-                    let items = document.querySelectorAll('ul.shopping-cart-items li.clearfix');
+                    let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
 
                     items.forEach(item => {
                         // eslint-disable-next-line no-console
@@ -98,7 +98,7 @@ export const init = (users, userid = 0) => {
                             item.remove();
                         }
                     });
-                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-section .totalprice');
+                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .totalprice');
 
                     totalprices.forEach(item => {
                         // eslint-disable-next-line no-console

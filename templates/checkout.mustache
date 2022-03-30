@@ -183,7 +183,14 @@
       {{#items}}
          {{> local_shopping_cart/shopping_cart_item }}
       {{/items}}
-      <li id="litotalprice" class="text-right"> <span>{{#str}} total, local_shopping_cart {{/str}}<span class="totalprice">{{price}} {{currency}}</li>
+      <li id="litotalprice" class="text-right">
+        <span>
+            {{#str}} total, local_shopping_cart {{/str}}
+        </span>
+        <span class="totalprice text-right">
+            {{price}} {{currency}}
+        </span>
+      </li>
       {{! <a href="#" class="btn btn-primary pull-right mr-3">Procceed with payment <i class="fa fa-chevron-right"></i></a></li> }}
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>

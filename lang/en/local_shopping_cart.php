@@ -81,3 +81,7 @@ $string['restart'] = "Next customer";
 $string['print'] = "Print";
 $string['previouspurchases'] = "Previous purchases";
 $string['checkout'] = "Checkout";
+$string['nouserselected'] = 'No user selectedd';
+$string['selectuser'] = 'Select a user...';
+$string['user'] = "User...";
+$string['searchforitem'] = "Search for item...";
