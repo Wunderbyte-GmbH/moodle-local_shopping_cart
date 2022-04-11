@@ -184,19 +184,62 @@ class shopping_cart_history {
 
     /**
      * Return data from DB via identifier.
+     * This function won't return data if the payment is already aborted.
      *
      * @param integer $identifier
-     * @return null|array
+     * @return array
      */
     public static function return_data_via_identifier(int $identifier):array {
 
         global $DB;
 
         if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
+
+            // If there is an error registered, we return null.
+            foreach ($data as $record) {
+                $aborted = false;
+                if ($record->payment == 'aborted') {
+                    $aborted = true;
+                }
+            }
+            if ($aborted) {
+                return [];
+            }
+
             return $data;
         }
 
-        return null;
+        return [];
+    }
+
+    /**
+     * Sets the cart item to payment => 'aborted' if it was still pending.
+     * Won't change other status.
+     *
+     * @param integer $identifier
+     * @return boolean
+     */
+    public static function error_occured_for_identifier(int $identifier):bool {
+
+        global $DB;
+
+        if (!$records = self::return_data_via_identifier($identifier)) {
+            return false;
+        }
+
+        // All the items of one transaction should have the same status.
+        // If it's still pending, we set all items to error.
+
+        $pending = 'pending';
+        foreach($records as $record) {
+            // If we haven't fond a record where it's not pending, we check this one.
+            if ($record->payment == 'pending') {
+                $record->payment = 'aborted';
+                $DB->update_record('local_shopping_cart_history', $record);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -211,11 +254,12 @@ class shopping_cart_history {
 
         $success = true;
         $identifier = null;
+        $now = time();
         foreach ($records as $record) {
 
             $identifier = $record->identifier;
             $record->payment = 'success';
-            $record->timemodified = time();
+            $record->timemodified = $now;
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;
@@ -224,7 +268,7 @@ class shopping_cart_history {
 
         // Clean the cache here, after successful checkout.
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->delete('identifier');
+        $cache->delete($identifier);
 
         return $success;
     }

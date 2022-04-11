@@ -59,7 +59,6 @@ class service_provider implements \core_payment\local\callback\service_provider 
             $accountid = 1;
         }
 
-        // TODO: Accontnumber 1 is hardcoded here, we will be able to select available accounts via config settings.php.
         return new \core_payment\local\entities\payable($shoppingcart->price, $shoppingcart->currency, $accountid);
     }
 
@@ -92,6 +91,10 @@ class service_provider implements \core_payment\local\callback\service_provider 
          // Now run through all the optionids (itemids) and confirm payment.
 
         $data['items'] = shopping_cart_history::return_data_via_identifier($identifier);
+
+        if (count($data['items']) > 0) {
+            return false;
+        }
 
         shopping_cart::confirm_payment($userid, $data);
 

@@ -42,4 +42,8 @@ $observers = array(
         'eventname' => '\local_shopping_cart\event\item_bought',
         'callback' => 'local_shopping_cart_observer::item_bought',
     ),
+    array(
+        'eventname' => '*',
+        'callback' => 'local_shopping_cart_observer::payment_error',
+    ),
 );

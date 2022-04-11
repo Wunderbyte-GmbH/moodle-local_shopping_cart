@@ -22,10 +22,48 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shopping_cart\shopping_cart_history;
+
 /**
  * Event observer for local_shopping_cart.
  */
 class local_shopping_cart_observer {
+
+    /**
+     * Triggered via payment_error event from any payment provider
+     *
+     * @param $event
+     */
+    public static function payment_error($event): string {
+
+        // If we receive a payment error...
+        // We check for the order id in our shopping cart history
+        // And set it to error, if it was pending.
+
+        $data = $event->get_data();
+
+        // First check, to make it fast.
+        if ($data['target'] !== 'payment') {
+            return '';
+        }
+
+        // Next check.
+        $stringarray = explode("\\", $data['eventname']);
+        if (end($stringarray) !== 'payment_error') {
+            return '';
+        }
+
+        // Next, we look in the shopping cart history if there is a pending payment.
+        if (empty($data['other']['itemid'])) {
+            return '';
+        }
+
+        $itemid = $data['other']['itemid'];
+
+        shopping_cart_history::error_occured_for_identifier($itemid);
+
+        return 'registered_payment_error';
+    }
 
     /**
      * Triggered via add_item event.
