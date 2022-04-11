@@ -42,6 +42,8 @@ $string['additonalcashiersection'] = 'Add text for cashier section';
 $string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';
 $string['accountid'] = 'Payment account';
 $string['accountid:description'] = 'Choose your preferred payment account.';
+$string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
+$string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';

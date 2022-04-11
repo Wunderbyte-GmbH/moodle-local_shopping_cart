@@ -44,16 +44,32 @@ if ($hassiteconfig) {
         $paymentaccounts[$paymentaccountrecord->id] = $paymentaccountrecord->name;
     }
 
-    // Connect payment account.
-    $settings->add(
-        new admin_setting_configselect(
-            $componentname .'/accountid',
-            get_string('accountid', $componentname),
-            get_string('accountid:description', $componentname),
-            null,
-            $paymentaccounts
-        )
-    );
+    if (empty($paymentaccounts)) {
+
+        $moodleurl = new moodle_url('/payment/accounts.php');
+        $urlobject = new stdClass;
+        $urlobject->link = $moodleurl->out(false);
+
+        // If we have no payment accounts then show a static text instead.
+        $settings->add(new admin_setting_description(
+            'nopaymentaccounts',
+            get_string('nopaymentaccounts', 'local_shopping_cart'),
+            get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
+        )); 
+
+    } else {
+        // Connect payment account.
+        $settings->add(
+            new admin_setting_configselect(
+                $componentname .'/accountid',
+                get_string('accountid', $componentname),
+                get_string('accountid:description', $componentname),
+                null,
+                $paymentaccounts
+            )
+        );
+    }
+    
 
     // Max items in cart.
     $settings->add(

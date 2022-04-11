@@ -42,6 +42,8 @@ $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';
 $string['accountid'] = 'Zahlungsanbieter-Konto';
 $string['accountid:description'] = 'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
+$string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
+$string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
