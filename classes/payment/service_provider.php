@@ -92,7 +92,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
 
         $data['items'] = shopping_cart_history::return_data_via_identifier($identifier);
 
-        if (count($data['items']) > 0) {
+        if (count($data['items']) == 0) {
             return false;
         }
 
