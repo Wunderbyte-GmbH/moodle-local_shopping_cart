@@ -43,59 +43,52 @@ $services = array(
 
 $functions = array(
         'local_shopping_cart_add_item' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'add_item_to_cart',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'classname' => 'local_shopping_cart\external\add_item_to_cart',
+                'classpath' => '',
                 'description' => 'Add an Item to the shopping cart',
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
         ),
         'local_shopping_cart_delete_item' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'delete_item_from_cart',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'classname' => 'local_shopping_cart\external\delete_item_from_cart',
+                'classpath' => '',
                 'description' => 'Delete Item from cart',
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
         ),
         'local_shopping_cart_delete_all_items_from_cart' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'delete_all_items_from_cart',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'classname' => 'local_shopping_cart\external\delete_all_items_from_cart',
+                'classpath' => '',
                 'description' => 'Delete All Items from cart',
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
         ),
         'local_shopping_cart_get_shopping_cart_items' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'get_shopping_cart_items',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'classname' => 'local_shopping_cart\external\get_shopping_cart_items',
+                'classpath' => '',
                 'description' => 'Get shopping cart items',
                 'type' => 'read',
                 'capabilities' => '',
                 'ajax' => 1
         ),
-/*         'local_shopping_cart_checkout_for_customer' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'get_shopping_cart_items',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
-                'description' => 'Get shopping cart items',
-                'type' => 'read',
-                'capabilities' => 'local/shopping_cart:cachier',
-                'ajax' => 1
-        ), */
         'local_shopping_cart_confirm_cash_payment' => array(
-                'classname' => 'local_shopping_cart_external',
-                'methodname' => 'confirm_cash_payment',
-                'classpath' => 'local/shopping_cart/classes/externallib.php',
+                'classname' => 'local_shopping_cart\external\confirm_cash_payment',
+                'classpath' => '',
                 'description' => 'Confirm cash payment by cashier',
                 'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cachier',
                 'ajax' => 1
+        ),
+        'local_shopping_cart_cancel_purchase' => array(
+                'classname' => 'local_shopping_cart\external\cancel_purchase',
+                'classpath' => '',
+                'description' => 'Cancel purchase',
+                'type' => 'write',
+                'capabilities' => '',
+                'ajax' => 1
         )
-
 );
 
