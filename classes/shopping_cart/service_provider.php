@@ -64,7 +64,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param int $userid
      * @return bool
      */
-    public static function successful_checkout(int $itemid, int $paymentid, int $userid): bool {
+    public static function successful_checkout(int $itemid, string $paymentid, int $userid): bool {
         global $DB;
 
         // TODO: Set booking_answer to 1.

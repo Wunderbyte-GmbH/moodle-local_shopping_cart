@@ -96,8 +96,7 @@ class shopping_cart_history {
         $sql = "SELECT *
                 FROM {local_shopping_cart_history}
                 WHERE userid=:userid
-                AND (payment='success'
-                    OR payment='cash')";
+                AND paymentstatus >= " . PAYMENT_SUCCESS ;
 
         return $DB->get_records_sql($sql, ['userid' => $userid]);
     }
@@ -111,6 +110,7 @@ class shopping_cart_history {
         $prepareddata = (object)$this->prepare_data_from_cache($userid);
         self::write_to_db($prepareddata);
     }
+
     /**
      * write_to_db.
      *
@@ -147,6 +147,7 @@ class shopping_cart_history {
      * @param string $componentname
      * @param string $identifier
      * @param string $payment
+     * @param int $paymentstatus
      * @return integer
      */
     public static function create_entry_in_history(
@@ -157,7 +158,8 @@ class shopping_cart_history {
             string $currency,
             string $componentname,
             string $identifier,
-            string $payment
+            string $payment,
+            int $paymentstatus = PAYMENT_PENDING
             ) {
 
         global $USER;
@@ -173,6 +175,7 @@ class shopping_cart_history {
         $data->componentname = $componentname;
         $data->identifier = $identifier;
         $data->payment = $payment;
+        $data->paymentstatus = $paymentstatus;
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
@@ -198,7 +201,7 @@ class shopping_cart_history {
             // If there is an error registered, we return null.
             foreach ($data as $record) {
                 $aborted = false;
-                if ($record->payment == 'aborted') {
+                if ($record->paymentstatus == PAYMENT_ABORTED) {
                     $aborted = true;
                 }
             }
@@ -233,8 +236,8 @@ class shopping_cart_history {
         $pending = 'pending';
         foreach($records as $record) {
             // If we haven't fond a record where it's not pending, we check this one.
-            if ($record->payment == 'pending') {
-                $record->payment = 'aborted';
+            if ($record->paymentstatus == PAYMENT_PENDING) {
+                $record->paymentstatus = PAYMENT_ABORTED;
                 $DB->update_record('local_shopping_cart_history', $record);
             }
         }
@@ -258,7 +261,7 @@ class shopping_cart_history {
         foreach ($records as $record) {
 
             $identifier = $record->identifier;
-            $record->payment = 'success';
+            $record->paymentstatus = PAYMENT_SUCCESS;
             $record->timemodified = $now;
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
@@ -302,7 +305,8 @@ class shopping_cart_history {
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
             $data['userid'] = $userid; // The user for which the item was bought.]
-            $data['payment'] = 'pending';
+            $data['payment'] = 'card'; // This function is only used for card.
+            $data['paymentstatus'] = PAYMENT_PENDING;
             $dataarr['items'][] = $data;
         }
 
@@ -356,7 +360,6 @@ class shopping_cart_history {
             $shoppingcart->storedinhistory = true;
             $cache->set($identifier, $shoppingcart);
         }
-
 
         return $shoppingcart;
     }

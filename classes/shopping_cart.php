@@ -477,7 +477,9 @@ class shopping_cart {
                         $item['currency'],
                         $item['componentname'],
                         $identifier,
-                        'cash');
+                        'cash',
+                        PAYMENT_SUCCESS
+                        );
                 }
 
             }
