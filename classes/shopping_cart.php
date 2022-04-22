@@ -26,6 +26,11 @@ namespace local_shopping_cart;
 use context_system;
 use local_shopping_cart\task\delete_item_task;
 
+define('PAYMENT_PENDING', 0); // First entry in shopping cart history. This means that payment was initiated, but not successfully completed.
+define('PAYMENT_ABORTED', 1); // Pending will be switched to aborted, once we can be sure that the payment process will not be continued.
+define('PAYMENT_SUCCESS', 2); // Payment was successful.
+define('PAYMENT_CANCELED', 3); // Canceled payments mean that they paid for items are canceled after successful checkout.
+
 /**
  * Class shopping_cart
  *
