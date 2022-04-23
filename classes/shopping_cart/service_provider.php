@@ -71,4 +71,16 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         return true;
     }
+
+    /**
+     * Callback function that handles cancelation after purchase.
+     *
+     * @param integer $itemid
+     * @param integer $userid
+     * @return boolean
+     */
+    public static function cancel_purchase(int $itemid, int $userid = 0): bool {
+
+        return true;
+    }
 }

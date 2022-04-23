@@ -24,6 +24,7 @@
 
 namespace local_shopping_cart;
 
+use Exception;
 use stdClass;
 
 /**
@@ -184,6 +185,55 @@ class shopping_cart_history {
         return $result;
     }
 
+    /**
+     * This function updates the entry in shppping cart history and sets the status to "canceled".
+     *
+     * @param int $itemid
+     * @param int $userid
+     * @param int $identifier
+     * @return bool
+     */
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null):array {
+
+        global $DB;
+
+        // Identify record.
+        if ($entryid) {
+            $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid]);
+        } else {
+            // Only return successfull payments.
+            // We only take the last record
+            $sql = "SELECT *
+                    FROM {local_shopping_cart_history}
+                    WHERE itemid=:itemid
+                    AND  userid=:userid
+                    AND componentname=:componentname
+                    AND paymentstatus = " . PAYMENT_SUCCESS . "
+                    ORDER BY timemodified
+                    LIMIT 1";
+
+            $params = ['itemid' => $itemid,
+                       'userid' => $userid,
+                        'componentname' => $componentname];
+            $record = $DB->get_record_sql($sql, $params);
+        }
+
+        if (!$record) {
+            return [0, 'noentryinhistoryfound'];
+        }
+
+        // Now update found record as canceled.
+
+        $record->paymentstatus = PAYMENT_CANCELED;
+        $record->timemodified = time();
+
+        try {
+            $DB->update_record('local_shopping_cart_history', $record);
+            return [1, ''];
+        } catch (Exception $e) {
+            return [0, 'failureduringupdateofentry'];
+        }
+    }
 
     /**
      * Return data from DB via identifier.

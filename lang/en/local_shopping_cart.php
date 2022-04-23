@@ -85,3 +85,12 @@ $string['nouserselected'] = 'No user selectedd';
 $string['selectuser'] = 'Select a user...';
 $string['user'] = "User...";
 $string['searchforitem'] = "Search for item...";
+
+$string['cancelpurchase'] = 'Cancel purchase';
+$string['canceled'] = 'Canceled';
+$string['canceldidntwork'] = 'Cancel didn\'t work';
+$string['cancelsuccess'] = 'Successfully canceled';
+
+$string['confirmcanceltitle'] = 'Confirm Cancelation';
+$string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone.';
+

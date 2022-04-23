@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use context_system;
 use external_api;
 use external_function_parameters;
 use external_value;
@@ -45,9 +46,10 @@ class cancel_purchase extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
+            'componentname'  => new external_value(PARAM_RAW, 'componentname', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
+            'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_DEFAULT, 0),
             )
         );
     }
@@ -61,14 +63,15 @@ class cancel_purchase extends external_api {
      *
      * @return array
      */
-    public static function execute(string $component, int $itemid, int $userid): array {
+    public static function execute(string $componentname, int $itemid, int $userid, int $historyid): array {
         $params = self::validate_parameters(self::execute_parameters(), [
-            'component' => $component,
+            'componentname' => $componentname,
             'itemid' => $itemid,
-            'userid' => $userid
+            'userid' => $userid,
+            'historyid' => $historyid
         ]);
 
-        return shopping_cart::cancel_purchase($params['component'], $params['itemid'], $params['userid']);
+        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'], $params['historyid']);
     }
 
     /**

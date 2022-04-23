@@ -26,6 +26,7 @@
 namespace local_shopping_cart\output;
 
 use local_shopping_cart\shopping_cart_history;
+use moodle_url;
 use renderable;
 use renderer_base;
 use templatable;
@@ -62,6 +63,8 @@ class shoppingcart_history_list implements renderable, templatable {
         foreach ($items as $item) {
 
             $item->date = date('Y-m-d', $item->timemodified);
+            $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
+            $item->buttonclass = $item->paymentstatus == PAYMENT_CANCELED ? 'btn-danger disabled' : 'btn-primary';
 
             $this->historyitems[] = (array)$item;
 

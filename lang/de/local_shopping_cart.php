@@ -85,3 +85,11 @@ $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = "Teilnehmerin...";
 $string['searchforitem'] = "Suche...";
+
+$string['cancelpurchase'] = 'Stornieren';
+$string['canceled'] = 'Storniert';
+$string['canceldidntwork'] = 'Fehler beim Stornieren';
+$string['cancelsuccess'] = 'Erfolgreich storniert';
+
+$string['confirmcanceltitle'] = 'Bestätige Stornierung';
+$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Diese Aktion lässt sich nicht rückgängig machen.';

@@ -498,4 +498,32 @@ class shopping_cart {
             ];
         }
     }
+
+
+    /**
+     * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
+     * @param integer $itemid
+     * @param integer $userid
+     * @param string $component
+     * @param integer|null $historyid
+     * @return array
+     */
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $historyid = null):array {
+
+         // Cancelation is only allowed for cachiers.
+         $context = context_system::instance();
+         if (!has_capability('local/shopping_cart:cachier', $context)) {
+             return [
+                 'success' => 0,
+                 'error' => get_string('nopermission', 'local_shopping_cart')
+             ];
+         }
+
+        list($success, $error) = shopping_cart_history::cancel_purchase($itemid, $userid, $componentname, $historyid);
+
+        return [
+            'success' => $success,
+            'error' => $error
+        ];
+    }
 }

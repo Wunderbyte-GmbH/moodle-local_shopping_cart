@@ -68,4 +68,14 @@ interface service_provider {
      * @return bool Whether successful or not
      */
     public static function successful_checkout(int $itemid, string $paymentid, int $userid): bool;
+
+    /**
+     * Callback function that cancels an already bought item.
+     *
+     * @param int $itemid An identifier that is known to the plugin
+     * @param int $userid
+     *
+     * @return bool
+     */
+    public static function cancel_purchase(int $itemid, int $userid = 0): bool;
 }
