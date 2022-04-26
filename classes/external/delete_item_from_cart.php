@@ -44,7 +44,12 @@ class delete_item_from_cart extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array());
+        return new external_function_parameters(array(
+            'component'  => new external_value(PARAM_RAW, 'component name like mod_booking', VALUE_DEFAULT, ''),
+            'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, '0'),
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
+            )
+        );
     }
 
     /**
