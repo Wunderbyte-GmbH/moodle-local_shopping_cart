@@ -92,5 +92,20 @@ $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['cancelsuccess'] = 'Successfully canceled';
 
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
-$string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone.';
+$string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone. You can adjust the credit below.';
+
+$string['confirmpaidbacktitle'] = "Confirm Payback";
+$string['confirmpaidbackbody'] = "Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.";
+$string['confirmpaidback'] = "Confirm";
+
+$string['deletecredit'] = 'Refunded';
+$string['credit'] = 'Credit:';
+
+$string['cashier'] = "Cashier";
+
+$string['initialtotal'] = "Price:";
+$string['usecredit'] = "Use credit:";
+$string['deductible'] = "Deductible:";
+$string['remainingcredit'] = "Remaining credit:";
+$string['remainingtotal'] = "Price:";
 

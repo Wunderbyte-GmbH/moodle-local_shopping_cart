@@ -89,6 +89,22 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1
+        ),
+        'local_shopping_cart_get_price' => array(
+                'classname' => 'local_shopping_cart\external\get_price',
+                'classpath' => '',
+                'description' => 'Get price',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
+        ),
+        'local_shopping_cart_credit_paid_back' => array(
+                'classname' => 'local_shopping_cart\external\credit_paid_back',
+                'classpath' => '',
+                'description' => 'Register paid back credit',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
         )
 );
 

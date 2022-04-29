@@ -130,6 +130,7 @@ class shopping_cart_history {
                 $DB->insert_record('local_shopping_cart_history', $data);
             }
         } else {
+            $data->timecreated = $now;
             $DB->insert_record('local_shopping_cart_history', $data);
         }
 
@@ -193,7 +194,7 @@ class shopping_cart_history {
      * @param int $identifier
      * @return bool
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null):array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null, $credit = null):array {
 
         global $DB;
 
@@ -229,7 +230,17 @@ class shopping_cart_history {
 
         try {
             $DB->update_record('local_shopping_cart_history', $record);
-            return [1, ''];
+
+            // The credit can be the whole price, or it can be just a fraction.
+            // If there is no price or the credit is higher than the price, we use the price.
+            if ($credit === null
+                || ($credit > $record->price)) {
+                return [1, '', $record->price, $record->currency];
+            } else {
+                // If the credit is smaller than the price, we use the credit.
+                return [1, '', $credit, $record->currency];
+            }
+
         } catch (Exception $e) {
             return [0, 'failureduringupdateofentry'];
         }
@@ -347,6 +358,9 @@ class shopping_cart_history {
 
         $totalprice = 0;
         $currency = '';
+        if (!isset($cachedrawdata["items"])) {
+            $cachedrawdata["items"] = [];
+        }
         foreach ($cachedrawdata["items"] as $item) {
             $data = $item;
             $totalprice += $item['price'];
@@ -424,7 +438,6 @@ class shopping_cart_history {
     public static function create_unique_cart_identifier(int $userid): string {
         return time();
     }
-
 
     /**
      * Validate data.

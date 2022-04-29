@@ -192,57 +192,12 @@ class shopping_cart {
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $cache->set($cachekey, null);
+
+            unset($cachedrawdata['items']);
+
+            $cache->set($cachekey, $cachedrawdata);
         }
         return true;
-    }
-
-
-
-    /**
-     *
-     * A possibility to easily add random items for testing.
-     * @return bool
-     */
-    public static function add_random_item() {
-        global $USER;
-        $userid = $USER->id;
-        $itemdata['componentname'] = "componentname";
-        $sports = array("Lacrosse", "Roller derby", "Basketball", "Tennis",
-                        "Rugby", "Bowling", "Fencing", "Baseball", "Crew", "Cheerleading",
-                        "Baseball", "Roller derby", "Baseball", "Baseball", "Boxing", "Endurance Running",
-                        "Ultimate", "Curling", "Wrestling", "Surfing", "Horse Racing", "Auto Racing",
-                        "Soccer", "Fencing", "Gynastics", "Lacrosse", "Skateboarding",
-                        "Track", "Soccer", "Crew", "Skiing", "Poker", "Lacrosse", "Auto Racing",
-                        "Endurance Running", "Curling", "Cricket", "Wiffleball",
-                        "Wrestling", "Snowboarding", "Skateboarding", "Skateboarding",
-                        "Poker", "Mixed Martial Arts", "Ice Hockey", "Badminton", "Surfing",
-                        "Field Hockey", "Endurance Running", "Horse Racing", "Bowling", "Bobsleigh",
-                        "Bobsleigh", "Basketball", "Cheerleading", "Mixed Martial Arts", "Field Hockey",
-                        "Curling", "Skiing", "Soccer", "Curling", "Cricket", "Rugby", "Curling",
-                        "Bobsleigh", "Cheerleading", "Baseball", "Competitive Swimming",
-                        "Curling", "Curling", "Horse Racing", "Polo", "Tennis", "Football",
-                        "Polo", "Golf", "Volleyball", "Lacrosse", "Golf", "Tennis", "Wrestling",
-                        "Cricket", "Endurance Running", "Basketball", "Track", "Polo", "Field Hockey",
-                        "Wiffleball", "Rowing", "Lacrosse", "Competitive Swimming", "Endurance Running",
-                        "Snowboarding", "Horse Racing", "Baseball", "Skateboarding", "Pool",
-                        "Mixed Martial Arts", "Snowboarding", "Surfing", "Polo", "Skateboarding",
-                        "Poker", "Bowling", "Crew", "Ice Hockey", "Wrestling", "Cheerleading", "Polo",
-                        "Rugby", "Crew", "Weightlifting", "Skiing", "Skateboarding", "Horse Racing",
-                        "Bowling", "Weightlifting", "Rugby", "Roller derby", "Badminton");
-        $rand = array_rand($sports, 1);
-        $itemdata['itemid'] = time() - $rand + 7 * rand(5, 115);
-        $itemdata['itemname'] = $sports[$rand];
-        $itemdata['price'] = rand(5, 115);
-        $itemdata['expirationdate'] = time() + rand(1, 1) * 60;
-        $itemdata['description'] = "asdadasdsad";
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
-        $cachedrawdata['items'][ $itemdata['itemid'] ] = $itemdata;
-        $cache->set($userid . '_shopping_cart', $cachedrawdata);
-        $event = event\item_added::create_from_ids($userid, $itemdata);
-        $event->trigger();
-        return $itemdata;
     }
 
     /**
@@ -307,17 +262,48 @@ class shopping_cart {
     }
 
     /**
-     * Function local_shopping_cart_get_cache_data
+     * Cancels Purchase.
+     *
+     * @param string $component Name of the component that the cartitems belong to
+     * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
+     * @return local\entities\cartitem
+     */
+    public static function cancel_purchase_for_component(string $component, int $itemid, int $userid): bool {
+
+        $providerclass = static::get_service_provider_classname($component);
+
+        return component_class_callback($providerclass, 'cancel_purchase', [$itemid, $userid]);
+    }
+
+    /**
+     * Function local_shopping_cart_get_cache_data
+     * This function returns all the item and calculates live the price for them.
+     * This function also supports the credit system of this modle.
+     * If usecredit is true, the credit of the user is substracted from price...
+     * ... and supplementary informatin about the subsctraction is returend.
+     *
+     * @param int $userid
+     * @param bool $usecredit
      * @return array
      */
-    public static function local_shopping_cart_get_cache_data($userid): array {
+    public static function local_shopping_cart_get_cache_data(int $userid, bool $usecredit = null): array {
+
+        global $USER;
+
+        if (empty($userid)) {
+            $userid = $USER->id;
+        }
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachedrawdata = $cache->get($userid . '_shopping_cart');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            if ($cachedrawdata['expirationdate'] < time()) {
+            if (isset($cachedrawdata['expirationdate'])
+                && $cachedrawdata['expirationdate'] < time()) {
                 self::delete_all_items_from_cart($userid);
+                unset($cachedrawdata['expirationdate']);
+                $cachedrawdata = $cache->get($cachekey);
             }
         }
         $data = [];
@@ -328,6 +314,16 @@ class shopping_cart {
         $data['items'] = [];
         $data['price'] = 0;
 
+        if ($userid && (!isset($cachedrawdata['credit']) || !isset($cachedrawdata['currency']))) {
+            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
+            $cachedrawdata['credit'] = $data['credit'];
+            $cachedrawdata['currency'] = $data['currency'];
+
+        } else {
+            $data['credit'] = $cachedrawdata['credit'];
+            $data['currency'] = $cachedrawdata['currency'];
+        }
+
         if ($cachedrawdata && isset($cachedrawdata['items'])) {
             $count = count($cachedrawdata['items']);
             $data['count'] = $count;
@@ -337,8 +333,52 @@ class shopping_cart {
                 $data['price'] = array_sum(array_column($data['items'], 'price'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
             }
+            // There might be cases where we don't have the currency yet. We take it from the last item in cart.
+            if (!$data['currency']) {
+                $data['currency'] = end($data['items'])['currency'] ?? "";
+            }
         }
+
+        // If there is credit for this user, we give her options.
+        shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
+
         return $data;
+    }
+
+    /**
+     * Returns 0|1 fore the saved usecredit state, null if no such state exists.
+     *
+     * @param int $userid
+     * @return null|int
+     */
+    public static function get_saved_usecredit_state($userid) {
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+
+        if ($cachedrawdata && isset($cachedrawdata['usecredit'])) {
+            return $cachedrawdata['usecredit'];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets the usecredit value in Cache for the user.
+     *
+     * @param int $userid
+     * @param bool $usecredit
+     * @return void
+     */
+    public static function save_used_credit_state($userid, $usecredit) {
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+
+        $cachedrawdata['usecredit'] = $usecredit;
+
+        $cache->set($cachekey, $cachedrawdata);
     }
 
     /**
@@ -417,22 +457,31 @@ class shopping_cart {
         global $USER;
 
         // If the data comes from history, we don't need to check rights.
+        // No history means that we are in the cashier process.
         if (!$datafromhistory) {
             // Make sure the user has the rights to access this function.
             $context = context_system::instance();
             if (!has_capability('local/shopping_cart:cachier', $context)) {
                 return [
                     'status' => 0,
-                    'error' => get_string('nopermission', 'local_shopping_cart')
+                    'error' => get_string('nopermission', 'local_shopping_cart'),
+                    'credit' => ''
                 ];
             }
 
             $identifier = time();
+
         }
 
         if (!$data = $datafromhistory) {
             // Retrieve items from cache.
             $data = self::local_shopping_cart_get_cache_data($userid);
+        } else {
+
+            // Even if we get the data from history, we still need to look in cache.
+            // With this, we will know how much the user actually paid and how much comes from her credits.
+            shopping_cart_credits::prepare_checkout($data, $userid);
+
         }
 
         // Check if we have items for this user.
@@ -440,7 +489,8 @@ class shopping_cart {
             || count($data['items']) < 1) {
             return [
                 'status' => 0,
-                'error' => get_string('noitemsincart', 'local_shopping_cart')
+                'error' => get_string('noitemsincart', 'local_shopping_cart'),
+                'credit' => ''
             ];
         }
 
@@ -450,7 +500,7 @@ class shopping_cart {
         // Run through all items still in the cart and confirm payment.
         foreach ($data['items'] as $item) {
 
-            // We might retrieve the items from history or via cache. Form history, the come as stdClass.
+            // We might retrieve the items from history or via cache. From history, they come as stdClass.
 
             $item = (array)$item;
 
@@ -485,16 +535,27 @@ class shopping_cart {
             }
         }
 
+        // In our ledger, the credits table, we add an entry and make sure we actually deduce any credit we might have.
+        if (isset($data['usecredit'])
+            && $data['usecredit'] === true) {
+                shopping_cart_credits::use_credit($userid, $data);
+        } else {
+            $data['remainingcredit'] = 0;
+        }
+
         if ($success) {
 
             return [
                 'status' => 1,
-                'error' => ''
+                'error' => '',
+                'credit' => $data['remainingcredit']
+
             ];
         } else {
             return [
                 'status' => 0,
-                'error' => implode('<br>', $error)
+                'error' => implode('<br>', $error),
+                'credit' => $data['remainingcredit']
             ];
         }
     }
@@ -508,22 +569,71 @@ class shopping_cart {
      * @param integer|null $historyid
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $historyid = null):array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $historyid = null, float $customcredit = 0):array {
 
          // Cancelation is only allowed for cachiers.
          $context = context_system::instance();
          if (!has_capability('local/shopping_cart:cachier', $context)) {
              return [
                  'success' => 0,
-                 'error' => get_string('nopermission', 'local_shopping_cart')
+                 'error' => get_string('nopermission', 'local_shopping_cart'),
+                 'credit' => 0
              ];
          }
 
-        list($success, $error) = shopping_cart_history::cancel_purchase($itemid, $userid, $componentname, $historyid);
+        if (!self::cancel_purchase_for_component($componentname, $itemid, $userid)) {
+            return [
+                'success' => 0,
+                'error' => get_string('canceldidntwork', 'local_shopping_cart'),
+                'credit' => 0
+            ];
+        }
+
+        list($success, $error, $credit, $currency) = shopping_cart_history::cancel_purchase($itemid, $userid, $componentname, $historyid);
+
+        if (empty($customcredit)) {
+            $customcredit = $credit;
+        }
+
+        if ($success == 1) {
+            // If the payment was successfully canceled, we can book the credits to the users balance.
+
+            list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
+        }
 
         return [
             'success' => $success,
-            'error' => $error
+            'error' => $error,
+            'credit' => $newcredit
+        ];
+    }
+
+    /**
+     * Sets credit to 0, because we get information about cash pay-back.
+     *
+     * @param integer $userid
+     * @return array
+     */
+    public static function credit_paid_back(int $userid):array {
+
+        $context = context_system::instance();
+        if (!has_capability('local/shopping_cart:cachier', $context)) {
+            return [
+                'status' => 0,
+                'error' => get_string('nopermission', 'local_shopping_cart'),
+            ];
+        }
+
+        if (!shopping_cart_credits::credit_paid_back($userid)) {
+            return [
+                'status' => 0,
+                'error' => 'couldntpayback'
+            ];
+        }
+
+        return [
+            'status' => 1,
+            'error' => ''
         ];
     }
 }

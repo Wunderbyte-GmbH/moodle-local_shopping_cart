@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 
-class confirm_cash_payment extends external_api {
+class credit_paid_back extends external_api {
 
     /**
      * Describes the paramters for this service.
@@ -64,7 +64,7 @@ class confirm_cash_payment extends external_api {
             'userid' => $userid
         ]);
 
-        return shopping_cart::confirm_payment($params['userid']);
+        return shopping_cart::credit_paid_back($params['userid']);
     }
 
     /**
@@ -76,8 +76,7 @@ class confirm_cash_payment extends external_api {
         return new external_single_structure(
             array(
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
-                'error' => new external_value(PARAM_RAW, 'Error message.'),
-                'credit' => new external_value(PARAM_RAW, 'credit')
+                'error' => new external_value(PARAM_RAW, 'Error message.')
             )
         );
     }

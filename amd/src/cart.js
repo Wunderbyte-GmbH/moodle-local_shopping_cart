@@ -55,12 +55,7 @@ export const buttoninit = (id, component) => {
     // If we don't find the button, we abort.
     if (!addtocartbutton
         || addtocartbutton.dataset.initialized) {
-            // eslint-disable-next-line no-console
-            console.log('button already initialized', id);
         return;
-    } else {
-        // eslint-disable-next-line no-console
-        console.log('button not yet initialized', id);
     }
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
@@ -116,6 +111,7 @@ export const buttoninit = (id, component) => {
             }
         });
     }
+    updateTotalPrice();
 };
 
 export const reinit = () => {
@@ -216,7 +212,7 @@ export const deleteItem = (id, component, userid) => {
                 }
             });
 
-            updateTotalPrice();
+            updateTotalPrice(userid);
 
             let itemcount1 = document.getElementById("countbadge");
             let itemcount2 = document.getElementById("itemcount");
@@ -256,7 +252,7 @@ export const deleteItem = (id, component, userid) => {
                 // eslint-disable-next-line no-console
                 console.log('itemprice', itemprice);
 
-                updateTotalPrice();
+                updateTotalPrice(userid);
             }
         },
     }]);
@@ -304,11 +300,15 @@ export const addItem = (id, component) => {
                 }, 5000);
 
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                    let lastElem = document.querySelectorAll("[id^='litotalprice']");
-                    lastElem.forEach(lastElem => {
+                    let lastElements = document.querySelectorAll("[id^='liinitialtotal']");
+                    lastElements.forEach(lastElem => {
+
+                        // eslint-disable-next-line no-console
+                        console.log('found li', lastElem);
+
                         // If we buy for a user, we only want to interact with the cashiers section.
                         if ((data.buyforuser == 0)
-                            || (lastElem.id === "litotalprice_cashier")) {
+                            || (lastElem.id === "liinitialtotal_cashier")) {
                             lastElem.insertAdjacentHTML('beforeBegin', html);
                         }
                     });
@@ -322,14 +322,10 @@ export const addItem = (id, component) => {
 
                     let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                     items.forEach(item => {
-                        // eslint-disable-next-line no-console
-                        console.log('add delete event', item);
-                        // eslint-disable-next-line no-console
-                        console.log('userid ', data.userid);
                         addDeleteevent(item, data.userid);
                     });
 
-                    updateTotalPrice();
+                    updateTotalPrice(data.userid);
 
                     // If we buy for a user, we don't have to do the navbar stuff below.
                     if (data.buyforuser != 0) {
@@ -339,7 +335,7 @@ export const addItem = (id, component) => {
                     const badge = document.getElementById("itemcount");
                     badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
                     badge.classList.remove('hidden');
-                    updateTotalPrice();
+                    updateTotalPrice(data.userid);
                     clearInterval(interval);
                     initTimer(data.expirationdate);
                     return;
@@ -348,6 +344,152 @@ export const addItem = (id, component) => {
                     console.log(e);
                 });
             }
+        },
+        fail: function(ex) {
+            // eslint-disable-next-line no-console
+            console.log('error', ex);
+        }
+    }], true);
+};
+
+/**
+ *
+ * @param {*} userid
+ * @param {*} usecredit
+ */
+export const updateTotalPrice = (userid = 0, usecredit = true) => {
+
+    // eslint-disable-next-line no-console
+    console.log('updatetotalprice');
+
+    // First, get the state of usecredit.
+
+    const labelareas = document.querySelectorAll('.sc_price_label');
+    labelareas.forEach(element => {
+
+        // eslint-disable-next-line no-console
+        console.log(element);
+
+        // First we update the userid, if possible.
+        userid = element.dataset.userid ? element.dataset.userid : userid;
+
+        const checkbox = element.querySelector('input.usecredit-checkbox');
+
+        if (checkbox) {
+            if (checkbox.checked) {
+
+                // eslint-disable-next-line no-console
+                console.log('checked', checkbox.checked);
+                usecredit = checkbox.checked;
+            } else {
+                usecredit = 0;
+            }
+        }
+    });
+
+    usecredit = usecredit ? 1 : 0;
+
+    // eslint-disable-next-line no-console
+    console.log('usecredit before ajax', usecredit);
+
+    Ajax.call([{
+        methodname: "local_shopping_cart_get_price",
+        args: {
+            userid,
+            usecredit
+        },
+        done: function(data) {
+
+            // eslint-disable-next-line no-console
+            console.log(data);
+
+            // We take the usecredit value we receive from the server.
+            if (data.usecredit == 1) {
+                data.usecreditclass = 'checked';
+            } else {
+                data.usecreditclass = '';
+            }
+
+            const initialtotal = data.initialtotal;
+
+            let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
+            let cashierssection = null;
+            let checkoutcart = null;
+            let checkouttotals = null;
+
+            if (!shoppingcart) {
+                shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
+                checkoutcart = document.querySelector('div.checkoutgrid.checkout');
+                // eslint-disable-next-line no-console
+                console.log('1', checkoutcart);
+            } else {
+                cashierssection = document.querySelector('#shopping_cart-cashiers-section');
+            }
+
+            let totals = [];
+            if (cashierssection) {
+                totals = cashierssection.querySelectorAll('.initialtotal');
+            } else {
+                // First we add the total price from navbar.
+                totals = shoppingcart.querySelectorAll('.initialtotal');
+
+                // If we are on the checkout site, we deal with the totals there separately.
+                if (checkoutcart) {
+                    checkouttotals = checkoutcart.querySelectorAll('.initialtotal');
+
+                    if (checkouttotals) {
+                        checkouttotals.forEach(total => {
+                            total.innerHTML = initialtotal;
+                        });
+                    }
+                }
+            }
+
+            // Run through the list of total prices and set them to the right one.
+            totals.forEach(total => {
+                total.innerHTML = initialtotal;
+            });
+
+            let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
+
+            if (paymentbutton) {
+                const price = data.initialtotal;
+                const currency = data.currency;
+
+                paymentbutton.dataset.cost = price + " " + currency;
+            }
+
+            data.checkboxid = Math.random().toString(36).slice(2, 5);
+
+            Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html}) => {
+                labelareas.forEach(element => {
+                    // First, clean all children.
+                    let child = element.lastElementChild;
+                    while (child) {
+                        element.removeChild(child);
+                        child = element.lastElementChild;
+                    }
+                    element.insertAdjacentHTML("afterbegin", html);
+
+                    const checkbox = element.querySelector('input.usecredit-checkbox');
+
+                    if (checkbox) {
+                        checkbox.addEventListener('change', event => {
+
+                            // eslint-disable-next-line no-console
+                            console.log(event);
+
+                            updateTotalPrice(userid);
+                        });
+                    }
+
+                });
+                return true;
+            }).catch((e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            }));
+
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -393,60 +535,6 @@ function deleteEvent() {
         }
 
         deleteItem(id, component, userid);
-    }
-
-    /**
-     * Function to update total price in navbar and for cashier.
-     */
-    function updateTotalPrice() {
-
-        let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
-        let cashierssection = null;
-        let checkoutcart = null;
-        let checkouttotals = null;
-
-        if (!shoppingcart) {
-            shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
-            checkoutcart = document.querySelector('div.checkoutgrid.checkout');
-            // eslint-disable-next-line no-console
-            console.log('1', checkoutcart);
-        } else {
-            cashierssection = document.querySelector('#shopping_cart-cashiers-section');
-        }
-
-        const items = shoppingcart.querySelectorAll('[id^=item-]');
-        let totalprice = 0;
-        let currency = "";
-
-        items.forEach((item) => {
-            if (item.dataset.price) {
-                totalprice += parseInt(item.dataset.price);
-            }
-            currency = item.dataset.currency;
-        });
-        let totals = [];
-        if (cashierssection) {
-            totals = cashierssection.querySelectorAll('.totalprice');
-        } else {
-            // First we add the total price from navbar.
-            totals = shoppingcart.querySelectorAll('.totalprice');
-
-            // If we are on the checkout site, we deal with the totals there separately.
-            if (checkoutcart) {
-                checkouttotals = checkoutcart.querySelectorAll('.totalprice');
-
-                if (checkouttotals) {
-                    checkouttotals.forEach(total => {
-                        total.innerHTML = totalprice + " " + currency;
-                    });
-                }
-            }
-        }
-
-        // Run through the list of total prices and set them to the right one.
-        totals.forEach(total => {
-            total.innerHTML =  totalprice + " " + currency;
-        });
     }
 
 /**

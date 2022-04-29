@@ -23,9 +23,8 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-use local_shopping_cart\output\shoppingcart_history_list;
+use local_shopping_cart\output\cashier;
 use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
@@ -35,36 +34,27 @@ require_login();
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
 
+// If there is no user, we unset the buy for user variable and delete the cart for active user.
 if (!$userid) {
-    // We unset the buy for user variable.
     shopping_cart::buy_for_user(0);
     shopping_cart::delete_all_items_from_cart($USER->id);
-}
-
-$data = shopping_cart::local_shopping_cart_get_cache_data($userid);
-if (isset($userid) && $userid > 0 ) {
-    $data['buyforuserid'] = $userid;
-    $user = core_user::get_user($userid, 'id, lastname, firstname, email');
-    $data['userid'] = $user->id;
-    $data['userlastname'] = $user->lastname;
-    $data['userfirstname'] = $user->firstname;
-    $data['useremail'] = $user->email;
+} else {
     shopping_cart::buy_for_user($userid);
-
-    // We use the template class, but not the renderer here.
-    $sclist = new shoppingcart_history_list($userid);
-    $data['historyitems'] = $sclist->return_list();
 }
+
+// We use our output class, but only need the generated array.
+$cashier = new cashier($userid, true);
+$data = $cashier->returnaslist();
+
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title("Kassa");
-$PAGE->set_heading("Kassa");
+$PAGE->set_title(get_string('cashier', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('cashier', 'local_shopping_cart'));
 
 // Set the page layout.
 
 $PAGE->set_pagelayout('standard');
-
 
 // Output the header.
 echo $OUTPUT->header();

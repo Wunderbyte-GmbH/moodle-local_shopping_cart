@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template message_output_popup/shopping_cart_popover
+    @template price_label/shopping_cart_popover
 
     This template will render the shopping_cart popover for the navigation bar.
 
@@ -38,27 +38,27 @@
     }
 
 }}
-<li class="list-group-item flex-column align-items-start text-dark">
-    <div class="d-flex w-100 justify-content-between">
-        <h5>{{itemname}}</h5>
-        <small>{{price}} {{currency}}</small>
-    </div>
-    <div class="d-flex w-100 justify-content-between">
-        <p><span><small>{{date}}</small>
-    </div>
-    <button type="button" class="shopping_cart_history_cancel_button btn btn-sm pull-right {{buttonclass}}"
-        data-historyid='{{id}}'
-        data-componentname='{{componentname}}'
-        data-itemid='{{itemid}}'
-        data-userid='{{userid}}'
-        data-canceled='{{canceled}}'
-        data-currency='{{currency}}'
-        data-price='{{price}}'>
-        {{#canceled}}
-            {{#str}} canceled, local_shopping_cart {{/str}}
-        {{/canceled}}
-        {{^canceled}}
-            {{#str}} cancelpurchase, local_shopping_cart {{/str}}
-        {{/canceled}}
-    </button>
-</li>
+
+
+<div>
+    {{#credit}}
+        <div class="text-center sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+        <div class="text-center sc_credit">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" value="" {{usecreditclass}}>
+                <label class="custom-control-label" for="{{checkboxid}}">
+                    {{#str}} usecredit, local_shopping_cart {{/str}} {{credit}} {{currency}}
+                </label>
+            </div>
+        </div>
+        <div class="text-center sc_deductible">{{#str}} deductible, local_shopping_cart {{/str}} {{deductible}} {{currency}}</div>
+
+        <div class="text-center sc_remainingcredit">{{#str}} remainingcredit, local_shopping_cart {{/str}} {{remainingcredit}} {{currency}}</div>
+    {{/credit}}
+
+    <span class="pull-right">{{#str}} total, local_shopping_cart {{/str}}
+        <span class="sc_totalprice">
+            {{price}} {{currency}}
+        <span>
+    </span>
+</div>

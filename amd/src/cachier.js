@@ -88,6 +88,11 @@ export const init = (users, userid = 0) => {
                     console.log('payment confirmed');
                     document.getElementById('success-tab').classList.add('success');
 
+                    if (data.credit) {
+                        const credittotal = document.querySelector('span.credit_total');
+                        credittotal.innerText = data.credit;
+                    }
+
                     // We might display the item more often than once.
                     let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
 
@@ -98,7 +103,7 @@ export const init = (users, userid = 0) => {
                             item.remove();
                         }
                     });
-                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .totalprice');
+                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
 
                     totalprices.forEach(item => {
                         // eslint-disable-next-line no-console

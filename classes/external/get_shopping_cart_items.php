@@ -60,7 +60,7 @@ class get_shopping_cart_items extends external_api {
     public static function execute() {
         global $USER;
 
-        return shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+        return shopping_cart::local_shopping_cart_get_cache_data($USER->id, true);
     }
 
     /**

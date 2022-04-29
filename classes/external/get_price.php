@@ -31,26 +31,29 @@ use external_function_parameters;
 use external_value;
 use external_single_structure;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_credits;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 
-class confirm_cash_payment extends external_api {
+class get_price extends external_api {
 
     /**
-     * Describes the paramters for this service.
+     * Describes the paramters for add_item_to_cart.
      *
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
-        ));
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
+            'usecredit'  => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
+            )
+        );
     }
 
     /**
-     * Excecute this websrvice.
+     * Webservice for shopping_cart class to add a new item to the cart.
      *
      * @param string $component
      * @param int $itemid
@@ -58,13 +61,25 @@ class confirm_cash_payment extends external_api {
      *
      * @return array
      */
-    public static function execute(int $userid) {
-
+    public static function execute(int $userid, int $usecredit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid
+            'userid' => $userid,
+            'usecredit' => $usecredit
         ]);
 
-        return shopping_cart::confirm_payment($params['userid']);
+        $usecredit = $params['usecredit'] == 1 ? true : false;
+
+        shopping_cart::save_used_credit_state($params['userid'], $usecredit);
+
+        $data = shopping_cart::local_shopping_cart_get_cache_data($params['userid'], $usecredit);
+
+        // For the webservice, we must make sure that the keys exist.
+
+        $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
+        $data['deductible'] = $data['deductible'] ?? 0;
+        $data['usecredit'] = $data['usecredit'] ?? 0;
+
+        return $data;
     }
 
     /**
@@ -73,11 +88,14 @@ class confirm_cash_payment extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure(
-            array(
-                'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
-                'error' => new external_value(PARAM_RAW, 'Error message.'),
-                'credit' => new external_value(PARAM_RAW, 'credit')
+        return new external_single_structure(array(
+            'price' => new external_value(PARAM_RAW, 'Total price'),
+            'credit' => new external_value(PARAM_RAW, 'Credit'),
+            'currency' => new external_value(PARAM_RAW, 'Currency'),
+            'initialtotal' => new external_value(PARAM_RAW, 'Initial price before deduced credits'),
+            'remainingcredit' => new external_value(PARAM_RAW, 'Credits after reducation'),
+            'deductible' => new external_value(PARAM_RAW, 'Deductible amount'),
+            'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
             )
         );
     }

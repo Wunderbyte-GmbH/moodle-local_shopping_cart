@@ -50,6 +50,7 @@ class cancel_purchase extends external_api {
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_DEFAULT, 0),
+            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_DEFAULT, 0)
             )
         );
     }
@@ -63,15 +64,16 @@ class cancel_purchase extends external_api {
      *
      * @return array
      */
-    public static function execute(string $componentname, int $itemid, int $userid, int $historyid): array {
+    public static function execute(string $componentname, int $itemid, int $userid, int $historyid, float $credit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
             'itemid' => $itemid,
             'userid' => $userid,
-            'historyid' => $historyid
+            'historyid' => $historyid,
+            'credit' => $credit
         ]);
 
-        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'], $params['historyid']);
+        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'], $params['historyid'],  $params['credit']);
     }
 
     /**
@@ -82,7 +84,8 @@ class cancel_purchase extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(array(
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
-            'error' => new external_value(PARAM_RAW, 'Error message if something went wrong')
+            'error' => new external_value(PARAM_RAW, 'Error message if something went wrong'),
+            'credit' => new external_value(PARAM_FLOAT, 'New credit value')
             )
         );
     }

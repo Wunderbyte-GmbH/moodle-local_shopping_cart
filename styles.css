@@ -197,3 +197,122 @@
         flex: 0 0 100%;
     }
 }
+
+#cachiertabs span.nav-link {
+    outline: 0;
+    box-shadow: none;
+}
+#cachiertabs .active {
+    color: #000000;
+}
+
+#cachiertabs li {
+    list-style-type: none;
+    font-size: 12px;
+    width: 25%;
+    float: left;
+    position: relative;
+}
+
+#cachiertabs li span:before {
+    position: relative;
+    z-index: 3;
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: lightgray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+    text-align: center;
+}
+
+#cachiertabs li span:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: lightgray;
+    position: absolute;
+    left: 0;
+    top: 34px;
+    z-index: 2;
+}
+
+#cachiertabs {
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: lightgrey;
+}
+
+#cachiertabs #user-tab:before {
+    font-family: FontAwesome;
+    content: "\f007";
+}
+
+#cachiertabs #cart-tab:before {
+    font-family: FontAwesome;
+    content: "\f07a";
+}
+
+#cachiertabs #checkout-tab:before {
+    font-family: FontAwesome;
+    content: "\f09d";
+}
+
+
+#cachiertabs #success-tab:before {
+    font-family: FontAwesome;
+    content: "\f00c";
+}
+
+#cachiertabs li span.active:before,
+#cachiertabs li span.active:after,
+#cachiertabs li span.success:before,
+#cachiertabs li span.success:after {
+    background: var(--success);
+}
+
+.shopping-cart-items {
+    list-style: none;
+    padding-left: 0;
+}
+.autocomplete {
+    width: max-content;
+}
+
+#cachiertabs span.disabled {
+    font-style: normal;
+}
+
+#page-local-shopping_cart-checkout #region-main-box {
+    border: none;
+}
+
+#page-local-shopping_cart-checkout .wunderbyteTableJavascript ul {
+    padding: 0;
+    border-top: 1px solid var(--primary);
+}
+#page-local-shopping_cart-checkout #shoppingcartfilterinput {
+    margin-top: 20px;
+    width: 200px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+}
+
+#page-local-shopping_cart-checkout #checkout .shopping-cart-items {
+    padding: 20px;
+    margin: 20px;
+    border-top: 1px dashed black;
+}
+
+#page-local-shopping_cart-checkout #region-main-box #litotalprice {
+    font-size: 20px;
+    color: var(--warning);
+}
+
+#page-local-shopping_cart-checkout #region-main-box #success #litotalprice {
+    color: var(--success);
+}

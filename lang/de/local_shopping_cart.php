@@ -92,4 +92,19 @@ $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
 
 $string['confirmcanceltitle'] = 'Bestätige Stornierung';
-$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Diese Aktion lässt sich nicht rückgängig machen.';
+$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das lässt sich nicht rückgängig machen. Unten kann die Gutschrift angepasst werden.';
+
+$string['confirmpaidbacktitle'] = "Bestätige Auszahlung";
+$string['confirmpaidbackbody'] = "Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.";
+$string['confirmpaidback'] = "Bestätige Auszahlung";
+
+$string['deletecredit'] = 'Ausbezahlt';
+$string['credit'] = 'Guthaben:';
+
+$string['cashier'] = "Kassa";
+
+$string['initialtotal'] = "Preis:";
+$string['usecredit'] = "Verwende Guthaben:";
+$string['deductible'] = "Abziehbar:";
+$string['remainingcredit'] = "Verbleibendes Guthaben:";
+$string['remainingtotal'] = "Preis:";

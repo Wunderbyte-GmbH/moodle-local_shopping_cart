@@ -1,0 +1,91 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Contains class mod_questionnaire\output\indexpage
+ *
+ * @package    local_shopping_cart
+ * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
+ * @author     Georg Maißer
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ **/
+
+namespace local_shopping_cart\output;
+
+use core_user;
+use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
+use moodle_url;
+use renderable;
+use renderer_base;
+use templatable;
+
+/**
+ * viewtable class to display view.php
+ * @package local_shopping_cart
+ *
+ */
+class cashier implements renderable, templatable {
+
+    /**
+     * data is the array used for output.
+     *
+     * @var array
+     */
+    private $data = [];
+
+    /**
+     * Constructor.
+     * @param integer|null $userid
+     */
+    public function __construct(int $userid = null, bool $usecredit = false) {
+
+        if (isset($userid) && $userid > 0 ) {
+            $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
+            $data['buyforuserid'] = $userid;
+            $user = core_user::get_user($userid, 'id, lastname, firstname, email');
+            $data['userid'] = $user->id;
+            $data['userlastname'] = $user->lastname;
+            $data['userfirstname'] = $user->firstname;
+            $data['useremail'] = $user->email;
+
+            // We use the template class, but not the renderer here.
+            $sclist = new shoppingcart_history_list($userid);
+            $data['historyitems'] = $sclist->return_list();
+            $this->data = $data;
+        }
+    }
+
+    /**
+     * Returns the values as array.
+     *
+     * @return array
+     */
+    public function returnaslist() {
+        return $this->data;
+    }
+
+    /**
+     * Prepare data for use in a template
+     *
+     * @param renderer_base $output
+     * @return array
+     */
+    public function export_for_template(renderer_base $output) {
+
+        return $this->data;
+    }
+}
