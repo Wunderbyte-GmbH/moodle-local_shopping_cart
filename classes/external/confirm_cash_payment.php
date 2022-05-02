@@ -77,7 +77,8 @@ class confirm_cash_payment extends external_api {
             array(
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
                 'error' => new external_value(PARAM_RAW, 'Error message.'),
-                'credit' => new external_value(PARAM_RAW, 'credit')
+                'credit' => new external_value(PARAM_RAW, 'credit'),
+                'identifier' => new external_value(PARAM_INT, 'identifier used in the shopping cart history')
             )
         );
     }

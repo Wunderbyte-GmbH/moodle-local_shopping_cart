@@ -460,6 +460,8 @@ class shopping_cart {
     public static function confirm_payment($userid, $datafromhistory = null) {
         global $USER;
 
+        $identifier = 0;
+
         // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
             // Retrieve items from cache.
@@ -480,7 +482,8 @@ class shopping_cart {
                     return [
                         'status' => 0,
                         'error' => get_string('notenoughcredit', 'local_shopping_cart'),
-                        'credit' => $data['remainingcredit']
+                        'credit' => $data['remainingcredit'],
+                        'identifier' => $identifier
                     ];
                 }
             } else {
@@ -488,7 +491,8 @@ class shopping_cart {
                     return [
                         'status' => 0,
                         'error' => get_string('nopermission', 'local_shopping_cart'),
-                        'credit' => ''
+                        'credit' => '',
+                        'identifier' => $identifier
                     ];
                 }
             }
@@ -509,7 +513,8 @@ class shopping_cart {
             return [
                 'status' => 0,
                 'error' => get_string('noitemsincart', 'local_shopping_cart'),
-                'credit' => ''
+                'credit' => '',
+                'identifier' => $identifier
             ];
         }
 
@@ -522,6 +527,10 @@ class shopping_cart {
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
 
             $item = (array)$item;
+
+            // If the item identifier is specified (this is only the case, when we get data from history)...
+            // ... we use the identifier. Else, it stays the same.
+            $identifier = $item['identifier'] ?? $identifier;
 
             // In the shoppingcart history, we don't store the name.
             if (!isset($item['itemname'])) {
@@ -572,14 +581,16 @@ class shopping_cart {
             return [
                 'status' => 1,
                 'error' => '',
-                'credit' => $data['remainingcredit']
+                'credit' => $data['remainingcredit'],
+                'identifier' => $identifier
 
             ];
         } else {
             return [
                 'status' => 0,
                 'error' => implode('<br>', $error),
-                'credit' => $data['remainingcredit']
+                'credit' => $data['remainingcredit'],
+                'identifier' => $identifier
             ];
         }
     }

@@ -20,6 +20,7 @@
  */
 
 import Ajax from 'core/ajax';
+import Url from 'core/url';
 
 export const init = (users, userid = 0) => {
     // eslint-disable-next-line no-console
@@ -81,34 +82,52 @@ export const confirmPayment = (userid) => {
         done: function(data) {
 
             if (data.status == 1) {
+
                 // eslint-disable-next-line no-console
-                console.log('payment confirmed');
-                document.getElementById('success-tab').classList.add('success');
+                console.log('payment confirmed', data);
 
-                if (data.credit) {
-                    const credittotal = document.querySelector('span.credit_total');
-                    credittotal.innerText = data.credit;
+                // The function can be called via cashier, or because a user pays via credits.
+                // If that's the case, we are not on the cachier site.
+
+                const oncashier = window.location.href.indexOf("cashier.php");
+
+                // If we are not on cashier, we can just redirect.
+                if (oncashier < 1) {
+
+                    const identifier = data.identifier;
+
+                    const newurl = Url.fileUrl("/local/shopping_cart/checkout.php?success=1&identifier=" + identifier, "");
+
+                    location.href = newurl;
+
+                } else {
+                    document.getElementById('success-tab').classList.add('success');
+
+                    if (data.credit) {
+                        const credittotal = document.querySelector('span.credit_total');
+                        credittotal.innerText = data.credit;
+                    }
+
+                    // We might display the item more often than once.
+                    let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
+
+                    items.forEach(item => {
+                        // eslint-disable-next-line no-console
+                        console.log(item);
+                        if (item) {
+                            item.remove();
+                        }
+                    });
+                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
+
+                    totalprices.forEach(item => {
+                        // eslint-disable-next-line no-console
+                        console.log(item);
+                        if (item) {
+                            item.innerText = 0;
+                        }
+                    });
                 }
-
-                // We might display the item more often than once.
-                let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
-
-                items.forEach(item => {
-                    // eslint-disable-next-line no-console
-                    console.log(item);
-                    if (item) {
-                        item.remove();
-                    }
-                });
-                let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
-
-                totalprices.forEach(item => {
-                    // eslint-disable-next-line no-console
-                    console.log(item);
-                    if (item) {
-                        item.innerText = 0;
-                    }
-                });
 
             } else {
                 // eslint-disable-next-line no-console

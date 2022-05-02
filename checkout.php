@@ -55,6 +55,7 @@ $userid = $USER->id;
 $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
+$data["userid"] = $USER->id;
 if (isset($success)) {
     if ($success) {
         $data['success'] = 1;
