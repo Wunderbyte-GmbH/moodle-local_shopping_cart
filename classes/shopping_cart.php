@@ -65,13 +65,17 @@ class shopping_cart {
         global $USER;
 
         // If there is no user specified, we determine it automatically.
-        if ($userid == 0) {
+        if ($userid < 0) {
             $context = context_system::instance();
             if (has_capability('local/shopping_cart:cachier', $context)) {
                 $userid = self::return_buy_for_userid();
-            } else {
-                $userid = $USER->id;
             }
+        } else {
+            // As we are not on cashier anymore, we delete buy for user.
+            self::buy_for_user(0);
+        }
+        if ($userid < 1) {
+            $userid = $USER->id;
         }
 
         $success = true;
@@ -456,32 +460,47 @@ class shopping_cart {
     public static function confirm_payment($userid, $datafromhistory = null) {
         global $USER;
 
-        // If the data comes from history, we don't need to check rights.
-        // No history means that we are in the cashier process.
-        if (!$datafromhistory) {
-            // Make sure the user has the rights to access this function.
-            $context = context_system::instance();
-            if (!has_capability('local/shopping_cart:cachier', $context)) {
-                return [
-                    'status' => 0,
-                    'error' => get_string('nopermission', 'local_shopping_cart'),
-                    'credit' => ''
-                ];
-            }
-
-            $identifier = time();
-
-        }
-
+        // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
             // Retrieve items from cache.
             $data = self::local_shopping_cart_get_cache_data($userid);
+
+            // Now, this can happen in two cases. Either, a user wants to pay with his credits for his item.
+            // This can only go through, when price is 0.
+
+            $context = context_system::instance();
+
+            if ($userid == $USER->id) {
+                if ($data['price'] == 0) {
+                    // The user wants to pay for herself with her credits and she has enough.
+                    // We actually don't need to do anything here.
+
+                } else if (!has_capability('local/shopping_cart:cachier', $context)) {
+                    // The cashier could call this to pay for herself, therefore only for non cashiers, we return here.
+                    return [
+                        'status' => 0,
+                        'error' => get_string('notenoughcredit', 'local_shopping_cart'),
+                        'credit' => $data['remainingcredit']
+                    ];
+                }
+            } else {
+                if (!has_capability('local/shopping_cart:cachier', $context)) {
+                    return [
+                        'status' => 0,
+                        'error' => get_string('nopermission', 'local_shopping_cart'),
+                        'credit' => ''
+                    ];
+                }
+            }
+
+            // Now the user either has enough credit to pay for herself, or she is a cashier.
+            $identifier = time();
+
         } else {
 
             // Even if we get the data from history, we still need to look in cache.
             // With this, we will know how much the user actually paid and how much comes from her credits.
             shopping_cart_credits::prepare_checkout($data, $userid);
-
         }
 
         // Check if we have items for this user.
@@ -519,6 +538,11 @@ class shopping_cart {
 
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
+
+                    // If this is paid for with credits, we want to have this on record.
+                    // Also, price is then 0, but we want to know the real price.
+                    $paymenttype = $data['price'] == 0 ? 'credits' : 'cash';
+
                     shopping_cart_history::create_entry_in_history(
                         $userid,
                         $item['itemid'],
@@ -527,7 +551,7 @@ class shopping_cart {
                         $item['currency'],
                         $item['componentname'],
                         $identifier,
-                        'cash',
+                        $paymenttype,
                         PAYMENT_SUCCESS
                         );
                 }

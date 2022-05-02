@@ -98,6 +98,10 @@ $string['confirmpaidbacktitle'] = "Bestätige Auszahlung";
 $string['confirmpaidbackbody'] = "Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.";
 $string['confirmpaidback'] = "Bestätige Auszahlung";
 
+$string['confirmzeropricecheckouttitle'] = "Mit Guthaben bezahlen";
+$string['confirmzeropricecheckoutbody'] = "Sie haben genug Guthaben, um Ihren Kauf zur Gänze zu bezahlen. Wollen Sie fortfahren?";
+$string['confirmzeropricecheckout'] = "Bestätige";
+
 $string['deletecredit'] = 'Ausbezahlt';
 $string['credit'] = 'Guthaben:';
 

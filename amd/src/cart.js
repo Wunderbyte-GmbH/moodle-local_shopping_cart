@@ -23,6 +23,16 @@ import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 import Notification from 'core/notification';
 
+import ModalFactory from 'core/modal_factory';
+import ModalEvents from 'core/modal_events';
+
+import {confirmPayment} from 'local_shopping_cart/cachier';
+
+import {
+    get_strings as getStrings
+        }
+        from 'core/str';
+
 export var countdownelement = null;
 export var interval = null;
 export var visbilityevent = false;
@@ -260,19 +270,24 @@ export const deleteItem = (id, component, userid) => {
 
 export const addItem = (id, component) => {
 
+    const oncashier = window.location.href.indexOf("cashier.php");
+
+    let userid = 0;
+    if (oncashier > 0) {
+        userid = -1;
+    }
+
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
             'component': component,
-            'itemid': id
+            'itemid': id,
+            'userid': userid
         },
         done: function(data) {
             data.component = component;
             data.id = id;
             data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
-
-            // eslint-disable-next-line no-console
-            console.log('buyforuser', data.buyforuser);
 
             if (data.success != 1) {
                 Notification.addNotification({
@@ -363,8 +378,15 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
     console.log('updatetotalprice');
 
     // First, get the state of usecredit.
+    const oncashier = window.location.href.indexOf("cashier.php");
 
-    const labelareas = document.querySelectorAll('.sc_price_label');
+    let labelareas = null;
+    if (oncashier > 0) {
+        labelareas = document.querySelectorAll('div.sc_price_label');
+    } else {
+        labelareas = document.querySelectorAll('li.sc_price_label');
+    }
+
     labelareas.forEach(element => {
 
         // eslint-disable-next-line no-console
@@ -445,19 +467,33 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 }
             }
 
+            let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
+
+            if (paymentbutton) {
+
+                const price = data.price;
+                const currency = data.currency;
+
+                // eslint-disable-next-line no-console
+                console.log("paymentbutton", price, currency);
+
+                paymentbutton.dataset.cost = price + " " + currency;
+
+                if (price == 0) {
+                    // eslint-disable-next-line no-console
+                    console.log('price is 0');
+                    paymentbutton.addEventListener('click', dealWithZeroPrice);
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.log('price is not 0');
+                    paymentbutton.removeEventListener('click', dealWithZeroPrice);
+                }
+            }
+
             // Run through the list of total prices and set them to the right one.
             totals.forEach(total => {
                 total.innerHTML = initialtotal;
             });
-
-            let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
-
-            if (paymentbutton) {
-                const price = data.initialtotal;
-                const currency = data.currency;
-
-                paymentbutton.dataset.cost = price + " " + currency;
-            }
 
             data.checkboxid = Math.random().toString(36).slice(2, 5);
 
@@ -497,6 +533,23 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
         }
     }], true);
 };
+
+/**
+ *
+ * @param {*} event
+ */
+function dealWithZeroPrice(event) {
+
+    // eslint-disable-next-line no-console
+    console.log('onlymyclickcounts');
+
+        event.stopPropagation();
+        event.preventDefault();
+        // eslint-disable-next-line no-console
+        console.log('onlymyclickcounts', event.target);
+
+        confirmZeroPriceCheckoutModal(event.target);
+}
 
 /**
  * Delete Event.
@@ -592,3 +645,45 @@ function initTimer(expirationdate = null) {
     }
 }
 
+/**
+ *
+ * @param {*} element
+ */
+ function confirmZeroPriceCheckoutModal(element) {
+
+    getStrings([
+        {key: 'confirmzeropricecheckouttitle', component: 'local_shopping_cart'},
+        {key: 'confirmzeropricecheckoutbody', component: 'local_shopping_cart'},
+        {key: 'confirmzeropricecheckout', component: 'local_shopping_cart'}
+    ]
+    ).then(strings => {
+
+        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+
+            modal.setTitle(strings[0]);
+                modal.setBody(strings[1]);
+                modal.setSaveButtonText(strings[2]);
+                modal.getRoot().on(ModalEvents.save, function() {
+
+                    const userid = element.dataset.userid;
+
+                    // eslint-disable-next-line no-console
+                    console.log(userid);
+
+                    if (userid) {
+                        confirmPayment(userid);
+                    }
+                });
+
+                modal.show();
+                return modal;
+        }).catch(e => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+        return true;
+    }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log(e);
+    });
+}

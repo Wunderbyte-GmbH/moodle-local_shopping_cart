@@ -284,4 +284,36 @@ class shopping_cart_credits {
 
         return true;
     }
+
+    /**
+     * This function calculates the price to be paid from the shopping cart, while taking account credits and usecredit status.
+     *
+     * @param [type] $shoppingcart
+     * @return integer
+     */
+    public static function get_price_from_shistorycart($shoppingcart):int {
+
+        // First we need to get the userid from the cart.
+        $userid = 0;
+        $currency = '';
+        $data = [];
+        $data['price'] = $shoppingcart->price;
+
+        if (isset($shoppingcart->items)) {
+            foreach($shoppingcart->items as $item) {
+                if (!empty($item['userid'])) {
+                    $userid = $item['userid'];
+                    $currency = $item['currency'];
+                    break;
+                }
+            }
+        }
+        if ($userid != 0) {
+
+            $data['currency'] = $currency;
+            self::prepare_checkout($data, $userid);
+        }
+
+        return $data['price'];
+    }
 }

@@ -70,61 +70,57 @@ export const init = (users, userid = 0) => {
             }
         });
     }
+};
 
-    /**
-     * Confirm successful payment via ajax.
-     * @param {integer} userid
-     */
-    function confirmPayment(userid) {
-        Ajax.call([{
-            methodname: "local_shopping_cart_confirm_cash_payment",
-            args: {
-                'userid': userid
-            },
-            done: function(data) {
+export const confirmPayment = (userid) => {
+    Ajax.call([{
+        methodname: "local_shopping_cart_confirm_cash_payment",
+        args: {
+            'userid': userid
+        },
+        done: function(data) {
 
-                if (data.status == 1) {
-                    // eslint-disable-next-line no-console
-                    console.log('payment confirmed');
-                    document.getElementById('success-tab').classList.add('success');
-
-                    if (data.credit) {
-                        const credittotal = document.querySelector('span.credit_total');
-                        credittotal.innerText = data.credit;
-                    }
-
-                    // We might display the item more often than once.
-                    let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
-
-                    items.forEach(item => {
-                        // eslint-disable-next-line no-console
-                        console.log(item);
-                        if (item) {
-                            item.remove();
-                        }
-                    });
-                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
-
-                    totalprices.forEach(item => {
-                        // eslint-disable-next-line no-console
-                        console.log(item);
-                        if (item) {
-                            item.innerText = 0;
-                        }
-                    });
-
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.log('payment denied');
-                    document.getElementById('success-tab').classList.add('error');
-                }
-            },
-            fail: function(ex) {
+            if (data.status == 1) {
                 // eslint-disable-next-line no-console
-                console.log(ex);
-            },
-        }]);
-    }
+                console.log('payment confirmed');
+                document.getElementById('success-tab').classList.add('success');
+
+                if (data.credit) {
+                    const credittotal = document.querySelector('span.credit_total');
+                    credittotal.innerText = data.credit;
+                }
+
+                // We might display the item more often than once.
+                let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
+
+                items.forEach(item => {
+                    // eslint-disable-next-line no-console
+                    console.log(item);
+                    if (item) {
+                        item.remove();
+                    }
+                });
+                let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
+
+                totalprices.forEach(item => {
+                    // eslint-disable-next-line no-console
+                    console.log(item);
+                    if (item) {
+                        item.innerText = 0;
+                    }
+                });
+
+            } else {
+                // eslint-disable-next-line no-console
+                console.log('payment denied');
+                document.getElementById('success-tab').classList.add('error');
+            }
+        },
+        fail: function(ex) {
+            // eslint-disable-next-line no-console
+            console.log(ex);
+        },
+    }]);
 };
 
 export const validateCart = ($userid) => {

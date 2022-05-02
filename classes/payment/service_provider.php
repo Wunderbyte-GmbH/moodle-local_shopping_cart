@@ -62,9 +62,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
 
         // At this point, the user will consume any credit she might have.
         // This might reduce the price, down to 0. But the reduction to 0 should be treated beforehand, because it will throw an error in payment.
-        $checkoutdata = shopping_cart_credits::prepare_checkout($shoppingcart->userid);
-
-        $price = $checkoutdata['remainingtotal'];
+        $price = shopping_cart_credits::get_price_from_shistorycart($shoppingcart);
 
         return new \core_payment\local\entities\payable($price, $shoppingcart->currency, $accountid);
     }

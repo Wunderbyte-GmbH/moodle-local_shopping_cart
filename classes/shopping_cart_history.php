@@ -411,7 +411,7 @@ class shopping_cart_history {
      * @param bool $writetodb
      * @return mixed|false
      */
-    public function fetch_data_from_schistory_cache(string $identifier, bool $writetodb = false) {
+    public function fetch_data_from_schistory_cache(string $identifier) {
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
 

@@ -66,8 +66,20 @@
             {{#items}}
             {{> local_shopping_cart/shopping_cart_item }}
             {{/items}}
-            <li id="liinitialtotal_navbar" class="sc_price_label">
-                {{> local_shopping_cart/price_label }}
+            <li id="liinitialtotal_navbar">
+                <div class="text-right">
+                <span>
+                    {{#str}} total, local_shopping_cart {{/str}}
+                </span>
+                <span class="pull-right">
+                    <span class="initialtotal">
+                        {{initialtotal}}
+                    </span>
+                    <span class="currency_initialtotal">
+                        {{currency}}
+                    </span>
+                </span>
+                </div>
             </li>
         </ul>
     </div>
