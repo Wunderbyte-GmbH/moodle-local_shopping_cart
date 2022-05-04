@@ -32,8 +32,35 @@
 function xmldb_local_shopping_cart_upgrade($oldversion) {
     global $DB;
 
+    $dbman = $DB->get_manager();
 
+    if ($oldversion < 2022050400) {
 
+        // Define table local_shopping_cart_credits to be created.
+        $table = new xmldb_table('local_shopping_cart_credits');
+
+        // Adding fields to table local_shopping_cart_credits.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('credits', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('currency', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('balance', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table local_shopping_cart_credits.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for local_shopping_cart_credits.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022050400, 'local', 'shopping_cart');
+    }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //

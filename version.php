@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_shopping_cart';
 $plugin->release = '0.1.5';
-$plugin->version = 2022042900;
+$plugin->version = 2022050400;
 $plugin->requires = 2020051700;
 $plugin->maturity = MATURITY_ALPHA;
