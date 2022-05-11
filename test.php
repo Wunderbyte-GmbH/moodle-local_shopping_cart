@@ -50,6 +50,6 @@ $data = $item->getitem();
 $data = new button($data);
 global $USER;
 $history = new shopping_cart_history();
-$data = $history->prepare_data_from_cache($USER->id);
+// $data = $history->prepare_data_from_cache($USER->id);
 echo $renderer->render_button($data);
 echo $OUTPUT->footer();
