@@ -50,17 +50,13 @@ class get_shopping_cart_items extends external_api {
 
     /**
      * Excecute this websrvice.
-     *
-     * @param string $component
-     * @param int $itemid
-     * @param int $userid
-     *
+   
      * @return array
      */
     public static function execute() {
         global $USER;
 
-        return shopping_cart::local_shopping_cart_get_cache_data($USER->id, true);
+        return shopping_cart::local_shopping_cart_get_cache_data((int)$USER->id, true);
     }
 
     /**
