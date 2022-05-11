@@ -32,7 +32,10 @@ $services = array(
                         'local_shopping_cart_delete_item',
                         'local_shopping_cart_delete_all_items_from_cart',
                         'local_shopping_cart_get_shopping_cart_items',
-                        'local_shopping_cart_checkout_for_customer',
+                        'local_shopping_cart_credit_paid_back',
+                        'local_shopping_cart_cancel_purchase',
+                        'local_shopping_cart_get_price',
+                        'local_shopping_cart_credit_paid_back',
                         'local_shopping_cart_confirm_cash_payment'
                 ),
                 'restrictedusers' => 1,
