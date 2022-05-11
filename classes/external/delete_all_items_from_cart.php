@@ -66,6 +66,7 @@ class delete_all_items_from_cart extends external_api {
 
         $userid = $USER->id;
         shopping_cart::delete_all_items_from_cart($userid);
+        return ["success" => 1];
     }
 
     /**
@@ -74,5 +75,8 @@ class delete_all_items_from_cart extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns() {
+        return new external_single_structure(array(
+            'success'  => new external_value(PARAM_INT, 'id'),
+        ));
     }
 }
