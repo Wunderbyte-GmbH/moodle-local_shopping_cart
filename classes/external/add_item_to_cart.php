@@ -78,13 +78,13 @@ class add_item_to_cart extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(array(
-            'itemid' => new external_value(PARAM_INT, 'Item id'),
-            'itemname' => new external_value(PARAM_RAW, 'Item name'),
-            'price' => new external_value(PARAM_RAW, 'Item price'),
-            'currency' => new external_value(PARAM_RAW, 'Currency'),
-            'componentname' => new external_value(PARAM_RAW, 'Component name'),
+            'itemid' => new external_value(PARAM_INT, 'Item id', VALUE_DEFAULT, 0),
+            'itemname' => new external_value(PARAM_RAW, 'Item name', VALUE_DEFAULT, ''),
+            'price' => new external_value(PARAM_RAW, 'Item price', VALUE_DEFAULT, ''),
+            'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_DEFAULT, ''),
+            'componentname' => new external_value(PARAM_RAW, 'Component name', VALUE_DEFAULT, ''),
             'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
-            'description' => new external_value(PARAM_RAW, 'Item description'),
+            'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself')
             )
