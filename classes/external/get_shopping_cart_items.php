@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use context_system;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
@@ -45,7 +46,9 @@ class get_shopping_cart_items extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array());
+        return new external_function_parameters(array(
+            'userid'  => new external_value(PARAM_INT, 'userid',VALUE_DEFAULT, 0)
+        ));
     }
 
     /**
@@ -53,10 +56,22 @@ class get_shopping_cart_items extends external_api {
    
      * @return array
      */
-    public static function execute() {
+    public static function execute($userid) {
         global $USER;
 
-        return shopping_cart::local_shopping_cart_get_cache_data((int)$USER->id, true);
+        $params = self::validate_parameters(self::execute_parameters(), [
+            'userid' => $userid
+        ]);
+        
+        $context = context_system::instance();
+
+        if (has_capability('local/shopping_cart:cachier', $context)) { 
+            $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
+        } else {
+            $userid = (int)$USER->id;
+        }
+
+        return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
     }
 
     /**
