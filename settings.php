@@ -30,7 +30,7 @@ $componentname = 'local_shopping_cart';
 // Default for users that have site config.
 if ($hassiteconfig) {
     // Add the category to the local plugin branch.
-    $settings = new admin_settingpage('local_shopping_cart_settings', '');
+    $settings = new admin_settingpage('local_shopping_cart_settings', get_string('pluginname', 'local_shopping_cart'));
     $ADMIN->add('localplugins', new admin_category($componentname, get_string('pluginname', $componentname)));
     $ADMIN->add($componentname, $settings);
 
@@ -55,7 +55,7 @@ if ($hassiteconfig) {
             'nopaymentaccounts',
             get_string('nopaymentaccounts', 'local_shopping_cart'),
             get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
-        )); 
+        ));
 
     } else {
         // Connect payment account.
@@ -69,7 +69,7 @@ if ($hassiteconfig) {
             )
         );
     }
-    
+
 
     // Max items in cart.
     $settings->add(
