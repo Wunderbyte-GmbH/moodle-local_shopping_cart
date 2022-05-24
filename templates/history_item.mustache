@@ -45,7 +45,23 @@
     </div>
     <div class="d-flex w-100 justify-content-between">
         <p><span><small>{{date}}</small>
+        <p><span><small>payed by {{payment}}</small>
     </div>
+    {{#gateway}}
+    <p>
+        <span><small>Payment gateway: <b>{{gateway}}</b></small></span>
+        {{#orderid}}
+            <br><a data-toggle="collapse" href="#collapseOrderid{{id}}" role="button" aria-expanded="false" aria-controls="collapseOrderid{{id}}">
+                    <small>Show Order-ID...</small>
+            </a>
+            <div class="collapse" id="collapseOrderid{{id}}">
+                <div class="card card-body mb-3 bg-light">
+                    {{orderid}}
+                </div>
+            </div>
+        {{/orderid}}
+    </p>
+    {{/gateway}}
     <button type="button" class="shopping_cart_history_cancel_button btn btn-sm pull-right {{buttonclass}}"
         data-historyid='{{id}}'
         data-componentname='{{componentname}}'

@@ -94,10 +94,57 @@ class shopping_cart_history {
 
         global $DB;
 
-        $sql = "SELECT *
-                FROM {local_shopping_cart_history}
-                WHERE userid=:userid
-                AND paymentstatus >= " . PAYMENT_SUCCESS ;
+        // Get payment account from settings.
+        $accountid = get_config('local_shopping_cart', 'accountid');
+        $account = null;
+
+        if (!empty($accountid)) {
+            $account = new \core_payment\account($accountid);
+        }
+
+        // Create selects for each payment gateway.
+        $colselects = [];
+
+        // Create an array of table names for the payment gateways.
+        if (!empty($account)) {
+            foreach ($account->get_gateways() as $gateway) {
+                $gwname = $gateway->get('gateway');
+                if ($gateway->get('enabled')) {
+                    $tablename = "paygw_" . $gwname;
+                    
+                    $cols = $DB->get_columns($tablename);
+                    // Do not add the table if it does not have exactly 3 columns.
+                    if (count($cols) != 3) {
+                        continue;
+                    }
+
+                    foreach ($cols as $key => $value) {
+                        if(strpos($key, 'orderid') !== false){
+                            // Generate a select for each table.
+                            $colselects[] =
+                               "SELECT $gwname.paymentid, $gwname.$key orderid
+                                FROM {paygw_$gwname} $gwname";
+                        }
+                    }
+                }
+            }
+        }
+
+        $selectorderidpart = "";
+        if (!empty($colselects)) {
+            $selectorderidpart = ", pgw.orderid";
+            $colselectsstring = implode(' UNION ', $colselects);
+            $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
+        }
+
+        $sql = "SELECT sch.*, p.gateway$selectorderidpart
+                FROM {local_shopping_cart_history} sch
+                LEFT JOIN {payments} p
+                ON p.itemid = sch.identifier
+                $gatewayspart
+                WHERE sch.userid = :userid AND sch.paymentstatus >= " . PAYMENT_SUCCESS .
+                " ORDER BY sch.timemodified DESC";
+
 
         return $DB->get_records_sql($sql, ['userid' => $userid]);
     }
