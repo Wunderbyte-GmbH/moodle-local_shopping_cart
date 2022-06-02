@@ -9,7 +9,7 @@
                 <FIELD NAME="price" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Item price."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
                 <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
-                <FIELD NAME="identifier" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
                 <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of payment."/>
                 <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
                 <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>

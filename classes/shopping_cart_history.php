@@ -111,7 +111,7 @@ class shopping_cart_history {
                 $gwname = $gateway->get('gateway');
                 if ($gateway->get('enabled')) {
                     $tablename = "paygw_" . $gwname;
-                    
+
                     $cols = $DB->get_columns($tablename);
                     // Do not add the table if it does not have exactly 3 columns.
                     if (count($cols) != 3) {
@@ -119,7 +119,7 @@ class shopping_cart_history {
                     }
 
                     foreach ($cols as $key => $value) {
-                        if(strpos($key, 'orderid') !== false){
+                        if (strpos($key, 'orderid') !== false) {
                             // Generate a select for each table.
                             $colselects[] =
                                "SELECT $gwname.paymentid, $gwname.$key orderid
@@ -142,11 +142,10 @@ class shopping_cart_history {
                 LEFT JOIN {payments} p
                 ON p.itemid = sch.identifier
                 $gatewayspart
-                WHERE sch.userid = :userid AND sch.paymentstatus >= " . PAYMENT_SUCCESS .
-                " ORDER BY sch.timemodified DESC";
+                WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
+                ORDER BY sch.timemodified DESC";
 
-
-        return $DB->get_records_sql($sql, ['userid' => $userid]);
+        return $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => PAYMENT_SUCCESS]);
     }
 
     /**
@@ -342,7 +341,7 @@ class shopping_cart_history {
         // If it's still pending, we set all items to error.
 
         $pending = 'pending';
-        foreach($records as $record) {
+        foreach ($records as $record) {
             // If we haven't fond a record where it's not pending, we check this one.
             if ($record->paymentstatus == PAYMENT_PENDING) {
                 $record->paymentstatus = PAYMENT_ABORTED;

@@ -476,6 +476,7 @@ class shopping_cart {
                 if ($data['price'] == 0) {
                     // The user wants to pay for herself with her credits and she has enough.
                     // We actually don't need to do anything here.
+                    $data['price'] = 0;
 
                 } else if (!has_capability('local/shopping_cart:cachier', $context)) {
                     // The cashier could call this to pay for herself, therefore only for non cashiers, we return here.
@@ -606,15 +607,15 @@ class shopping_cart {
      */
     public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $historyid = null, float $customcredit = 0):array {
 
-         // Cancelation is only allowed for cachiers.
-         $context = context_system::instance();
-         if (!has_capability('local/shopping_cart:cachier', $context)) {
+        // Cancelation is only allowed for cachiers.
+        $context = context_system::instance();
+        if (!has_capability('local/shopping_cart:cachier', $context)) {
              return [
                  'success' => 0,
                  'error' => get_string('nopermission', 'local_shopping_cart'),
                  'credit' => 0
              ];
-         }
+        }
 
         if (!self::cancel_purchase_for_component($componentname, $itemid, $userid)) {
             return [
