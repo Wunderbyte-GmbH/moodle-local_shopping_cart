@@ -66,9 +66,20 @@ class shoppingcart_history_list implements renderable, templatable {
             $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
             $item->buttonclass = $item->paymentstatus == PAYMENT_CANCELED ? 'btn-danger disabled' : 'btn-primary';
 
-            $this->historyitems[] = (array)$item;
+            // Localize the payment string.
+            switch ($item->payment) {
+                case 'card':
+                    $item->paymentstring = get_string('card', 'local_shopping_cart');
+                    break;
+                case 'cash':
+                    $item->paymentstring = get_string('cash', 'local_shopping_cart');
+                    break;
+                default:
+                    $item->paymentstring = get_string('unknown', 'local_shopping_cart');
+                    break;
+            }
 
-
+            $this->historyitems = (array)$item;
         }
     }
 

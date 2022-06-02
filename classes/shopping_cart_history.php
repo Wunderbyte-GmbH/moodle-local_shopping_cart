@@ -238,9 +238,10 @@ class shopping_cart_history {
      * @param int $itemid
      * @param int $userid
      * @param int $identifier
-     * @return bool
+     * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null, $credit = null):array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null,
+        $credit = null): array {
 
         global $DB;
 
@@ -249,7 +250,7 @@ class shopping_cart_history {
             $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid]);
         } else {
             // Only return successfull payments.
-            // We only take the last record
+            // We only take the last record.
             $sql = "SELECT *
                     FROM {local_shopping_cart_history}
                     WHERE itemid=:itemid
@@ -414,7 +415,7 @@ class shopping_cart_history {
             $data['expirationtime'] = $cachedrawdata["expirationdate"];
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
-            $data['userid'] = $userid; // The user for which the item was bought.]
+            $data['userid'] = $userid; // The user for which the item was bought.
             $data['payment'] = 'card'; // This function is only used for card.
             $data['paymentstatus'] = PAYMENT_PENDING;
             $dataarr['items'][] = $data;

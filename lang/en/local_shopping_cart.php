@@ -75,6 +75,9 @@ $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
 
 // Cashier.
+$string['card'] = 'online';
+$string['cash'] = 'at cachier\'s office';
+$string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
 $string['restart'] = "Next customer";
