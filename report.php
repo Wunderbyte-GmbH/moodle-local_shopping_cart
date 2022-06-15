@@ -27,6 +27,8 @@ use local_shopping_cart\table\cash_report_table;
 
 require_once(__DIR__ . '/../../config.php');
 
+global $DB;
+
 $download = optional_param('download', '', PARAM_ALPHA);
 
 // No guest autologin.
@@ -92,12 +94,57 @@ if (!$cashreporttable->is_downloading()) {
     /* Header column.
     $cashreporttable->define_header_column('optiondate');*/
 
+    // Get payment account from settings.
+    $accountid = get_config('local_shopping_cart', 'accountid');
+    $account = null;
+    if (!empty($accountid)) {
+        $account = new \core_payment\account($accountid);
+    }
+
+    // Create selects for each payment gateway.
+    $colselects = [];
+    // Create an array of table names for the payment gateways.
+    if (!empty($account)) {
+        foreach ($account->get_gateways() as $gateway) {
+            $gwname = $gateway->get('gateway');
+            if ($gateway->get('enabled')) {
+                $tablename = "paygw_" . $gwname;
+
+                $cols = $DB->get_columns($tablename);
+
+                // Do not add the table if it does not have exactly 3 columns.
+                if (count($cols) != 3) {
+                    continue;
+                }
+
+                // Generate a select for each table.
+                foreach ($cols as $key => $value) {
+                    if (strpos($key, 'orderid') !== false) {
+                        $colselects[] =
+                            "SELECT $gwname.paymentid, $gwname.$key orderid
+                            FROM {paygw_$gwname} $gwname";
+                    }
+                }
+            }
+        }
+    }
+
+    $selectorderidpart = "";
+    if (!empty($colselects)) {
+        $selectorderidpart = ", pgw.orderid";
+        $colselectsstring = implode(' UNION ', $colselects);
+        $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
+    }
+
     // SQL query. The subselect will fix the "Did you remember to make the first column something...
     // ...unique in your call to get_records?" bug.
-    $fields = "sch.*";
-    $from = "{local_shopping_cart_history} sch";
-    $where = "1=1";
-    $params = [];
+    $fields = "sch.*, p.gateway$selectorderidpart";
+    $from = "{local_shopping_cart_history} sch
+            LEFT JOIN {payments} p
+            ON p.itemid = sch.identifier
+            $gatewayspart";
+    $where = "sch.paymentstatus >= :paymentstatus";
+    $params = ['paymentstatus' => PAYMENT_SUCCESS];
 
     // Now build the table.
     $cashreporttable->set_sql($fields, $from, $where, $params);
