@@ -62,7 +62,7 @@ class shopping_cart {
         // If there is no user specified, we determine it automatically.
         if ($userid < 0) {
             $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cachier', $context)) {
+            if (has_capability('local/shopping_cart:cashier', $context)) {
                 $userid = self::return_buy_for_userid();
             }
         } else {
@@ -473,7 +473,7 @@ class shopping_cart {
                     // We actually don't need to do anything here.
                     $data['price'] = 0;
 
-                } else if (!has_capability('local/shopping_cart:cachier', $context)) {
+                } else if (!has_capability('local/shopping_cart:cashier', $context)) {
                     // The cashier could call this to pay for herself, therefore only for non cashiers, we return here.
                     return [
                         'status' => 0,
@@ -483,7 +483,7 @@ class shopping_cart {
                     ];
                 }
             } else {
-                if (!has_capability('local/shopping_cart:cachier', $context)) {
+                if (!has_capability('local/shopping_cart:cashier', $context)) {
                     return [
                         'status' => 0,
                         'error' => get_string('nopermission', 'local_shopping_cart'),
@@ -603,9 +603,9 @@ class shopping_cart {
     public static function cancel_purchase(int $itemid, int $userid, string $componentname,
         int $historyid = null, float $customcredit = 0): array {
 
-        // Cancelation is only allowed for cachiers.
+        // Cancelation is only allowed for cashiers.
         $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cachier', $context)) {
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
              return [
                  'success' => 0,
                  'error' => get_string('nopermission', 'local_shopping_cart'),
@@ -650,7 +650,7 @@ class shopping_cart {
     public static function credit_paid_back(int $userid):array {
 
         $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cachier', $context)) {
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
             return [
                 'status' => 0,
                 'error' => get_string('nopermission', 'local_shopping_cart'),

@@ -60,7 +60,7 @@ $PAGE->set_pagelayout('standard');
 echo $OUTPUT->header();
 
 $context = context_system::instance();
-if (has_capability('local/shopping_cart:cachier', $context)) {
+if (has_capability('local/shopping_cart:cashier', $context)) {
     $data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
 }
 
@@ -77,6 +77,6 @@ foreach ($users as $user) {
 }
 $data['users'] = json_encode($data['users']);
 
-echo $OUTPUT->render_from_template('local_shopping_cart/cachier', $data);
+echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

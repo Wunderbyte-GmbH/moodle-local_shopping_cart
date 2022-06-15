@@ -26,7 +26,7 @@ import Notification from 'core/notification';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 
-import {confirmPayment} from 'local_shopping_cart/cachier';
+import {confirmPayment} from 'local_shopping_cart/cashier';
 
 import {
     get_strings as getStrings

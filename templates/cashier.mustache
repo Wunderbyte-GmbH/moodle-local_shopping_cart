@@ -56,7 +56,7 @@
                   <p>{{#str}} selectuser, local_shopping_cart {{/str}}</p>
                </div>
                {{/userid}}
-               <ul class="nav m-0" id="cachiertabs" role="tablist">
+               <ul class="nav m-0" id="cashiertabs" role="tablist">
                   <li class="nav-item" role="presentation">
                      <span class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="home" aria-selected="true"></span>
                   </li>
@@ -142,7 +142,7 @@
             </div>
             <div class="card-body">
                <div class="history">
-                  <ul class="list-group cachier-history-items">
+                  <ul class="list-group cashier-history-items">
 
                   {{> local_shopping_cart/credit_item }}
 
@@ -159,8 +159,8 @@
 </div>
 
 {{#js}}
-    require(['local_shopping_cart/cachier'], function(cachier) {
-      cachier.init({{{users}}}, {{userid}});
+    require(['local_shopping_cart/cashier'], function(cashier) {
+      cashier.init({{{users}}}, {{userid}});
     });
     require(['local_shopping_cart/shistory'], function(shistory) {
       shistory.init();

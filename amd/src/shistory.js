@@ -260,7 +260,7 @@ function showCredit(credit, currency, userid) {
         Templates.renderForPromise('local_shopping_cart/credit_item', data).then(({html}) => {
 
             // Get parentelement.
-            let parent = document.querySelector('ul.cachier-history-items');
+            let parent = document.querySelector('ul.cashier-history-items');
 
             parent.insertAdjacentHTML('afterbegin', html);
 

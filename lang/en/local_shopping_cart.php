@@ -50,7 +50,7 @@ $string['showdescription'] = "Show description";
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
-$string['shopping_cart:cachier'] = 'Is a cachier';
+$string['shopping_cart:cashier'] = 'Is a cashier';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -76,7 +76,7 @@ $string['failure'] = 'Failure';
 
 // Cashier.
 $string['paymentonline'] = 'online';
-$string['paymentcachier'] = 'at cachier\'s office';
+$string['paymentcashier'] = 'at cashier\'s office';
 $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
@@ -118,7 +118,34 @@ $string['remainingtotal'] = "Price:";
 
 // Report.
 $string['cashreport'] = 'Cash report';
-$string['cashreport_desc'] = 'Here you get an overview over all in- and outgoing accounting transactions.
+$string['cashreport_desc'] = 'Here you get an overview over all accounting transactions.
 You also can export the report in your preferred file format.';
 $string['accessdenied'] = 'Access denied';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
+
+// Report headers.
+$string['timecreated'] = 'Created';
+$string['timemodified'] = 'Completed';
+$string['identifier'] = 'ID';
+$string['price'] = 'Price';
+$string['currency'] = 'Currency';
+$string['lastname'] = 'Last name';
+$string['firstname'] = 'First name';
+$string['itemid'] = 'ItemID';
+$string['itemname'] = 'Item name';
+$string['payment'] = 'Payment method';
+$string['paymentstatus'] = 'Status';
+$string['gateway'] = 'Gateway';
+$string['orderid'] = 'OrderID';
+$string['usermodified'] = 'Modified by';
+
+// Payment methods.
+$string['paymentmethodonline'] = 'Online';
+$string['paymentmethodcashier'] = 'Cashier';
+$string['paymentmethodcredits'] = 'Credits';
+
+// Payment status.
+$string['paymentpending'] = 'Pending';
+$string['paymentaborted'] = 'Aborted';
+$string['paymentsuccess'] = 'Success';
+$string['paymentcanceled'] = 'Canceled';

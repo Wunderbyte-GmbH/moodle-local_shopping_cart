@@ -198,15 +198,15 @@
     }
 }
 
-#cachiertabs span.nav-link {
+#cashiertabs span.nav-link {
     outline: 0;
     box-shadow: none;
 }
-#cachiertabs .active {
+#cashiertabs .active {
     color: #000000;
 }
 
-#cachiertabs li {
+#cashiertabs li {
     list-style-type: none;
     font-size: 12px;
     width: 25%;
@@ -214,7 +214,7 @@
     position: relative;
 }
 
-#cachiertabs li span:before {
+#cashiertabs li span:before {
     position: relative;
     z-index: 3;
     width: 50px;
@@ -230,7 +230,7 @@
     text-align: center;
 }
 
-#cachiertabs li span:after {
+#cashiertabs li span:after {
     content: '';
     width: 100%;
     height: 2px;
@@ -241,37 +241,37 @@
     z-index: 2;
 }
 
-#cachiertabs {
+#cashiertabs {
     margin-bottom: 30px;
     overflow: hidden;
     color: lightgrey;
 }
 
-#cachiertabs #user-tab:before {
+#cashiertabs #user-tab:before {
     font-family: FontAwesome;
     content: "\f007";
 }
 
-#cachiertabs #cart-tab:before {
+#cashiertabs #cart-tab:before {
     font-family: FontAwesome;
     content: "\f07a";
 }
 
-#cachiertabs #checkout-tab:before {
+#cashiertabs #checkout-tab:before {
     font-family: FontAwesome;
     content: "\f09d";
 }
 
 
-#cachiertabs #success-tab:before {
+#cashiertabs #success-tab:before {
     font-family: FontAwesome;
     content: "\f00c";
 }
 
-#cachiertabs li span.active:before,
-#cachiertabs li span.active:after,
-#cachiertabs li span.success:before,
-#cachiertabs li span.success:after {
+#cashiertabs li span.active:before,
+#cashiertabs li span.active:after,
+#cashiertabs li span.success:before,
+#cashiertabs li span.success:after {
     background: var(--success);
 }
 
@@ -283,7 +283,7 @@
     width: max-content;
 }
 
-#cachiertabs span.disabled {
+#cashiertabs span.disabled {
     font-style: normal;
 }
 

@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-        'local/shopping_cart:cachier' => [
+        'local/shopping_cart:cashier' => [
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_SYSTEM,

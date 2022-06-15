@@ -48,7 +48,7 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
-$string['shopping_cart:cachier'] = 'Ist berechtigt für die Kassa';
+$string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -76,7 +76,7 @@ $string['showdescription'] = "Zeige Beschreibung";
 
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
-$string['paymentcachier'] = 'an der Kassa';
+$string['paymentcashier'] = 'an der Kassa';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
@@ -118,7 +118,34 @@ $string['remainingtotal'] = "Preis:";
 
 // Report.
 $string['cashreport'] = 'Kassajournal';
-$string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle getätigten Ein- und Ausgänge.
+$string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle getätigten Bezahlungen.
 Sie können das Kassajournal auch im gewünschten Format exportieren.';
 $string['accessdenied'] = 'Zugriff verweigert';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
+
+// Report headers.
+$string['timecreated'] = 'Erstellt';
+$string['timemodified'] = 'Abgeschlossen';
+$string['identifier'] = 'ID';
+$string['price'] = 'Preis';
+$string['currency'] = 'Währung';
+$string['lastname'] = 'Nachname';
+$string['firstname'] = 'Vorname';
+$string['itemid'] = 'ItemID';
+$string['itemname'] = 'Kurs';
+$string['payment'] = 'Bezahlmethode';
+$string['paymentstatus'] = 'Status';
+$string['gateway'] = 'Gateway';
+$string['orderid'] = 'OrderID';
+$string['usermodified'] = 'Bearbeitet von';
+
+// Payment methods.
+$string['paymentmethodonline'] = 'Online';
+$string['paymentmethodcashier'] = 'Kassa';
+$string['paymentmethodcredits'] = 'Credits';
+
+// Payment status.
+$string['paymentpending'] = 'Keine Rückmeldung';
+$string['paymentaborted'] = 'Abgebrochen';
+$string['paymentsuccess'] = 'Erfolg';
+$string['paymentcanceled'] = 'Storno';

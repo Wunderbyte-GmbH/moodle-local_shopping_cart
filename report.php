@@ -40,7 +40,7 @@ $PAGE->set_context($context);
 $baseurl = new moodle_url('/local/shopping_cart/report.php');
 $PAGE->set_url($baseurl);
 
-if (!has_capability('local/shopping_cart:cachier', $context)) {
+if (!has_capability('local/shopping_cart:cashier', $context)) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('accessdenied', 'local_shopping_cart'), 4);
     echo get_string('nopermissiontoaccesspage', 'local_shopping_cart');
@@ -75,24 +75,40 @@ if (!$cashreporttable->is_downloading()) {
     </div>';
 
     // Header.
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /*$cashreporttable->define_headers([
-        get_string('optiondate', 'mod_booking'),
-        get_string('teacher', 'mod_booking'),
-        get_string('edit')
-    ]);*/
+    $cashreporttable->define_headers([
+        get_string('identifier', 'local_shopping_cart'),
+        get_string('timecreated', 'local_shopping_cart'),
+        get_string('timemodified', 'local_shopping_cart'),
+        get_string('price', 'local_shopping_cart'),
+        get_string('currency', 'local_shopping_cart'),
+        get_string('lastname', 'local_shopping_cart'),
+        get_string('firstname', 'local_shopping_cart'),
+        get_string('itemid', 'local_shopping_cart'),
+        get_string('itemname', 'local_shopping_cart'),
+        get_string('payment', 'local_shopping_cart'),
+        get_string('paymentstatus', 'local_shopping_cart'),
+        get_string('gateway', 'local_shopping_cart'),
+        get_string('orderid', 'local_shopping_cart'),
+        get_string('usermodified', 'local_shopping_cart')
+    ]);
 
     // Columns.
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /*$cashreporttable->define_columns([
-        'optiondate',
-        'teacher',
-        'edit'
-    ]);*/
-
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* Header column.
-    $cashreporttable->define_header_column('optiondate');*/
+    $cashreporttable->define_columns([
+        'identifier',
+        'timecreated',
+        'timemodified',
+        'price',
+        'currency',
+        'lastname',
+        'firstname',
+        'itemid',
+        'itemname',
+        'payment',
+        'paymentstatus',
+        'gateway',
+        'orderid',
+        'usermodified'
+    ]);
 
     // Get payment account from settings.
     $accountid = get_config('local_shopping_cart', 'accountid');
@@ -138,12 +154,19 @@ if (!$cashreporttable->is_downloading()) {
 
     // SQL query. The subselect will fix the "Did you remember to make the first column something...
     // ...unique in your call to get_records?" bug.
-    $fields = "sch.*, p.gateway$selectorderidpart";
+    $fields = "sch.identifier, sch.price, sch.currency,
+            u.lastname, u.firstname, sch.itemid, sch.itemname, sch.payment, sch.paymentstatus, " .
+            $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, sch.timecreated, sch.timemodified,
+            p.gateway$selectorderidpart";
     $from = "{local_shopping_cart_history} sch
+            LEFT JOIN {user} u
+            ON u.id = sch.userid
+            LEFT JOIN {user} um
+            ON um.id = sch.usermodified
             LEFT JOIN {payments} p
             ON p.itemid = sch.identifier
             $gatewayspart";
-    $where = "sch.paymentstatus >= :paymentstatus";
+    $where = "1 = 1";
     $params = ['paymentstatus' => PAYMENT_SUCCESS];
 
     // Now build the table.

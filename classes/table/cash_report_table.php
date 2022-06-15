@@ -45,5 +45,106 @@ class cash_report_table extends table_sql {
         // Columns and headers are not defined in constructor, in order to keep things as generic as possible.
     }
 
-    // TODO: Add col_... functions.
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'timecreated' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered date.
+     * @throws dml_exception
+     */
+    public function col_timecreated(object $values): string {
+        $rendereddate = '';
+
+        if ($this->is_downloading()) {
+            $rendereddate = date('Y-m-d H:i:s', $values->timecreated);
+        } else if (current_language() === 'de') {
+            $rendereddate = date('d.m.Y H:i:s', $values->timecreated);
+        } else {
+            $rendereddate = date('Y-m-d H:i:s', $values->timecreated);
+        }
+
+        return $rendereddate;
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'timemodified' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered date.
+     * @throws dml_exception
+     */
+    public function col_timemodified(object $values): string {
+        $rendereddate = '';
+
+        if (empty($values->timemodified)) {
+            $values->timemodified = $values->timecreated;
+        }
+
+        if ($this->is_downloading()) {
+            $rendereddate = date('Y-m-d H:i:s', $values->timemodified);
+        } else if (current_language() === 'de') {
+            $rendereddate = date('d.m.Y H:i:s', $values->timemodified);
+        } else {
+            $rendereddate = date('Y-m-d H:i:s', $values->timemodified);
+        }
+
+        return $rendereddate;
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'payment' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string payment method
+     * @throws dml_exception
+     */
+    public function col_payment(object $values): string {
+        $paymentstring = '';
+
+        switch ($values->payment) {
+            case PAYMENT_METHOD_ONLINE:
+                $paymentstring = get_string('paymentmethodonline', 'local_shopping_cart');
+                break;
+            case PAYMENT_METHOD_CASHIER:
+                $paymentstring = get_string('paymentmethodcashier', 'local_shopping_cart');
+                break;
+            case PAYMENT_METHOD_CREDITS:
+                $paymentstring = get_string('paymentmethodcredits', 'local_shopping_cart');
+                break;
+        }
+
+        return $paymentstring;
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'paymentstatus' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string payment status
+     * @throws dml_exception
+     */
+    public function col_paymentstatus(object $values): string {
+        $status = '';
+
+        switch ($values->paymentstatus) {
+            case PAYMENT_PENDING:
+                $status = get_string('paymentpending', 'local_shopping_cart');
+                break;
+            case PAYMENT_ABORTED:
+                $status = get_string('paymentaborted', 'local_shopping_cart');
+                break;
+            case PAYMENT_SUCCESS:
+                $status = get_string('paymentsuccess', 'local_shopping_cart');
+                break;
+            case PAYMENT_CANCELED:
+                $status = get_string('paymentcanceled', 'local_shopping_cart');
+                break;
+        }
+
+        return $status;
+    }
 }

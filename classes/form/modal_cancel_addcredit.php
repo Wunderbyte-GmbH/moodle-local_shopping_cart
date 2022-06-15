@@ -57,7 +57,7 @@ class modal_cancel_addcredit extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-        require_capability('local/shopping_cart:cachier', $this->get_context_for_dynamic_submission());
+        require_capability('local/shopping_cart:cashier', $this->get_context_for_dynamic_submission());
     }
 
     /**

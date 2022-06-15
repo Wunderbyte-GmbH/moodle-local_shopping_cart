@@ -38,7 +38,7 @@ define('PAYMENT_CANCELED', 3);
 
 // Payment methods.
 define('PAYMENT_METHOD_ONLINE', 0); // Payment via payment gateway (usually with card).
-define('PAYMENT_METHOD_CASHIER', 1); // Payment at cachier's office (usually cash, but card would also be possible).
+define('PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (usually cash, but card would also be possible).
 define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
 
 /**
@@ -49,7 +49,7 @@ define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
  */
 function local_shopping_cart_extend_navigation(navigation_node $navigation) {
     $context = context_system::instance();
-    if (has_capability('local/shopping_cart:cachier', $context)) {
+    if (has_capability('local/shopping_cart:cashier', $context)) {
         $nodehome = $navigation->get('home');
         if (empty($nodehome)) {
             $nodehome = $navigation;

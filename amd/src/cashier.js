@@ -87,7 +87,7 @@ export const confirmPayment = (userid) => {
                 console.log('payment confirmed', data);
 
                 // The function can be called via cashier, or because a user pays via credits.
-                // If that's the case, we are not on the cachier site.
+                // If that's the case, we are not on the cashier site.
 
                 const oncashier = window.location.href.indexOf("cashier.php");
 

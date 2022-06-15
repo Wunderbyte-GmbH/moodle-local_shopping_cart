@@ -82,7 +82,7 @@ $functions = array(
                 'classpath' => '',
                 'description' => 'Confirm cash payment by cashier',
                 'type' => 'write',
-                'capabilities' => 'local/shopping_cart:cachier',
+                'capabilities' => 'local/shopping_cart:cashier',
                 'ajax' => 1
         ),
         'local_shopping_cart_cancel_purchase' => array(
