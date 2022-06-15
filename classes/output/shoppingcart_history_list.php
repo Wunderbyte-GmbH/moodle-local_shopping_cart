@@ -68,11 +68,11 @@ class shoppingcart_history_list implements renderable, templatable {
 
             // Localize the payment string.
             switch ($item->payment) {
-                case 'card':
-                    $item->paymentstring = get_string('card', 'local_shopping_cart');
+                case PAYMENT_METHOD_ONLINE:
+                    $item->paymentstring = get_string('paymentonline', 'local_shopping_cart');
                     break;
-                case 'cash':
-                    $item->paymentstring = get_string('cash', 'local_shopping_cart');
+                case PAYMENT_METHOD_CASHIER:
+                    $item->paymentstring = get_string('paymentcachier', 'local_shopping_cart');
                     break;
                 default:
                     $item->paymentstring = get_string('unknown', 'local_shopping_cart');

@@ -26,11 +26,6 @@ namespace local_shopping_cart;
 use context_system;
 use local_shopping_cart\task\delete_item_task;
 
-define('PAYMENT_PENDING', 0); // First entry in shopping cart history. This means that payment was initiated, but not successfully completed.
-define('PAYMENT_ABORTED', 1); // Pending will be switched to aborted, once we can be sure that the payment process will not be continued.
-define('PAYMENT_SUCCESS', 2); // Payment was successful.
-define('PAYMENT_CANCELED', 3); // Canceled payments mean that they paid for items are canceled after successful checkout.
-
 /**
  * Class shopping_cart
  *
@@ -262,7 +257,7 @@ class shopping_cart {
     public static function successful_checkout(string $component, int $itemid, int $userid): bool {
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'successful_checkout', [$itemid, 'cash', $userid]);
+        return component_class_callback($providerclass, 'successful_checkout', [$itemid, PAYMENT_METHOD_CASHIER, $userid]);
     }
 
     /**
@@ -551,7 +546,7 @@ class shopping_cart {
 
                     // If this is paid for with credits, we want to have this on record.
                     // Also, price is then 0, but we want to know the real price.
-                    $paymenttype = $data['price'] == 0 ? 'credits' : 'cash';
+                    $paymentmethod = $data['price'] == 0 ? PAYMENT_METHOD_CREDITS : PAYMENT_METHOD_CASHIER;
 
                     shopping_cart_history::create_entry_in_history(
                         $userid,
@@ -561,9 +556,9 @@ class shopping_cart {
                         $item['currency'],
                         $item['componentname'],
                         $identifier,
-                        $paymenttype,
+                        $paymentmethod,
                         PAYMENT_SUCCESS
-                        );
+                    );
                 }
 
             }
@@ -605,7 +600,8 @@ class shopping_cart {
      * @param integer|null $historyid
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $historyid = null, float $customcredit = 0):array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname,
+        int $historyid = null, float $customcredit = 0): array {
 
         // Cancelation is only allowed for cachiers.
         $context = context_system::instance();
@@ -625,7 +621,8 @@ class shopping_cart {
             ];
         }
 
-        list($success, $error, $credit, $currency) = shopping_cart_history::cancel_purchase($itemid, $userid, $componentname, $historyid);
+        list($success, $error, $credit, $currency) = shopping_cart_history::cancel_purchase($itemid,
+            $userid, $componentname, $historyid);
 
         if (empty($customcredit)) {
             $customcredit = $credit;

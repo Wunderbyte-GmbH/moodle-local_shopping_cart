@@ -75,8 +75,8 @@ $string['failure'] = 'Fehler.';
 $string['showdescription'] = "Zeige Beschreibung";
 
 // Cashier.
-$string['card'] = 'via Online-Zahlung';
-$string['cash'] = 'an der Kassa';
+$string['paymentonline'] = 'via Online-Zahlung';
+$string['paymentcachier'] = 'an der Kassa';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';

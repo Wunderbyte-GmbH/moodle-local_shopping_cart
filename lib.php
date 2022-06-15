@@ -25,6 +25,22 @@ defined('MOODLE_INTERNAL') || die;
 
 use local_shopping_cart\shopping_cart;
 
+// Define constants.
+
+// First entry in shopping cart history. This means that payment was initiated, but not successfully completed.
+define('PAYMENT_PENDING', 0);
+// Pending will be switched to aborted, once we can be sure that the payment process will not be continued.
+define('PAYMENT_ABORTED', 1);
+// Payment was successful.
+define('PAYMENT_SUCCESS', 2);
+// Canceled payments mean that items - which have already been paid for - are canceled after successful checkout.
+define('PAYMENT_CANCELED', 3);
+
+// Payment methods.
+define('PAYMENT_METHOD_ONLINE', 0); // Payment via payment gateway (usually with card).
+define('PAYMENT_METHOD_CASHIER', 1); // Payment at cachier's office (usually cash, but card would also be possible).
+define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
+
 /**
  * Adds module specific settings to the settings block
  *
@@ -41,7 +57,8 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
         $pluginname = get_string('pluginname', 'local_shopping_cart');
         $link = new moodle_url('/local/shopping_cart/cashier.php', array());
         $icon = new pix_icon('i/shopping_cart', $pluginname, 'local_shopping_cart');
-        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF, $pluginname, 'shopping_cart_cashier', $icon);
+        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF,
+            $pluginname, 'shopping_cart_cashier', $icon);
         $nodecreatecourse->showinflatnavigation = true;
     }
 }

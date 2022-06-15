@@ -64,12 +64,6 @@ class shopping_cart_history {
     private $componentname;
 
     /**
-     * pending,online or cash.
-     * @var string
-     */
-    private $paymenttype;
-
-    /**
      * History constructor
      * @param stdClass $data
      * @return void
@@ -80,7 +74,6 @@ class shopping_cart_history {
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
-            $this->paymenttype = $data->paymenttype;
         }
     }
 
@@ -416,7 +409,7 @@ class shopping_cart_history {
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
             $data['userid'] = $userid; // The user for which the item was bought.
-            $data['payment'] = 'card'; // This function is only used for card.
+            $data['payment'] = PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
             $data['paymentstatus'] = PAYMENT_PENDING;
             $dataarr['items'][] = $data;
         }
