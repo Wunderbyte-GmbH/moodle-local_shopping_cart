@@ -84,7 +84,7 @@ $string['restart'] = "Next customer";
 $string['print'] = "Print";
 $string['previouspurchases'] = "Previous purchases";
 $string['checkout'] = "Checkout";
-$string['nouserselected'] = 'No user selectedd';
+$string['nouserselected'] = 'No user selected';
 $string['selectuser'] = 'Select a user...';
 $string['user'] = "User...";
 $string['searchforitem'] = "Search for item...";
@@ -116,3 +116,9 @@ $string['deductible'] = "Deductible:";
 $string['remainingcredit'] = "Remaining credit:";
 $string['remainingtotal'] = "Price:";
 
+// Report.
+$string['cashreport'] = 'Cash report';
+$string['cashreport_desc'] = 'Here you get an overview over all in- and outgoing accounting transactions.
+You also can export the report in your preferred file format.';
+$string['accessdenied'] = 'Access denied';
+$string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';

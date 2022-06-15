@@ -115,3 +115,10 @@ $string['usecredit'] = "Verwende Guthaben:";
 $string['deductible'] = "Abziehbar:";
 $string['remainingcredit'] = "Verbleibendes Guthaben:";
 $string['remainingtotal'] = "Preis:";
+
+// Report.
+$string['cashreport'] = 'Kassajournal';
+$string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle getätigten Ein- und Ausgänge.
+Sie können das Kassajournal auch im gewünschten Format exportieren.';
+$string['accessdenied'] = 'Zugriff verweigert';
+$string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
