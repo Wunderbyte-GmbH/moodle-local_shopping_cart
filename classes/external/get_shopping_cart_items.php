@@ -47,13 +47,12 @@ class get_shopping_cart_items extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid',VALUE_DEFAULT, 0)
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
         ));
     }
 
     /**
-     * Excecute this websrvice.
-   
+     * Excecute this webservice.
      * @return array
      */
     public static function execute($userid) {
@@ -62,10 +61,10 @@ class get_shopping_cart_items extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid
         ]);
-        
+
         $context = context_system::instance();
 
-        if (has_capability('local/shopping_cart:cashier', $context)) { 
+        if (has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
         } else {
             $userid = (int)$USER->id;

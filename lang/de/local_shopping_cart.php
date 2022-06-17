@@ -117,6 +117,7 @@ $string['remainingcredit'] = "Verbleibendes Guthaben:";
 $string['remainingtotal'] = "Preis:";
 
 // Report.
+$string['reports'] = 'Berichte';
 $string['cashreport'] = 'Kassajournal';
 $string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle getätigten Bezahlungen.
 Sie können das Kassajournal auch im gewünschten Format exportieren.';

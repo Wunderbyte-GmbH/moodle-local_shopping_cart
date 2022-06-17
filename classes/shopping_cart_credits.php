@@ -72,7 +72,7 @@ class shopping_cart_credits {
         if ($usecredit === null) {
             $tempusecredit = shopping_cart::get_saved_usecredit_state($userid);
             if ($tempusecredit === null) {
-                // If nothing is saved, we fall back to true;
+                // If nothing is saved, we fall back to true.
                 $usecredit = true;
             } else {
                 $usecredit = $tempusecredit;
@@ -212,16 +212,16 @@ class shopping_cart_credits {
 
         $DB->insert_record('local_shopping_cart_credits', $data);
 
-         // We always have to add the cache.
-         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-         $cachekey = $userid . '_shopping_cart';
+        // We always have to add the cache.
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
 
-         $cachedrawdata = $cache->get($cachekey);
-         if ($cachedrawdata) {
-             $cachedrawdata['credit'] = $data->balance;
-             $cachedrawdata['currency'] = $data->currency;
-             $cache->set($cachekey, $cachedrawdata);
-         }
+        $cachedrawdata = $cache->get($cachekey);
+        if ($cachedrawdata) {
+            $cachedrawdata['credit'] = $data->balance;
+            $cachedrawdata['currency'] = $data->currency;
+            $cache->set($cachekey, $cachedrawdata);
+        }
     }
 
     /**
@@ -300,7 +300,7 @@ class shopping_cart_credits {
         $data['price'] = $shoppingcart->price;
 
         if (isset($shoppingcart->items)) {
-            foreach($shoppingcart->items as $item) {
+            foreach ($shoppingcart->items as $item) {
                 if (!empty($item['userid'])) {
                     $userid = $item['userid'];
                     $currency = $item['currency'];

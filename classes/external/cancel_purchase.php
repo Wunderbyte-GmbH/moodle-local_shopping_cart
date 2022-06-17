@@ -73,7 +73,8 @@ class cancel_purchase extends external_api {
             'credit' => $credit
         ]);
 
-        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'], $params['historyid'],  $params['credit']);
+        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'],
+            $params['historyid'],  $params['credit']);
     }
 
     /**

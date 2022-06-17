@@ -122,8 +122,23 @@
             </div>
          </div>
       </div>
+      {{^userid}}
+      {{! Without userid sidebar contains only report links. }}
+      <div class="col-md-4">
+         <div id="shopping-cart-reports" class="card">
+            <div class="card-header text-center bg-primary text-white">
+               <i class="fa fa-table" aria-hidden="true"></i>
+               <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+            </div>
+            <div class="card-body">
+               <a class="btn btn-secondary" href="/local/shopping_cart/report.php">
+                  <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
+               </a>
+            </div>
+         </div>
+      </div>
+      {{/userid}}
       {{#userid}}
-
       {{! Sidebar with cart items and hitory items }}
       <div class="col-md-4">
          <div id="shopping_cart-cashiers-cart" class="card">
@@ -151,6 +166,17 @@
                   {{/historyitems}}
                   </ul>
                </div>
+            </div>
+         </div>
+         <div id="shopping-cart-reports" class="card mt-4">
+            <div class="card-header text-center bg-primary text-white">
+               <i class="fa fa-table" aria-hidden="true"></i>
+               <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+            </div>
+            <div class="card-body">
+               <a class="btn btn-secondary" href="/local/shopping_cart/report.php">
+                  <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
+               </a>
             </div>
          </div>
       </div>

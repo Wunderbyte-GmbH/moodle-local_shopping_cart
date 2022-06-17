@@ -117,6 +117,7 @@ $string['remainingcredit'] = "Remaining credit:";
 $string['remainingtotal'] = "Price:";
 
 // Report.
+$string['reports'] = 'Reports';
 $string['cashreport'] = 'Cash report';
 $string['cashreport_desc'] = 'Here you get an overview over all accounting transactions.
 You also can export the report in your preferred file format.';
