@@ -133,18 +133,26 @@ class cash_report_table extends table_sql {
         switch ($values->paymentstatus) {
             case PAYMENT_PENDING:
                 $status = get_string('paymentpending', 'local_shopping_cart');
+                $classes = "text-danger";
                 break;
             case PAYMENT_ABORTED:
                 $status = get_string('paymentaborted', 'local_shopping_cart');
+                $classes = "text-danger";
                 break;
             case PAYMENT_SUCCESS:
                 $status = get_string('paymentsuccess', 'local_shopping_cart');
+                $classes = "text-success";
                 break;
             case PAYMENT_CANCELED:
                 $status = get_string('paymentcanceled', 'local_shopping_cart');
+                $classes = "text-danger";
                 break;
         }
 
-        return $status;
+        if ($this->is_downloading()) {
+            return $status;
+        }
+
+        return "<div class='$classes'>$status</div>";
     }
 }
