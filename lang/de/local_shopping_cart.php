@@ -116,6 +116,9 @@ $string['deductible'] = "Abziehbar:";
 $string['remainingcredit'] = "Verbleibendes Guthaben:";
 $string['remainingtotal'] = "Preis:";
 
+// access.php
+$string['local/shopping_cart:cashier'] = 'NutzerIn hat Kassier-Rechte';
+
 // Report.
 $string['reports'] = 'Berichte';
 $string['cashreport'] = 'Kassajournal';

@@ -116,6 +116,8 @@ $string['deductible'] = "Deductible:";
 $string['remainingcredit'] = "Remaining credit:";
 $string['remainingtotal'] = "Price:";
 
+// access.php
+$string['local/shopping_cart:cashier'] = 'User has cashier rights';
 // Report.
 $string['reports'] = 'Reports';
 $string['cashreport'] = 'Cash report';
