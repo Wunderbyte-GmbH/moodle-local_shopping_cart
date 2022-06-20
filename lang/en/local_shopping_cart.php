@@ -116,8 +116,9 @@ $string['deductible'] = "Deductible:";
 $string['remainingcredit'] = "Remaining credit:";
 $string['remainingtotal'] = "Price:";
 
-// access.php
+// Access.php.
 $string['local/shopping_cart:cashier'] = 'User has cashier rights';
+
 // Report.
 $string['reports'] = 'Reports';
 $string['cashreport'] = 'Cash report';
@@ -129,7 +130,8 @@ $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="ale
 // Report headers.
 $string['timecreated'] = 'Created';
 $string['timemodified'] = 'Completed';
-$string['identifier'] = 'ID';
+$string['id'] = 'ID';
+$string['identifier'] = 'TransactionID';
 $string['price'] = 'Price';
 $string['currency'] = 'Currency';
 $string['lastname'] = 'Last name';

@@ -23,6 +23,10 @@
  */
 namespace local_shopping_cart;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__ . '/../lib.php');
+
 use context_system;
 use local_shopping_cart\task\delete_item_task;
 

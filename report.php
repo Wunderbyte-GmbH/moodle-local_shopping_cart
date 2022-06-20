@@ -62,6 +62,7 @@ $cashreporttable->defaultdownloadformat = 'pdf';
 
 // Header.
 $cashreporttable->define_headers([
+    get_string('id', 'local_shopping_cart'),
     get_string('identifier', 'local_shopping_cart'),
     get_string('timecreated', 'local_shopping_cart'),
     get_string('timemodified', 'local_shopping_cart'),
@@ -80,6 +81,7 @@ $cashreporttable->define_headers([
 
 // Columns.
 $cashreporttable->define_columns([
+    'id',
     'identifier',
     'timecreated',
     'timemodified',
@@ -140,7 +142,7 @@ if (!empty($colselects)) {
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
-$fields = "sch.identifier, sch.price, sch.currency,
+$fields = "sch.id, sch.identifier, sch.price, sch.currency,
         u.lastname, u.firstname, sch.itemid, sch.itemname, sch.payment, sch.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, sch.timecreated, sch.timemodified,
         p.gateway$selectorderidpart";
