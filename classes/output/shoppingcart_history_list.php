@@ -79,7 +79,7 @@ class shoppingcart_history_list implements renderable, templatable {
                     break;
             }
 
-            $this->historyitems = (array)$item;
+            $this->historyitems[] = (array)$item;
         }
     }
 
