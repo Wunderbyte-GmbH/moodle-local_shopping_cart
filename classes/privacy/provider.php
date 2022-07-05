@@ -22,7 +22,7 @@
  * @author     Thomas Winkler
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace local_entities\privacy;
+namespace local_shopping_cart\privacy;
 
 /**
  * Privacy subsystem implementation for local_shopping_cart
