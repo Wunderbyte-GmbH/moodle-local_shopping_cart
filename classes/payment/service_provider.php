@@ -96,7 +96,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
          // First, look in shopping cart history to identify the payment and what users have bought.
          // Now run through all the optionids (itemids) and confirm payment.
 
-        $data['items'] = shopping_cart_history::return_data_via_identifier($identifier);
+        $data['items'] = shopping_cart_history::return_data_via_identifier($identifier, $userid);
 
         if (count($data['items']) == 0) {
             return false;

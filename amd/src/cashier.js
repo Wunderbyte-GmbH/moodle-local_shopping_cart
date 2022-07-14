@@ -28,12 +28,11 @@ export const init = (users, userid = 0) => {
 
     document.getElementById('checkout-tab').classList.remove('success');
 
-    const buybutton = document.querySelector('#buy-btn');
+    const buybuttons = document.querySelectorAll('.buy-btn');
         // eslint-disable-next-line no-console
-        console.log(buybutton);
-        if (buybutton) {
-            buybutton.addEventListener('click', function() {
-                confirmPayment(userid);
+        if (buybuttons) {
+            buybuttons.forEach(buybutton => {
+                buybutton.addEventListener('click', (e) => confirmPayment(userid, e.target.dataset.paymenttype));
             });
         }
 
@@ -73,16 +72,15 @@ export const init = (users, userid = 0) => {
     }
 };
 
-export const confirmPayment = (userid) => {
+export const confirmPayment = (userid, paymenttype) => {
     Ajax.call([{
         methodname: "local_shopping_cart_confirm_cash_payment",
         args: {
-            'userid': userid
+            'userid': userid,
+            'paymenttype': paymenttype
         },
         done: function(data) {
-
             if (data.status == 1) {
-
                 // eslint-disable-next-line no-console
                 console.log('payment confirmed', data);
 
@@ -90,6 +88,9 @@ export const confirmPayment = (userid) => {
                 // If that's the case, we are not on the cashier site.
 
                 const oncashier = window.location.href.indexOf("cashier.php");
+
+                // Set link to right receipt.
+                addPrintIdentifier(data.identifier, userid);
 
                 // If we are not on cashier, we can just redirect.
                 if (oncashier < 1) {
@@ -147,6 +148,16 @@ export const validateCart = ($userid) => {
     alert($userid);
  };
 
+/**
+ * Adds parameters to the printbutton.
+ * @param {int} identifier
+ * @param {int} userid
+ */
+export const addPrintIdentifier = (identifier, userid) => {
+   let printbtn = document.getElementById('printbtn');
+   let href = printbtn.getAttribute('href');
+   printbtn.setAttribute('href', href + identifier + '&userid=' + userid);
+}
 /**
  * The autocomplete function takes two arguments.
  * The text field element and an array of possible autocompleted values.

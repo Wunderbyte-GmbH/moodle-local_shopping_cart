@@ -98,3 +98,62 @@ function local_shopping_cart_get_fontawesome_icon_map() {
         'local_shopping_cart:t/star' => 'fa-star',
     ];
 }
+
+
+/**
+ *  Callback checking permissions and preparing the file for serving plugin files, see File API.
+ *
+ * @param $course
+ * @param $cm
+ * @param $context
+ * @param $filearea
+ * @param $args
+ * @param $forcedownload
+ * @param array $options
+ * @return bool
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
+function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+
+    // Check the contextlevel is as expected - if your plugin is a block.
+    // We need context course if wee like to acces template files.
+    if (!in_array($context->contextlevel, array(CONTEXT_SYSTEM))) {
+        return false;
+    }
+
+    // Make sure the filearea is one of those used by the plugin.
+    if ($filearea !== 'local_shopping_cart_receiptimage') {
+        return false;
+    }
+
+    // Make sure the user is logged in and has access to the module.
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+    /* require_login($course, true, $cm); */
+
+    // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
+    $itemid = array_shift($args); // The first item in the $args array.
+                                  // Use the itemid to retrieve any relevant data records and
+                                  // perform any security checks to see if the
+                                  // user really does have access to the file in question.
+                                  // Extract the filename / filepath from the $args array.
+    $filename = array_pop($args); // The last item in the $args array.
+    if (!$args) {
+        // Var $args is empty => the path is '/'.
+        $filepath = '/';
+    } else {
+        // Var $args contains elements of the filepath.
+        $filepath = '/' . implode('/', $args) . '/';
+    }
+
+    // Retrieve the file from the Files API.
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'local_shopping_cart', $filearea, $itemid, $filepath, $filename);
+    if (!$file) {
+        return false; // The file does not exist.
+    }
+
+    // Send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
+    send_stored_file($file, 0, 0, true, $options);
+}

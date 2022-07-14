@@ -45,26 +45,27 @@ class confirm_cash_payment extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
+            'paymenttype' => new external_value(PARAM_TEXT, 'paymenttype', VALUE_DEFAULT, '')
         ));
     }
 
     /**
      * Excecute this websrvice.
      *
-     * @param string $component
-     * @param int $itemid
+     * @param string $paymenttype
      * @param int $userid
      *
      * @return array
      */
-    public static function execute(int $userid) {
+    public static function execute(int $userid, string $paymenttype) {
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid
+            'userid' => $userid,
+            'paymenttype' => $paymenttype
         ]);
 
-        return shopping_cart::confirm_payment($params['userid']);
+        return shopping_cart::confirm_payment($params['userid'], $params['paymenttype']);
     }
 
     /**

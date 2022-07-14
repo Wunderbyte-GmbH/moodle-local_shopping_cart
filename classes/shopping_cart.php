@@ -129,7 +129,7 @@ class shopping_cart {
             // This case means that we have the item already in the cart.
             // Normally, this should not happen, because of JS, but it might occure when a user is...
             // Logged in on two different devices.
-            $itemdata['success'] = 1;
+            $itemdata['success'] = 2;
             $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
             $itemdata['expirationdate'] = 0;
         }
@@ -453,10 +453,11 @@ class shopping_cart {
      * .. or the items passed by shopping cart history. The second option is the case when we use the payment module of moodle.
      *
      * @param int $userid
+     * @param string $paymentmethod
      * @param array $datafromhistory
      * @return void
      */
-    public static function confirm_payment($userid, $datafromhistory = null) {
+    public static function confirm_payment($userid, $paymenttype, $datafromhistory = null) {
         global $USER;
 
         $identifier = 0;

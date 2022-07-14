@@ -112,4 +112,22 @@ if ($hassiteconfig) {
             PARAM_RAW
         )
     );
+
+    $settings->add(
+        new admin_setting_configtextarea(
+            $componentname . '/receipthtml',
+            get_string('receipthtml', $componentname),
+            get_string('receipthtml:description', $componentname),
+            '..',
+            PARAM_RAW
+        )
+    );
+
+    $fileid = 'local_shopping_cart_receiptimage';
+    $name = 'local_shopping_cart/receiptimage';
+    $title = get_string('receiptimage', 'local_shopping_cart');
+    $description = get_string('receiptimage:description', 'local_shopping_cart');
+    $opts = array('accepted_types' => array('.png', '.jpg'), 'maxfiles' => 1);
+    $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
+    $settings->add($setting);
 }

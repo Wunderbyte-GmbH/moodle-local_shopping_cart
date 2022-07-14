@@ -166,14 +166,17 @@ class shopping_cart_history {
             foreach ($data->items as $item) {
                 $data = (object)$item;
                 $data->timecreated = $now;
-                $DB->insert_record('local_shopping_cart_history', $data);
+                $record = $DB->insert_record('local_shopping_cart_history', $data);
             }
         } else {
             $data->timecreated = $now;
-            $DB->insert_record('local_shopping_cart_history', $data);
+            $record = $DB->insert_record('local_shopping_cart_history', $data);
         }
-
-        return true;
+        if ($record > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -291,13 +294,14 @@ class shopping_cart_history {
      * This function won't return data if the payment is already aborted.
      *
      * @param integer $identifier
+     * @param integer $userid
      * @return array
      */
-    public static function return_data_via_identifier(int $identifier):array {
+    public static function return_data_via_identifier(int $identifier, int $userid):array {
 
         global $DB;
-
-        if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
+        // TODO and Userid`?
+        if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier, 'userid' => $userid])) {
 
             // If there is an error registered, we return null.
             foreach ($data as $record) {
@@ -321,13 +325,14 @@ class shopping_cart_history {
      * Won't change other status.
      *
      * @param integer $identifier
+     * @param integer $userid
      * @return boolean
      */
-    public static function error_occured_for_identifier(int $identifier):bool {
+    public static function error_occured_for_identifier(int $identifier, int $userid):bool {
 
         global $DB;
 
-        if (!$records = self::return_data_via_identifier($identifier)) {
+        if (!$records = self::return_data_via_identifier($identifier, $userid)) {
             return false;
         }
 

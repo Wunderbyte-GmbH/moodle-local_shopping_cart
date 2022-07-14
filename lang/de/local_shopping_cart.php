@@ -89,6 +89,13 @@ $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = "Teilnehmerin...";
 $string['searchforitem'] = "Suche...";
 
+$string['cash'] = "Bar";
+$string['creditcard'] = "Kreditkarte";
+$string['card'] = "EC Karte";
+
+
+
+
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
@@ -154,3 +161,12 @@ $string['paymentpending'] = 'Keine Rückmeldung';
 $string['paymentaborted'] = 'Abgebrochen';
 $string['paymentsuccess'] = 'Erfolg';
 $string['paymentcanceled'] = 'Storno';
+
+// Receipt.
+$string['receipthtml'] = "HTML-Vorlage zur Erstellung von Kassenbelegen";
+$string['receipthtml:description'] = "Sie können die folgenden Platzhalter verwenden:
+[[place]], [[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
+ Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[email]] und [[date]] verwenden.
+ Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.";
+$string['receiptimage'] = "Hintergrundbild für den Kassenbeleg";
+$string['receiptimage:description'] = "Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.";

@@ -93,13 +93,19 @@
                      {{/additonalcashiersection}}
                   </div>
             {{! 3. Tab before checkout }}
-                  <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">
-                     <div class="sc_price_label" data-userid="{{userid}}">
-                        {{> local_shopping_cart/price_label }}
+                  <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
+                     <div class="row">
+                        <div class="col-md-12">
+                           <div class="sc_price_label" data-userid="{{userid}}">
+                              {{> local_shopping_cart/price_label }}
+                           </div>
+                        </div>
                      </div>
                      <div>
-                        <a class="btn btn-danger" id="cashpayment-btn" data-toggle="tab" href="/local/shopping_cart/cashier.php" onclick="location.reload()"role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}} cancel, core {{/str}}</a>
-                        <a class="btn btn-success" id="buy-btn" data-toggle="tab" href="#success" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} paid, local_shopping_cart {{/str}}</a>
+                        <a class="btn btn-danger d-block my-4 mx-2" id="cashpayment-btn" data-toggle="tab" href="/local/shopping_cart/cashier.php" onclick="location.reload()"role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}} cancel, core {{/str}}</a>
+                        <a class="btn btn-success d-block my-4 mx-2 buy-btn" data-paymenttype="cash" data-toggle="tab" href="#success" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} cash, local_shopping_cart {{/str}}</a>
+                        <a class="btn btn-success d-block my-4 mx-2 buy-btn" data-paymenttype="creditcard" data-toggle="tab" href="#success" role="tab" aria-controls="creditcardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} creditcard, local_shopping_cart {{/str}}</a>
+                        <a class="btn btn-success d-block my-4 mx-2 buy-btn" data-paymenttype="card" data-toggle="tab" href="#success" role="tab" aria-controls="cardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} card, local_shopping_cart {{/str}}</a>
                      </div>
                      {{> local_shopping_cart/shopping_cart_items }}
                   </div>
@@ -112,7 +118,7 @@
                               <p>
                                  {{> local_shopping_cart/shopping_cart_items }}
                               </p>
-                              <a onclick="window.print();return false;" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
+                              <a href="/local/shopping_cart/receipt.php?id=" id="printbtn" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
                               <a href="/local/shopping_cart/cashier.php" class="btn btn-success">{{#str}} restart, local_shopping_cart {{/str}}</a>
                            </div>
                         </div>
@@ -160,7 +166,6 @@
                   <ul class="list-group cashier-history-items">
 
                   {{> local_shopping_cart/credit_item }}
-
                   {{#historyitems}}
                     {{> local_shopping_cart/history_item }}
                   {{/historyitems}}
