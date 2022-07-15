@@ -157,7 +157,8 @@ export const addPrintIdentifier = (identifier, userid) => {
    let printbtn = document.getElementById('printbtn');
    let href = printbtn.getAttribute('href');
    printbtn.setAttribute('href', href + identifier + '&userid=' + userid);
-}
+};
+
 /**
  * The autocomplete function takes two arguments.
  * The text field element and an array of possible autocompleted values.

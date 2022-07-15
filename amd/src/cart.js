@@ -564,8 +564,7 @@ function addDeleteevent(item, userid = 0) {
 }
 
 /**
- * Function called in listener,
- * @param {HTMLElement} item
+ * Function called in listener.
  */
 function deleteEvent() {
 
