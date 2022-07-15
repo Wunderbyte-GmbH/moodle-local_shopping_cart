@@ -553,6 +553,25 @@ class shopping_cart {
                     // Also, price is then 0, but we want to know the real price.
                     $paymentmethod = $data['price'] == 0 ? PAYMENT_METHOD_CREDITS : PAYMENT_METHOD_CASHIER;
 
+                    if ($paymentmethod === PAYMENT_METHOD_CASHIER) {
+                        // We now need to specify the actual payment method (cash, debit or credit card).
+                        switch ($paymenttype) {
+                            case 'cashpayment':
+                                $paymentmethod = PAYMENT_METHOD_CASHIER_CASH;
+                                break;
+                            case 'creditcardpayment':
+                                $paymentmethod = PAYMENT_METHOD_CASHIER_CREDITCARD;
+                                break;
+                            case 'debitcardpayment':
+                                $paymentmethod = PAYMENT_METHOD_CASHIER_DEBITCARD;
+                                break;
+                            default:
+                                // Specific type missing.
+                                $paymentmethod = PAYMENT_METHOD_CASHIER;
+                                break;
+                        }
+                    }
+
                     shopping_cart_history::create_entry_in_history(
                         $userid,
                         $item['itemid'],

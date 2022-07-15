@@ -146,7 +146,7 @@ export const confirmPayment = (userid, paymenttype) => {
 export const validateCart = ($userid) => {
     // eslint-disable-next-line no-alert
     alert($userid);
- };
+};
 
 /**
  * Adds parameters to the printbutton.

@@ -74,6 +74,15 @@ class shoppingcart_history_list implements renderable, templatable {
                 case PAYMENT_METHOD_CASHIER:
                     $item->paymentstring = get_string('paymentcashier', 'local_shopping_cart');
                     break;
+                case PAYMENT_METHOD_CASHIER_CASH:
+                    $item->paymentstring = get_string('paymentcashier:cash', 'local_shopping_cart');
+                    break;
+                case PAYMENT_METHOD_CASHIER_CREDITCARD:
+                    $item->paymentstring = get_string('paymentcashier:creditcard', 'local_shopping_cart');
+                    break;
+                case PAYMENT_METHOD_CASHIER_DEBITCARD:
+                    $item->paymentstring = get_string('paymentcashier:debitcard', 'local_shopping_cart');
+                    break;
                 default:
                     $item->paymentstring = get_string('unknown', 'local_shopping_cart');
                     break;

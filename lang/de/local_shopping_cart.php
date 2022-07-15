@@ -77,6 +77,9 @@ $string['showdescription'] = "Zeige Beschreibung";
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
 $string['paymentcashier'] = 'an der Kassa';
+$string['paymentcashier:cash'] = 'in bar an der Kassa';
+$string['paymentcashier:creditcard'] = 'mit Kreditkarte an der Kassa';
+$string['paymentcashier:debitcard'] = 'mit Bankomatkarte an der Kassa';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
@@ -89,12 +92,9 @@ $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = "Teilnehmerin...";
 $string['searchforitem'] = "Suche...";
 
-$string['cash'] = "Bar";
-$string['creditcard'] = "Kreditkarte";
-$string['card'] = "EC Karte";
-
-
-
+$string['payedwithcash'] = "Barzahlung bestätigen";
+$string['payedwithcreditcard'] = "Kreditkartenzahlung bestätigen";
+$string['payedwithdebitcard'] = "Bankomatkartenzahlung bestätigen";
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
@@ -155,6 +155,9 @@ $string['usermodified'] = 'Bearbeitet von';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
 $string['paymentmethodcredits'] = 'Credits';
+$string['paymentmethodcashier:cash'] = 'Kassa: Bar';
+$string['paymentmethodcashier:creditcard'] = 'Kassa: Kreditkarte';
+$string['paymentmethodcashier:debitcard'] = 'Kassa: Bankomatkarte';
 
 // Payment status.
 $string['paymentpending'] = 'Keine Rückmeldung';

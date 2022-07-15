@@ -37,9 +37,12 @@ define('PAYMENT_SUCCESS', 2);
 define('PAYMENT_CANCELED', 3);
 
 // Payment methods.
-define('PAYMENT_METHOD_ONLINE', 0); // Payment via payment gateway (usually with card).
-define('PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (usually cash, but card would also be possible).
+define('PAYMENT_METHOD_ONLINE', 0); // Payment via payment gateway (which is usually connected with a credit card).
+define('PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (unknown if cash, debit or credit card).
 define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
+define('PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using cash.
+define('PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at cashier's office using a debit card.
+define('PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
 
 /**
  * Adds module specific settings to the settings block

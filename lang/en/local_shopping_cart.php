@@ -77,6 +77,9 @@ $string['failure'] = 'Failure';
 // Cashier.
 $string['paymentonline'] = 'online';
 $string['paymentcashier'] = 'at cashier\'s office';
+$string['paymentcashier:cash'] = 'with cash at cashier\'s office';
+$string['paymentcashier:creditcard'] = 'with credit card at cashier\'s office';
+$string['paymentcashier:debitcard'] = 'with debit card at cashier\'s office';
 $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
@@ -89,9 +92,9 @@ $string['selectuser'] = 'Select a user...';
 $string['user'] = "User...";
 $string['searchforitem'] = "Search for item...";
 
-$string['cash'] = "cash";
-$string['creditcard'] = "creditcard";
-$string['card'] = "EC card";
+$string['payedwithcash'] = "Confirm cash payment";
+$string['payedwithcreditcard'] = "Confirm credit card payment";
+$string['payedwithdebitcard'] = "Confirm debit card payment";
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
@@ -152,6 +155,9 @@ $string['usermodified'] = 'Modified by';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Cashier';
 $string['paymentmethodcredits'] = 'Credits';
+$string['paymentmethodcashier:cash'] = 'Cashier: Cash';
+$string['paymentmethodcashier:creditcard'] = 'Cashier: Credit card';
+$string['paymentmethodcashier:debitcard'] = 'Cashier: Debit card';
 
 // Payment status.
 $string['paymentpending'] = 'Pending';
