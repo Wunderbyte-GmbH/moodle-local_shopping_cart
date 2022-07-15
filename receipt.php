@@ -36,11 +36,10 @@ $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
 // Set some content to print.
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_url('/test.php');
+$PAGE->set_url('/receipt.php');
 
-$PAGE->set_title('Testing');
-$PAGE->set_heading('Testing local_shopping_cart');
-$PAGE->navbar->add('Testing local_shopping_cart', new moodle_url('/receipt.php'));
+$PAGE->set_title('Receipt');
+$PAGE->set_heading('Receipt');
 
 $filename = get_config('local_shopping_cart' , 'receiptimage');
 $cfghtml = get_config('local_shopping_cart', 'receipthtml');
@@ -50,12 +49,12 @@ $files = $fs->get_area_files($context->id, 'local_shopping_cart', 'local_shoppin
 foreach ($files as $file) {
     if ($file->get_filesize() > 0) {
         $filename = $file->get_filename();
-        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+        $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
             $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
         $img = html_writer::link($url, $filename);
     }
 }
-$img = $url->out(false);
+
 
 $items = local_shopping_cart\shopping_cart_history::return_data_via_identifier($id, $userid);
 $timecreated = $items[array_key_first($items)]->timecreated;
@@ -106,10 +105,10 @@ $html = '
 
 // Set document information.
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 001');
+$pdf->SetAuthor($userdetails->email);
+$pdf->SetTitle($userid.' '.$date);
 $pdf->SetSubject('');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+$pdf->SetKeywords('');
 
 // Set header and footer fonts.
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -124,14 +123,6 @@ $pdf->SetAutoPageBreak(false, PDF_MARGIN_BOTTOM);
 // Set image scale factor.
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-// Set some language-dependent strings (optional).
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-    require_once(dirname(__FILE__).'/lang/eng.php');
-    $pdf->setLanguageArray($l);
-}
-
-// ---------------------------------------------------------
-
 // Set default font subsetting mode.
 $pdf->setFontSubsetting(true);
 
@@ -145,7 +136,9 @@ $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
 
 $pdf->AddPage();
-$pdf->Image($url->out(false), 0, 0, $pdf->getPageWidth(), $pdf->getPageHeight(), '', '', '', true, 300, '', false, false, 0);
+if (isset($imgurl)) {
+    $pdf->Image($imgurl->out(false), 0, 0, $pdf->getPageWidth(), $pdf->getPageHeight(), '', '', '', true, 300, '', false, false, 0);
+}
 $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
 // Close and output PDF document.
