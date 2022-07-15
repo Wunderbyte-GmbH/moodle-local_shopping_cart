@@ -15,21 +15,23 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Testfile to see how wunderbyte_table works.
+ * Generate receipt after cashier has confirmed payment.
  *
  * @package     local_shopping_cart
  * @copyright   2021 Wunderbyte GmbH <info@wunderbyte.at>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_shopping_cart\shopping_cart_history;
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/pdflib.php');
+
 require_login();
 
 // Include the main TCPDF library (search for installation path).
 $id = required_param('id', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
+
+ob_start();
 
 // Create new PDF document.
 $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
@@ -51,10 +53,8 @@ foreach ($files as $file) {
         $filename = $file->get_filename();
         $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
             $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
-        $img = html_writer::link($url, $filename);
     }
 }
-
 
 $items = local_shopping_cart\shopping_cart_history::return_data_via_identifier($id, $userid);
 $timecreated = $items[array_key_first($items)]->timecreated;
@@ -75,6 +75,7 @@ $posthtml = $repeathtml[1];
 
 $pos = 1;
 $sum = 0;
+$itemhtml = '';
 foreach ($items as $item) {
     $tmp = str_replace("[[price]]", $item->price, $repeathtml[0]);
     $tmp = str_replace("[[name]]", $item->itemname, $tmp);
@@ -101,7 +102,6 @@ $html = '
 </style>
 '. $prehtml[0] . $itemhtml . $posthtml;
 // Print text using writeHTMLCell().
-
 
 // Set document information.
 $pdf->SetCreator(PDF_CREATOR);
@@ -136,10 +136,14 @@ $pdf->setPrintHeader(false);
 $pdf->setPrintFooter(false);
 
 $pdf->AddPage();
+
 if (isset($imgurl)) {
-    $pdf->Image($imgurl->out(false), 0, 0, $pdf->getPageWidth(), $pdf->getPageHeight(), '', '', '', true, 300, '', false, false, 0);
+    $pdf->Image($imgurl->out(false), 0, 0, $pdf->getPageWidth(), $pdf->getPageHeight(), "", "", "",
+        true, "300", "", false, false, 0);
 }
 $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+ob_end_clean();
 
 // Close and output PDF document.
 // This method has several options, check the source code documentation for more information.
