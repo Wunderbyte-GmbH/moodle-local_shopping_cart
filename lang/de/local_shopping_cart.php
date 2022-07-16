@@ -36,6 +36,9 @@ $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
+$string['cancelationfee'] = 'Stornierungsgebühr';
+$string['cancelationfee:description'] = 'Automatisch vom Guthaben abgezogene Gebühr bei einer Stornierung durch die/den KäuferIn.
+                                        -1 bedeutet, dass Stornierung durch Userin nicht möglich ist.';
 $string['addon'] = 'Zusätzliche Zeit festlegen';
 $string['addon:description'] = 'Zeit, die zur Ablaufzeit hinzugefügt wird, nachdem der Checkout-Prozess gestartet wurde';
 $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
@@ -72,7 +75,7 @@ $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
 
-$string['showdescription'] = "Zeige Beschreibung";
+$string['showdescription'] = 'Zeige Beschreibung';
 
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
@@ -83,45 +86,51 @@ $string['paymentcashier:debitcard'] = 'mit Bankomatkarte an der Kassa';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
-$string['restart'] = "Nächste/r KundIn";
-$string['print'] = "Drucken";
-$string['previouspurchases'] = "Bisherige Käufe";
-$string['checkout'] = "Zur Kassa";
+$string['restart'] = 'Nächste/r KundIn';
+$string['print'] = 'Drucken';
+$string['previouspurchases'] = 'Bisherige Käufe';
+$string['checkout'] = 'Zur Kassa';
 $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
-$string['user'] = "Teilnehmerin...";
-$string['searchforitem'] = "Suche...";
+$string['user'] = 'Teilnehmerin...';
+$string['searchforitem'] = 'Suche...';
 
-$string['payedwithcash'] = "Barzahlung bestätigen";
-$string['payedwithcreditcard'] = "Kreditkartenzahlung bestätigen";
-$string['payedwithdebitcard'] = "Bankomatkartenzahlung bestätigen";
+$string['payedwithcash'] = 'Barzahlung bestätigen';
+$string['payedwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
+$string['payedwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
 
+$string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
+$string['youcannotcancelanymore'] = 'Stornieren ist nicht mehr möglich.';
+
 $string['confirmcanceltitle'] = 'Bestätige Stornierung';
-$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das lässt sich nicht rückgängig machen. Unten kann die Gutschrift angepasst werden.';
+$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das lässt sich nicht rückgängig machen.
+                                Unten kann die Gutschrift angepasst werden.';
+$string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
+                                    Sie bekommen den Kaufpreis abzüglich einer Bearbeitungsgebühr in der Höhe von {$a} Euro gutgeschrieben.';
 
-$string['confirmpaidbacktitle'] = "Bestätige Auszahlung";
-$string['confirmpaidbackbody'] = "Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.";
-$string['confirmpaidback'] = "Bestätige Auszahlung";
+$string['confirmpaidbacktitle'] = 'Bestätige Auszahlung';
+$string['confirmpaidbackbody'] = 'Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.';
+$string['confirmpaidback'] = 'Bestätige Auszahlung';
 
-$string['confirmzeropricecheckouttitle'] = "Mit Guthaben bezahlen";
-$string['confirmzeropricecheckoutbody'] = "Sie haben genug Guthaben, um Ihren Kauf zur Gänze zu bezahlen. Wollen Sie fortfahren?";
-$string['confirmzeropricecheckout'] = "Bestätige";
+$string['confirmzeropricecheckouttitle'] = 'Mit Guthaben bezahlen';
+$string['confirmzeropricecheckoutbody'] = 'Sie haben genug Guthaben, um Ihren Kauf zur Gänze zu bezahlen. Wollen Sie fortfahren?';
+$string['confirmzeropricecheckout'] = 'Bestätige';
 
 $string['deletecredit'] = 'Ausbezahlt';
 $string['credit'] = 'Guthaben:';
 
-$string['cashier'] = "Kassa";
+$string['cashier'] = 'Kassa';
 
-$string['initialtotal'] = "Preis:";
-$string['usecredit'] = "Verwende Guthaben:";
-$string['deductible'] = "Abziehbar:";
-$string['remainingcredit'] = "Verbleibendes Guthaben:";
-$string['remainingtotal'] = "Preis:";
+$string['initialtotal'] = 'Preis:';
+$string['usecredit'] = 'Verwende Guthaben:';
+$string['deductible'] = 'Abziehbar:';
+$string['remainingcredit'] = 'Verbleibendes Guthaben:';
+$string['remainingtotal'] = 'Preis:';
 
 // Access.php.
 $string['local/shopping_cart:cashier'] = 'NutzerIn hat Kassier-Rechte';
@@ -166,10 +175,10 @@ $string['paymentsuccess'] = 'Erfolg';
 $string['paymentcanceled'] = 'Storno';
 
 // Receipt.
-$string['receipthtml'] = "HTML-Vorlage zur Erstellung von Kassenbelegen";
-$string['receipthtml:description'] = "Sie können die folgenden Platzhalter verwenden:
+$string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
+$string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[place]], [[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
  Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[email]] und [[date]] verwenden.
- Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.";
-$string['receiptimage'] = "Hintergrundbild für den Kassenbeleg";
-$string['receiptimage:description'] = "Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.";
+ Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
+$string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
+$string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';

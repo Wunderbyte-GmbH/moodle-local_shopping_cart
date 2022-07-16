@@ -104,6 +104,16 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+        new admin_setting_configtext(
+            $componentname . '/cancelationfee',
+            get_string('cancelationfee', $componentname),
+            get_string('cancelationfee:description', $componentname),
+            -1,
+            PARAM_FLOAT
+        )
+    );
+
+    $settings->add(
         new admin_setting_confightmleditor(
             $componentname . '/additonalcashiersection',
             get_string('additonalcashiersection', $componentname),

@@ -203,7 +203,8 @@ class shopping_cart_history {
             string $componentname,
             string $identifier,
             string $payment,
-            int $paymentstatus = PAYMENT_PENDING
+            int $paymentstatus = PAYMENT_PENDING,
+            int $canceluntil = null
             ) {
 
         global $USER;
@@ -223,6 +224,7 @@ class shopping_cart_history {
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
+        $data->canceluntil = $canceluntil;
 
         $result = self::write_to_db($data);
         return $result;
@@ -510,5 +512,19 @@ class shopping_cart_history {
         if (!isset($this->other['assignid'])) {
             throw new \coding_exception('The \'assignid\' value must be set in other.');
         }
+    }
+
+    /**
+     * Return an item for shopping card history table.
+     *
+     * @param integer $historyid
+     * @param integer $itemid
+     * @param integer $userid
+     * @return bool|stdClass
+     */
+    public static function return_item_from_history(int $historyid, int $itemid, int $userid) {
+        global $DB;
+
+        return $DB->get_record('local_shopping_cart_history', ['id' => $historyid, 'itemid' => $itemid, 'userid' => $userid]);
     }
 }

@@ -36,6 +36,9 @@ $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
+$string['cancelationfee'] = 'Cancelation fee';
+$string['cancelationfee:description'] = 'Automatically deducted fee for cancelation by user.
+                                        -1 means that cancelation by user is not possible.';
 $string['addon'] = 'Set addon time';
 $string['addon:description'] = 'Addition to the expiration time after checkout process is initiated';
 $string['additonalcashiersection'] = 'Add text for cashier section';
@@ -45,7 +48,7 @@ $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
 
-$string['showdescription'] = "Show description";
+$string['showdescription'] = 'Show description';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
@@ -83,45 +86,50 @@ $string['paymentcashier:debitcard'] = 'with debit card at cashier\'s office';
 $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
-$string['restart'] = "Next customer";
-$string['print'] = "Print";
-$string['previouspurchases'] = "Previous purchases";
-$string['checkout'] = "Checkout";
+$string['restart'] = 'Next customer';
+$string['print'] = 'Print';
+$string['previouspurchases'] = 'Previous purchases';
+$string['checkout'] = 'Checkout';
 $string['nouserselected'] = 'No user selected';
 $string['selectuser'] = 'Select a user...';
-$string['user'] = "User...";
-$string['searchforitem'] = "Search for item...";
+$string['user'] = 'User...';
+$string['searchforitem'] = 'Search for item...';
 
-$string['payedwithcash'] = "Confirm cash payment";
-$string['payedwithcreditcard'] = "Confirm credit card payment";
-$string['payedwithdebitcard'] = "Confirm debit card payment";
+$string['payedwithcash'] = 'Confirm cash payment';
+$string['payedwithcreditcard'] = 'Confirm credit card payment';
+$string['payedwithdebitcard'] = 'Confirm debit card payment';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
 $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['cancelsuccess'] = 'Successfully canceled';
 
+$string['youcancanceluntil'] = 'You can cancel until {$a}.';
+$string['youcannotcancelanymore'] = 'You can not cancel anymore.';
+
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone. You can adjust the credit below.';
+$string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase.
+                                    You\'l get the costs of your purchase minus a cancelation fee ({$a} Euro) as a credit for your next purchase.';
 
-$string['confirmpaidbacktitle'] = "Confirm Payback";
-$string['confirmpaidbackbody'] = "Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.";
-$string['confirmpaidback'] = "Confirm";
+$string['confirmpaidbacktitle'] = 'Confirm Payback';
+$string['confirmpaidbackbody'] = 'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
+$string['confirmpaidback'] = 'Confirm';
 
-$string['confirmzeropricecheckouttitle'] = "Pay with your credits";
-$string['confirmzeropricecheckoutbody'] = "You have enough credits to pay fully for your purchase. Do you want to proceed?";
-$string['confirmzeropricecheckout'] = "Confirm";
+$string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
+$string['confirmzeropricecheckoutbody'] = 'You have enough credits to pay fully for your purchase. Do you want to proceed?';
+$string['confirmzeropricecheckout'] = 'Confirm';
 
 $string['deletecredit'] = 'Refunded';
 $string['credit'] = 'Credit:';
 
-$string['cashier'] = "Cashier";
+$string['cashier'] = 'Cashier';
 
-$string['initialtotal'] = "Price:";
-$string['usecredit'] = "Use credit:";
-$string['deductible'] = "Deductible:";
-$string['remainingcredit'] = "Remaining credit:";
-$string['remainingtotal'] = "Price:";
+$string['initialtotal'] = 'Price:';
+$string['usecredit'] = 'Use credit:';
+$string['deductible'] = 'Deductible:';
+$string['remainingcredit'] = 'Remaining credit:';
+$string['remainingtotal'] = 'Price:';
 
 // Access.php.
 $string['local/shopping_cart:cashier'] = 'User has cashier rights';
@@ -166,11 +174,11 @@ $string['paymentsuccess'] = 'Success';
 $string['paymentcanceled'] = 'Canceled';
 
 // Receipt.
-$string['receipthtml'] = "Put in template for receipt";
-$string['receipthtml:description'] = "You can use the following placeholders:
+$string['receipthtml'] = 'Put in template for receipt';
+$string['receipthtml:description'] = 'You can use the following placeholders:
  [[place]], [[price]], [[pos]], [[name]] between [[items]] and [[/items]].
  Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[email]] and [[date]] (outside of [[items]] tag).
- Only use basic HTML supported by TCPDF";
+ Only use basic HTML supported by TCPDF';
 
-$string['receiptimage'] = "Background image for cashiers receipt";
-$string['receiptimage:description'] = "Set a background image, e.g. with logo";
+$string['receiptimage'] = 'Background image for cashiers receipt';
+$string['receiptimage:description'] = 'Set a background image, e.g. with logo';

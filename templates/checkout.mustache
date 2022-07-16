@@ -190,4 +190,27 @@
      <li> {{> local_shopping_cart/payment_region }} </li>
    </ul>
 </div>
+
+<div class="card mt-4">
+    <div class="card-header text-center bg-primary text-white">
+        <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+        <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
+    </div>
+    <div class="card-body">
+        <div class="history">
+            <ul class="list-group cashier-history-items">
+                {{> local_shopping_cart/credit_item }}
+                {{#previouslyboughthistoyitems}}
+                    {{> local_shopping_cart/history_item }}
+                {{/previouslyboughthistoyitems}}
+            </ul>
+        </div>
+    </div>
+</div>
 {{/finished}}
+
+{{#js}}
+    require(['local_shopping_cart/shistory'], function(shistory) {
+      shistory.init({{cancelationfee}});
+    });
+{{/js}}

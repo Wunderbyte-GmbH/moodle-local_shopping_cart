@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\output;
 
+use context_system;
+use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use moodle_url;
 use renderable;
@@ -58,13 +60,39 @@ class shoppingcart_history_list implements renderable, templatable {
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
         }
+        $iscachier = false;
+        $context = context_system::instance();
+        if (has_capability('local/shopping_cart:cashier', $context)) {
+            $iscachier = true;
+        }
 
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
 
             $item->date = date('Y-m-d', $item->timemodified);
             $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
-            $item->buttonclass = $item->paymentstatus == PAYMENT_CANCELED ? 'btn-danger disabled' : 'btn-primary';
+
+            // Depending on how is calling this and which status the person has, we display different cancel options.
+            if (!$item->canceled) {
+
+                $item->canceluntilstring = date('Y-m-d', $item->canceluntil);
+
+                if (!$iscachier) {
+                    if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->userid)) {
+                        $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart', $item->canceluntilstring);
+                        $item->buttonclass = 'btn-primary';
+                    } else {
+                        $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart', $item->canceluntilstring);
+                        $item->buttonclass = 'disabled hidden';
+                    }
+
+                } else {
+                    $item->buttonclass = $item->paymentstatus == PAYMENT_CANCELED ? 'btn-danger disabled' : 'btn-primary';
+                }
+            } else {
+                // If the item is already canceled, we can just disable the button.
+                $item->buttonclass = 'btn-danger disabled';
+            }
 
             // Localize the payment string.
             switch ($item->payment) {

@@ -37,13 +37,17 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      */
     public static function load_cartitem(int $optionid, int $userid = 0): cartitem {
 
+        $canceluntil = strtotime('+14 days', time());
+
         return new cartitem($optionid,
                             'my test item ' . $optionid,
                             10,
                             'EUR',
                             'local_shopping_cart',
                             'item description',
-                            '/local/shopping_cart/pix/edu.png');
+                            '/local/shopping_cart/pix/edu.png',
+                            $canceluntil
+                            );
     }
 
     /**

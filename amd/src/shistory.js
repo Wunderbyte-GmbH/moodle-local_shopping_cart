@@ -34,9 +34,12 @@ import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
 
-export const init = () => {
+export const init = (cancelationFee = null) => {
 
-    const buttons = document.querySelectorAll("#shopping_cart-cashiers-section .shopping_cart_history_cancel_button");
+    // eslint-disable-next-line no-console
+    console.log('init shopping cart history');
+
+    const buttons = document.querySelectorAll(".cashier-history-items .shopping_cart_history_cancel_button");
 
     buttons.forEach(button => {
 
@@ -54,10 +57,16 @@ export const init = () => {
                         // eslint-disable-next-line no-console
                         console.log('button clicked');
 
-                        // confirmCancelModal(button);
+                        // We find out if we are on the cachiers page. Only there, we set the cachiers modal.
 
-                        confirmCancelAndSetCreditModal(button);
-
+                        if (window.location.href.includes('cashier.php')) {
+                            confirmCancelAndSetCreditModal(button);
+                        } else {
+                            // We only add the functionality if we got a cancelation fee.
+                            if (cancelationFee !== null) {
+                                confirmCancelModal(button, cancelationFee);
+                            }
+                        }
                     }
 
                 });
@@ -321,51 +330,52 @@ function confirmPaidBack(element) {
     }]);
 }
 
-// /**
-//  *
-//  * @param {*} button
-//  */
-// function confirmCancelModal(button) {
+/**
+ *
+ * @param {*} button
+ * @param {*} cancelationFee
+ */
+function confirmCancelModal(button, cancelationFee) {
 
-//     getStrings([
-//             {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
-//             {key: 'confirmcancelbody', component: 'local_shopping_cart'},
-//             {key: 'cancelpurchase', component: 'local_shopping_cart'}
-//         ]
-//         ).then(strings => {
+    getStrings([
+            {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
+            {key: 'confirmcancelbodyuser', component: 'local_shopping_cart', param: cancelationFee},
+            {key: 'cancelpurchase', component: 'local_shopping_cart'}
+        ]
+        ).then(strings => {
 
-//             ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+            ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
 
-//                 modal.setTitle(strings[0]);
-//                     modal.setBody(strings[1]);
-//                     modal.setSaveButtonText(strings[2]);
-//                     modal.getRoot().on(ModalEvents.save, function() {
+                modal.setTitle(strings[0]);
+                    modal.setBody(strings[1]);
+                    modal.setSaveButtonText(strings[2]);
+                    modal.getRoot().on(ModalEvents.save, function() {
 
-//                         // eslint-disable-next-line no-console
-//                         console.log('we saved');
+                        // eslint-disable-next-line no-console
+                        console.log('we saved');
 
-//                         const historyid = button.dataset.historyid;
-//                         const itemid = button.dataset.itemid;
-//                         const userid = button.dataset.userid;
-//                         const currency = button.dataset.currency;
-//                         const componentname = button.dataset.componentname;
-//                         const price = button.dataset.price;
+                        const historyid = button.dataset.historyid;
+                        const itemid = button.dataset.itemid;
+                        const userid = button.dataset.userid;
+                        const currency = button.dataset.currency;
+                        const componentname = button.dataset.componentname;
+                        const price = button.dataset.price;
 
-//                         cancelPurchase(itemid, userid, componentname, historyid, currency, price, button);
-//                     });
+                        cancelPurchase(itemid, userid, componentname, historyid, currency, price, 0, button);
+                    });
 
-//                     modal.show();
-//                     return modal;
-//             }).catch(e => {
-//                 // eslint-disable-next-line no-console
-//                 console.log(e);
-//             });
-//             return true;
-//         }).catch(e => {
-//             // eslint-disable-next-line no-console
-//             console.log(e);
-//         });
-// }
+                    modal.show();
+                    return modal;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return true;
+        }).catch(e => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+}
 
 /**
  *

@@ -41,11 +41,13 @@ echo $OUTPUT->header();
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
-$item = new cartitem(1, 'Testitem 1', 10.00, 'EUR', 'local_shopping_cart', 'My Testitem 1 description');
+$canceluntil = strtotime('+14 days', time());
+
+$item = new cartitem(1, 'Testitem 1', 10.00, 'EUR', 'local_shopping_cart', 'My Testitem 1 description', null, $canceluntil);
 $data = $item->getitem();
 $data = new button($data);
 echo $renderer->render_button($data);
-$item = new cartitem(2, 'asdsad 2', 20.3, 'EUR', 'local_shopping_cart', 'My Testitem 2 description');
+$item = new cartitem(2, 'asdsad 2', 20.3, 'EUR', 'local_shopping_cart', 'My Testitem 2 description', null, $canceluntil);
 $data = $item->getitem();
 $data = new button($data);
 global $USER;

@@ -581,7 +581,8 @@ class shopping_cart {
                         $item['componentname'],
                         $identifier,
                         $paymentmethod,
-                        PAYMENT_SUCCESS
+                        PAYMENT_SUCCESS,
+                        $item['canceluntil'] ?? null
                     );
                 }
 
@@ -627,14 +628,16 @@ class shopping_cart {
     public static function cancel_purchase(int $itemid, int $userid, string $componentname,
         int $historyid = null, float $customcredit = 0): array {
 
-        // Cancelation is only allowed for cashiers.
-        $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
-             return [
-                 'success' => 0,
-                 'error' => get_string('nopermission', 'local_shopping_cart'),
-                 'credit' => 0
-             ];
+        global $USER;
+
+        // Check if cancelation is still within the allowed periode set in shopping_cart_history.
+
+        if (!self::allowed_to_cancel($historyid, $itemid, $userid)) {
+            return [
+                'success' => 0,
+                'error' => get_string('nopermission', 'local_shopping_cart'),
+                'credit' => 0
+            ];
         }
 
         if (!self::cancel_purchase_for_component($componentname, $itemid, $userid)) {
@@ -654,6 +657,14 @@ class shopping_cart {
 
         if ($success == 1) {
             // If the payment was successfully canceled, we can book the credits to the users balance.
+
+            // If the user canceled herself and a cancelation fee is set, we deduce this fee from the credit.
+            if ($userid == $USER->id) {
+                if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
+                    && $cancelationfee > 0) {
+                        $customcredit = $customcredit - $cancelationfee;
+                }
+            }
 
             list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
         }
@@ -692,5 +703,36 @@ class shopping_cart {
             'status' => 1,
             'error' => ''
         ];
+    }
+
+    /**
+     * Check if we are allowed to cancel.
+     * Can be when it's still within the defined cancelation periode, or the user has the right as cashier.
+     *
+     * @param integer $historyid
+     * @param integer $itemid
+     * @param integer $userid
+     * @return boolean
+     */
+    public static function allowed_to_cancel(int $historyid, int $itemid, int $userid):bool {
+
+        global $DB;
+
+        if (!$item = shopping_cart_history::return_item_from_history($historyid, $itemid, $userid)) {
+            return false;
+        }
+
+        $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
+
+        // If the cancelationfee is < 0, or the time has expired, the user is not allowed to cancel.
+        if (($cancelationfee < 0) || ($item->canceluntil < time())) {
+            // Cancelation after time has expired is only allowed for cashiers.
+            $context = context_system::instance();
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
