@@ -82,6 +82,13 @@ class cartitem {
     private $imageurl;
 
     /**
+     * A timestamp until when canceling is possible.
+     *
+     * @var null|int
+     */
+    private $canceluntil;
+
+    /**
      * Cunstructor.
      *
      * @param int $itemid
@@ -98,7 +105,8 @@ class cartitem {
                                 string $currency,
                                 string $componentname,
                                 string $description = '',
-                                string $imageurl = null) {
+                                string $imageurl = null,
+                                int $canceluntil = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -106,6 +114,7 @@ class cartitem {
         $this->componentname = $componentname;
         $this->description = $description;
         $this->imageurl = $imageurl;
+        $this->canceluntil = $canceluntil;
     }
 
     /**
@@ -122,6 +131,7 @@ class cartitem {
         $item['componentname'] = $this->componentname;
         $item['description'] = $this->description;
         $item['imageurl'] = $this->imageurl;
+        $item['canceluntil'] = $this->canceluntil;
         return $item;
     }
 
@@ -150,5 +160,14 @@ class cartitem {
      */
     public function getitemid(): int {
         return $this->itemid;
+    }
+
+    /**
+     * Get the canceluntil timestamp.
+     *
+     * @return int
+     */
+    public function getcanceluntil(): int {
+        return $this->canceluntil;
     }
 }
