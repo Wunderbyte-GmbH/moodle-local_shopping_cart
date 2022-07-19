@@ -155,7 +155,7 @@ $from = "{local_shopping_cart_history} sch
         ON p.itemid = sch.identifier
         $gatewayspart";
 $where = "1 = 1";
-$params = ['paymentstatus' => PAYMENT_SUCCESS];
+$params = [];
 
 // Now build the table.
 $cashreporttable->set_sql($fields, $from, $where, $params);
@@ -166,6 +166,52 @@ if (!$cashreporttable->is_downloading()) {
     // Table will be shown normally.
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
+
+    // SQL to get daily sums.
+    $dailysumssql = "SELECT payment, sum(price) dailysum
+        FROM {local_shopping_cart_history}
+        WHERE timecreated BETWEEN :startoftoday AND :endoftoday
+        AND paymentstatus = :paymentsuccess
+        GROUP BY payment";
+
+    // SQL params.
+    $dailysumsparams = [
+        'startoftoday' => strtotime('today 00:00'),
+        'endoftoday' => strtotime('today 24:00'),
+        'paymentsuccess' => PAYMENT_SUCCESS
+    ];
+
+    $dailysumsfromdb = $DB->get_records_sql($dailysumssql, $dailysumsparams);
+    foreach ($dailysumsfromdb as $dailysumrecord) {
+        switch ($dailysumrecord->payment) {
+            case PAYMENT_METHOD_ONLINE:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+            case PAYMENT_METHOD_CASHIER:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+            case PAYMENT_METHOD_CREDITS:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+            case PAYMENT_METHOD_CASHIER_CASH:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+            case PAYMENT_METHOD_CASHIER_CREDITCARD:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+            case PAYMENT_METHOD_CASHIER_DEBITCARD:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
+                $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
+                break;
+        }
+    }
+
+    echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums', $dailysumsdata);
 
     // Dismissible alert containing the description of the report.
     echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .

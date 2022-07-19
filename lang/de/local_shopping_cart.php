@@ -142,6 +142,7 @@ $string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle get�
 Sie können das Kassajournal auch im gewünschten Format exportieren.';
 $string['accessdenied'] = 'Zugriff verweigert';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
+$string['showdailysums'] = '&sum; Tagessummen anzeigen...';
 
 // Report headers.
 $string['timecreated'] = 'Erstellt';
@@ -164,9 +165,9 @@ $string['usermodified'] = 'Bearbeitet von';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
 $string['paymentmethodcredits'] = 'Credits';
-$string['paymentmethodcashier:cash'] = 'Kassa: Bar';
-$string['paymentmethodcashier:creditcard'] = 'Kassa: Kreditkarte';
-$string['paymentmethodcashier:debitcard'] = 'Kassa: Bankomatkarte';
+$string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
+$string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
+$string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';
 
 // Payment status.
 $string['paymentpending'] = 'Keine Rückmeldung';

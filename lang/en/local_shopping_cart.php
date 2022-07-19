@@ -141,6 +141,7 @@ $string['cashreport_desc'] = 'Here you get an overview over all accounting trans
 You also can export the report in your preferred file format.';
 $string['accessdenied'] = 'Access denied';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
+$string['showdailysums'] = '&sum; Show daily sums...';
 
 // Report headers.
 $string['timecreated'] = 'Created';
@@ -163,9 +164,9 @@ $string['usermodified'] = 'Modified by';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Cashier';
 $string['paymentmethodcredits'] = 'Credits';
-$string['paymentmethodcashier:cash'] = 'Cashier: Cash';
-$string['paymentmethodcashier:creditcard'] = 'Cashier: Credit card';
-$string['paymentmethodcashier:debitcard'] = 'Cashier: Debit card';
+$string['paymentmethodcashier:cash'] = 'Cashier (Cash)';
+$string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
+$string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';
 
 // Payment status.
 $string['paymentpending'] = 'Pending';
