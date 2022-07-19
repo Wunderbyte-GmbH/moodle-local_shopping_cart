@@ -105,7 +105,7 @@ $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['cancelsuccess'] = 'Successfully canceled';
 
 $string['youcancanceluntil'] = 'You can cancel until {$a}.';
-$string['youcannotcancelanymore'] = 'You can not cancel anymore.';
+$string['youcannotcancelanymore'] = 'No cancelation possible.';
 
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone. You can adjust the credit below.';
@@ -182,3 +182,9 @@ $string['receipthtml:description'] = 'You can use the following placeholders:
 
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
+
+// Shortcodes.
+$string['shoppingcarthistory'] = 'All purchases of a given user';
+
+// Shopping cart history card.
+$string['getrefundforcredit'] = 'You can use your credit to buy a new item.';

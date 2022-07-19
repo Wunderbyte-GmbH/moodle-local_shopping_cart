@@ -63,8 +63,10 @@ class cashier implements renderable, templatable {
             $data['useremail'] = $user->email;
 
             // We use the template class, but not the renderer here.
-            $sclist = new shoppingcart_history_list($userid);
-            $data['historyitems'] = $sclist->return_list();
+            $historylist = new shoppingcart_history_list($userid);
+
+            $historylist->insert_list($data);
+
             $this->data = $data;
         }
     }

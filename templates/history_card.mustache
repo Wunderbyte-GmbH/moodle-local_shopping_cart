@@ -31,38 +31,34 @@
 
     Example context (json):
     {
-        "itemid": 3,
-        "componentname": 'mod_booking',
-        "price": 133,
-        "expirationdate": 1642155164,
-        "itemname": Tenniscourse
+        "userid": 3,
+        "urls": {
+            "preferences": "http://www.moodle.com"
+        }
     }
 
 }}
 
-{{#credit}}
-    <li class="list-group-item flex-column align-items-start text-dark shopping_cart_history_paidback">
-    <div class="d-flex w-100 justify-content-between">
-        <h5>
-        <span class="credit_total">
-            {{credit}}
-        </span>
-        <span class="currency_credit">
-            {{currency}}
-        </span></h5>
+
+<div class="card mt-4">
+    <div class="card-header text-center bg-primary text-white">
+        <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+        <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
     </div>
+    <div class="card-body">
+        <div class="history">
+            <ul class="list-group cashier-history-items">
+            {{> local_shopping_cart/credit_item }}
+            {{#historyitems}}
+            {{> local_shopping_cart/history_item }}
+            {{/historyitems}}
+            </ul>
+        </div>
+    </div>
+</div>
 
-    {{#canpayback}}
-        <button type="button" class="shopping_cart_history_paidback_button btn btn-success btn-sm pull-right"
-            data-userid='{{userid}}'>
-            {{#str}} deletecredit, local_shopping_cart {{/str}}
-        </button>
-    {{/canpayback}}
-
-    {{^canpayback}}
-        <span class="getrefundforcredit">
-            {{#str}} getrefundforcredit, local_shopping_cart {{/str}}
-        </span>
-    {{/canpayback}}
-    </li>
-{{/credit}}
+{{#js}}
+    require(['local_shopping_cart/shistory'], function(shistory) {
+      shistory.init({{cancelationfee}});
+    });
+{{/js}}

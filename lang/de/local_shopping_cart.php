@@ -105,7 +105,7 @@ $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
 
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
-$string['youcannotcancelanymore'] = 'Stornieren ist nicht mehr möglich.';
+$string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
 
 $string['confirmcanceltitle'] = 'Bestätige Stornierung';
 $string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das lässt sich nicht rückgängig machen.
@@ -182,3 +182,9 @@ $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verw
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
+
+// Shortcodes.
+$string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
+
+// Shopping cart history card.
+$string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';

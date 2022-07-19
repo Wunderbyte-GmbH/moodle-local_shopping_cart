@@ -44,4 +44,15 @@ class renderer extends plugin_renderer_base {
         $data = $button->export_for_template($this);
         return $this->render_from_template('local_shopping_cart/addtocartdb', $data);
     }
+
+    /**
+     * Render add to cart button
+     *
+     * @param templatable $button
+     * @return string|boolean
+     */
+    public function render_history_card(templatable $data) {
+        $data = $data->export_for_template($this);
+        return $this->render_from_template('local_shopping_cart/history_card', $data);
+    }
 }

@@ -64,7 +64,7 @@ if (isset($success)) {
         // If we have a successful checkout, we show the bought items via transaction id.
         if (isset($identifier)) {
             $historylist = new shoppingcart_history_list($userid, $identifier);
-            $data['histoyitems'] = $historylist->return_list();
+            $historylist->insert_list($data);
         }
 
     } else {
@@ -75,7 +75,12 @@ if (isset($success)) {
     // Here we are before checkout.
 
     $historylist = new shoppingcart_history_list($userid);
-    $data['previouslyboughthistoyitems'] = $historylist->return_list();
+
+    $historyarray = $historylist->return_list();
+    $data['previouslyboughthistoryitems'] = $historyarray['historyitems'];
+    if (isset($historyarray['cancelationfee'])) {
+        $data['cancelationfee'] = $historyarray['cancelationfee'];
+    }
 
 }
 
@@ -89,12 +94,6 @@ $sp = new service_provider();
 $data['identifier'] = $scdata['identifier'];
 $data['currency'] = $scdata['currency'] ?? '';
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
-// We only add the cancelation fee if it is set and not negative.
-if ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee')) {
-    if ($cancelationfee >= 0) {
-        $data['cancelationfee'] = $cancelationfee;
-    }
-}
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

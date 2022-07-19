@@ -156,23 +156,10 @@
                 {{> local_shopping_cart/shopping_cart_items }}
             </div>
          </div>
-         <div class="card mt-4">
-            <div class="card-header text-center bg-primary text-white">
-               <i class="fa fa-history fa-2x" aria-hidden="true"></i>
-               <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
-            </div>
-            <div class="card-body">
-               <div class="history">
-                  <ul class="list-group cashier-history-items">
 
-                  {{> local_shopping_cart/credit_item }}
-                  {{#historyitems}}
-                    {{> local_shopping_cart/history_item }}
-                  {{/historyitems}}
-                  </ul>
-               </div>
-            </div>
-         </div>
+         {{! We use the card with the history items more than once. }}
+         {{> local_shopping_cart/history_card }}
+
          <div id="shopping-cart-reports" class="card mt-4">
             <div class="card-header text-center bg-primary text-white">
                <i class="fa fa-table" aria-hidden="true"></i>
@@ -192,9 +179,6 @@
 {{#js}}
     require(['local_shopping_cart/cashier'], function(cashier) {
       cashier.init({{{users}}}, {{userid}});
-    });
-    require(['local_shopping_cart/shistory'], function(shistory) {
-      shistory.init();
     });
 {{/js}}
 
