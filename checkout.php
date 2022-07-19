@@ -75,12 +75,7 @@ if (isset($success)) {
     // Here we are before checkout.
 
     $historylist = new shoppingcart_history_list($userid);
-
-    $historyarray = $historylist->return_list();
-    $data['previouslyboughthistoryitems'] = $historyarray['historyitems'];
-    if (isset($historyarray['cancelationfee'])) {
-        $data['cancelationfee'] = $historyarray['cancelationfee'];
-    }
+    $historylist->insert_list($data);
 
 }
 
