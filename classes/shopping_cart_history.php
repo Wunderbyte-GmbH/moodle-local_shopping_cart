@@ -144,6 +144,31 @@ class shopping_cart_history {
     }
 
     /**
+     * Returns a list of users who are booked for this option.
+     *
+     * @param integer $optionid
+     * @param string $componentname
+     * @return array
+     */
+    public static function get_user_list_for_option(int $optionid, string $componentname) {
+
+        global $DB;
+
+        $sql = "SELECT sch.id, u.id as userid, u.firstname, u.lastname, u.email, sch.itemid, sch.price, sch.currency
+                FROM {user} u
+                JOIN {local_shopping_cart_history} sch
+                ON u.id=sch.userid
+                WHERE sch.itemid=:optionid
+                AND sch.componentname=:componentname
+                AND sch.paymentstatus=2";
+
+        $params = ['optionid' => $optionid,
+                   'componentname' => $componentname];
+
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
      * Function create_history
      * @param int $userid
      * @return void

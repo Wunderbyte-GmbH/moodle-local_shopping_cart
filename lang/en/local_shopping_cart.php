@@ -108,9 +108,14 @@ $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';
 
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
-$string['confirmcancelbody'] = 'Do you really want to cancel this purchase. It can\'t be undone. You can adjust the credit below.';
+$string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone. You can adjust the credit below.';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase.
                                     You\'l get the costs of your purchase minus a cancelation fee ({$a} Euro) as a credit for your next purchase.';
+
+$string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
+    The following users will get their money as a credit back:
+    {$a->userlist}
+    You can specify the cancelation fee below. This will be deduced from the original purchase price.';
 
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
 $string['confirmpaidbackbody'] = 'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
@@ -192,3 +197,6 @@ $string['shoppingcarthistory'] = 'All purchases of a given user';
 
 // Shopping cart history card.
 $string['getrefundforcredit'] = 'You can use your credit to buy a new item.';
+
+// Form modal_cancel_all_addcredit.
+$string['nousersfound'] = 'No users found';
