@@ -41,8 +41,22 @@
 </p>
 <div class="collapse mb-5" id="collapseExample">
   <div class="card card-body">
-    {{#dailysums}}
-      <p><strong>{{paymentmethod}}:</strong> {{dailysum}}</p>
-    {{/dailysums}}
+    <h4>{{#str}} titledailysums, local_shopping_cart {{/str}} ({{currentdate}})</h4>
+    <p>
+      {{#dailysums:exist}}
+        <h5>{{#str}} titledailysums:all, local_shopping_cart {{/str}}</h5>
+      {{/dailysums:exist}}
+      {{#dailysums}}
+        <strong>{{paymentmethod}}:</strong> {{dailysumformatted}}<br>
+      {{/dailysums}}
+    </p>
+    <p>
+      {{#dailysumscurrentcashier:exist}}
+        <h5>{{#str}} titledailysums:current, local_shopping_cart {{/str}} ({{currentcashier:fullname}})</h5>
+      {{/dailysumscurrentcashier:exist}}
+      {{#dailysumscurrentcashier}}
+        <strong>{{paymentmethod}}:</strong> {{dailysumformatted}}<br>
+      {{/dailysumscurrentcashier}}
+    </p>
   </div>
 </div>

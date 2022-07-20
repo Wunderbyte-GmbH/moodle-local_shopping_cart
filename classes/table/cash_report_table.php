@@ -47,6 +47,19 @@ class cash_report_table extends table_sql {
 
     /**
      * This function is called for each data row to allow processing of the
+     * 'price' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered price.
+     * @throws dml_exception
+     */
+    public function col_price(object $values): string {
+        $commaseparator = current_language() == 'de' ? ',' : '.';
+        return number_format((float)$values->price, 2, $commaseparator, '');
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
      * 'timecreated' value.
      *
      * @param object $values Contains object with all the values of record.

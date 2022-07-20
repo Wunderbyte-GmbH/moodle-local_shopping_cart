@@ -142,6 +142,9 @@ You also can export the report in your preferred file format.';
 $string['accessdenied'] = 'Access denied';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
 $string['showdailysums'] = '&sum; Show daily sums...';
+$string['titledailysums'] = 'Daily revenue';
+$string['titledailysums:all'] = 'Total revenue';
+$string['titledailysums:current'] = 'Current cashier';
 
 // Report headers.
 $string['timecreated'] = 'Created';
