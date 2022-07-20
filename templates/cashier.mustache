@@ -87,10 +87,11 @@
             {{! 2. Tab which lets you chose the item }}
                   <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
                      <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false">{{#str}} checkout, local_shopping_cart {{/str}}</a>
-                     <p><input type="text" id="shoppingcartfilterinput" placeholder="{{#str}} searchforitem, local_shopping_cart {{/str}}"></p>
+                     <p class="additonalcashiersection">
                      {{#additonalcashiersection}}
                      {{{additonalcashiersection}}}
                      {{/additonalcashiersection}}
+                     </p>
                   </div>
             {{! 3. Tab before checkout }}
                   <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
