@@ -47,6 +47,8 @@ export const init = (users, userid = 0) => {
             console.log('click');
         });
     }
+
+    autocomplete(document.getElementById("searchuser"), users);
 };
 
 export const confirmPayment = (userid, paymenttype) => {
