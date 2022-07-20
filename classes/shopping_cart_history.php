@@ -128,6 +128,8 @@ class shopping_cart_history {
             $selectorderidpart = ", pgw.orderid";
             $colselectsstring = implode(' UNION ', $colselects);
             $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
+        } else {
+            $gatewayspart = '';
         }
 
         $sql = "SELECT sch.*, p.gateway$selectorderidpart

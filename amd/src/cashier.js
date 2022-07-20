@@ -47,29 +47,6 @@ export const init = (users, userid = 0) => {
             console.log('click');
         });
     }
-
-    autocomplete(document.getElementById("searchuser"), users);
-    attachFilterFuntion();
-
-     /**
-      * Attach filter function.
-      */
-    function attachFilterFuntion() {
-        const input = document.querySelector("#shoppingcartfilterinput");
-        input.addEventListener("keyup", () => {
-            const filter = input.value.toUpperCase();
-            const li = document.querySelectorAll(".list-group-item.wunderbyteTableJavascript");
-            for (let i = 0; i < li.length; i++) {
-                const a = li[i];
-                const txtValue = a.textContent || a.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = "";
-                } else {
-                    li[i].style.display = "none";
-                }
-            }
-        });
-    }
 };
 
 export const confirmPayment = (userid, paymenttype) => {
