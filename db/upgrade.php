@@ -77,6 +77,19 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022071600, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2022072100) {
+
+        // Changing type of field price on table local_shopping_cart_history to number.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('price', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null, 'itemname');
+
+        // Launch change of type for field price.
+        $dbman->change_field_type($table, $field);
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022072100, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
