@@ -28,6 +28,7 @@ namespace local_shopping_cart\payment;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
+use moodle_exception;
 use moodle_url;
 use stdClass;
 
@@ -54,18 +55,33 @@ class service_provider implements \core_payment\local\callback\service_provider 
         // This timestamp will give us a key to store the cart of a user in session cache and hold the items of the cart together.
 
         $sc = new shopping_cart_history();
-        $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
+        if (!$shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true)) {
+
+            if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
+                throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
+            }
+
+            $price = 0;
+            foreach ($records as $record) {
+                $price = $price + $record->price;
+                $currency = $record->currency;
+            }
+
+        } else {
+
+            // At this point, the user will consume any credit she might have.
+            // This might reduce the price, down to 0. But the reduction to 0 should be...
+            // ... treated beforehand, because it will throw an error in payment.
+            $price = shopping_cart_credits::get_price_from_shistorycart($shoppingcart);
+            $currency = $shoppingcart->currency;
+
+        }
 
         if (!$accountid = get_config('local_shopping_cart', 'accountid')) {
             $accountid = 1;
         }
 
-        // At this point, the user will consume any credit she might have.
-        // This might reduce the price, down to 0. But the reduction to 0 should be...
-        // ... treated beforehand, because it will throw an error in payment.
-        $price = shopping_cart_credits::get_price_from_shistorycart($shoppingcart);
-
-        return new \core_payment\local\entities\payable($price, $shoppingcart->currency, $accountid);
+        return new \core_payment\local\entities\payable($price, $currency, $accountid);
     }
 
     /**
