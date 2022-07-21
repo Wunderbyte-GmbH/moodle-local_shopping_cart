@@ -113,8 +113,8 @@ $string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das l
 $string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
                                     Sie bekommen den Kaufpreis abzüglich einer Bearbeitungsgebühr in der Höhe von {$a} Euro gutgeschrieben.';
 
-$string['confirmcancelallbody'] = 'Möchten Sie wirklich den Kauf für alle aktuellen KäuferInnen stornieren?
-    Folgende Nutzerinnen erhalten ihr den Kaufpreis zurück:
+$string['confirmcancelallbody'] = 'Möchten Sie wirklich den Kauf für alle aktuellen Käufer*innen stornieren?
+    Folgende Nutzer*innen erhalten den Kaufpreis zurück:
     {$a->userlist}
     Sie können unten die Bearbeitungsgebühr anführen. Diese wird von der rückerstatteten Summe abgezogen.';
 
