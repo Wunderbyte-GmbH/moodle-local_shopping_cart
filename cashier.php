@@ -53,8 +53,7 @@ $PAGE->set_title(get_string('cashier', 'local_shopping_cart'));
 $PAGE->set_heading(get_string('cashier', 'local_shopping_cart'));
 
 // Set the page layout.
-
-$PAGE->set_pagelayout('admin');
+$PAGE->set_pagelayout('base');
 
 // Output the header.
 echo $OUTPUT->header();

@@ -45,8 +45,7 @@ $PAGE->set_title("Ihr Warenkorb");
 $PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
 
 // Set the page layout.
-
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('base');
 
 
 // Output the header.
