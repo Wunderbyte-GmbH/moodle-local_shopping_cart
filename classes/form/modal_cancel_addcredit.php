@@ -46,8 +46,7 @@ class modal_cancel_addcredit extends dynamic_form {
 
         $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbody', 'local_shopping_cart'));
 
-        $mform->addElement('text', 'credit', get_string('credit', 'local_shopping_cart')); // Add elements to your form.
-        $mform->setType('credit', PARAM_FLOAT);                   // Set type of element.
+        $mform->addElement('float', 'credit', get_string('credit', 'local_shopping_cart'));
         $mform->setDefault('credit', $credit);
     }
 

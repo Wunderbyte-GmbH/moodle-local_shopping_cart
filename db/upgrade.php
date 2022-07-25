@@ -90,6 +90,27 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022072100, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2022072500) {
+
+        // Changing type of field credits on table local_shopping_cart_credits to number.
+        $table = new xmldb_table('local_shopping_cart_credits');
+
+        $credits = new xmldb_field('credits', XMLDB_TYPE_NUMBER, '10, 2', null, XMLDB_NOTNULL, null, null, 'userid');
+        // Launch change of type for field credits.
+        $dbman->change_field_type($table, $credits);
+        // Launch change of precision for field credits.
+        $dbman->change_field_precision($table, $credits);
+
+        $balance = new xmldb_field('balance', XMLDB_TYPE_NUMBER, '10, 2', null, XMLDB_NOTNULL, null, null, 'currency');
+        // Launch change of type for field balance.
+        $dbman->change_field_type($table, $balance);
+        // Launch change of precision for field balance.
+        $dbman->change_field_precision($table, $balance);
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022072500, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

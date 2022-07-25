@@ -30,7 +30,6 @@ use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
 use moodle_url;
-use stdClass;
 
 /**
  * Payment subsystem callback implementation for local_shopping_cart.

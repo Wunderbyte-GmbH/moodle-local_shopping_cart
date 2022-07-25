@@ -24,7 +24,6 @@
 
 namespace local_shopping_cart;
 
-use Exception;
 use moodle_exception;
 use stdClass;
 
@@ -40,11 +39,9 @@ class shopping_cart_credits {
      * Returns the current balance of the given user.
      *
      * @param int $userid
-     * @return null|int
+     * @return array
      */
     public static function get_balance(int $userid): array {
-
-        global $DB;
 
         $records = self::get_all_transactions($userid);
 
@@ -56,7 +53,7 @@ class shopping_cart_credits {
             $currency = $record->currency;
         }
 
-        return [$balance, $currency];
+        return [round($balance, 2), $currency];
     }
 
     /**
@@ -107,12 +104,11 @@ class shopping_cart_credits {
                 $remainingtotal = $data['price'];
             }
 
-            $data['credit'] = $balance;
-            $data['deductible'] = $deductible;
-            $data['price'] = $remainingtotal;
-            $data['remainingcredit'] = $remainingcredit;
+            $data['credit'] = round($balance, 2);
+            $data['deductible'] = round($deductible, 2);
+            $data['price'] = round($remainingtotal, 2);
+            $data['remainingcredit'] = round($remainingcredit, 2);
             $data['checkboxid'] = bin2hex(random_bytes(3));
-
         }
     }
 
@@ -160,8 +156,8 @@ class shopping_cart_credits {
 
         $data->userid = $userid;
         $data->credits = $credit;
-        $data->currency = $currency;
-        $data->balance = $balance + $credit; // Balance hold the new balance after this transaction.
+        $data->currency = (float) $currency;
+        $data->balance = (float) $balance + $credit; // Balance hold the new balance after this transaction.
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
@@ -181,7 +177,7 @@ class shopping_cart_credits {
 
             $cachedrawdata = $cache->get($cachekey);
             if ($cachedrawdata) {
-                $cachedrawdata['credit'] = $newbalance;
+                $cachedrawdata['credit'] = round($newbalance, 2);
                 $cachedrawdata['currency'] = $currency;
                 $cache->set($cachekey, $cachedrawdata);
             }
@@ -191,7 +187,8 @@ class shopping_cart_credits {
     }
 
     /**
-     * This function only uses the data already calculated in prepare checkout stores the result in DB.
+     * This function only uses the data already calculated in prepare checkout...
+     * ...and stores the result in DB.
      * @param int $userid
      * @return void
      */
@@ -203,8 +200,8 @@ class shopping_cart_credits {
         $data = new stdClass();
 
         $data->userid = $userid;
-        $data->credits = -$checkoutdata['deductible'];
-        $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
+        $data->credits = (float) -$checkoutdata['deductible'];
+        $data->balance = (float) $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
         $data->currency = $checkoutdata['currency'];
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
@@ -218,7 +215,7 @@ class shopping_cart_credits {
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $cachedrawdata['credit'] = $data->balance;
+            $cachedrawdata['credit'] = round($data->balance, 2);
             $cachedrawdata['currency'] = $data->currency;
             $cache->set($cachekey, $cachedrawdata);
         }
@@ -258,7 +255,7 @@ class shopping_cart_credits {
             throw new moodle_exception('balancedoesnotmatch', 'local_shopping_cart');
         }
 
-        return [$balance, $currency];
+        return [round($balance, 2), $currency];
     }
 
 
@@ -270,13 +267,11 @@ class shopping_cart_credits {
      */
     public static function credit_paid_back($userid) {
 
-        global $DB;
-
         list($balance, $currency) = self::get_balance($userid);
 
         $data = [];
 
-        $data['deductible'] = $balance;
+        $data['deductible'] = round($balance, 2);
         $data['remainingcredit'] = 0;
         $data['currency'] = $currency;
 
@@ -289,9 +284,9 @@ class shopping_cart_credits {
      * This function calculates the price to be paid from the shopping cart, while taking account credits and usecredit status.
      *
      * @param [type] $shoppingcart
-     * @return integer
+     * @return float
      */
-    public static function get_price_from_shistorycart($shoppingcart):int {
+    public static function get_price_from_shistorycart($shoppingcart): float {
 
         // First we need to get the userid from the cart.
         $userid = 0;
@@ -308,12 +303,12 @@ class shopping_cart_credits {
                 }
             }
         }
-        if ($userid != 0) {
 
+        if ($userid != 0) {
             $data['currency'] = $currency;
             self::prepare_checkout($data, $userid);
         }
 
-        return $data['price'];
+        return (float) round($data['price'], 2);
     }
 }
