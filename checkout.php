@@ -47,7 +47,6 @@ $PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>
 // Set the page layout.
 $PAGE->set_pagelayout('base');
 
-
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
@@ -59,6 +58,12 @@ if (isset($success)) {
     if ($success) {
         $data['success'] = 1;
         $data['finished'] = 1;
+
+        // After successful checkout, remove all items from cart.
+        $PAGE->requires->js_call_amd(
+            'local_shopping_cart/cart',
+            'deleteAllItems', []
+        );
 
         // If we have a successful checkout, we show the bought items via transaction id.
         if (isset($identifier)) {

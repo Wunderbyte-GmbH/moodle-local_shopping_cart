@@ -194,6 +194,8 @@ export const deleteAllItems = () => {
                     btn.classList.remove('disabled');
                 }
             });
+            // eslint-disable-next-line no-console
+            console.log('All items have been removed from cart.');
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
