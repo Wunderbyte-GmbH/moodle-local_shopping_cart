@@ -60,7 +60,7 @@ class local_shopping_cart_observer {
 
         $itemid = $data['other']['itemid'];
 
-        shopping_cart_history::error_occured_for_identifier($itemid);
+        shopping_cart_history::error_occured_for_identifier($itemid, $data['userid']);
 
         return 'registered_payment_error';
     }

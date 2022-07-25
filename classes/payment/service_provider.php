@@ -55,8 +55,15 @@ class service_provider implements \core_payment\local\callback\service_provider 
         // This timestamp will give us a key to store the cart of a user in session cache and hold the items of the cart together.
 
         $sc = new shopping_cart_history();
-        if (!$shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true)) {
+        $cachedeleted = false;
 
+        try {
+            $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
+        } catch (\Exception $e) {
+            $cachedeleted = true;
+        }
+
+        if ($cachedeleted) {
             if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
                 throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
             }
@@ -68,7 +75,6 @@ class service_provider implements \core_payment\local\callback\service_provider 
             }
 
         } else {
-
             // At this point, the user will consume any credit she might have.
             // This might reduce the price, down to 0. But the reduction to 0 should be...
             // ... treated beforehand, because it will throw an error in payment.
