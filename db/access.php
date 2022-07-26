@@ -31,9 +31,7 @@ $capabilities = [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_SYSTEM,
                 'archetypes' => [
-                        'manager' => CAP_ALLOW,
-                        'editingteacher' => CAP_ALLOW,
-                        'teacher' => CAP_ALLOW
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/shopping_cart:history' => [
