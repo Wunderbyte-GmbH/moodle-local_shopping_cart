@@ -91,7 +91,11 @@ $schistory->store_in_schistory_cache($scdata);
 $sp = new service_provider();
 
 $data['identifier'] = $scdata['identifier'];
-$data['currency'] = $scdata['currency'] ?? '';
+
+if (empty($data['currency'])) {
+    $data['currency'] = $scdata['currency'] ?? '';
+}
+
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);

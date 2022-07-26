@@ -41,9 +41,10 @@
 }}
 
 {{#credit}}
-    <li class="list-group-item flex-column align-items-start text-dark shopping_cart_history_paidback">
+    <li class="list-group-item flex-column align-items-start text-dark bg-light shopping_cart_history_paidback">
     <div class="d-flex w-100 justify-content-between">
         <h5>
+        {{#str}} paymentmethodcredits, local_shopping_cart {{/str}}: 
         <span class="credit_total">
             {{credit}}
         </span>

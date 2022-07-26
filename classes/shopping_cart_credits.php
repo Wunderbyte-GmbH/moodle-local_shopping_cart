@@ -156,8 +156,8 @@ class shopping_cart_credits {
 
         $data->userid = $userid;
         $data->credits = $credit;
-        $data->currency = (float) $currency;
-        $data->balance = (float) $balance + $credit; // Balance hold the new balance after this transaction.
+        $data->currency = $currency;
+        $data->balance = $balance + $credit; // Balance hold the new balance after this transaction.
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
@@ -200,8 +200,8 @@ class shopping_cart_credits {
         $data = new stdClass();
 
         $data->userid = $userid;
-        $data->credits = (float) -$checkoutdata['deductible'];
-        $data->balance = (float) $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
+        $data->credits = -$checkoutdata['deductible'];
+        $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
         $data->currency = $checkoutdata['currency'];
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
@@ -309,6 +309,6 @@ class shopping_cart_credits {
             self::prepare_checkout($data, $userid);
         }
 
-        return (float) round($data['price'], 2);
+        return round($data['price'], 2);
     }
 }

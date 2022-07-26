@@ -460,7 +460,7 @@ class shopping_cart_history {
      * On loading the checkout.php, the shopping cart is stored in the schistory cache.
      * This is because we don't pass the individual items, but only a total sum and description to the payment provider.
      * To identify the items in the cart, we have to store them with an identifier.
-     * To avoid clutterin the table with useless data, we store it temporarily in this cache.
+     * To avoid cluttering the table with useless data, we store it temporarily in this cache.
      *
      * @param array $dataarray
      * @return bool|null

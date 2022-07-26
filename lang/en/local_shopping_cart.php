@@ -196,7 +196,7 @@ $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
 $string['shoppingcarthistory'] = 'All purchases of a given user';
 
 // Shopping cart history card.
-$string['getrefundforcredit'] = 'You can use your credit to buy a new item.';
+$string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 
 // Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'No users found';

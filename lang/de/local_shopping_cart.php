@@ -172,7 +172,7 @@ $string['usermodified'] = 'Bearbeitet von';
 // Payment methods.
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
-$string['paymentmethodcredits'] = 'Credits';
+$string['paymentmethodcredits'] = 'Guthaben';
 $string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
 $string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
 $string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';

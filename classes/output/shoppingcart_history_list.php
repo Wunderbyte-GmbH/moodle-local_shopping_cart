@@ -108,10 +108,12 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 if (!$iscachier) {
                     if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->userid)) {
-                        $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart', $item->canceluntilstring);
+                        $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
+                            $item->canceluntilstring);
                         $item->buttonclass = 'btn-primary';
                     } else {
-                        $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart', $item->canceluntilstring);
+                        $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart',
+                            $item->canceluntilstring);
                         $item->buttonclass = 'disabled hidden';
                     }
 
@@ -178,6 +180,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if (isset($historyarray['canpayback'])) {
             $data['canpayback'] = $historyarray['canpayback'];
+        }
+
+        if (!empty($historyarray['currency'])) {
+            $data['currency'] = $historyarray["currency"];
         }
     }
 
