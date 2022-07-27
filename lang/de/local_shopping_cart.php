@@ -83,6 +83,7 @@ $string['paymentcashier'] = 'an der Kassa';
 $string['paymentcashier:cash'] = 'in bar an der Kassa';
 $string['paymentcashier:creditcard'] = 'mit Kreditkarte an der Kassa';
 $string['paymentcashier:debitcard'] = 'mit Bankomatkarte an der Kassa';
+$string['paymentcredits'] = 'mit Guthaben';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
@@ -186,7 +187,7 @@ $string['paymentcanceled'] = 'Storno';
 // Receipt.
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
-[[place]], [[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
+[[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
  Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[email]] und [[date]] verwenden.
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';

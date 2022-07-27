@@ -83,6 +83,7 @@ $string['paymentcashier'] = 'at cashier\'s office';
 $string['paymentcashier:cash'] = 'with cash at cashier\'s office';
 $string['paymentcashier:creditcard'] = 'with credit card at cashier\'s office';
 $string['paymentcashier:debitcard'] = 'with debit card at cashier\'s office';
+$string['paymentcredits'] = 'with credits';
 $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
@@ -185,7 +186,7 @@ $string['paymentcanceled'] = 'Canceled';
 // Receipt.
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
- [[place]], [[price]], [[pos]], [[name]] between [[items]] and [[/items]].
+[[price]], [[pos]], [[name]] between [[items]] and [[/items]].
  Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[email]] and [[date]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
 
