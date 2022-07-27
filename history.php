@@ -38,8 +38,8 @@ $success = optional_param('success', null, PARAM_INT);
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title("Ihr Warenkorb");
-$PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
+$PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
 
 // Set the page layout.
 

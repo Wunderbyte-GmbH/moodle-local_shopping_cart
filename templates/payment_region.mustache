@@ -49,9 +49,9 @@
 <div class="shopping_cart_payment_region text-center">
     {{#isguestuser}}
         <div class="mdl-align">
-            <p>{{# str }} paymentrequired {{/ str}}</p>
+            <p>{{#str}} paymentrequired {{/str}}</p>
             <p><b>{{price}} {{currency}}</b></p>
-            <p><a href="{{config.wwwroot}}/login/">{{# str }} loginsite {{/ str }}</a></p>
+            <p><a href="{{config.wwwroot}}/login/">{{# str }} loginsite {{/str}}</a></p>
         </div>
     {{/isguestuser}}
     {{^isguestuser}}
@@ -68,7 +68,7 @@
             data-successurl="{{successurl}}"
             data-description="my shopping cart checkout"
         >
-            {{# str }} sendpaymentbutton, local_shopping_cart {{/ str }}
+            {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
         </button>
     {{/isguestuser}}
 </div>

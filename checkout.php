@@ -41,8 +41,8 @@ $identifier = optional_param('identifier', null, PARAM_INT);
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title("Ihr Warenkorb");
-$PAGE->set_heading("<i class='fa fa-3x fa-shopping-cart' aria-hidden='true'></i>Ihr Warenkorb ");
+$PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
 
 // Set the page layout.
 $PAGE->set_pagelayout('base');
@@ -97,6 +97,10 @@ if (empty($data['currency'])) {
 }
 
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
+
+if (empty($data['items'])) {
+    $data['cartisempty'] = true;
+}
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

@@ -77,6 +77,9 @@ $string['success'] = 'Success';
 $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
 
+$string['cartisempty'] = 'Your shopping cart is empty.';
+$string['yourcart'] = 'Your shopping cart';
+
 // Cashier.
 $string['paymentonline'] = 'online';
 $string['paymentcashier'] = 'at cashier\'s office';

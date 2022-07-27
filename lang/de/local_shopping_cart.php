@@ -48,6 +48,8 @@ $string['accountid:description'] = 'Wählen Sie aus, über welchen Anbieter (Pay
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
 
+$string['showdescription'] = 'Zeige Beschreibung';
+
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
@@ -75,7 +77,8 @@ $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
 
-$string['showdescription'] = 'Zeige Beschreibung';
+$string['cartisempty'] = 'Ihr Warenkorb ist leer.';
+$string['yourcart'] = 'Ihr Warenkorb';
 
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
