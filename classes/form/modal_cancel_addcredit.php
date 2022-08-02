@@ -72,6 +72,8 @@ class modal_cancel_addcredit extends dynamic_form {
 
         $data = $this->get_data();
 
+
+
         return $data;
     }
 

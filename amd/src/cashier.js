@@ -68,9 +68,6 @@ export const confirmPayment = (userid, paymenttype) => {
 
                 const oncashier = window.location.href.indexOf("cashier.php");
 
-                // Set link to right receipt.
-                addPrintIdentifier(data.identifier, userid);
-
                 // If we are not on cashier, we can just redirect.
                 if (oncashier < 1) {
 
@@ -81,6 +78,12 @@ export const confirmPayment = (userid, paymenttype) => {
                     location.href = newurl;
 
                 } else {
+
+                    // This is the cachier view.
+
+                    // Set link to right receipt.
+                    addPrintIdentifier(data.identifier, userid);
+
                     document.getElementById('success-tab').classList.add('success');
 
                     if (data.credit) {

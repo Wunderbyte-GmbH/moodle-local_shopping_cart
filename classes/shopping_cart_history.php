@@ -27,6 +27,8 @@ namespace local_shopping_cart;
 use Exception;
 use stdClass;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Class shopping_cart_history.
  * @author      Thomas Winkler

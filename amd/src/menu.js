@@ -74,7 +74,7 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
         // Name of the class where form is defined (must extend \core_form\dynamic_form):
         formClass: "local_shopping_cart\\form\\modal_cancel_all_addcredit",
         // Add as many arguments as you need, they will be passed to the form:
-        args: {'itemid': itemid, 'componentname' : componentname},
+        args: {'itemid': itemid, 'componentname': componentname},
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
