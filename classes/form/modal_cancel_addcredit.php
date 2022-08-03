@@ -24,6 +24,7 @@ require_once("$CFG->libdir/formslib.php");
 use context;
 use context_system;
 use core_form\dynamic_form;
+use local_shopping_cart\shopping_cart;
 use moodle_url;
 use stdClass;
 
@@ -42,12 +43,23 @@ class modal_cancel_addcredit extends dynamic_form {
     public function definition() {
         $mform = $this->_form;
 
-        $credit = $this->_ajaxformdata['credit'];
+        $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
 
         $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbody', 'local_shopping_cart'));
 
-        $mform->addElement('float', 'credit', get_string('credit', 'local_shopping_cart'));
-        $mform->setDefault('credit', $credit);
+        if (!$cancelationfee || $cancelationfee < 0) {
+            $cancelationfee = 0;
+        }
+
+        $mform->addElement('hidden', 'price', $this->_ajaxformdata["price"]);
+        $mform->addElement('hidden', 'historyid', $this->_ajaxformdata["historyid"]);
+        $mform->addElement('hidden', 'itemid', $this->_ajaxformdata["itemid"]);
+        $mform->addElement('hidden', 'userid', $this->_ajaxformdata["userid"]);
+        $mform->addElement('hidden', 'currency', $this->_ajaxformdata["currency"]);
+        $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
+
+        $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
+        $mform->setDefault('cancelationfee', $cancelationfee);
     }
 
     /**
@@ -72,7 +84,16 @@ class modal_cancel_addcredit extends dynamic_form {
 
         $data = $this->get_data();
 
+        // Set cancellation fee.
+        $cancelationfee = $data->cancelationfee ?? 0;
+        if ($data->cancelationfee < 0) {
+                $cancelationfee = 0;
+        }
 
+        // Subtract cancellation fee from price to get credit for the user.
+        $credit = $data->price - $cancelationfee;
+
+        shopping_cart::cancel_purchase($data->itemid, $data->userid, $data->componentname, $data->historyid, $credit);
 
         return $data;
     }

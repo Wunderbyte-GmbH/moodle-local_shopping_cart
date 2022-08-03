@@ -112,7 +112,8 @@ $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';
 
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
-$string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone. You can adjust the credit below.';
+$string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
+ The user who purchased will get his money back of which the cancellation fee will be subtracted.';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase.
                                     You\'l get the costs of your purchase minus a cancelation fee ({$a} Euro) as a credit for your next purchase.';
 

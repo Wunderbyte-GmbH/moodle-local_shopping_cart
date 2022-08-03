@@ -86,7 +86,7 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
         window.console.log(e.detail);
 
         // eslint-disable-next-line no-console
-        console.log('we saved');
+        console.log('confirmCancelAllUsersAndSetCreditModal: form submitted');
     });
 
     // Show the form.

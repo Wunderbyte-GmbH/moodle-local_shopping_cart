@@ -384,32 +384,35 @@ function confirmCancelModal(button, cancelationFee) {
 function confirmCancelAndSetCreditModal(button) {
 
     const price = button.dataset.price;
+    const historyid = button.dataset.historyid;
+    const itemid = button.dataset.itemid;
+    const userid = button.dataset.userid;
+    const currency = button.dataset.currency;
+    const componentname = button.dataset.componentname;
 
     const modalForm = new ModalForm({
 
         // Name of the class where form is defined (must extend \core_form\dynamic_form):
         formClass: "local_shopping_cart\\form\\modal_cancel_addcredit",
         // Add as many arguments as you need, they will be passed to the form:
-        args: {'credit': price},
+        args: {'price': price,
+               'historyid': historyid,
+               'itemid': itemid,
+               'userid': userid,
+               'currency': currency,
+               'componentname': componentname},
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
-        returnFocus: button,
+        returnFocus: button
     });
     // Listen to events if you want to execute something on form submit.
     // Event detail will contain everything the process() function returned:
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
-        window.console.log(e.detail);
-
-        const historyid = button.dataset.historyid;
-        const itemid = button.dataset.itemid;
-        const userid = button.dataset.userid;
-        const currency = button.dataset.currency;
-        const componentname = button.dataset.componentname;
-
-        const credit = e.detail.credit ?? "";
-
-        cancelPurchase(itemid, userid, componentname, historyid, currency, price, credit, button);
+        const response = e.detail;
+        // eslint-disable-next-line no-console
+        console.log('confirmCancelAndSetCreditModal response: ', response);
+        window.location.reload();
     });
 
     // Show the form.

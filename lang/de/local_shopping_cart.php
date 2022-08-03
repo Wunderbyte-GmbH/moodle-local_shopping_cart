@@ -112,8 +112,8 @@ $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
 
 $string['confirmcanceltitle'] = 'Bestätige Stornierung';
-$string['confirmcancelbody'] = 'Möchten Sie wirklich den Kauf stornieren? Das lässt sich nicht rückgängig machen.
-                                Unten kann die Gutschrift angepasst werden.';
+$string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
+                                Der/die Käufer*in bekommt den Kaufpreis abzüglich der Stornierungsgebühr gutgeschrieben.';
 $string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
                                     Sie bekommen den Kaufpreis abzüglich einer Bearbeitungsgebühr in der Höhe von {$a} Euro gutgeschrieben.';
 
