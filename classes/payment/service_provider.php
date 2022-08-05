@@ -31,6 +31,9 @@ use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
 use moodle_url;
 
+// We need the constants defined in lib.
+require_once(__DIR__ . '/../../lib.php');
+
 /**
  * Payment subsystem callback implementation for local_shopping_cart.
  *
@@ -123,7 +126,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
             return false;
         }
 
-        shopping_cart::confirm_payment($userid, $data);
+        shopping_cart::confirm_payment($userid, PAYMENT_METHOD_ONLINE, $data);
 
         $success = shopping_cart_history::set_success_in_db($data['items']);
         return $success;
