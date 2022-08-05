@@ -155,7 +155,7 @@ class shopping_cart {
      * @param bool $unload
      * @return boolean
      */
-    public static function delete_item_from_cart($component, $itemid, $userid, $unload = true): bool {
+    public static function delete_item_from_cart(string $component, int $itemid, int $userid, bool $unload = true): bool {
 
         global $USER;
 
@@ -188,7 +188,7 @@ class shopping_cart {
      * @param int $userid
      * @return bool
      */
-    public static function delete_all_items_from_cart($userid): bool {
+    public static function delete_all_items_from_cart(int $userid): bool {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
@@ -354,7 +354,7 @@ class shopping_cart {
      * @param int $userid
      * @return null|int
      */
-    public static function get_saved_usecredit_state($userid) {
+    public static function get_saved_usecredit_state(int $userid) {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
         $cachedrawdata = $cache->get($cachekey);
@@ -373,7 +373,7 @@ class shopping_cart {
      * @param bool $usecredit
      * @return void
      */
-    public static function save_used_credit_state($userid, $usecredit) {
+    public static function save_used_credit_state(int $userid, bool $usecredit) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
@@ -453,11 +453,11 @@ class shopping_cart {
      * .. or the items passed by shopping cart history. The second option is the case when we use the payment module of moodle.
      *
      * @param int $userid
-     * @param string $paymentmethod
+     * @param int $paymentmethod
      * @param array $datafromhistory
      * @return void
      */
-    public static function confirm_payment($userid, $paymenttype, $datafromhistory = null) {
+    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null) {
         global $USER;
 
         $identifier = 0;
