@@ -165,6 +165,7 @@ $string['price'] = 'Price';
 $string['currency'] = 'Currency';
 $string['lastname'] = 'Last name';
 $string['firstname'] = 'First name';
+$string['email'] = 'E-Mail';
 $string['itemid'] = 'ItemID';
 $string['itemname'] = 'Item name';
 $string['payment'] = 'Payment method';

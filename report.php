@@ -70,6 +70,7 @@ $cashreporttable->define_headers([
     get_string('currency', 'local_shopping_cart'),
     get_string('lastname', 'local_shopping_cart'),
     get_string('firstname', 'local_shopping_cart'),
+    get_string('email', 'local_shopping_cart'),
     get_string('itemid', 'local_shopping_cart'),
     get_string('itemname', 'local_shopping_cart'),
     get_string('payment', 'local_shopping_cart'),
@@ -89,6 +90,7 @@ $cashreporttable->define_columns([
     'currency',
     'lastname',
     'firstname',
+    'email',
     'itemid',
     'itemname',
     'payment',
@@ -143,7 +145,7 @@ if (!empty($colselects)) {
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
 $fields = "sch.id, sch.identifier, sch.price, sch.currency,
-        u.lastname, u.firstname, sch.itemid, sch.itemname, sch.payment, sch.paymentstatus, " .
+        u.lastname, u.firstname, u.email, sch.itemid, sch.itemname, sch.payment, sch.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, sch.timecreated, sch.timemodified,
         p.gateway$selectorderidpart";
 $from = "{local_shopping_cart_history} sch
