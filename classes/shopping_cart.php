@@ -323,8 +323,8 @@ class shopping_cart {
             $cachedrawdata['currency'] = $data['currency'];
 
         } else {
-            $data['credit'] = $cachedrawdata['credit'];
-            $data['currency'] = $cachedrawdata['currency'];
+            $data['credit'] = $cachedrawdata['credit'] ?? 0.0;
+            $data['currency'] = $cachedrawdata['currency'] ?? "";
         }
 
         if ($cachedrawdata && isset($cachedrawdata['items'])) {
