@@ -119,6 +119,18 @@ export const confirmPayment = (userid, paymenttype) => {
                 }
 
             } else {
+
+                getString('paymentaborted', 'local_shopping_cart').then(message => {
+                    Notification.addNotification({
+                        message,
+                        type: "error"
+                    });
+                    return;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+
                 // eslint-disable-next-line no-console
                 console.log('payment denied');
                 document.getElementById('success-tab').classList.add('error');
