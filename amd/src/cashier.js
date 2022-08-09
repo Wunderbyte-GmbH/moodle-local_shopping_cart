@@ -21,6 +21,12 @@
 
 import Ajax from 'core/ajax';
 import Url from 'core/url';
+import Notification from 'core/notification';
+
+import {
+    get_string as getString
+        }
+        from 'core/str';
 
 export const init = (users, userid = 0) => {
     // eslint-disable-next-line no-console
@@ -119,6 +125,18 @@ export const confirmPayment = (userid, paymenttype) => {
             }
         },
         fail: function(ex) {
+
+            getString('paymentaborted', 'local_shopping_cart').then(message => {
+                Notification.addNotification({
+                    message,
+                    type: "error"
+                });
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+
             // eslint-disable-next-line no-console
             console.log(ex);
         },
