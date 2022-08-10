@@ -62,6 +62,8 @@ class get_shopping_cart_items extends external_api {
             'userid' => $userid
         ]);
 
+        require_login();
+
         $context = context_system::instance();
 
         if (has_capability('local/shopping_cart:cashier', $context)) {

@@ -26,11 +26,13 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use context_system;
 use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
 use local_shopping_cart\shopping_cart;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -67,6 +69,13 @@ class delete_item_from_cart extends external_api {
             'itemid' => $itemid,
             'userid' => $userid
         ]);
+
+        require_login();
+
+        $context = context_system::instance();
+        if (has_capability('local/shopping_cart:canbuy', $context)) {
+            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
 
         // This treats the cache side.
         if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $params['userid'])) {

@@ -65,6 +65,8 @@ class delete_all_items_from_cart extends external_api {
             'userid' => $userid
         ]);
 
+        require_login();
+
         $context = context_system::instance();
 
         if (has_capability('local/shopping_cart:cashier', $context)) {

@@ -26,11 +26,13 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use context_system;
 use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
 use local_shopping_cart\shopping_cart;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -65,6 +67,13 @@ class get_price extends external_api {
             'userid' => $userid,
             'usecredit' => $usecredit
         ]);
+
+        require_login();
+
+        $context = context_system::instance();
+        if (has_capability('local/shopping_cart:canbuy', $context)) {
+            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
 
         $usecredit = $params['usecredit'] == 1 ? true : false;
 
