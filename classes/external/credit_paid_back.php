@@ -69,7 +69,7 @@ class credit_paid_back extends external_api {
         require_login();
 
         $context = context_system::instance();
-        if (has_capability('local/shopping_cart:cashier', $context)) {
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 

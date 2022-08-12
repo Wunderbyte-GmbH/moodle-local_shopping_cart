@@ -69,7 +69,7 @@ class delete_all_items_from_cart extends external_api {
 
         $context = context_system::instance();
 
-        if (has_capability('local/shopping_cart:cashier', $context)) {
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
         } else {
             $userid = (int)$USER->id;

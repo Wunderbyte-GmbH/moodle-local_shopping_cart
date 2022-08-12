@@ -70,7 +70,7 @@ class confirm_cash_payment extends external_api {
         require_login();
 
         $context = context_system::instance();
-        if (has_capability('local/shopping_cart:canbuy', $context)) {
+        if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
