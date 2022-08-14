@@ -89,7 +89,7 @@ class shopping_cart {
         $cacheitemkey = $component . '-' . $itemid;
 
         // Check if maxitems is exceeded.
-        if (isset($maxitems) && (count($cachedrawdata['items']) >= $maxitems)) {
+        if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
             $success = false;
         }
 
