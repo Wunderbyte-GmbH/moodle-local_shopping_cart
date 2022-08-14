@@ -59,6 +59,13 @@
         <div class="text-center sc_remainingcredit">{{#str}} remainingcredit, local_shopping_cart {{/str}} {{remainingcredit}} {{currency}}</div>
     {{/credit}}
 
+    {{^credit}}
+        {{#discount}}
+            <div class="text-center sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}} - {{discount}} {{currency}}</div>
+        {{/discount}}
+    {{/credit}}
+
     <span class="pull-right">{{#str}} total, local_shopping_cart {{/str}}
         <span class="sc_totalprice">
             {{price}} {{currency}}
