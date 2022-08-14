@@ -22,6 +22,9 @@
 import Ajax from 'core/ajax';
 import Url from 'core/url';
 import Notification from 'core/notification';
+import ModalForm from 'core_form/modalform';
+
+import {updateTotalPrice} from 'local_shopping_cart/cart';
 
 import {
     get_string as getString
@@ -115,6 +118,17 @@ export const confirmPayment = (userid, paymenttype) => {
                         if (item) {
                             item.innerText = 0;
                         }
+                    });
+
+                    getString('paymentsuccessful', 'local_shopping_cart').then(message => {
+                        Notification.addNotification({
+                            message,
+                            type: "success"
+                        });
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
                     });
                 }
 
@@ -280,3 +294,70 @@ export const addPrintIdentifier = (identifier, userid) => {
         closeAllLists(e.target);
     });
   };
+
+
+/**
+ * Delete Event.
+ * @param {HTMLElement} button
+ * @param {int} userid
+ */
+ export function addDiscountEvent(button, userid = 0) {
+    // eslint-disable-next-line no-console
+    console.log('add to button', button);
+    if (userid != 0) {
+        button.dataset.userid = userid;
+    }
+    if (button.dataset.initialized) {
+        return;
+    }
+    button.dataset.initialized = true;
+    button.addEventListener('click', discountModal);
+}
+
+/**
+ *
+ */
+function discountModal() {
+
+    // We two parents up, we find the right element with the necessary information.
+    const element = this.closest('li');
+
+    // eslint-disable-next-line no-console
+    console.log('closest', element);
+
+    const price = element.dataset.price;
+    const itemid = element.dataset.id;
+    const userid = element.dataset.userid;
+    const componentname = element.dataset.component;
+
+    // eslint-disable-next-line no-console
+    console.log('discountModal', price, itemid, userid, componentname);
+
+    const modalForm = new ModalForm({
+
+        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+        formClass: "local_shopping_cart\\form\\modal_add_discount_to_item",
+        // Add as many arguments as you need, they will be passed to the form:
+        args: {'price': price,
+               'itemid': itemid,
+               'userid': userid,
+               'componentname': componentname},
+        // Pass any configuration settings to the modal dialogue, for example, the title:
+        modalConfig: {title: getString('applydiscount', 'local_shopping_cart')},
+        // DOM element that should get the focus after the modal dialogue is closed:
+        returnFocus: element
+    });
+    // Listen to events if you want to execute something on form submit.
+    // Event detail will contain everything the process() function returned:
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+        const response = e.detail;
+        // eslint-disable-next-line no-console
+        console.log('confirmCancelAndSetCreditModal response: ', response);
+
+        updateTotalPrice(userid);
+    });
+
+    // Show the form.
+    modalForm.show();
+
+}

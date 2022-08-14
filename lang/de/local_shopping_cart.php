@@ -205,3 +205,13 @@ $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf 
 
 // Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
+
+// Discount Modal
+$string['discount'] = 'Discount';
+$string['applydiscount'] = 'Discount abziehen';
+$string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
+    nicht aber um beides.';
+$string['discountabsolut'] = 'Betrag';
+$string['discountabsolut_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "15". Keine Währung eingeben.';
+$string['discountpercent'] = 'Prozent';
+$string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';

@@ -62,6 +62,12 @@ class cashier implements renderable, templatable {
             $data['userfirstname'] = $user->firstname;
             $data['useremail'] = $user->email;
 
+            // The cart items should have the supplementary discount flag, to add the discount button.
+
+            foreach ($data['items'] as $key => $value) {
+                $data['items'][$key]['iscashier'] = true;
+            }
+
             // We use the template class, but not the renderer here.
             $historylist = new shoppingcart_history_list($userid);
 

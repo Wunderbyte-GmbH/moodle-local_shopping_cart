@@ -97,13 +97,14 @@ class get_price extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(array(
-            'price' => new external_value(PARAM_RAW, 'Total price'),
-            'credit' => new external_value(PARAM_RAW, 'Credit'),
+            'price' => new external_value(PARAM_FLOAT, 'Total price'),
+            'credit' => new external_value(PARAM_FLOAT, 'Credit'),
             'currency' => new external_value(PARAM_RAW, 'Currency'),
-            'initialtotal' => new external_value(PARAM_RAW, 'Initial price before deduced credits'),
-            'remainingcredit' => new external_value(PARAM_RAW, 'Credits after reducation'),
-            'deductible' => new external_value(PARAM_RAW, 'Deductible amount'),
+            'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
+            'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
+            'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
             'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
+            'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
             )
         );
     }

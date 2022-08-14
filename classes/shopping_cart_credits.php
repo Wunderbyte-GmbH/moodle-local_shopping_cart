@@ -24,6 +24,7 @@
 
 namespace local_shopping_cart;
 
+use context_system;
 use moodle_exception;
 use stdClass;
 
@@ -58,6 +59,7 @@ class shopping_cart_credits {
 
     /**
      * This adds and changes keys of data object to account for credits and its consumption.
+     * This also takes into account discounts.
      *
      * @param integer $userid
      * @return void
@@ -80,6 +82,20 @@ class shopping_cart_credits {
 
         $data['initialtotal'] = $data['price'];
         $data['currency'] = $currency ? $currency : $data['currency'];
+
+        // Now we account for discounts.
+        //
+        if (isset($data['discount'])) {
+
+            $data['initialtotal'] = $data['initialtotal'] + $data['discount'];
+
+            $context = context_system::instance();
+            // Right now, only the cachier has the right to use discounts.
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
+
+                $data['price'] = $data['price'] + $data['discount'];
+            }
+        }
 
         // Only if the user has any credit at all, we apply the function.
         if ($balance > 0) {

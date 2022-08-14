@@ -27,6 +27,7 @@ import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 
 import {confirmPayment} from 'local_shopping_cart/cashier';
+import {addDiscountEvent} from 'local_shopping_cart/cashier';
 
 import {
     get_strings as getStrings
@@ -113,6 +114,11 @@ export const buttoninit = (id, component) => {
         let items = document.querySelectorAll('[id^=item-] .fa-trash-o');
         items.forEach(item => {
             addDeleteevent(item);
+        });
+
+        items = document.querySelectorAll('[id^=item-] .fa-eur');
+        items.forEach(item => {
+            addDiscountEvent(item);
         });
         document.addEventListener("visibilitychange", function() {
             visbilityevent = true;
@@ -316,6 +322,12 @@ export const addItem = (id, component) => {
                     notificatonelement.remove();
                 }, 5000);
 
+                // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
+                const oncashier = window.location.href.indexOf("cashier.php");
+                if (oncashier) {
+                    data.iscashier = true;
+                }
+
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
                     let lastElements = document.querySelectorAll("[id^='liinitialtotal']");
                     lastElements.forEach(lastElem => {
@@ -340,6 +352,11 @@ export const addItem = (id, component) => {
                     let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
                     items.forEach(item => {
                         addDeleteevent(item, data.userid);
+                    });
+
+                    items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-eur');
+                    items.forEach(item => {
+                        addDiscountEvent(item, data.userid);
                     });
 
                     updateTotalPrice(data.userid);

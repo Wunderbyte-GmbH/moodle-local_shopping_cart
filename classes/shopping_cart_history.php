@@ -171,16 +171,6 @@ class shopping_cart_history {
     }
 
     /**
-     * Function create_history
-     * @param int $userid
-     * @return void
-     */
-    public function create_history(int $userid) {
-        $prepareddata = (object)$this->prepare_data_from_cache($userid);
-        self::write_to_db($prepareddata);
-    }
-
-    /**
      * write_to_db.
      *
      * @param stdClass $data
@@ -193,6 +183,7 @@ class shopping_cart_history {
 
         if (isset($data->items)) {
             foreach ($data->items as $item) {
+
                 $data = (object)$item;
                 $data->timecreated = $now;
                 $record = $DB->insert_record('local_shopping_cart_history', $data);
@@ -215,7 +206,8 @@ class shopping_cart_history {
      * @param integer $userid
      * @param integer $itemid
      * @param string $itemname
-     * @param string $price
+     * @param float $price
+     * @param float $discount
      * @param string $currency
      * @param string $componentname
      * @param string $identifier
@@ -227,7 +219,8 @@ class shopping_cart_history {
             int $userid,
             int $itemid,
             string $itemname,
-            string $price,
+            float $price,
+            float $discount,
             string $currency,
             string $componentname,
             string $identifier,
@@ -245,6 +238,7 @@ class shopping_cart_history {
         $data->itemid = $itemid;
         $data->itemname = $itemname;
         $data->price = $price;
+        $data->discount = $discount;
         $data->currency = $currency;
         $data->componentname = $componentname;
         $data->identifier = $identifier;
@@ -307,6 +301,7 @@ class shopping_cart_history {
 
             // The credit can be the whole price, or it can be just a fraction.
             // If there is no price or the credit is higher than the price, we use the price.
+
             if ($credit === null
                 || ($credit > $record->price)) {
                 return [1, '', $record->price, $record->currency];
@@ -447,6 +442,7 @@ class shopping_cart_history {
             $data['userid'] = $userid; // The user for which the item was bought.
             $data['payment'] = PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
             $data['paymentstatus'] = PAYMENT_PENDING;
+            $data['discount'] = $item['discount'] ?? null;
             $dataarr['items'][] = $data;
         }
 
