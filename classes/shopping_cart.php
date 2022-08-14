@@ -335,6 +335,7 @@ class shopping_cart {
             if ($count > 0) {
                 $data['items'] = array_values($cachedrawdata['items']);
                 $data['price'] = array_sum(array_column($data['items'], 'price'));
+                $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
             }
             // There might be cases where we don't have the currency yet. We take it from the last item in cart.
@@ -758,8 +759,6 @@ class shopping_cart {
         float $percent,
         float $absolut): array {
 
-        global $USER;
-
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
@@ -784,19 +783,19 @@ class shopping_cart {
             if ($percent < 0 || $percent > 100) {
                 throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
             }
-            $discountedprice = $item['price'] / 100 * $percent;
-            $discount = $item['price'] - $discountedprice;
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = $item['price'] / 100 * $percent;
         } else if (!empty($absolut)) {
             // Validation of absolut value.
             if ($absolut < 0 || $absolut > $item['price']) {
                 throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
             }
-            $discountedprice = $item['price'] - $absolut;
-            $discount = $absolut;
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolut;
+        } else {
+            // If both are empty, we unset discount.
+            unset($cachedrawdata['items'][$cacheitemkey]['discount']);
         }
 
         // We write the modified data back to cache.
-
         $cache->set($cachekey, $cachedrawdata);
 
         return ['success' => 1];

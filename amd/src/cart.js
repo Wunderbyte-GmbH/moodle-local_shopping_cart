@@ -325,7 +325,7 @@ export const addItem = (id, component) => {
                 // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
                 const oncashier = window.location.href.indexOf("cashier.php");
                 if (oncashier) {
-                    data.discount = true;
+                    data.iscashier = true;
                 }
 
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {

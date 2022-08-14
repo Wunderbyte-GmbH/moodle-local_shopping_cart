@@ -43,6 +43,9 @@
 <div>
     {{#credit}}
         <div class="text-center sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+        {{#discount}}
+            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}} - {{discount}} {{currency}}</div>
+        {{/discount}}
         <div class="text-center sc_credit">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" value="" {{usecreditclass}}>

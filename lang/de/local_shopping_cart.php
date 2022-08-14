@@ -207,6 +207,8 @@ $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf 
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
 
 // Discount Modal
+$string['discount'] = 'Discount';
+$string['applydiscount'] = 'Discount abziehen';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides.';
 $string['discountabsolut'] = 'Betrag';

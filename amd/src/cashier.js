@@ -332,7 +332,7 @@ function discountModal() {
                'userid': userid,
                'componentname': componentname},
         // Pass any configuration settings to the modal dialogue, for example, the title:
-        modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
+        modalConfig: {title: getString('applydiscount', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
         returnFocus: element
     });

@@ -208,6 +208,8 @@ $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['nousersfound'] = 'No users found';
 
 // Discount Modal
+$string['discount'] = 'Discount';
+$string['applydiscount'] = 'Apply discount';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
     You can\'t apply both at the same time.';
 $string['discountabsolut'] = 'Amount';

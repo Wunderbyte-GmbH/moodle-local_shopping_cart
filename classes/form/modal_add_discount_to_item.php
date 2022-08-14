@@ -25,6 +25,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use local_shopping_cart\shopping_cart;
+use moodle_exception;
 use moodle_url;
 use stdClass;
 
@@ -104,6 +105,35 @@ class modal_add_discount_to_item extends dynamic_form {
      */
     public function set_data_for_dynamic_submission(): void {
         $data = new stdClass();
+
+        $userid = $this->_ajaxformdata["userid"];
+        $itemid = $this->_ajaxformdata["itemid"];
+        $component = $this->_ajaxformdata["componentname"];
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
+        $cacheitemkey = $component . '-' . $itemid;
+
+        // Item has to be there.
+        if (!isset($cachedrawdata['items'][$cacheitemkey])) {
+            throw new moodle_exception('itemnotfound', 'local_shopping_cart');
+        }
+
+        $item = $cachedrawdata['items'][$cacheitemkey];
+
+        $discount = $item['discount'];
+
+        // We have to guess if the value comes from percentage or absolute.
+        if (!empty($discount)
+            && (0 === (($discount * 100) % $item['price']))) {
+                // This seems to come from percentage, because we get a nice number.
+                $data->discountpercent = ($discount * 100) / $item['price'];
+        } else {
+            $data->discountabsolut = $discount;
+        }
+
         $this->set_data($data);
     }
 
@@ -149,11 +179,6 @@ class modal_add_discount_to_item extends dynamic_form {
         if (!empty($data['discountpercent']) && !empty($data['discountabsolut'])) {
             $errors['discountpercent'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
             $errors['discountabsolut'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
-        }
-
-        if (empty($data['discountpercent']) && empty($data['discountabsolut'])) {
-            $errors['discountpercent'] = get_string('oneofthevalueshastobeset', 'local_shopping_cart');
-            $errors['discountabsolut'] = get_string('oneofthevalueshastobeset', 'local_shopping_cart');
         }
 
         return $errors;

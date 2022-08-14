@@ -65,7 +65,7 @@ class cashier implements renderable, templatable {
             // The cart items should have the supplementary discount flag, to add the discount button.
 
             foreach ($data['items'] as $key => $value) {
-                $data['items'][$key]['discount'] = true;
+                $data['items'][$key]['iscashier'] = true;
             }
 
             // We use the template class, but not the renderer here.
