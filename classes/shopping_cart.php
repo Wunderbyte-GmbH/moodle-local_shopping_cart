@@ -29,6 +29,7 @@ require_once(__DIR__ . '/../lib.php');
 
 use context_system;
 use local_shopping_cart\task\delete_item_task;
+use moodle_exception;
 
 /**
  * Class shopping_cart
@@ -734,5 +735,70 @@ class shopping_cart {
         }
 
         return true;
+    }
+
+    /**
+     *
+     * Add discount to item.
+     * - First we check if the item is here.
+     * - Now we add the discount to the cart.
+     * - For any fail, we return success 0.
+     *
+     * @param string $component
+     * @param integer $itemid
+     * @param integer $userid
+     * @param float $percent
+     * @param float $absolut
+     * @return array
+     */
+    public static function add_discount_to_item(
+        string $component,
+        int $itemid,
+        int $userid,
+        float $percent,
+        float $absolut): array {
+
+        global $USER;
+
+        $context = context_system::instance();
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
+            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
+        $cacheitemkey = $component . '-' . $itemid;
+
+        // Item has to be there.
+        if (!isset($cachedrawdata['items'][$cacheitemkey])) {
+            throw new moodle_exception('itemnotfound', 'local_shopping_cart');
+        }
+
+        $item = $cachedrawdata['items'][$cacheitemkey];
+
+        if (!empty($percent)) {
+
+            // Validation of percent value.
+            if ($percent < 0 || $percent > 100) {
+                throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
+            }
+            $discountedprice = $item['price'] / 100 * $percent;
+            $discount = $item['price'] - $discountedprice;
+        } else if (!empty($absolut)) {
+            // Validation of absolut value.
+            if ($absolut < 0 || $absolut > $item['price']) {
+                throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
+            }
+            $discountedprice = $item['price'] - $absolut;
+            $discount = $absolut;
+        }
+
+        // We write the modified data back to cache.
+
+        $cache->set($cachekey, $cachedrawdata);
+
+        return ['success' => 1];
     }
 }
