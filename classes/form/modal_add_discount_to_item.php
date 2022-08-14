@@ -42,12 +42,19 @@ class modal_add_discount_to_item extends dynamic_form {
      * @see moodleform::definition()
      */
     public function definition() {
+
+        global $USER;
+
         $mform = $this->_form;
+
+        $userid = $this->_ajaxformdata["userid"] == 0
+            ? $USER->id : $this->_ajaxformdata["userid"];
+
 
         $mform->addElement('static', 'bodytext', '', get_string('adddiscounttoitem', 'local_shopping_cart'));
 
         $mform->addElement('hidden', 'itemid', $this->_ajaxformdata["itemid"]);
-        $mform->addElement('hidden', 'userid', $this->_ajaxformdata["userid"]);
+        $mform->addElement('hidden', 'userid', $userid);
         $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
 
         $mform->addElement('float', 'discountpercent', get_string('discountpercent', 'local_shopping_cart'));
@@ -81,7 +88,12 @@ class modal_add_discount_to_item extends dynamic_form {
      */
     public function process_dynamic_submission() {
 
+        global $USER;
+
         $data = $this->get_data();
+
+        $userid = empty($data->userid)
+            ? $USER->id : $data->userid;
 
         shopping_cart::add_discount_to_item(
             $data->componentname,
@@ -104,9 +116,13 @@ class modal_add_discount_to_item extends dynamic_form {
      *     $this->set_data(get_entity($this->_ajaxformdata['cmid']));
      */
     public function set_data_for_dynamic_submission(): void {
+
+        global $USER;
         $data = new stdClass();
 
-        $userid = $this->_ajaxformdata["userid"];
+        $userid = $this->_ajaxformdata["userid"] == 0
+            ? $USER->id : $this->_ajaxformdata["userid"];
+
         $itemid = $this->_ajaxformdata["itemid"];
         $component = $this->_ajaxformdata["componentname"];
 
