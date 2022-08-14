@@ -119,6 +119,17 @@ export const confirmPayment = (userid, paymenttype) => {
                             item.innerText = 0;
                         }
                     });
+
+                    getString('paymentsuccessful', 'local_shopping_cart').then(message => {
+                        Notification.addNotification({
+                            message,
+                            type: "success"
+                        });
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
                 }
 
             } else {

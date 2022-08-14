@@ -87,11 +87,13 @@ class shopping_cart_credits {
         //
         if (isset($data['discount'])) {
 
+            $data['initialtotal'] = $data['initialtotal'] + $data['discount'];
+
             $context = context_system::instance();
             // Right now, only the cachier has the right to use discounts.
-            if (has_capability('local/shopping_cart:cashier', $context)) {
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
 
-                $data['price'] = $data['price'] - $data['discount'];
+                $data['price'] = $data['price'] + $data['discount'];
             }
         }
 

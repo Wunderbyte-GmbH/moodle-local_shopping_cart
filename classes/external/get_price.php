@@ -104,7 +104,7 @@ class get_price extends external_api {
             'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
             'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
             'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
-            'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.')
+            'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
             )
         );
     }

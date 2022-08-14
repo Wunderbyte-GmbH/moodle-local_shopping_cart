@@ -574,11 +574,15 @@ class shopping_cart {
                         }
                     }
 
+                    // Make sure we can pass on a valid value.
+                    $item['discount'] = $item['discount'] ?? 0;
+
                     shopping_cart_history::create_entry_in_history(
                         $userid,
                         $item['itemid'],
                         $item['itemname'],
                         $item['price'],
+                        $item['discount'],
                         $item['currency'],
                         $item['componentname'],
                         $identifier,
@@ -777,21 +781,30 @@ class shopping_cart {
 
         $item = $cachedrawdata['items'][$cacheitemkey];
 
+        // The undiscounted price of the item is price + discount.
+        $initialdiscount = $item['discount'] ?? 0;
+        $initialprice = $item['price'] + $initialdiscount;
+
         if (!empty($percent)) {
 
             // Validation of percent value.
             if ($percent < 0 || $percent > 100) {
                 throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
             }
-            $cachedrawdata['items'][$cacheitemkey]['discount'] = $item['price'] / 100 * $percent;
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = $initialprice / 100 * $percent;
+            $cachedrawdata['items'][$cacheitemkey]['price'] =
+                $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
         } else if (!empty($absolut)) {
             // Validation of absolut value.
-            if ($absolut < 0 || $absolut > $item['price']) {
+            if ($absolut < 0 || $absolut > $initialprice) {
                 throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
             }
             $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolut;
+            $cachedrawdata['items'][$cacheitemkey]['price'] =
+                $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
         } else {
             // If both are empty, we unset discount.
+            $cachedrawdata['items'][$cacheitemkey]['price'] = $initialprice;
             unset($cachedrawdata['items'][$cacheitemkey]['discount']);
         }
 
