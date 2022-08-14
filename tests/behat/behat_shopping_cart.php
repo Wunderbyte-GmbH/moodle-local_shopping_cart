@@ -51,6 +51,6 @@ class behat_shopping_cart extends behat_base {
         $data = $item->getitem();
 
         $shoppingcart = new shopping_cart();
-        $shoppingcart->add_item_to_cart($data); // TODO: Fix this with the correct params!
+        $shoppingcart->add_item_to_cart('local_shopping_cart', 1, 0); // TODO: Fix this with the correct params!
     }
 }
