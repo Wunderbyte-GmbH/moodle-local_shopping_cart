@@ -50,7 +50,6 @@ class modal_add_discount_to_item extends dynamic_form {
         $userid = $this->_ajaxformdata["userid"] == 0
             ? $USER->id : $this->_ajaxformdata["userid"];
 
-
         $mform->addElement('static', 'bodytext', '', get_string('adddiscounttoitem', 'local_shopping_cart'));
 
         $mform->addElement('hidden', 'itemid', $this->_ajaxformdata["itemid"]);
@@ -139,7 +138,7 @@ class modal_add_discount_to_item extends dynamic_form {
 
         $item = $cachedrawdata['items'][$cacheitemkey];
 
-        $discount = $item['discount'];
+        $discount = $item['discount'] ?? 0;
 
         // We have to guess if the value comes from percentage or absolute.
         if (!empty($discount)
