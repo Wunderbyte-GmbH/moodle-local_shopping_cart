@@ -104,3 +104,7 @@ Feature: Test purchase process in shopping cart.
             | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "3.5" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I press "Refunded"
+    And I press "Confirm"
+    Then I should see "Credit paid back" in the ".notifications" "css_element"
+    Then I should not see "Credit" in the "ul.cashier-history-items" "css_element"
