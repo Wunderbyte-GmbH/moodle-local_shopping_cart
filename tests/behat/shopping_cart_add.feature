@@ -28,13 +28,11 @@ Feature: Test purchase process in shopping cart.
     And I click on "#btn-local_shopping_cart-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "#item-local_shopping_cart-1" "css_element"
-    And I wait "1" seconds
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "#item-local_shopping_cart-1" "css_element"
     And I follow "Checkout"
     Then I should see "my test item 1" in the "div.checkoutgrid" "css_element"
-    And I wait "20" seconds
 
   @javascript
   Scenario: Delete item from the shopping cart
