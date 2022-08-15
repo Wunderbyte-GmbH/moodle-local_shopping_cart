@@ -208,10 +208,21 @@ export const addPrintIdentifier = (identifier, userid) => {
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
             if (arr[i].toUpperCase().indexOf(val.toUpperCase()) > -1) {
-                /* Create a DIV element for each matching element: */
-                b = document.createElement("DIV");
+
                 /* Make the matching letters bold: */
                 let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
+
+                /* Create a DIV element for each matching element: */
+                b = document.createElement("DIV");
+
+                const namearray = arr[i].split(' ');
+                const firstname = namearray[0].toLowerCase();
+                const lastname = namearray[1].toLowerCase();
+
+                b.dataset.firstname = firstname;
+                b.dataset.lastname = lastname;
+                b.id = 'li_' + firstname + '_' + lastname;
+
                 b.innerHTML = arr[i].substr(0, index);
                 b.innerHTML += "<strong>"
                         + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
