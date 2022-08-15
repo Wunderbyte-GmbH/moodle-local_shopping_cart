@@ -60,11 +60,13 @@ class modal_add_discount_to_item extends dynamic_form {
         $mform->addHelpButton('discountpercent', 'discountpercent', 'local_shopping_cart');
         $mform->setType('discountpercent', PARAM_FLOAT);
         $mform->setDefault('discountpercent', 0);
+        $mform->addRule('discountpercent', get_string('floatonly'), 'numeric', null , 'client');
 
         $mform->addElement('float', 'discountabsolut', get_string('discountabsolut', 'local_shopping_cart'));
         $mform->addHelpButton('discountabsolut', 'discountabsolut', 'local_shopping_cart');
         $mform->setType('discountabsolut', PARAM_FLOAT);
         $mform->setDefault('discountabsolut', 0);
+        $mform->addRule('discountabsolut', get_string('floatonly'), 'numeric', null , 'client');
     }
 
     /**
