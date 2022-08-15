@@ -120,48 +120,20 @@ export const confirmPayment = (userid, paymenttype) => {
                         }
                     });
 
-                    getString('paymentsuccessful', 'local_shopping_cart').then(message => {
-                        Notification.addNotification({
-                            message,
-                            type: "success"
-                        });
-                        return;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
+                    displayPaymentMessage('paymentsuccessful');
                 }
 
             } else {
 
-                getString('paymentaborted', 'local_shopping_cart').then(message => {
-                    Notification.addNotification({
-                        message,
-                        type: "error"
-                    });
-                    return;
-                }).catch(e => {
-                    // eslint-disable-next-line no-console
-                    console.log(e);
-                });
-
                 // eslint-disable-next-line no-console
                 console.log('payment denied');
+                displayPaymentMessage('paymentdenied', false);
                 document.getElementById('success-tab').classList.add('error');
             }
         },
         fail: function(ex) {
 
-            getString('paymentaborted', 'local_shopping_cart').then(message => {
-                Notification.addNotification({
-                    message,
-                    type: "error"
-                });
-                return;
-            }).catch(e => {
-                // eslint-disable-next-line no-console
-                console.log(e);
-            });
+            displayPaymentMessage('paymentdenied', false);
 
             // eslint-disable-next-line no-console
             console.log(ex);
@@ -371,4 +343,37 @@ function discountModal() {
     // Show the form.
     modalForm.show();
 
+}
+
+/**
+ * This function first displays the result at the right place.
+ * It further uses the notification class to make result even more visible.
+ * @param {string} message
+ * @param {bool} success
+ */
+function displayPaymentMessage(message, success = true) {
+    let displaymessage = document.querySelector('.payment_message_result');
+    if (displaymessage) {
+        getString(message, 'local_shopping_cart').then(localizedmessage => {
+
+            displaymessage.innerText = localizedmessage;
+
+            if (success) {
+                Notification.addNotification({
+                    message: localizedmessage,
+                    type: "info"
+                });
+            } else {
+                Notification.addNotification({
+                    message: localizedmessage,
+                    type: "error"
+                });
+            }
+            return;
+        }).catch(e => {
+
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+    }
 }
