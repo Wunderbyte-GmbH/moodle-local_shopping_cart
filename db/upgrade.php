@@ -29,7 +29,8 @@
  * @param int $oldversion
  * @return bool
  */
-function xmldb_local_shopping_cart_upgrade($oldversion) {
+function xmldb_local_shopping_cart_upgrade($oldversion)
+{
     global $DB;
 
     $dbman = $DB->get_manager();
@@ -124,6 +125,44 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022081400, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2022081500) {
+
+        // Define table local_shopping_cart_ledger to be created.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+
+        // Adding fields to table local_shopping_cart_ledger.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemname', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('price', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null);
+        $table->add_field('discount', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null);
+        $table->add_field('credits', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null);
+        $table->add_field('fee', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null);
+        $table->add_field('currency', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('componentname', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('identifier', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('payment', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('paymentstatus', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('accountid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('canceluntil', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table local_shopping_cart_ledger.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for local_shopping_cart_ledger.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022081500, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
