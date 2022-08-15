@@ -70,6 +70,7 @@ $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 // Cart.
 $string['total'] = 'Gesamt:';
 $string['paymentsuccessful'] = 'Zahlung erfolgreich!';
+$string['paymentdenied'] = 'Zahlung abgelehnt!';
 $string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
 $string['backtohome'] = 'Zurück zur Überblicksseite.';
 
@@ -215,3 +216,4 @@ $string['discountabsolut'] = 'Betrag';
 $string['discountabsolut_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "15". Keine Währung eingeben.';
 $string['discountpercent'] = 'Prozent';
 $string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';
+$string['floatonly'] = 'Nur Dezimalzahlen werden akzeptiert. Das richtige Trennzeichen hängt von Ihrem System ab.';

@@ -70,6 +70,7 @@ $string['noitemsincart'] = 'There are no items in the cart';
 // Cart.
 $string['total'] = 'Total:';
 $string['paymentsuccessful'] = 'Payment successful!';
+$string['paymentdenied'] = 'Payment denied!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
 $string['backtohome'] = 'Back to home.';
 
@@ -216,3 +217,4 @@ $string['discountabsolut'] = 'Amount';
 $string['discountabsolut_help'] = 'Reduce price by this amount, like "15". No currency.';
 $string['discountpercent'] = 'Percentage';
 $string['discountpercent_help'] = 'Reduce price by this percentage, like "10". Don\'t enter %-symbol';
+$string['floatonly'] = 'Only numeric values (decimals) are accepted. The correct separator depends on your system.';
