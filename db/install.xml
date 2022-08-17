@@ -50,7 +50,7 @@
                 <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
                 <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>
-                <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like "mod_booking"."/>
+                <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like mod_booking."/>
                 <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
                 <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The type of payment."/>
                 <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
