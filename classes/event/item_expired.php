@@ -81,7 +81,7 @@ class item_expired extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('item_expired', 'shopping_cart');
+        return get_string('item_expired', 'local_shopping_cart');
     }
 
     /**

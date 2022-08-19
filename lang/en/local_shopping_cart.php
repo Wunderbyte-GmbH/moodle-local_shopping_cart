@@ -218,3 +218,9 @@ $string['discountabsolut_help'] = 'Reduce price by this amount, like "15". No cu
 $string['discountpercent'] = 'Percentage';
 $string['discountpercent_help'] = 'Reduce price by this percentage, like "10". Don\'t enter %-symbol';
 $string['floatonly'] = 'Only numeric values (decimals) are accepted. The correct separator depends on your system.';
+
+// Events.
+$string['item_bought'] = 'Item bought';
+$string['item_added'] = 'Item added';
+$string['item_expired'] = 'Item expired';
+$string['item_deleted'] = 'Item deleted';

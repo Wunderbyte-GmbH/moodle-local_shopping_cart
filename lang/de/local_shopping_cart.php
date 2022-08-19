@@ -217,3 +217,9 @@ $string['discountabsolut_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "1
 $string['discountpercent'] = 'Prozent';
 $string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';
 $string['floatonly'] = 'Nur Dezimalzahlen werden akzeptiert. Das richtige Trennzeichen hängt von Ihrem System ab.';
+
+// Events.
+$string['item_bought'] = 'Artikel gekauft';
+$string['item_added'] = 'Artikel hinzugefügt';
+$string['item_expired'] = 'Zeit für Artikel im Warenkorb abgelaufen';
+$string['item_deleted'] = 'Artikel gelöscht';

@@ -73,7 +73,7 @@ class item_added extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return "get_string('item_added', 'shopping_cart')";
+        return get_string('item_added', 'local_shopping_cart');
     }
 
     /**

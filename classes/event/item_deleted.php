@@ -75,7 +75,7 @@ class item_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('item_deleted', 'shopping_cart');
+        return get_string('item_deleted', 'local_shopping_cart');
     }
 
     /**
