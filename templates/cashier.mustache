@@ -88,7 +88,9 @@
                   </div>
             {{! 2. Tab which lets you chose the item }}
                   <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
-                     <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false">{{#str}} checkout, local_shopping_cart {{/str}}</a>
+                     <div class="d-flex flex-row-reverse">
+                        <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false">{{#str}} checkout, local_shopping_cart {{/str}}</a>
+                     </div>
                      <p class="additonalcashiersection">
                      {{#additonalcashiersection}}
                      {{{additonalcashiersection}}}
