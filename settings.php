@@ -113,6 +113,12 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/rounddiscounts',
+                get_string('rounddiscounts', 'local_shopping_cart'),
+                get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
+
     $settings->add(
         new admin_setting_confightmleditor(
             $componentname . '/additonalcashiersection',

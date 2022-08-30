@@ -46,7 +46,7 @@
                 <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the bought item."/>
                 <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
                 <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
-                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Given discount in absolut amount. If 10% is given on 19, the value here will be 1.9."/>
+                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
                 <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
                 <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>

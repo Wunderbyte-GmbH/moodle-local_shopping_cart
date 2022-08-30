@@ -50,7 +50,7 @@ Feature: Test purchase process in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolut | 4.5 |
+            | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -70,7 +70,7 @@ Feature: Test purchase process in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolut | 4.5 |
+            | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -92,7 +92,7 @@ Feature: Test purchase process in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolut | 4.5 |
+            | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"

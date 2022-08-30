@@ -753,7 +753,7 @@ class shopping_cart {
      * @param integer $itemid
      * @param integer $userid
      * @param float $percent
-     * @param float $absolut
+     * @param float $absolute
      * @return array
      */
     public static function add_discount_to_item(
@@ -761,7 +761,7 @@ class shopping_cart {
         int $itemid,
         int $userid,
         float $percent,
-        float $absolut): array {
+        float $absolute): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -783,23 +783,36 @@ class shopping_cart {
 
         // The undiscounted price of the item is price + discount.
         $initialdiscount = $item['discount'] ?? 0;
+
+        // If setting to round discounts is turned on, we round to full integer.
+        $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
+        $initialdiscount = round($initialdiscount, $discountprecision);
+
         $initialprice = $item['price'] + $initialdiscount;
 
         if (!empty($percent)) {
 
             // Validation of percent value.
             if ($percent < 0 || $percent > 100) {
-                throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
+                throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
             }
             $cachedrawdata['items'][$cacheitemkey]['discount'] = $initialprice / 100 * $percent;
+
+            // If setting to round discounts is turned on, we round to full integer.
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
+                $discountprecision);
+
             $cachedrawdata['items'][$cacheitemkey]['price'] =
                 $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
-        } else if (!empty($absolut)) {
-            // Validation of absolut value.
-            if ($absolut < 0 || $absolut > $initialprice) {
-                throw new moodle_exception('absolutvalueinvalid', 'local_shopping_cart');
+        } else if (!empty($absolute)) {
+            // Validation of absolute value.
+            if ($absolute < 0 || $absolute > $initialprice) {
+                throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
             }
-            $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolut;
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolute;
+            // If setting to round discounts is turned on, we round to full integer.
+            $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
+                $discountprecision);
             $cachedrawdata['items'][$cacheitemkey]['price'] =
                 $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
         } else {

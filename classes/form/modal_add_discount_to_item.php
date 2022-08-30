@@ -60,13 +60,13 @@ class modal_add_discount_to_item extends dynamic_form {
         $mform->addHelpButton('discountpercent', 'discountpercent', 'local_shopping_cart');
         $mform->setType('discountpercent', PARAM_FLOAT);
         $mform->setDefault('discountpercent', 0);
-        $mform->addRule('discountpercent', get_string('floatonly'), 'numeric', null , 'client');
+        $mform->addRule('discountpercent', get_string('floatonly', 'local_shopping_cart'), 'numeric', null , 'client');
 
-        $mform->addElement('float', 'discountabsolut', get_string('discountabsolut', 'local_shopping_cart'));
-        $mform->addHelpButton('discountabsolut', 'discountabsolut', 'local_shopping_cart');
-        $mform->setType('discountabsolut', PARAM_FLOAT);
-        $mform->setDefault('discountabsolut', 0);
-        $mform->addRule('discountabsolut', get_string('floatonly'), 'numeric', null , 'client');
+        $mform->addElement('float', 'discountabsolute', get_string('discountabsolute', 'local_shopping_cart'));
+        $mform->addHelpButton('discountabsolute', 'discountabsolute', 'local_shopping_cart');
+        $mform->setType('discountabsolute', PARAM_FLOAT);
+        $mform->setDefault('discountabsolute', 0);
+        $mform->addRule('discountabsolute', get_string('floatonly', 'local_shopping_cart'), 'numeric', null , 'client');
     }
 
     /**
@@ -101,7 +101,7 @@ class modal_add_discount_to_item extends dynamic_form {
             $data->itemid,
             $data->userid,
             $data->discountpercent,
-            $data->discountabsolut);
+            $data->discountabsolute);
 
         return $data;
     }
@@ -145,10 +145,11 @@ class modal_add_discount_to_item extends dynamic_form {
         // We have to guess if the value comes from percentage or absolute.
         if (!empty($discount)
             && (0 === (($discount * 100) % $item['price']))) {
-                // This seems to come from percentage, because we get a nice number.
-                $data->discountpercent = ($discount * 100) / $item['price'];
+
+            // This seems to come from percentage, because we get a nice number.
+            $data->discountpercent = ($discount * 100) / $item['price'];
         } else {
-            $data->discountabsolut = $discount;
+            $data->discountabsolute = $discount;
         }
 
         $this->set_data($data);
@@ -193,9 +194,9 @@ class modal_add_discount_to_item extends dynamic_form {
 
         $errors = array();
 
-        if (!empty($data['discountpercent']) && !empty($data['discountabsolut'])) {
+        if (!empty($data['discountpercent']) && !empty($data['discountabsolute'])) {
             $errors['discountpercent'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
-            $errors['discountabsolut'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
+            $errors['discountabsolute'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
         }
 
         return $errors;

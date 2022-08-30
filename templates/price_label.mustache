@@ -44,7 +44,7 @@
     {{#credit}}
         <div class="text-center sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
         {{#discount}}
-            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}} - {{discount}} {{currency}}</div>
+            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
         {{/discount}}
         <div class="text-center sc_credit">
             <div class="custom-control custom-checkbox">
@@ -62,7 +62,7 @@
     {{^credit}}
         {{#discount}}
             <div class="text-center sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
-            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}} - {{discount}} {{currency}}</div>
+            <div class="text-center sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
         {{/discount}}
     {{/credit}}
 

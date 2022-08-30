@@ -84,8 +84,11 @@ class shopping_cart_credits {
         $data['currency'] = $currency ? $currency : $data['currency'];
 
         // Now we account for discounts.
-        //
         if (isset($data['discount'])) {
+
+            // If setting to round discounts is turned on, we round to full integer.
+            $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
+            $data['discount'] = round($data['discount'], $discountprecision);
 
             $data['initialtotal'] = $data['initialtotal'] + $data['discount'];
 

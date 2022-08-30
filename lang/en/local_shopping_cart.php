@@ -31,6 +31,7 @@ $string['sendpaymentbutton'] = 'Checkout';
 $string['addtocart'] = 'Add to cart';
 
 $string['mycart'] = 'My Cart';
+
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
@@ -47,8 +48,9 @@ $string['accountid'] = 'Payment account';
 $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
-
 $string['showdescription'] = 'Show description';
+$string['rounddiscounts'] = 'Round discounts';
+$string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
@@ -208,13 +210,13 @@ $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 // Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'No users found';
 
-// Discount Modal
+// Discount modal.
 $string['discount'] = 'Discount';
 $string['applydiscount'] = 'Apply discount';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
     You can\'t apply both at the same time.';
-$string['discountabsolut'] = 'Amount';
-$string['discountabsolut_help'] = 'Reduce price by this amount, like "15". No currency.';
+$string['discountabsolute'] = 'Amount';
+$string['discountabsolute_help'] = 'Reduce price by this amount, like "15". No currency.';
 $string['discountpercent'] = 'Percentage';
 $string['discountpercent_help'] = 'Reduce price by this percentage, like "10". Don\'t enter %-symbol';
 $string['floatonly'] = 'Only numeric values (decimals) are accepted. The correct separator depends on your system.';

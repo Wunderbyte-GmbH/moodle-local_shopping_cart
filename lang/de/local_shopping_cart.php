@@ -47,8 +47,9 @@ $string['accountid'] = 'Zahlungsanbieter-Konto';
 $string['accountid:description'] = 'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
-
 $string['showdescription'] = 'Zeige Beschreibung';
+$string['rounddiscounts'] = 'Rabatte runden';
+$string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
@@ -207,13 +208,13 @@ $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf 
 // Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
 
-// Discount Modal
-$string['discount'] = 'Discount';
-$string['applydiscount'] = 'Discount abziehen';
+// Discount modal.
+$string['discount'] = 'Rabatt';
+$string['applydiscount'] = 'Rabatt abziehen';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides.';
-$string['discountabsolut'] = 'Betrag';
-$string['discountabsolut_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "15". Keine Währung eingeben.';
+$string['discountabsolute'] = 'Betrag';
+$string['discountabsolute_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "15". Keine Währung eingeben.';
 $string['discountpercent'] = 'Prozent';
 $string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';
 $string['floatonly'] = 'Nur Dezimalzahlen werden akzeptiert. Das richtige Trennzeichen hängt von Ihrem System ab.';
