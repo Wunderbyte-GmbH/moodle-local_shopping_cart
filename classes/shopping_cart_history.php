@@ -108,14 +108,10 @@ class shopping_cart_history {
                     $tablename = "paygw_" . $gwname;
 
                     $cols = $DB->get_columns($tablename);
-                    // Do not add the table if it does not have exactly 3 columns.
-                    if (count($cols) != 3) {
-                        continue;
-                    }
-
                     foreach ($cols as $key => $value) {
                         if (strpos($key, 'orderid') !== false) {
                             // Generate a select for each table.
+                            // Only do this, if an orderid exists.
                             $colselects[] =
                                "SELECT $gwname.paymentid, $gwname.$key orderid
                                 FROM {paygw_$gwname} $gwname";

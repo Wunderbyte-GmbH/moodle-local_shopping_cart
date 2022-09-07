@@ -117,13 +117,8 @@ if (!empty($account)) {
             $tablename = "paygw_" . $gwname;
 
             $cols = $DB->get_columns($tablename);
-
-            // Do not add the table if it does not have exactly 3 columns.
-            if (count($cols) != 3) {
-                continue;
-            }
-
             // Generate a select for each table.
+            // Only do this, if an orderid exists.
             foreach ($cols as $key => $value) {
                 if (strpos($key, 'orderid') !== false) {
                     $colselects[] =

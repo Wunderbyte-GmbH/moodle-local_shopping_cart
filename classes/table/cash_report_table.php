@@ -23,8 +23,6 @@ require_once(__DIR__ . '/../../lib.php');
 require_once($CFG->libdir.'/tablelib.php');
 
 use dml_exception;
-use html_writer;
-use moodle_url;
 use table_sql;
 
 /**
