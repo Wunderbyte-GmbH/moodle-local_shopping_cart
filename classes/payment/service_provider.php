@@ -31,6 +31,8 @@ use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
 use moodle_url;
 
+defined('MOODLE_INTERNAL') || die();
+
 // We need the constants defined in lib.
 require_once(__DIR__ . '/../../lib.php');
 
