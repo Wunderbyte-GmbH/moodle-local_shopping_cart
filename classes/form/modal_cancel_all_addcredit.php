@@ -120,7 +120,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
         foreach ($bookedusers as $buser) {
 
             $credit = $buser->price - $cancelationfee;
-            shopping_cart::cancel_purchase($buser->itemid, $buser->userid, $componentname, $buser->id, $credit);
+            shopping_cart::cancel_purchase($buser->itemid, $buser->userid, $componentname, $buser->id, $credit, $cancelationfee);
 
         }
 

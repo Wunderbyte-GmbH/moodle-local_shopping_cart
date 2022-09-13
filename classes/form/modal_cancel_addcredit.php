@@ -93,7 +93,8 @@ class modal_cancel_addcredit extends dynamic_form {
         // Subtract cancellation fee from price to get credit for the user.
         $credit = $data->price - $cancelationfee;
 
-        shopping_cart::cancel_purchase($data->itemid, $data->userid, $data->componentname, $data->historyid, $credit);
+        shopping_cart::cancel_purchase($data->itemid, $data->userid, $data->componentname, $data->historyid,
+            $credit, $cancelationfee);
 
         return $data;
     }

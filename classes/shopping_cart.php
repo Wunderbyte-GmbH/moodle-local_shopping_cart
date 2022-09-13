@@ -30,6 +30,7 @@ require_once(__DIR__ . '/../lib.php');
 use context_system;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
+use stdClass;
 
 /**
  * Class shopping_cart
@@ -632,7 +633,7 @@ class shopping_cart {
      * @return array
      */
     public static function cancel_purchase(int $itemid, int $userid, string $componentname,
-        int $historyid = null, float $customcredit = 0): array {
+        int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
 
         global $USER;
 
@@ -654,7 +655,7 @@ class shopping_cart {
             ];
         }
 
-        list($success, $error, $credit, $currency) = shopping_cart_history::cancel_purchase($itemid,
+        list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase($itemid,
             $userid, $componentname, $historyid);
 
         if (empty($customcredit)) {
@@ -664,7 +665,8 @@ class shopping_cart {
         if ($success == 1) {
             // If the payment was successfully canceled, we can book the credits to the users balance.
 
-            // If the user canceled herself and a cancelation fee is set, we deduce this fee from the credit.
+            /* If the user canceled herself and a cancelation fee is set in config settings
+            we deduce this fee from the credit. */
             if ($userid == $USER->id) {
                 if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
                     && $cancelationfee > 0) {
@@ -673,6 +675,11 @@ class shopping_cart {
             }
 
             list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
+
+            // We also need to insert a record into the ledger table.
+            $record->credits = $customcredit;
+            $record->fee = $cancelationfee;
+            self::add_record_to_ledger_table($record);
         }
 
         return [
@@ -825,5 +832,36 @@ class shopping_cart {
         $cache->set($cachekey, $cachedrawdata);
 
         return ['success' => 1];
+    }
+
+    /**
+     * Helper function to add entries to local_shopping_cart_ledger table.
+     *
+     * @param stdClass $record the record to add to the ledger table
+     * @return bool true if successful, else false
+     */
+    public static function add_record_to_ledger_table(stdClass $record) {
+        global $DB;
+        $success = true;
+        switch($record->paymentstatus) {
+            case PAYMENT_SUCCESS:
+                if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
+                    $success = false;
+                }
+                break;
+            case PAYMENT_CANCELED:
+                $record->price = null;
+                $record->discount = null;
+                if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
+                    $success = false;
+                }
+                break;
+            case PAYMENT_ABORTED:
+            case PAYMENT_PENDING:
+            default:
+                $success = false;
+                break;
+        }
+        return $success;
     }
 }

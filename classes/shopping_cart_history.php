@@ -183,10 +183,14 @@ class shopping_cart_history {
                 $data = (object)$item;
                 $data->timecreated = $now;
                 $record = $DB->insert_record('local_shopping_cart_history', $data);
+                // We also need to insert the record into the ledger table.
+                shopping_cart::add_record_to_ledger_table($data);
             }
         } else {
             $data->timecreated = $now;
             $record = $DB->insert_record('local_shopping_cart_history', $data);
+            // We also need to insert the record into the ledger table.
+            shopping_cart::add_record_to_ledger_table($data);
         }
         if ($record > 0) {
             return true;
@@ -266,7 +270,7 @@ class shopping_cart_history {
         if ($entryid) {
             $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid]);
         } else {
-            // Only return successfull payments.
+            // Only return successful payments.
             // We only take the last record.
             $sql = "SELECT *
                     FROM {local_shopping_cart_history}
@@ -300,10 +304,10 @@ class shopping_cart_history {
 
             if ($credit === null
                 || ($credit > $record->price)) {
-                return [1, '', $record->price, $record->currency];
+                return [1, '', $record->price, $record->currency, $record];
             } else {
                 // If the credit is smaller than the price, we use the credit.
-                return [1, '', $credit, $record->currency];
+                return [1, '', $credit, $record->currency, $record];
             }
 
         } catch (Exception $e) {
@@ -322,7 +326,6 @@ class shopping_cart_history {
     public static function return_data_via_identifier(int $identifier, int $userid):array {
 
         global $DB;
-        // TODO and Userid`?
         if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier, 'userid' => $userid])) {
 
             // If there is an error registered, we return null.
@@ -360,8 +363,6 @@ class shopping_cart_history {
 
         // All the items of one transaction should have the same status.
         // If it's still pending, we set all items to error.
-
-        $pending = 'pending';
         foreach ($records as $record) {
             // If we haven't fond a record where it's not pending, we check this one.
             if ($record->paymentstatus == PAYMENT_PENDING) {
@@ -394,6 +395,9 @@ class shopping_cart_history {
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;
+            } else {
+                // We also need to insert the record into the ledger table.
+                shopping_cart::add_record_to_ledger_table($record);
             }
         }
 
