@@ -285,6 +285,7 @@ class shopping_cart_credits {
      * @return void
      */
     public static function credit_paid_back($userid) {
+        global $USER;
 
         list($balance, $currency) = self::get_balance($userid);
 
@@ -295,6 +296,22 @@ class shopping_cart_credits {
         $data['currency'] = $currency;
 
         self::use_credit($userid, $data);
+
+        // Also record this in the ledger table.
+        $ledgerrecord = new stdClass;
+        $now = time();
+        $ledgerrecord->userid = $userid;
+        $ledgerrecord->itemid = 0;
+        $ledgerrecord->price = (float)(-1.0) * $data['deductible'];
+        $ledgerrecord->credits = (float)(-1.0) * $data['deductible'];
+        $ledgerrecord->currency = $currency;
+        $ledgerrecord->componentname = 'local_shopping_cart';
+        $ledgerrecord->payment = PAYMENT_METHOD_CREDITS_PAID_BACK;
+        $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+        $ledgerrecord->usermodified = $USER->id;
+        $ledgerrecord->timemodified = $now;
+        $ledgerrecord->timecreated = $now;
+        shopping_cart::add_record_to_ledger_table($ledgerrecord);
 
         return true;
     }

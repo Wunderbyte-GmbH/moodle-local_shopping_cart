@@ -181,6 +181,7 @@ $string['usermodified'] = 'Bearbeitet von';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
 $string['paymentmethodcredits'] = 'Guthaben';
+$string['paymentmethodcreditspaidback'] = 'Guthabenrückzahlung';
 $string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
 $string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
 $string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';

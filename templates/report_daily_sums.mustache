@@ -41,7 +41,8 @@
 </p>
 <div class="collapse mb-5" id="collapseExample">
   <div class="card card-body">
-    <h4>{{#str}} titledailysums, local_shopping_cart {{/str}} ({{currentdate}})</h4>
+    <div id="dailysums-selector-form">{{{selectorform}}}</div>
+    <h4>{{#str}} titledailysums, local_shopping_cart {{/str}} ({{date}})</h4>
     <p>
       {{#dailysums:exist}}
         <h5>{{#str}} titledailysums:all, local_shopping_cart {{/str}}</h5>

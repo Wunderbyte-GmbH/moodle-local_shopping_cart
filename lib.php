@@ -43,6 +43,7 @@ define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
 define('PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using cash.
 define('PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at cashier's office using a debit card.
 define('PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
+define('PAYMENT_METHOD_CREDITS_PAID_BACK', 6); // Credits removed and paid back to user.
 
 /**
  * Adds module specific settings to the settings block

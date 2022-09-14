@@ -182,6 +182,7 @@ $string['usermodified'] = 'Modified by';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Cashier';
 $string['paymentmethodcredits'] = 'Credits';
+$string['paymentmethodcreditspaidback'] = 'Credits paid back';
 $string['paymentmethodcashier:cash'] = 'Cashier (Cash)';
 $string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
 $string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';
