@@ -63,6 +63,7 @@ $string['foo'] = 'foo';
 // Cache.
 $string['cachedef_cashier'] = 'Cashier cache';
 $string['cachedef_cacheshopping'] = 'Shopping cache';
+$string['cachedef_schistory'] = 'Shopping cart history cache';
 
 // Errors.
 

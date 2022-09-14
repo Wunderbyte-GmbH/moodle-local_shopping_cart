@@ -60,8 +60,9 @@ $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['foo'] = 'foo';
 
 // Cache.
-$string['cachedef_cashier'] = 'Cashier cache';
-$string['cachedef_cacheshopping'] = 'Shopping cache';
+$string['cachedef_cashier'] = 'Kassier Cache';
+$string['cachedef_cacheshopping'] = 'Shopping Cache';
+$string['cachedef_schistory'] = 'Shopping cart history cache';
 
 // Errors.
 
