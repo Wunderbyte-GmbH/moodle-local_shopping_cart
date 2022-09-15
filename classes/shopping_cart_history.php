@@ -489,7 +489,7 @@ class shopping_cart_history {
 
         $shoppingcart = (object)$cache->get($identifier);
 
-        if (!isset($shoppingcart->storedinhistory)) {
+        if (isset($shoppingcart->identifier) && !isset($shoppingcart->storedinhistory)) {
 
             self::write_to_db($shoppingcart);
 
