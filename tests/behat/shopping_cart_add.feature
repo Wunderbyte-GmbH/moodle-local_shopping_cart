@@ -31,7 +31,7 @@ Feature: Test purchase process in shopping cart.
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "#item-local_shopping_cart-1" "css_element"
-    And I follow "Checkout"
+    And I click on "#gateways-modal-trigger-33" "css_element"
     Then I should see "my test item 1" in the "div.checkoutgrid" "css_element"
 
   @javascript
