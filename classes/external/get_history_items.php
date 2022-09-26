@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use block_recentlyaccesseditems\external;
 use context_system;
 use external_api;
 use external_function_parameters;
@@ -39,7 +40,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 
-class get_shopping_cart_items extends external_api {
+class get_history_items extends external_api {
 
     /**
      * Describes the paramters for this service.
@@ -73,8 +74,10 @@ class get_shopping_cart_items extends external_api {
             $userid = (int)$USER->id;
         }
 
-        return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
+        //return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
 
+        $historyitems = shopping_cart_history::get_history_list_for_user($userid);
+        return $historyitems;
     }
 
     /**
@@ -82,24 +85,19 @@ class get_shopping_cart_items extends external_api {
      *
      * @return external_single_structure
      */
-    public static function execute_returns(): external_single_structure {
-        return new external_single_structure(
-            array(
-                'count' => new external_value(PARAM_INT, 'Number of items'),
-                'price' => new external_value(PARAM_RAW, 'Total price'),
-                'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
-                'maxitems' => new external_value(PARAM_INT, 'Max Items'),
-                'items' => new external_multiple_structure (
-                        new external_single_structure(
-                            array(
-                            'itemid' => new external_value(PARAM_RAW, 'Item id'),
-                            'itemname' => new external_value(PARAM_RAW, 'Item name'),
-                            'price' => new external_value(PARAM_RAW, 'Price of item'),
-                            'currency' => new external_value(PARAM_RAW, 'Currency'),
-                            'componentname' => new external_value(PARAM_RAW, 'Component name'),
-                            'description' => new external_value(PARAM_RAW, 'Item description'),
-                            )
-                        )
+
+    // Original:
+     public static function execute_returns(): external_multiple_structure {
+        return new external_multiple_structure (
+            new external_single_structure(
+                array(
+                'itemid' => new external_value(PARAM_INT, 'Item id'),
+                'id' => new external_value(PARAM_INT, 'Historyid id'),
+                'itemname' => new external_value(PARAM_TEXT, 'Item name'),
+                'price' => new external_value(PARAM_FLOAT, 'Price of item'),
+                'currency' => new external_value(PARAM_ALPHA, 'Currency'),
+                'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus')
                 )
             )
         );

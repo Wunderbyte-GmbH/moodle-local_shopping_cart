@@ -108,6 +108,14 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => '',
                 'ajax' => 1
-        )
+        ),
+        'local_shopping_cart_get_history_items' => array(
+                'classname' => 'local_shopping_cart\external\get_history_items',
+                'classpath' => '',
+                'description' => 'Get History items',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
+        ),
 );
 
