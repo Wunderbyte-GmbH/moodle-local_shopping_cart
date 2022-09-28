@@ -74,8 +74,6 @@ class get_history_items extends external_api {
             $userid = (int)$USER->id;
         }
 
-        //return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
-
         $historyitems = shopping_cart_history::get_history_list_for_user($userid);
         return $historyitems;
     }
@@ -87,17 +85,17 @@ class get_history_items extends external_api {
      */
 
     // Original:
-     public static function execute_returns(): external_multiple_structure {
-        return new external_multiple_structure (
+    public static function execute_returns(): external_multiple_structure {
+        return new external_multiple_structure(
             new external_single_structure(
                 array(
-                'itemid' => new external_value(PARAM_INT, 'Item id'),
-                'id' => new external_value(PARAM_INT, 'Historyid id'),
-                'itemname' => new external_value(PARAM_TEXT, 'Item name'),
-                'price' => new external_value(PARAM_FLOAT, 'Price of item'),
-                'currency' => new external_value(PARAM_ALPHA, 'Currency'),
-                'componentname' => new external_value(PARAM_TEXT, 'Component name'),
-                'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus')
+                    'itemid' => new external_value(PARAM_INT, 'Item id'),
+                    'id' => new external_value(PARAM_INT, 'Historyid id'),
+                    'itemname' => new external_value(PARAM_TEXT, 'Item name'),
+                    'price' => new external_value(PARAM_FLOAT, 'Price of item'),
+                    'currency' => new external_value(PARAM_ALPHA, 'Currency'),
+                    'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                    'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus')
                 )
             )
         );
