@@ -89,6 +89,9 @@ class shopping_cart_history {
 
         global $DB;
 
+        // We need this in case we load via webservice to resolve the constants.
+        require_once(__DIR__ . '/../lib.php');
+
         // Get payment account from settings.
         $accountid = get_config('local_shopping_cart', 'accountid');
         $account = null;
