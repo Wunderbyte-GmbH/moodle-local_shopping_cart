@@ -65,9 +65,9 @@ $string['cachedef_cacheshopping'] = 'Shopping Cache';
 $string['cachedef_schistory'] = 'Shopping cart history cache';
 
 // Errors.
-
 $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
+$string['error:cachiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
 
 // Cart.
 $string['total'] = 'Gesamt:';

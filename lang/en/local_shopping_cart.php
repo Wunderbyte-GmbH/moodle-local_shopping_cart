@@ -66,9 +66,9 @@ $string['cachedef_cacheshopping'] = 'Shopping cache';
 $string['cachedef_schistory'] = 'Shopping cart history cache';
 
 // Errors.
-
 $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
+$string['error:cachiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
 
 // Cart.
 $string['total'] = 'Total:';
