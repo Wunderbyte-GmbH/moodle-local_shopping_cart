@@ -25,6 +25,7 @@
 namespace local_shopping_cart;
 
 use Exception;
+use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -498,6 +499,8 @@ class shopping_cart_history {
 
             $shoppingcart->storedinhistory = true;
             $cache->set($identifier, $shoppingcart);
+        } else if (!isset($shoppingcart->identifier)) {
+            throw new moodle_exception('noidentifierstoredincache', 'local_shopping_cart');
         }
 
         return $shoppingcart;
