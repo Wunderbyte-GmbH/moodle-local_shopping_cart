@@ -589,7 +589,9 @@ class shopping_cart {
                         $identifier,
                         $paymentmethod,
                         PAYMENT_SUCCESS,
-                        $item['canceluntil'] ?? null
+                        $item['canceluntil'] ?? null,
+                        $item['serviceperiodstart'] ?? null,
+                        $item['serviceperiodend'] ?? null
                     );
                 }
 

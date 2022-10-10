@@ -39,6 +39,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         $canceluntil = strtotime('+14 days', time());
 
+        $serviceperiodstart = time();
+        $serviceperiodend = strtotime('+30 days', time());
+
         return new cartitem($optionid,
                             'my test item ' . $optionid,
                             10,
@@ -46,7 +49,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                             'local_shopping_cart',
                             'item description',
                             '/local/shopping_cart/pix/edu.png',
-                            $canceluntil
+                            $canceluntil,
+                            $serviceperiodstart,
+                            $serviceperiodend
                             );
     }
 

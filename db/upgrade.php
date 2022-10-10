@@ -165,6 +165,28 @@ function xmldb_local_shopping_cart_upgrade($oldversion)
         upgrade_plugin_savepoint(true, 2022081500, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2022101000) {
+
+        // Define field id to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('serviceperiodstart', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'canceluntil');
+
+        // Conditionally launch add field serviceperiodstart.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('serviceperiodend', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'serviceperiodstart');
+
+        // Conditionally launch add field serviceperiodend.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022101000, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
