@@ -145,6 +145,12 @@ class shopping_cart_credits {
 
         if (count($records) > 1) {
             throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
+        } else if (count($records) === 0) {
+            $record = new stdClass();
+            $record->credits = 0;
+            $record->currency = '';
+
+            $records = [$record];
         }
 
         return reset($records);
