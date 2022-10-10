@@ -89,6 +89,20 @@ class cartitem {
     private $canceluntil;
 
     /**
+     * Service period start
+     *
+     * @var int
+     */
+    private $serviceperiodstart;
+
+    /**
+     * Stervice period end
+     *
+     * @var int
+     */
+    private $serviceperiodend;
+
+    /**
      * Cunstructor.
      *
      * @param int $itemid
@@ -98,6 +112,9 @@ class cartitem {
      * @param string $componentname
      * @param string $description
      * @param string $imageurl
+     * @param int canceluntil
+     * @param int serviceperiodstart
+     * @param int $serviceperiodend
      */
     public function __construct(int $itemid,
                                 string $itemname,
@@ -106,7 +123,9 @@ class cartitem {
                                 string $componentname,
                                 string $description = '',
                                 string $imageurl = null,
-                                int $canceluntil = null) {
+                                int $canceluntil = null,
+                                int $serviceperiodstart = null,
+                                int $serviceperiodend = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -115,6 +134,8 @@ class cartitem {
         $this->description = $description;
         $this->imageurl = $imageurl;
         $this->canceluntil = $canceluntil;
+        $this->serviceperiodstart = $serviceperiodstart;
+        $this->serviceperiodend = $serviceperiodend;
     }
 
     /**
@@ -132,6 +153,8 @@ class cartitem {
         $item['description'] = $this->description;
         $item['imageurl'] = $this->imageurl;
         $item['canceluntil'] = $this->canceluntil;
+        $item['serviceperiodstart'] = $this->serviceperiodstart;
+        $item['serviceperiodend'] = $this->serviceperiodend;
         return $item;
     }
 
