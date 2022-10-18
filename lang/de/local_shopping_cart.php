@@ -226,3 +226,6 @@ $string['item_bought'] = 'Artikel gekauft';
 $string['item_added'] = 'Artikel hinzugefügt';
 $string['item_expired'] = 'Zeit für Artikel im Warenkorb abgelaufen';
 $string['item_deleted'] = 'Artikel gelöscht';
+
+// Caches.
+$string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';
