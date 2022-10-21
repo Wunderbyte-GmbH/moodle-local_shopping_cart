@@ -108,7 +108,7 @@ class shopping_cart {
             // If reserveration is not successful, we have to react here.
             if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
                 // Get the itemdata as array.
-                $itemdata = $cartitem->getitem();
+                $itemdata = $cartitem->as_array();
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;

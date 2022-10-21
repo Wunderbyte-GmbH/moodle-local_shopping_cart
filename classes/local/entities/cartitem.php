@@ -47,11 +47,26 @@ class cartitem {
     private $itemname;
 
     /**
-     * Price of the item as a float value
+     * Price of the item as a float value including tax (gross)
      *
      * @var float
      */
     private $price;
+
+    /**
+     * Tax applied to this item price in percent float (20% tax = 0.2 float value).
+     * If both $taxpercentage and $tax are set, the absolute $tax value takes precedence.
+     *
+     * @var float|null
+     */
+    private $taxpercentage;
+
+    /**
+     * Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax
+     *
+     * @var float|null
+     */
+    private $tax;
 
     /**
      * Currency must be the same for all items in cart.
@@ -77,7 +92,7 @@ class cartitem {
     /**
      * Link to image
      *
-     * @var string
+     * @var string|null
      */
     private $imageurl;
 
@@ -89,7 +104,7 @@ class cartitem {
     private $canceluntil;
 
     /**
-     * Cunstructor.
+     * Constructor for creating a cartitem.
      *
      * @param int $itemid
      * @param string $itemname
@@ -97,16 +112,22 @@ class cartitem {
      * @param string $currency
      * @param string $componentname
      * @param string $description
-     * @param string $imageurl
+     * @param string|null $imageurl
+     * @param int|null $canceluntil
+     * @param float|null $tax
+     * @param float|null $taxpercentage
      */
-    public function __construct(int $itemid,
-                                string $itemname,
-                                float $price,
-                                string $currency,
-                                string $componentname,
-                                string $description = '',
-                                string $imageurl = null,
-                                int $canceluntil = null) {
+    public function __construct(
+            int $itemid,
+            string $itemname,
+            float $price,
+            string $currency,
+            string $componentname,
+            string $description = '',
+            string $imageurl = null,
+            int $canceluntil = null,
+            float $tax = null,
+            float $taxpercentage = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -115,6 +136,8 @@ class cartitem {
         $this->description = $description;
         $this->imageurl = $imageurl;
         $this->canceluntil = $canceluntil;
+        $this->tax = $tax;
+        $this->taxpercentage = $taxpercentage;
     }
 
     /**
@@ -122,7 +145,7 @@ class cartitem {
      *
      * @return array
      */
-    public function getitem():array {
+    public function as_array(): array {
         $item = array();
         $item['itemid'] = $this->itemid;
         $item['itemname'] = $this->itemname;
@@ -132,16 +155,44 @@ class cartitem {
         $item['description'] = $this->description;
         $item['imageurl'] = $this->imageurl;
         $item['canceluntil'] = $this->canceluntil;
+        $item['tax'] = $this->tax;
+        $item['taxpercentage'] = $this->taxpercentage;
         return $item;
     }
 
     /**
-     * Get the price of the cartitem.
+     * Get the gross price of the cartitem including any tax.
      *
      * @return float
      */
-    public function getprice(): float {
+    public function price(): float {
         return $this->price;
+    }
+
+    /**
+     * Get the tax amount in $currency absolute value.
+     * Returns null if there is no tax defined.
+     *
+     * @return float|null
+     */
+    public function tax_amount(): ?float {
+        if ($this->tax !== null) {
+            return $this->tax;
+        }
+        if ($this->taxpercentage !== null) {
+            return $this->price * $this->taxpercentage;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the net price of the cartitem excluding any tax.
+     *
+     * @return float
+     */
+    public function net_price(): float {
+        return $this->price - $this->tax_amount();
     }
 
     /**
@@ -149,7 +200,7 @@ class cartitem {
      *
      * @return string
      */
-    public function getcurrency(): string {
+    public function currency(): string {
         return $this->currency;
     }
 
@@ -158,16 +209,23 @@ class cartitem {
      *
      * @return int
      */
-    public function getitemid(): int {
+    public function itemid(): int {
         return $this->itemid;
     }
 
     /**
      * Get the canceluntil timestamp.
      *
-     * @return int
+     * @return int|null
      */
-    public function getcanceluntil(): int {
+    public function cancel_until_timestamp(): ?int {
         return $this->canceluntil;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function imageurl(): ?string {
+        return $this->imageurl;
     }
 }

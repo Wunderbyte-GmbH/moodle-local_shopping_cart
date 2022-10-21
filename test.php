@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Testfile to see how wunderbyte_table works.
+ * Testfile to simulate adding items to shopping cart
  *
  * @package     local_shopping_cart
  * @copyright   2021 Wunderbyte GmbH <info@wunderbyte.at>
@@ -25,6 +25,7 @@
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\output\button;
 use local_shopping_cart\shopping_cart_history;
+
 require_once(__DIR__ . '/../../config.php');
 require_login();
 
@@ -44,11 +45,11 @@ $renderer = $PAGE->get_renderer('local_shopping_cart');
 $canceluntil = strtotime('+14 days', time());
 
 $item = new cartitem(1, 'Testitem 1', 10.00, 'EUR', 'local_shopping_cart', 'My Testitem 1 description', null, $canceluntil);
-$data = $item->getitem();
+$data = $item->as_array();
 $data = new button($data);
 echo $renderer->render_button($data);
 $item = new cartitem(2, 'asdsad 2', 20.3, 'EUR', 'local_shopping_cart', 'My Testitem 2 description', null, $canceluntil);
-$data = $item->getitem();
+$data = $item->as_array();
 $data = new button($data);
 global $USER;
 $history = new shopping_cart_history();

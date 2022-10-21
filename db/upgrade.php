@@ -29,8 +29,7 @@
  * @param int $oldversion
  * @return bool
  */
-function xmldb_local_shopping_cart_upgrade($oldversion)
-{
+function xmldb_local_shopping_cart_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
@@ -163,6 +162,34 @@ function xmldb_local_shopping_cart_upgrade($oldversion)
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022081500, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 20221021) {
+
+        $history_table = new xmldb_table('local_shopping_cart_history');
+        $ledger_table = new xmldb_table('local_shopping_cart_ledger');
+
+        $field_tax = new xmldb_field('tax', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null, 'price');
+        $field_tax_percentage = new xmldb_field('taxpercentage', XMLDB_TYPE_NUMBER, '5, 4', null, null, null, null, 'tax');
+
+        // add new fields to local_shopping_cart_history table
+        if (!$dbman->field_exists($history_table, $field_tax)) {
+            $dbman->add_field($history_table, $field_tax);
+        }
+        if (!$dbman->field_exists($history_table, $field_tax_percentage)) {
+            $dbman->add_field($history_table, $field_tax_percentage);
+        }
+
+        // add new fields to local_shopping_cart_ledger table
+        if (!$dbman->field_exists($ledger_table, $field_tax)) {
+            $dbman->add_field($ledger_table, $field_tax);
+        }
+        if (!$dbman->field_exists($ledger_table, $field_tax_percentage)) {
+            $dbman->add_field($ledger_table, $field_tax_percentage);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 20221021, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.

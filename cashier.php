@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pages main view page.
+ * Checkout page for Cashiers
  *
  * @package         local_shopping_cart
  * @author          Thomas Winkler
@@ -72,7 +72,7 @@ foreach ($users as $user) {
         $data["mail"] = $user->email;
         $data["name"] = $user->firstname . $user->lastname;
     }
-    $data['users'][] = $user->lastname . ' ' . $user->firstname . ' (' . $user->email . ')' . ' uid:' .$user->id;
+    $data['users'][] = $user->lastname . ' ' . $user->firstname . ' (' . $user->email . ')' . ' uid:' . $user->id;
 }
 $data['users'] = json_encode($data['users']);
 
