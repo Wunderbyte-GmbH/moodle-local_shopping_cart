@@ -145,6 +145,8 @@ $string['deductible'] = 'Deductible:';
 $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';
 
+$string['nopermission'] = "No permission to cancel";
+
 // Access.php.
 $string['local/shopping_cart:cashier'] = 'User has cashier rights';
 

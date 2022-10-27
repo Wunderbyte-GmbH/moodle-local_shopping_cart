@@ -144,6 +144,8 @@ $string['deductible'] = 'Abziehbar:';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';
 $string['remainingtotal'] = 'Preis:';
 
+$string['nopermission'] = "No permission to cancel";
+
 // Access.php.
 $string['local/shopping_cart:cashier'] = 'NutzerIn hat Kassier-Rechte';
 
