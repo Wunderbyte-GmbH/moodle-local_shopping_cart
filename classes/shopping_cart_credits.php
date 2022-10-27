@@ -137,6 +137,7 @@ class shopping_cart_credits {
                 FROM {local_shopping_cart_credits}
                 WHERE userid =:userid
                 AND currency IS NOT NULL
+                AND currency <> ''
                 GROUP BY (currency)";
 
         $params = ['userid' => $userid];
@@ -174,16 +175,13 @@ class shopping_cart_credits {
         // TODO: Include the currency in the check.
         list($balance, $newcurrency) = self::check_balance($userid);
 
-        // Make sure we don't override an existing currency with null.
-        $currency = $newcurrency ? $newcurrency : $currency;
-
         $now = time();
 
         $data = new stdClass();
 
         $data->userid = $userid;
         $data->credits = $credit;
-        $data->currency = $currency;
+        $data->currency = $newcurrency ?? $currency;
         $data->balance = $balance + $credit; // Balance hold the new balance after this transaction.
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
