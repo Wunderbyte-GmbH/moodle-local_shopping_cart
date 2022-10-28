@@ -125,6 +125,9 @@ class shoppingcart_history_list implements renderable, templatable {
                 $item->buttonclass = 'btn-danger disabled';
             }
 
+            $item->serviceperiodstart = $item->serviceperiodstart ?? 0;
+            $item->serviceperiodend = $item->serviceperiodend ?? 0;
+
             // Localize the payment string.
             switch ($item->payment) {
                 case PAYMENT_METHOD_ONLINE:

@@ -44,17 +44,9 @@ class shopping_cart_credits {
      */
     public static function get_balance(int $userid): array {
 
-        $records = self::get_all_transactions($userid);
+        $userrecord = self::extract_from_transactions($userid);
 
-        $balance = 0;
-        $currency = null;
-
-        foreach ($records as $record) {
-            $balance += $record->credits;
-            $currency = $record->currency;
-        }
-
-        return [round($balance, 2), $currency];
+        return [round($userrecord->credits, 2), $userrecord->currency];
     }
 
     /**
@@ -132,20 +124,36 @@ class shopping_cart_credits {
     }
 
     /**
-     * Returns the a list of all trancations of current user.
+     * Return sum of credits and sum of balance from DB for one single user.
      *
-     * @param int $userid
-     * @return array
+     * @param integer $userid
+     * @return stdClass
      */
-    public static function get_all_transactions(int $userid): array {
+    public static function extract_from_transactions(int $userid): stdClass {
 
         global $DB;
 
-        if (!$records = $DB->get_records('local_shopping_cart_credits', ['userid' => $userid])) {
-            return [];
-        } else {
-            return $records;
+        $sql = "SELECT SUM(credits) credits, currency
+                FROM {local_shopping_cart_credits}
+                WHERE userid =:userid
+                AND currency IS NOT NULL
+                GROUP BY (currency)";
+
+        $params = ['userid' => $userid];
+
+        $records = $DB->get_records_sql($sql, $params);
+
+        if (count($records) > 1) {
+            throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
+        } else if (count($records) === 0) {
+            $record = new stdClass();
+            $record->credits = 0;
+            $record->currency = '';
+
+            $records = [$record];
         }
+
+        return reset($records);
     }
 
     /**

@@ -104,6 +104,20 @@ class cartitem {
     private $canceluntil;
 
     /**
+     * Service period start
+     *
+     * @var int
+     */
+    private $serviceperiodstart;
+
+    /**
+     * Stervice period end
+     *
+     * @var int
+     */
+    private $serviceperiodend;
+
+    /**
      * Constructor for creating a cartitem.
      *
      * @param int $itemid
@@ -128,6 +142,7 @@ class cartitem {
             int $canceluntil = null,
             float $tax = null,
             float $taxpercentage = null) {
+            
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -138,6 +153,8 @@ class cartitem {
         $this->canceluntil = $canceluntil;
         $this->tax = $tax;
         $this->taxpercentage = $taxpercentage;
+        $this->serviceperiodstart = $serviceperiodstart;
+        $this->serviceperiodend = $serviceperiodend;
     }
 
     /**
@@ -157,6 +174,8 @@ class cartitem {
         $item['canceluntil'] = $this->canceluntil;
         $item['tax'] = $this->tax;
         $item['taxpercentage'] = $this->taxpercentage;
+        $item['serviceperiodstart'] = $this->serviceperiodstart;
+        $item['serviceperiodend'] = $this->serviceperiodend;
         return $item;
     }
 

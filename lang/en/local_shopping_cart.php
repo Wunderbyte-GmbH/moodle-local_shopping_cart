@@ -228,3 +228,6 @@ $string['item_bought'] = 'Item bought';
 $string['item_added'] = 'Item added';
 $string['item_expired'] = 'Item expired';
 $string['item_deleted'] = 'Item deleted';
+
+// Caches.
+$string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';

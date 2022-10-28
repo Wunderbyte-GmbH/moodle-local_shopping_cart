@@ -559,18 +559,10 @@ class shopping_cart {
                     if ($paymentmethod === PAYMENT_METHOD_CASHIER) {
                         // We now need to specify the actual payment method (cash, debit or credit card).
                         switch ($paymenttype) {
-                            case 'cashpayment':
-                                $paymentmethod = PAYMENT_METHOD_CASHIER_CASH;
-                                break;
-                            case 'creditcardpayment':
-                                $paymentmethod = PAYMENT_METHOD_CASHIER_CREDITCARD;
-                                break;
-                            case 'debitcardpayment':
-                                $paymentmethod = PAYMENT_METHOD_CASHIER_DEBITCARD;
-                                break;
-                            default:
-                                // Specific type missing.
-                                $paymentmethod = PAYMENT_METHOD_CASHIER;
+                            case PAYMENT_METHOD_CASHIER_CASH:
+                            case PAYMENT_METHOD_CASHIER_CREDITCARD:
+                            case PAYMENT_METHOD_CASHIER_DEBITCARD:
+                                $paymentmethod = $paymenttype;
                                 break;
                         }
                     }
@@ -589,7 +581,9 @@ class shopping_cart {
                         $identifier,
                         $paymentmethod,
                         PAYMENT_SUCCESS,
-                        $item['canceluntil'] ?? null
+                        $item['canceluntil'] ?? null,
+                        $item['serviceperiodstart'] ?? null,
+                        $item['serviceperiodend'] ?? null
                     );
                 }
 
