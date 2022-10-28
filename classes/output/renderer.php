@@ -33,7 +33,6 @@ use templatable;
  */
 class renderer extends plugin_renderer_base {
 
-
     /**
      * Render add to cart button
      *
@@ -46,9 +45,9 @@ class renderer extends plugin_renderer_base {
     }
 
     /**
-     * Render add to cart button
+     * Render history card.
      *
-     * @param templatable $button
+     * @param templatable $data
      * @return string|boolean
      */
     public function render_history_card(templatable $data) {

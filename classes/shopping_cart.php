@@ -255,9 +255,9 @@ class shopping_cart {
     /**
      * Confirms Payment and successful checkout for item.
      *
-     * @param string $component Name of the component that the cartitems belong to
-     * @param int $itemid An internal identifier that is used by the component
-     * @param int $userid
+     * @param string $component
+     * @param integer $itemid
+     * @param integer $userid
      * @return local\entities\cartitem
      */
     public static function successful_checkout(string $component, int $itemid, int $userid): bool {
@@ -456,7 +456,7 @@ class shopping_cart {
      * .. or the items passed by shopping cart history. The second option is the case when we use the payment module of moodle.
      *
      * @param int $userid
-     * @param int $paymentmethod
+     * @param int $paymenttype
      * @param array $datafromhistory
      * @return void
      */
@@ -622,8 +622,10 @@ class shopping_cart {
      * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
      * @param integer $itemid
      * @param integer $userid
-     * @param string $component
+     * @param string $componentname
      * @param integer|null $historyid
+     * @param float $customcredit
+     * @param float $cancelationfee
      * @return array
      */
     public static function cancel_purchase(int $itemid, int $userid, string $componentname,

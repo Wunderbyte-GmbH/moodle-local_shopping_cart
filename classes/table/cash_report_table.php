@@ -27,6 +27,7 @@ use table_sql;
 
 /**
  * Report table to show the cash report.
+ * @package local_shopping_cart
  */
 class cash_report_table extends table_sql {
 

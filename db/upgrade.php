@@ -29,8 +29,7 @@
  * @param int $oldversion
  * @return bool
  */
-function xmldb_local_shopping_cart_upgrade($oldversion)
-{
+function xmldb_local_shopping_cart_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();

@@ -34,6 +34,7 @@ use stdClass;
 /**
  * Dynamic optiondate form.
  * @copyright Wunderbyte GmbH <info@wunderbyte.at>
+ * @package local_shopping_cart
  * @author Bernhard Fischer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -173,9 +174,9 @@ class modal_cancel_all_addcredit extends dynamic_form {
 
     /**
      * Validate dates.
-     *
-     * {@inheritdoc}
-     * @see moodleform::validation()
+     * @param stdClass $data
+     * @param array $files
+     * @return void
      */
     public function validation($data, $files) {
 
@@ -185,8 +186,9 @@ class modal_cancel_all_addcredit extends dynamic_form {
     }
 
     /**
-     * {@inheritDoc}
-     * @see moodleform::get_data()
+     * Get data from form function
+     *
+     * @return stdClass
      */
     public function get_data() {
         $data = parent::get_data();

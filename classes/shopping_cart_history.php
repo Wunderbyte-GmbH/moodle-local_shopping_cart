@@ -28,8 +28,6 @@ use Exception;
 use moodle_exception;
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class shopping_cart_history.
  * @author      Thomas Winkler
@@ -217,7 +215,8 @@ class shopping_cart_history {
      * @param string $identifier
      * @param string $payment
      * @param int $paymentstatus
-     * @return integer
+     * @param integer|null $canceluntil
+     * @return void
      */
     public static function create_entry_in_history(
             int $userid,
@@ -260,9 +259,11 @@ class shopping_cart_history {
     /**
      * This function updates the entry in shppping cart history and sets the status to "canceled".
      *
-     * @param int $itemid
-     * @param int $userid
-     * @param int $identifier
+     * @param integer $itemid
+     * @param integer $userid
+     * @param string $componentname
+     * @param integer|null $entryid
+     * @param float $credit
      * @return array
      */
     public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null,
@@ -381,7 +382,7 @@ class shopping_cart_history {
     /**
      * Sets the payment to success if the payment went successfully through.
      *
-     * @param stdClass $records
+     * @param array $records
      * @return boolean
      */
     public static function set_success_in_db(array $records):bool {
@@ -484,7 +485,6 @@ class shopping_cart_history {
      * Get data from schistory cache.
      * If the flag is set, we also trigger writing to tb and set the approbiate cache flag to do it only once.
      * @param string $identifier
-     * @param bool $writetodb
      * @return mixed|false
      */
     public function fetch_data_from_schistory_cache(string $identifier) {

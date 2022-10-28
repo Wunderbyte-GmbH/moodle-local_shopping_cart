@@ -40,6 +40,14 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 
+/**
+ * External Service for shopping cart.
+ *
+ * @package   local_shopping_cart
+ * @copyright 2022 Wunderbyte GmbH {@link http://www.wunderbyte.at}
+ * @author    Georg Maißer
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class get_history_items extends external_api {
 
     /**
@@ -84,7 +92,7 @@ class get_history_items extends external_api {
      * @return external_single_structure
      */
 
-    // Original:
+    // Original.
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(
             new external_single_structure(

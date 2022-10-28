@@ -111,10 +111,10 @@ class cartitem {
      * @param string $currency
      * @param string $componentname
      * @param string $description
-     * @param string $imageurl
-     * @param int canceluntil
-     * @param int serviceperiodstart
-     * @param int $serviceperiodend
+     * @param string|null $imageurl
+     * @param int|null canceluntil
+     * @param int|null serviceperiodstart
+     * @param int|null $serviceperiodend
      */
     public function __construct(int $itemid,
                                 string $itemname,

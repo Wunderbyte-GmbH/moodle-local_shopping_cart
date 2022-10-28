@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Shortcodes for local_musi
+ * Shortcodes for local_shopping_cart
  *
- * @package local_musi
+ * @package local_shopping_cart
  * @subpackage db
  * @since Moodle 3.11
  * @copyright 2022 Georg Maißer

@@ -32,6 +32,7 @@ use stdClass;
 /**
  * Dynamic optiondate form.
  * @copyright Wunderbyte GmbH <info@wunderbyte.at>
+ * @package   local_shopping_cart
  * @author Bernhard Fischer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -185,10 +186,11 @@ class modal_add_discount_to_item extends dynamic_form {
     }
 
     /**
-     * Validate dates.
+     * Validate form.
      *
-     * {@inheritdoc}
-     * @see moodleform::validation()
+     * @param stdClass $data
+     * @param array $files
+     * @return void
      */
     public function validation($data, $files) {
 

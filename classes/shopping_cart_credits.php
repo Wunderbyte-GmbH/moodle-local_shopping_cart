@@ -53,7 +53,9 @@ class shopping_cart_credits {
      * This adds and changes keys of data object to account for credits and its consumption.
      * This also takes into account discounts.
      *
+     * @param array $data
      * @param integer $userid
+     * @param int $usecredit
      * @return void
      */
     public static function prepare_checkout(array &$data, int $userid, $usecredit = null) {
@@ -162,8 +164,9 @@ class shopping_cart_credits {
      * This is somewhat expensive, as we always run checks on the consistency of the ledger.
      * Returns the total balance of the user.
      *
-     * @param int $userid
-     * @param int $credit
+     * @param integer $userid
+     * @param float $credit
+     * @param string $currency
      * @return array
      */
     public static function add_credit(int $userid, float $credit, string $currency): array {
@@ -214,7 +217,8 @@ class shopping_cart_credits {
     /**
      * This function only uses the data already calculated in prepare checkout...
      * ...and stores the result in DB.
-     * @param int $userid
+     * @param integer $userid
+     * @param array $checkoutdata
      * @return void
      */
     public static function use_credit(int $userid, $checkoutdata) {
@@ -287,7 +291,7 @@ class shopping_cart_credits {
     /**
      * This function just get's the current balance and sets it to 0.
      *
-     * @param int $userid
+     * @param integer $userid
      * @return void
      */
     public static function credit_paid_back($userid) {
@@ -325,7 +329,7 @@ class shopping_cart_credits {
     /**
      * This function calculates the price to be paid from the shopping cart, while taking account credits and usecredit status.
      *
-     * @param [type] $shoppingcart
+     * @param stdClass $shoppingcart
      * @return float
      */
     public static function get_price_from_shistorycart($shoppingcart): float {

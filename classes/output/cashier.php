@@ -48,8 +48,9 @@ class cashier implements renderable, templatable {
     private $data = [];
 
     /**
-     * Constructor.
+     * Constructor
      * @param integer|null $userid
+     * @param boolean $usecredit
      */
     public function __construct(int $userid = null, bool $usecredit = false) {
 
