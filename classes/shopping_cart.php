@@ -199,6 +199,7 @@ class shopping_cart {
         if ($cachedrawdata) {
 
             unset($cachedrawdata['items']);
+            unset($cachedrawdata['expirationdate']);
 
             $cache->set($cachekey, $cachedrawdata);
         }
@@ -300,38 +301,46 @@ class shopping_cart {
             $userid = $USER->id;
         }
 
+        $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
+
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
         $cachedrawdata = $cache->get($cachekey);
+
+        // If we have cachedrawdata, we need to check the expiration date and
         if ($cachedrawdata) {
-            if (isset($cachedrawdata['expirationdate'])
+            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
                 && $cachedrawdata['expirationdate'] < time()) {
                 self::delete_all_items_from_cart($userid);
-                unset($cachedrawdata['expirationdate']);
                 $cachedrawdata = $cache->get($cachekey);
             }
         }
-        $data = [];
 
+        // We create a new item to pass on in any case.
+        $data = [];
         $data['count'] = 0;
-        $data['expirationdate'] = time();
+
         $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
         $data['items'] = [];
-        $data['price'] = 0;
+        $data['price'] = 0.00;
+        $data['initialtotal'] = 0.00;
+        $data['deductible'] = 0.00;
+        $data['checkboxid'] = bin2hex(random_bytes(3));
+        $data['usecredit'] = $usecredit;
+        $data['expirationdate'] = time();
 
-        if ($userid && (!isset($cachedrawdata['credit']) || !isset($cachedrawdata['currency']))) {
+        if (!$cachedrawdata) {
             list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
-            $cachedrawdata['credit'] = $data['credit'];
-            $cachedrawdata['currency'] = $data['currency'];
+            $data['items'] = [];
+            $data['remainingcredit'] = $data['credit'];
 
-        } else {
-            $data['credit'] = $cachedrawdata['credit'] ?? 0.0;
-            $data['currency'] = $cachedrawdata['currency'] ?? "";
-        }
-
-        if ($cachedrawdata && isset($cachedrawdata['items'])) {
+        } else if ($cachedrawdata && isset($cachedrawdata['items'])) {
             $count = count($cachedrawdata['items']);
             $data['count'] = $count;
+
+            $data['currency'] = $cachedrawdata['currency'];
+            $data['credit'] = $cachedrawdata['credit'];
+            $data['remainingcredit'] = $data['credit'];
 
             if ($count > 0) {
                 $data['items'] = array_values($cachedrawdata['items']);
@@ -339,14 +348,23 @@ class shopping_cart {
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
             }
-            // There might be cases where we don't have the currency yet. We take it from the last item in cart.
-            if (!$data['currency']) {
-                $data['currency'] = end($data['items'])['currency'] ?? "";
-            }
         }
 
-        // If there is credit for this user, we give her options.
-        shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
+        // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
+        if (empty($data['currency']) && (count($data['items']) > 0)) {
+            $data['currency'] = end($data['items'])['currency'];
+        } else {
+            $data['currency'] = '';
+        }
+        $data['credit'] = $data['credit'] ?? 0.00;
+
+        if ($cachedrawdata && count($data['items']) > 0) {
+            // If there is credit for this user, we give her options.
+            shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
+        } else if (count($data['items']) == 0) {
+            // If not, we save the cache right away.
+            $cache->set($cachekey, $data);
+        }
 
         return $data;
     }

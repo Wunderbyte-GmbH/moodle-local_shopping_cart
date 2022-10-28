@@ -85,8 +85,10 @@ class get_price extends external_api {
 
         $usecredit = $params['usecredit'] == 1 ? true : false;
 
+        // Add the state to the cache.
         shopping_cart::save_used_credit_state($params['userid'], $usecredit);
 
+        // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
         $data = shopping_cart::local_shopping_cart_get_cache_data($params['userid'], $usecredit);
 
         // For the webservice, we must make sure that the keys exist.

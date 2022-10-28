@@ -60,17 +60,7 @@ class shopping_cart_credits {
      */
     public static function prepare_checkout(array &$data, int $userid, $usecredit = null) {
 
-        // If usecredit is null, we know we got the data from history.
-        // Therefore, we need to get the information from cache, if we want to use the credit.
-        if ($usecredit === null) {
-            $tempusecredit = shopping_cart::get_saved_usecredit_state($userid);
-            if ($tempusecredit === null) {
-                // If nothing is saved, we fall back to true.
-                $usecredit = true;
-            } else {
-                $usecredit = $tempusecredit;
-            }
-        }
+        $usecredit = self::use_credit_fallback($usecredit, $userid);
 
         list($balance, $currency) = self::get_balance($userid);
 
@@ -356,5 +346,27 @@ class shopping_cart_credits {
         }
 
         return round($data['price'], 2);
+    }
+
+    /**
+     * Fallback in case of undefined $usecredit to fetch from cache.
+     *
+     * @param bool|null $usecredit
+     * @param int $userid
+     * @return int
+     */
+    public static function use_credit_fallback($usecredit, int $userid):int {
+        // If usecredit is null, we know we got the data from history.
+        // Therefore, we need to get the information from cache, if we want to use the credit.
+        if ($usecredit === null) {
+            $tempusecredit = shopping_cart::get_saved_usecredit_state($userid);
+            if ($tempusecredit === null) {
+                // If nothing is saved, we fall back to true.
+                $usecredit = true;
+            } else {
+                $usecredit = $tempusecredit;
+            }
+        }
+        return $usecredit;
     }
 }
