@@ -1,9 +1,9 @@
 @local @local_shopping_cart @javascript
 
-Feature: Test purchase process in shopping cart.
-  In order to buy an item
-  As a student
-  I need to put an item in my cart and proceed to checkout
+Feature: Cashier actions in shopping cart.
+  In order buy for students
+  As a cashier
+  I buy for a student, add discount and so on.
 
   Background:
     Given the following "users" exist:
@@ -92,7 +92,7 @@ Feature: Test purchase process in shopping cart.
     And I set the following fields to these values:
             | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
-     
+
     And I visit "/local/shopping_cart/cashier.php"
     And I set the following fields to these values:
             | user | user |
@@ -119,7 +119,7 @@ Feature: Test purchase process in shopping cart.
     And I set the following fields to these values:
             | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
-  
+
     And I visit "/local/shopping_cart/cashier.php"
     And I set the following fields to these values:
             | user | user |
