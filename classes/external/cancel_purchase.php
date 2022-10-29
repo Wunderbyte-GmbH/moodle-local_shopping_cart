@@ -67,10 +67,11 @@ class cancel_purchase extends external_api {
     /**
      * Webservice for shopping_cart class to add a new item to the cart.
      *
-     * @param string $component
-     * @param int $itemid
-     * @param int $userid
-     *
+     * @param string $componentname
+     * @param integer $itemid
+     * @param integer $userid
+     * @param integer $historyid
+     * @param float $credit
      * @return array
      */
     public static function execute(string $componentname, int $itemid, int $userid, int $historyid, float $credit): array {

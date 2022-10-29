@@ -307,7 +307,7 @@ class shopping_cart {
         $cachekey = $userid . '_shopping_cart';
         $cachedrawdata = $cache->get($cachekey);
 
-        // If we have cachedrawdata, we need to check the expiration date and
+        // If we have cachedrawdata, we need to check the expiration date.
         if ($cachedrawdata) {
             if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
                 && $cachedrawdata['expirationdate'] < time()) {
@@ -476,7 +476,7 @@ class shopping_cart {
      * @param int $userid
      * @param int $paymenttype
      * @param array $datafromhistory
-     * @return void
+     * @return array
      */
     public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null) {
         global $USER;

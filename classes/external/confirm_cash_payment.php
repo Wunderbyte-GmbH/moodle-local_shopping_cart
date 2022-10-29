@@ -62,10 +62,8 @@ class confirm_cash_payment extends external_api {
 
     /**
      * Excecute this websrvice.
-     *
+     * @param integer $userid
      * @param string $paymenttype
-     * @param int $userid
-     *
      * @return array
      */
     public static function execute(int $userid, string $paymenttype) {

@@ -62,7 +62,7 @@ interface service_provider {
      * Callback function that is executed when the item is successfully bought.
      *
      * @param int $itemid An identifier that is known to the plugin
-     * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
+     * @param string $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to
      *
      * @return bool Whether successful or not

@@ -105,16 +105,16 @@ class cartitem {
     /**
      * Cunstructor.
      *
-     * @param int $itemid
+     * @param integer $itemid
      * @param string $itemname
      * @param float $price
      * @param string $currency
      * @param string $componentname
      * @param string $description
      * @param string|null $imageurl
-     * @param int|null canceluntil
-     * @param int|null serviceperiodstart
-     * @param int|null $serviceperiodend
+     * @param integer|null $canceluntil
+     * @param integer|null $serviceperiodstart
+     * @param integer|null $serviceperiodend
      */
     public function __construct(int $itemid,
                                 string $itemname,

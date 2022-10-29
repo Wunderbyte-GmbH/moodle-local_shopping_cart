@@ -61,11 +61,7 @@ class credit_paid_back extends external_api {
 
     /**
      * Excecute this websrvice.
-     *
-     * @param string $component
-     * @param int $itemid
-     * @param int $userid
-     *
+     * @param integer $userid
      * @return array
      */
     public static function execute(int $userid) {

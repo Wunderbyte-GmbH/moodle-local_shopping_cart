@@ -63,6 +63,7 @@ class get_history_items extends external_api {
 
     /**
      * Excecute this webservice.
+     * @param int $userid
      * @return array
      */
     public static function execute($userid) {
