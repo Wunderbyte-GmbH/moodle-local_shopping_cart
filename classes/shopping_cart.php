@@ -334,8 +334,8 @@ class shopping_cart {
             $data['items'] = [];
             $data['remainingcredit'] = $data['credit'];
 
-        } else if ($cachedrawdata && isset($cachedrawdata['items'])) {
-            $count = count($cachedrawdata['items']);
+        } else if ($cachedrawdata) {
+            $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
             $data['count'] = $count;
 
             $data['currency'] = $cachedrawdata['currency'];
@@ -353,7 +353,7 @@ class shopping_cart {
         // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
         if (empty($data['currency']) && (count($data['items']) > 0)) {
             $data['currency'] = end($data['items'])['currency'];
-        } else {
+        } else if (empty($data['currency'])) {
             $data['currency'] = '';
         }
         $data['credit'] = $data['credit'] ?? 0.00;
