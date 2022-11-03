@@ -64,9 +64,8 @@ class get_price extends external_api {
     /**
      * Webservice for shopping_cart class to add a new item to the cart.
      *
-     * @param string $component
-     * @param int $itemid
      * @param int $userid
+     * @param int $usecredit
      *
      * @return array
      */

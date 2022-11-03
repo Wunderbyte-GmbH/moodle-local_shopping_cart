@@ -19,8 +19,7 @@ namespace local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\entities\cartitem;
 
 /**
- * Shopping_cart subsystem callback implementation for local_shopping_cart.
- * This is only for testing, does not have any use for production.
+ * Shopping_cart subsystem callback implementation for local_shopping_cart, for testing, does not have any use for production.
  *
  * @package    local_shopping_cart
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
