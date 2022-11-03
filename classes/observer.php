@@ -31,15 +31,13 @@ class local_shopping_cart_observer {
 
     /**
      * Triggered via payment_error event from any payment provider
+     * If we receive a payment error, check for the order id in our shopping cart history.
+     * And set it to error, if it was pending.
      *
-     * @param $event
+     * @param \core\event\base $event
+     * @return string
      */
-    public static function payment_error($event): string {
-
-        // If we receive a payment error...
-        // We check for the order id in our shopping cart history
-        // And set it to error, if it was pending.
-
+    public static function payment_error(\core\event\base $event): string {
         $data = $event->get_data();
 
         // First check, to make it fast.

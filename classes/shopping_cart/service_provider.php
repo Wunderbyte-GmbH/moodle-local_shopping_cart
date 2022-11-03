@@ -20,6 +20,7 @@ use local_shopping_cart\local\entities\cartitem;
 
 /**
  * Shopping_cart subsystem callback implementation for local_shopping_cart.
+ * This is only for testing, does not have any use for production.
  *
  * @package    local_shopping_cart
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
@@ -33,12 +34,11 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      *
      * @param int $optionid
      * @param int $userid
-     * @return \shopping_cart\cartitem
+     * @return cartitem
      */
     public static function load_cartitem(int $optionid, int $userid = 0): cartitem {
 
         $canceluntil = strtotime('+14 days', time());
-
         $serviceperiodstart = time();
         $serviceperiodend = strtotime('+30 days', time());
 
@@ -57,12 +57,13 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
     /**
      * Callback function that unloads a cart item and thus frees
+     * Used only in test.php for test purches.
+     *
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      * @return bool
      */
     public static function unload_cartitem(int $itemid, int $userid = 0): bool {
-
         return true;
     }
 
@@ -73,11 +74,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param int $userid
      * @return bool
      */
-    public static function successful_checkout(int $itemid, string $paymentid, int $userid): bool {
-        global $DB;
-
+    public static function successful_checkout(int $itemid, int $paymentid, int $userid): bool {
         // TODO: Set booking_answer to 1.
-
         return true;
     }
 
@@ -89,7 +87,6 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return bool
      */
     public static function cancel_purchase(int $itemid, int $userid = 0): bool {
-
         return true;
     }
 }

@@ -46,7 +46,7 @@ define('PAYMENT_METHOD_CREDITS_PAID_BACK', 6); // Credits removed and paid back 
 /**
  * Adds module specific settings to the settings block
  *
- * @param navigation_node $modnode The node to add module settings to
+ * @param navigation_node $navigation The node to add module settings to
  * @return void
  */
 function local_shopping_cart_extend_navigation(navigation_node $navigation) {
@@ -101,24 +101,19 @@ function local_shopping_cart_get_fontawesome_icon_map() {
     ];
 }
 
-
 /**
  *  Callback checking permissions and preparing the file for serving plugin files, see File API.
  *
- * @param $course
- * @param $cm
- * @param $context
- * @param $filearea
- * @param $args
- * @param $forcedownload
- * @param array $options
- * @return bool
- * @throws coding_exception
- * @throws moodle_exception
- * @throws require_login_exception
+ * @param stdClass $course the course object
+ * @param stdClass $cm the course module object
+ * @param stdClass $context the context
+ * @param string $filearea the name of the file area
+ * @param array $args extra arguments (itemid, path)
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
 function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-
     // Check the contextlevel is as expected - if your plugin is a block.
     // We need context course if wee like to acces template files.
     if (!in_array($context->contextlevel, array(CONTEXT_SYSTEM))) {
@@ -129,17 +124,10 @@ function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args
     if ($filearea !== 'local_shopping_cart_receiptimage') {
         return false;
     }
-
     // Make sure the user is logged in and has access to the module.
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* require_login($course, true, $cm); */
 
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
     $itemid = array_shift($args); // The first item in the $args array.
-                                  // Use the itemid to retrieve any relevant data records and
-                                  // perform any security checks to see if the
-                                  // user really does have access to the file in question.
-                                  // Extract the filename / filepath from the $args array.
     $filename = array_pop($args); // The last item in the $args array.
     if (!$args) {
         // Var $args is empty => the path is '/'.

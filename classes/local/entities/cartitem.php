@@ -112,9 +112,9 @@ class cartitem {
      * @param string $componentname moodle compoment that sells the item
      * @param string $description item description
      * @param string $imageurl url to the item image
-     * @param ?int $canceluntil cancellation possible until
-     * @param ?int $serviceperiodstart start of service period
-     * @param ?int $serviceperiodend end of service period
+     * @param int|null $canceluntil cancellation possible until
+     * @param int|null $serviceperiodstart start of service period
+     * @param int|null $serviceperiodend end of service period
      */
     public function __construct(int $itemid,
         string $itemname,
