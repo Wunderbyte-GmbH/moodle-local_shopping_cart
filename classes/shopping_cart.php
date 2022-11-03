@@ -142,7 +142,7 @@ class shopping_cart {
     /**
      * Get expiration date time plus delta from config.
      *
-     * @return integer
+     * @return int
      */
     public static function get_expirationdate(): int {
         return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
@@ -155,7 +155,7 @@ class shopping_cart {
      * @param int $itemid
      * @param int $userid
      * @param bool $unload
-     * @return boolean
+     * @return bool
      */
     public static function delete_item_from_cart(string $component, int $itemid, int $userid, bool $unload = true): bool {
 
@@ -257,8 +257,8 @@ class shopping_cart {
      * Confirms Payment and successful checkout for item.
      *
      * @param string $component
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $itemid
+     * @param int $userid
      * @return local\entities\cartitem
      */
     public static function successful_checkout(string $component, int $itemid, int $userid): bool {
@@ -395,13 +395,10 @@ class shopping_cart {
      * @return void
      */
     public static function save_used_credit_state(int $userid, bool $usecredit) {
-
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
         $cachedrawdata = $cache->get($cachekey);
-
         $cachedrawdata['usecredit'] = $usecredit;
-
         $cache->set($cachekey, $cachedrawdata);
     }
 
@@ -638,10 +635,10 @@ class shopping_cart {
 
     /**
      * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $itemid
+     * @param int $userid
      * @param string $componentname
-     * @param integer|null $historyid
+     * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
      * @return array
@@ -706,7 +703,7 @@ class shopping_cart {
     /**
      * Sets credit to 0, because we get information about cash pay-back.
      *
-     * @param integer $userid
+     * @param int $userid
      * @return array
      */
     public static function credit_paid_back(int $userid):array {
@@ -736,10 +733,10 @@ class shopping_cart {
      * Check if we are allowed to cancel.
      * Can be when it's still within the defined cancelation periode, or the user has the right as cashier.
      *
-     * @param integer $historyid
-     * @param integer $itemid
-     * @param integer $userid
-     * @return boolean
+     * @param int $historyid
+     * @param int $itemid
+     * @param int $userid
+     * @return bool
      */
     public static function allowed_to_cancel(int $historyid, int $itemid, int $userid):bool {
 
@@ -771,8 +768,8 @@ class shopping_cart {
      * - For any fail, we return success 0.
      *
      * @param string $component
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $itemid
+     * @param int $userid
      * @param float $percent
      * @param float $absolute
      * @return array
@@ -805,7 +802,7 @@ class shopping_cart {
         // The undiscounted price of the item is price + discount.
         $initialdiscount = $item['discount'] ?? 0;
 
-        // If setting to round discounts is turned on, we round to full integer.
+        // If setting to round discounts is turned on, we round to full int.
         $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
         $initialdiscount = round($initialdiscount, $discountprecision);
 
@@ -819,7 +816,7 @@ class shopping_cart {
             }
             $cachedrawdata['items'][$cacheitemkey]['discount'] = $initialprice / 100 * $percent;
 
-            // If setting to round discounts is turned on, we round to full integer.
+            // If setting to round discounts is turned on, we round to full int.
             $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
                 $discountprecision);
 
@@ -831,7 +828,7 @@ class shopping_cart {
                 throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
             }
             $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolute;
-            // If setting to round discounts is turned on, we round to full integer.
+            // If setting to round discounts is turned on, we round to full int.
             $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
                 $discountprecision);
             $cachedrawdata['items'][$cacheitemkey]['price'] =

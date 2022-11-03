@@ -68,9 +68,9 @@ class cancel_purchase extends external_api {
      * Webservice for shopping_cart class to add a new item to the cart.
      *
      * @param string $componentname
-     * @param integer $itemid
-     * @param integer $userid
-     * @param integer $historyid
+     * @param int $itemid
+     * @param int $userid
+     * @param int $historyid
      * @param float $credit
      * @return array
      */

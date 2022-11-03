@@ -37,7 +37,7 @@ class renderer extends plugin_renderer_base {
      * Render add to cart button
      *
      * @param templatable $button
-     * @return string|boolean
+     * @return string|bool
      */
     public function render_button(templatable $button) {
         $data = $button->export_for_template($this);
@@ -48,7 +48,7 @@ class renderer extends plugin_renderer_base {
      * Render history card.
      *
      * @param templatable $data
-     * @return string|boolean
+     * @return string|bool
      */
     public function render_history_card(templatable $data) {
         $data = $data->export_for_template($this);

@@ -146,14 +146,12 @@ class shopping_cart_history {
     /**
      * Returns a list of users who are booked for this option.
      *
-     * @param integer $optionid
+     * @param int $optionid
      * @param string $componentname
      * @return array
      */
     public static function get_user_list_for_option(int $optionid, string $componentname) {
-
         global $DB;
-
         $sql = "SELECT sch.id, u.id as userid, u.firstname, u.lastname, u.email, sch.itemid, sch.price, sch.currency
                 FROM {user} u
                 JOIN {local_shopping_cart_history} sch
@@ -205,8 +203,8 @@ class shopping_cart_history {
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
      *
-     * @param integer $userid
-     * @param integer $itemid
+     * @param int $userid
+     * @param int $itemid
      * @param string $itemname
      * @param float $price
      * @param float $discount
@@ -215,7 +213,7 @@ class shopping_cart_history {
      * @param string $identifier
      * @param string $payment
      * @param int $paymentstatus
-     * @param integer|null $canceluntil
+     * @param int|null $canceluntil
      * @return void
      */
     public static function create_entry_in_history(
@@ -259,10 +257,10 @@ class shopping_cart_history {
     /**
      * This function updates the entry in shppping cart history and sets the status to "canceled".
      *
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $itemid
+     * @param int $userid
      * @param string $componentname
-     * @param integer|null $entryid
+     * @param int|null $entryid
      * @param float $credit
      * @return array
      */
@@ -324,8 +322,8 @@ class shopping_cart_history {
      * Return data from DB via identifier.
      * This function won't return data if the payment is already aborted.
      *
-     * @param integer $identifier
-     * @param integer $userid
+     * @param int $identifier
+     * @param int $userid
      * @return array
      */
     public static function return_data_via_identifier(int $identifier, int $userid):array {
@@ -354,9 +352,9 @@ class shopping_cart_history {
      * Sets the cart item to payment => 'aborted' if it was still pending.
      * Won't change other status.
      *
-     * @param integer $identifier
-     * @param integer $userid
-     * @return boolean
+     * @param int $identifier
+     * @param int $userid
+     * @return bool
      */
     public static function error_occured_for_identifier(int $identifier, int $userid):bool {
 
@@ -383,7 +381,7 @@ class shopping_cart_history {
      * Sets the payment to success if the payment went successfully through.
      *
      * @param array $records
-     * @return boolean
+     * @return bool
      */
     public static function set_success_in_db(array $records):bool {
 
@@ -548,9 +546,9 @@ class shopping_cart_history {
     /**
      * Return an item for shopping card history table.
      *
-     * @param integer $historyid
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $historyid
+     * @param int $itemid
+     * @param int $userid
      * @return bool|stdClass
      */
     public static function return_item_from_history(int $historyid, int $itemid, int $userid) {

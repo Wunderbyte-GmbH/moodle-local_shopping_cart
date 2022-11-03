@@ -77,8 +77,8 @@ class shoppingcart_history_list implements renderable, templatable {
 
     /**
      * Constructor.
-     * @param integer $userid
-     * @param integer $identifier
+     * @param int $userid
+     * @param int $identifier
      */
     public function __construct(int $userid, int $identifier = 0) {
 

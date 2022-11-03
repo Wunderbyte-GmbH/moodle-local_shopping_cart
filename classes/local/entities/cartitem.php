@@ -84,48 +84,48 @@ class cartitem {
     /**
      * A timestamp until when canceling is possible.
      *
-     * @var null|int
+     * @var ?int
      */
     private $canceluntil;
 
     /**
-     * Service period start
+     * Service period start timestamp
      *
-     * @var int
+     * @var ?int
      */
     private $serviceperiodstart;
 
     /**
-     * Stervice period end
+     * Service period end timestamp
      *
-     * @var int
+     * @var ?int
      */
     private $serviceperiodend;
 
     /**
-     * Cunstructor.
+     * Cartitem Constructor.
      *
-     * @param integer $itemid
-     * @param string $itemname
-     * @param float $price
-     * @param string $currency
-     * @param string $componentname
-     * @param string $description
-     * @param string|null $imageurl
-     * @param integer|null $canceluntil
-     * @param integer|null $serviceperiodstart
-     * @param integer|null $serviceperiodend
+     * @param int $itemid id of cartitem
+     * @param string $itemname name of item
+     * @param float $price item price
+     * @param string $currency currency for purchase
+     * @param string $componentname moodle compoment that sells the item
+     * @param string $description item description
+     * @param string $imageurl url to the item image
+     * @param ?int $canceluntil cancellation possible until
+     * @param ?int $serviceperiodstart start of service period
+     * @param ?int $serviceperiodend end of service period
      */
     public function __construct(int $itemid,
-                                string $itemname,
-                                float $price,
-                                string $currency,
-                                string $componentname,
-                                string $description = '',
-                                string $imageurl = null,
-                                int $canceluntil = null,
-                                int $serviceperiodstart = null,
-                                int $serviceperiodend = null) {
+        string $itemname,
+        float $price,
+        string $currency,
+        string $componentname,
+        string $description = '',
+        string $imageurl = '',
+        ?int $canceluntil = null,
+        ?int $serviceperiodstart = null,
+        ?int $serviceperiodend = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -143,7 +143,7 @@ class cartitem {
      *
      * @return array
      */
-    public function getitem():array {
+    public function getitem(): array {
         $item = array();
         $item['itemid'] = $this->itemid;
         $item['itemname'] = $this->itemname;

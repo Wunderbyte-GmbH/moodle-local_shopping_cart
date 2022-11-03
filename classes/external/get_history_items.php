@@ -66,7 +66,7 @@ class get_history_items extends external_api {
      * @param int $userid
      * @return array
      */
-    public static function execute($userid) {
+    public static function execute($userid): array {
         global $USER;
 
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -83,17 +83,14 @@ class get_history_items extends external_api {
             $userid = (int)$USER->id;
         }
 
-        $historyitems = shopping_cart_history::get_history_list_for_user($userid);
-        return $historyitems;
+        return shopping_cart_history::get_history_list_for_user($userid);
     }
 
     /**
-     * Returns description of method result value.
+     * Definition of return value
      *
-     * @return external_single_structure
+     * @return external_multiple_structure
      */
-
-    // Original.
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(
             new external_single_structure(

@@ -54,7 +54,7 @@ class shopping_cart_credits {
      * This also takes into account discounts.
      *
      * @param array $data
-     * @param integer $userid
+     * @param int $userid
      * @param int $usecredit
      * @return void
      */
@@ -70,7 +70,7 @@ class shopping_cart_credits {
         // Now we account for discounts.
         if (isset($data['discount'])) {
 
-            // If setting to round discounts is turned on, we round to full integer.
+            // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
             $data['discount'] = round($data['discount'], $discountprecision);
 
@@ -118,7 +118,7 @@ class shopping_cart_credits {
     /**
      * Return sum of credits and sum of balance from DB for one single user.
      *
-     * @param integer $userid
+     * @param int $userid
      * @return stdClass
      */
     public static function extract_from_transactions(int $userid): stdClass {
@@ -154,7 +154,7 @@ class shopping_cart_credits {
      * This is somewhat expensive, as we always run checks on the consistency of the ledger.
      * Returns the total balance of the user.
      *
-     * @param integer $userid
+     * @param int $userid
      * @param float $credit
      * @param string $currency
      * @return array
@@ -207,7 +207,7 @@ class shopping_cart_credits {
     /**
      * This function only uses the data already calculated in prepare checkout...
      * ...and stores the result in DB.
-     * @param integer $userid
+     * @param int $userid
      * @param array $checkoutdata
      * @return void
      */
@@ -243,7 +243,7 @@ class shopping_cart_credits {
     /**
      * Check balance is a way to make sure we don't have an error in our balance calculation.
      * Returns the current balance and currency, if everything works fine, else throws an error.
-     * @param integer $userid
+     * @param int $userid
      * @return array
      */
     private static function check_balance(int $userid):array {
@@ -281,7 +281,7 @@ class shopping_cart_credits {
     /**
      * This function just get's the current balance and sets it to 0.
      *
-     * @param integer $userid
+     * @param int $userid
      * @return void
      */
     public static function credit_paid_back($userid) {

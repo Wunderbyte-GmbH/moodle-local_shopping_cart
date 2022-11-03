@@ -61,25 +61,22 @@ class confirm_cash_payment extends external_api {
     }
 
     /**
-     * Excecute this websrvice.
-     * @param integer $userid
+     * Excecute this webservice.
+     * @param int $userid
      * @param string $paymenttype
      * @return array
      */
-    public static function execute(int $userid, string $paymenttype) {
-
+    public static function execute(int $userid, string $paymenttype): array {
+        require_login();
         $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
             'paymenttype' => $paymenttype
         ]);
 
-        require_login();
-
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
-
         return shopping_cart::confirm_payment($params['userid'], $params['paymenttype']);
     }
 
