@@ -185,6 +185,81 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022101000, 'local', 'shopping_cart');
     }
+    if ($oldversion < 2022110300) {
+
+        // Changing type of field itemid on table local_shopping_cart_history to int.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'userid');
+
+        // Launch change of type for field itemid.
+        $dbman->change_field_type($table, $field);
+
+        // Define index idxuse (not unique) to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $index = new xmldb_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch add index idxuse.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index usepay (not unique) to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $index = new xmldb_index('usepay', XMLDB_INDEX_NOTUNIQUE, ['userid', 'paymentstatus']);
+
+        // Conditionally launch add index usepay.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index identifier (not unique) to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $index = new xmldb_index('identifier', XMLDB_INDEX_NOTUNIQUE, ['identifier']);
+
+        // Conditionally launch add index identifier.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index idxuse (not unique) to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_credits');
+        $index = new xmldb_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch add index idxuse.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index userid (not unique) to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $index = new xmldb_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch add index userid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index itemid (not unique) to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $index = new xmldb_index('itemid', XMLDB_INDEX_NOTUNIQUE, ['itemid']);
+
+        // Conditionally launch add index userid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index identifier (not unique) to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $index = new xmldb_index('identifier', XMLDB_INDEX_NOTUNIQUE, ['identifier']);
+
+        // Conditionally launch add index userid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022110300, 'local', 'shopping_cart');
+    }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
