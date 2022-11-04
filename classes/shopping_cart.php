@@ -294,8 +294,7 @@ class shopping_cart {
      * @return array
      */
     public static function local_shopping_cart_get_cache_data(int $userid, bool $usecredit = null): array {
-
-        global $USER;
+        global $USER, $CFG;
 
         if (empty($userid)) {
             $userid = $USER->id;
@@ -328,6 +327,7 @@ class shopping_cart {
         $data['checkboxid'] = bin2hex(random_bytes(3));
         $data['usecredit'] = $usecredit;
         $data['expirationdate'] = time();
+        $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
 
         if (!$cachedrawdata) {
             list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
