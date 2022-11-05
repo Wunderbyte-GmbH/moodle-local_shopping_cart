@@ -174,7 +174,7 @@ class shopping_cart_credits {
 
         $data->userid = $userid;
         $data->credits = $credit;
-        $data->currency = $newcurrency ?? $currency;
+        $data->currency = !empty($newcurrency) ? $newcurrency : $currency;
         $data->balance = $balance + $credit; // Balance hold the new balance after this transaction.
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
