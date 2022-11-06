@@ -64,6 +64,7 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
 }
 
 $data['userid'] = $userid;
+$data['wwwroot'] = $CFG->wwwroot;
 
 $users = get_users_by_capability($context, 'local/shopping_cart:canbuy', 'u.id, u.lastname, u.firstname, u.email');
 $data['users'] = [];
