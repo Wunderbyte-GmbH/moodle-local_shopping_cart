@@ -63,9 +63,7 @@ export const init = (cancelationFee = null) => {
                             confirmCancelAndSetCreditModal(button);
                         } else {
                             // We only add the functionality if we got a cancelation fee.
-                            if (cancelationFee !== null) {
-                                confirmCancelModal(button, cancelationFee);
-                            }
+                            confirmCancelModal(button, cancelationFee);
                         }
                     }
 
@@ -336,6 +334,10 @@ function confirmPaidBack(element) {
  * @param {*} cancelationFee
  */
 function confirmCancelModal(button, cancelationFee) {
+
+    if (cancelationFee === null) {
+        cancelationFee = 0;
+    }
 
     getStrings([
             {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
