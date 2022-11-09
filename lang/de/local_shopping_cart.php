@@ -50,6 +50,16 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier
 $string['showdescription'] = 'Zeige Beschreibung';
 $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
+$string['taxsettings'] = 'Warenkorb Steuern';
+$string['enabletax'] = 'MWSt aktivieren';
+$string['enabletax_desc'] = 'Soll MWSt im Wartenkorb angezeigt und verwendet werden';
+$string['taxcategories'] = 'Steuerkategorien und anwendbare Steuersätze';
+$string['taxcategories_desc'] = 'Steuerkategorien und anwendbare Steuersätze (in %) pro User-Land.<br/>Z.B.: <pre>At A:20 B:10 C:0
+De A:19 B:10 C:0
+other A:0 B:0 C:0 </pre>';
+$string['defaulttaxcategory'] = 'Standard Steuerkategorie';
+$string['defaulttaxcategory_desc'] = 'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';
+
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';

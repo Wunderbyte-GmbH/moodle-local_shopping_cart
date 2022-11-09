@@ -51,6 +51,15 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Clic
 $string['showdescription'] = 'Show description';
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
+$string['taxsettings'] = 'Shopping Cart Taxes';
+$string['enabletax'] = 'Enable Tax processing';
+$string['enabletax_desc'] = 'Should tax information processing be enabled for this module';
+$string['taxcategories'] = 'Tax categories and their tax percentage';
+$string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage<br/>i.e.: <pre>At A:20 B:10 C:0
+De A:19 B:10 C:0
+other A:0 B:0 C:0 </pre>';
+$string['defaulttaxcategory'] = 'Default tax category';
+$string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';

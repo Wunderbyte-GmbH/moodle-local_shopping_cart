@@ -115,9 +115,9 @@ if ($hassiteconfig) {
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-        new admin_setting_configcheckbox($componentname . '/rounddiscounts',
-                get_string('rounddiscounts', 'local_shopping_cart'),
-                get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
+            new admin_setting_configcheckbox($componentname . '/rounddiscounts',
+                    get_string('rounddiscounts', 'local_shopping_cart'),
+                    get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
     $settings->add(
         new admin_setting_confightmleditor(
@@ -146,4 +146,36 @@ if ($hassiteconfig) {
     $opts = array('accepted_types' => array('.png', '.jpg'), 'maxfiles' => 1);
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
+
+
+    // Setting to enable taxes processing
+    $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', get_string('taxsettings', 'local_shopping_cart'));
+    $taxsettings->add(
+            new admin_setting_configcheckbox($componentname . '/enabletax',
+                    get_string('enabletax', 'local_shopping_cart'),
+                    get_string('enabletax_desc', 'local_shopping_cart'), 0));
+
+    $taxProcessingEnabled = get_config('local_shopping_cart', 'enabletax') == 1;
+    if($taxProcessingEnabled) {
+        $taxsettings->add(
+                new admin_setting_configtextarea(
+                        $componentname . '/taxcategories',
+                        get_string('taxcategories', $componentname),
+                        get_string('taxcategories_desc', $componentname),
+                        '',
+                        PARAM_TEXT
+                )
+        );
+
+        $taxsettings->add(
+                new admin_setting_configtext(
+                        $componentname . '/defaulttaxcategory',
+                        get_string('defaulttaxcategory', $componentname),
+                        get_string('defaulttaxcategory_desc', $componentname),
+                        "",
+                        PARAM_TEXT
+                )
+        );
+    }
+    $ADMIN->add($componentname, $taxsettings);
 }
