@@ -597,9 +597,6 @@ function deleteEvent() {
         const id = item.dataset.id;
         const component = item.dataset.component;
         let userid = item.dataset.userid;
-        // eslint-disable-next-line no-console
-        console.log('idarray', idarray);
-
         if (!userid) {
             userid = 0;
         }

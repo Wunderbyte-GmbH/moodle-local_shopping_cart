@@ -56,8 +56,7 @@ export const init = (users, userid = 0) => {
             console.log('click');
         });
     }
-
-    autocomplete(document.getElementById("searchuser"), users);
+    autocomplete(document.getElementById("shopping-cart-searchuser"), users);
 };
 
 export const confirmPayment = (userid, paymenttype) => {
@@ -68,7 +67,7 @@ export const confirmPayment = (userid, paymenttype) => {
             'paymenttype': paymenttype
         },
         done: function(data) {
-            if (data.status == 1) {
+            if (data.status === 1) {
                 // eslint-disable-next-line no-console
                 console.log('payment confirmed', data);
 
@@ -190,10 +189,14 @@ export const addPrintIdentifier = (identifier, userid) => {
                 const namearray = arr[i].split(' ');
                 const firstname = namearray[0].toLowerCase();
                 const lastname = namearray[1].toLowerCase();
+                const email = namearray[2].toLowerCase().replace(/^\(/, '').replace(/\)$/, '');
+                const userid = namearray[3].toLowerCase().replace(/^uid:/, '');
 
                 b.dataset.firstname = firstname;
                 b.dataset.lastname = lastname;
                 b.id = 'li_' + firstname + '_' + lastname;
+                b.dataset.email = email;
+                b.dataset.userid = userid;
 
                 b.innerHTML = arr[i].substr(0, index);
                 b.innerHTML += "<strong>"
