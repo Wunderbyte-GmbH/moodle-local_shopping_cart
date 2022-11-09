@@ -92,8 +92,8 @@
     {{#js}}
         require(['jquery', 'core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function($, controller, Ajax, cart) {
         cart.init({{expirationdate}}, {{maxitems}});
-        var container = $('#nav-shopping_cart-popover-container');
-        var controller = new controller(container);
+        let container = $('#nav-shopping_cart-popover-container');
+        let controller = new controller(container);
         controller.registerListNavigationEventListeners();
         });
     {{/js}}

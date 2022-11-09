@@ -31,10 +31,31 @@
 
     Example context (json):
     {
-        "userid": 3,
-        "urls": {
-            "preferences": "http://www.moodle.com"
-        }
+      "count": 0,
+      "maxitems": "10",
+      "items": [],
+      "price": 0,
+      "initialtotal": 0,
+      "deductible": 0,
+      "checkboxid": "af7a6b",
+      "usecredit": 1,
+      "expirationdate": 1667988637,
+      "checkouturl": "http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+      "currency": "EUR",
+      "credit": 0,
+      "remainingcredit": 0,
+      "buyforuserid": 3588,
+      "userid": 3588,
+      "userlastname": "Faulkner",
+      "userfirstname": "Graiden",
+      "useremail": "Graiden.Faulkner@mailinator.com",
+      "historyitems": [],
+      "canpayback": true,
+      "additonalcashiersection": "<div class=\"text_to_html\">..<\/div>",
+      "wwwroot": "http:\/\/localhost\/400_moodle",
+      "users": "[\"Caldwell Illana (Illana.Caldwell@mailinator.com) uid:512\",\"Ferguson Desirae (Desirae.Ferguson@mailinator.com) uid:768\",\"Lindsey Rose (Rose.Lindsey@example.com) uid:1024\",\"Oneil Octavius (Octavius.Oneil@example.com) uid:1280\",\"Franklin Francis (Francis.Franklin@example.com) uid:1536\"]",
+      "mail": "Graiden.Faulkner@mailinator.com",
+      "name": "Graiden Faulkner"
     }
 
 }}
@@ -46,7 +67,7 @@
             <div class="card-header p-0">
                {{#userid}}
                <div class="text-center bg-primary text-white">
-                  <h2 class="label label-info">{{userfirstname}} {{userlastname}} </h2>
+                  <h2 class="label label-info">{{name}}</h2>
                   <p>{{useremail}}</p>
                </div>
                {{/userid}}

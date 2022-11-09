@@ -79,9 +79,7 @@
 
 {{^finished}}
 <div class="checkoutgrid checkout">
-
    <div class="container-fluid">
-
       <ul class="list-group">
         {{#cartisempty}}
             <div class="alert alert-warning" role="alert">
@@ -89,21 +87,22 @@
             </div>
         {{/cartisempty}}
          {{#items}}
-         <li id="item-{{componentname}}-{{itemid}}" class="list-group-item">
+         <li id="checkitem-{{componentname}}-{{itemid}}" class="list-group-item">
             <div class="row">
                <div class="col-md-2">
                     {{#imageurl}}
-                        <img class="w-100" src="{{.}}">
+                        <img alt="Image of cart item: {{itemname}}" class="w-100" src="{{.}}">
                     {{/imageurl}}
                     {{^imageurl}}
-                        <img class="w-100" src="/local/shopping_cart/pix/cart.png">
+                        <img alt="Image of cart item: {{itemname}}" class="w-100" src="{{wwwroot}}/local/shopping_cart/pix/cart.png">
                     {{/imageurl}}
                </div>
                <div class="col">
-               <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
-               <span class="pull-right ml-2"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}"></i></span>
-               <span class="item-price pull-right"> {{price}} {{currency}}</span><br>
-               <div class="item-description">{{{description}}}</div>
+                   <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
+                   <span class="pull-right ml-2"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-id="checkitem-{{componentname}}-{{itemid}}"></i></span>
+                   <span class="item-price pull-right"> {{price}} {{currency}}</span><br>
+                   <div class="item-description">{{{description}}}</div>
+               </div>
             </div>
          </li>
          {{/items}}
@@ -126,21 +125,20 @@
         <li> {{> local_shopping_cart/payment_region }} </li>
         {{/cartisempty}}
    </ul>
-</div>
-
-<div class="card mt-4">
-    <div class="card-header text-center bg-primary text-white">
-        <i class="fa fa-history fa-2x" aria-hidden="true"></i>
-        <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
-    </div>
-    <div class="card-body">
-        <div class="history">
-            <ul class="list-group cashier-history-items">
-                {{> local_shopping_cart/credit_item }}
-                {{#historyitems}}
-                    {{> local_shopping_cart/history_item }}
-                {{/historyitems}}
-            </ul>
+    <div class="card mt-4">
+        <div class="card-header text-center bg-primary text-white">
+            <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+            <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
+        </div>
+        <div class="card-body">
+            <div class="history">
+                <ul class="list-group cashier-history-items">
+                    {{> local_shopping_cart/credit_item }}
+                    {{#historyitems}}
+                        {{> local_shopping_cart/history_item }}
+                    {{/historyitems}}
+                </ul>
+            </div>
         </div>
     </div>
 </div>

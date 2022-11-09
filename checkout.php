@@ -91,6 +91,7 @@ $schistory->store_in_schistory_cache($scdata);
 $sp = new service_provider();
 
 $data['identifier'] = $scdata['identifier'];
+$data['wwwroot'] = $CFG->wwwroot;
 
 if (empty($data['currency'])) {
     $data['currency'] = $scdata['currency'] ?? '';

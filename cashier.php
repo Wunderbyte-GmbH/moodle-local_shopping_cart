@@ -71,7 +71,7 @@ $data['users'] = [];
 foreach ($users as $user) {
     if ($userid == $user->id) {
         $data["mail"] = $user->email;
-        $data["name"] = $user->firstname . $user->lastname;
+        $data["name"] = $user->firstname . " " .  $user->lastname;
     }
     $data['users'][] = $user->lastname . ' ' . $user->firstname . ' (' . $user->email . ')' . ' uid:' .$user->id;
 }
