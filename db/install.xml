@@ -1,12 +1,21 @@
-<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="local/shopping_cart/db" VERSION="20220201" COMMENT="XMLDB file for Moodle local/shopping_cart" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/shopping_cart/db" VERSION="2022110900" COMMENT="XMLDB file for Moodle local/shopping_cart"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
     <TABLES>
         <TABLE NAME="local_shopping_cart_history" COMMENT="Shopping Cart History">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the user who optained something."/>
-                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the itme bought."/>
-                <FIELD NAME="itemname" LENGTH="255" TYPE="char" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the item bought."/>
+                <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
                 <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Item price."/>
+                <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
+                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
+                <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
+                       COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
+                <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
                 <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Applied discount."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
                 <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
@@ -17,8 +26,10 @@
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="serviceperiodstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
-                <FIELD NAME="serviceperiodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
+                <FIELD NAME="serviceperiodstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
+                <FIELD NAME="serviceperiodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -55,17 +66,28 @@
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the user who bought the item."/>
                 <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the bought item."/>
                 <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
-                <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
-                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
-                <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
-                <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
+                <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
+                       COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
+                <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3"
+                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
+                <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
+                       COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
+                <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
+                       COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
+                <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
+                       COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
+                <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
+                       COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>
                 <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like mod_booking."/>
-                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"
+                       COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
                 <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The type of payment."/>
                 <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
                 <FIELD NAME="accountid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the moodle payment account used."/>
-                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Which user actually effectuated the transaction (might have been cashier)"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
+                       COMMENT="Which user actually effectuated the transaction (might have been cashier)"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
