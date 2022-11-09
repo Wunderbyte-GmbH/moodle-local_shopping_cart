@@ -44,8 +44,9 @@
         <small>{{price}} {{currency}}</small>
     </div>
     <div class="d-flex w-100 justify-content-between">
-        <p><span><small>{{date}}</small>
-        <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small>
+        <p><span><small>{{date}}</small></span></p>
+        <p><span><small>{{date}}</small></span></p>
+        <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small></span></p>
     </div>
     {{#gateway}}
     <p>
@@ -68,13 +69,13 @@
         </span>
     </p>
     <button type="button" class="shopping_cart_history_cancel_button btn btn-sm pull-right {{buttonclass}}"
-        data-historyid='{{id}}'
-        data-componentname='{{componentname}}'
-        data-itemid='{{itemid}}'
-        data-userid='{{userid}}'
-        data-canceled='{{canceled}}'
-        data-currency='{{currency}}'
-        data-price='{{price}}'>
+        data-historyid="{{id}}"
+        data-componentname="{{componentname}}"
+        data-itemid="{{itemid}}"
+        data-userid="{{userid}}"
+        data-canceled="{{canceled}}"
+        data-currency="{{currency}}"
+        data-price="{{price}}">
         {{#canceled}}
             {{#str}} canceled, local_shopping_cart {{/str}}
         {{/canceled}}

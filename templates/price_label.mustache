@@ -55,7 +55,6 @@
             </div>
         </div>
         <div class="text-center sc_deductible">{{#str}} deductible, local_shopping_cart {{/str}} {{deductible}} {{currency}}</div>
-
         <div class="text-center sc_remainingcredit">{{#str}} remainingcredit, local_shopping_cart {{/str}} {{remainingcredit}} {{currency}}</div>
     {{/credit}}
 
@@ -66,9 +65,8 @@
         {{/discount}}
     {{/credit}}
 
-    <span class="pull-right">{{#str}} total, local_shopping_cart {{/str}}
-        <span class="sc_totalprice">
-            {{price}} {{currency}}
-        <span>
-    </span>
+    <div class="pull-right">
+        <span>{{#str}} total, local_shopping_cart {{/str}}</span>
+        <span class="sc_totalprice">{{price}} {{currency}}</span>
+    </div>
 </div>

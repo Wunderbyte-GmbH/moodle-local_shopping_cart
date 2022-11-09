@@ -31,12 +31,43 @@
 
     Example context (json):
     {
-        "userid": 3,
-        "urls": {
-            "preferences": "http://www.moodle.com"
-        }
-    }
+       "count":1,
+       "maxitems":"10",
+       "items":[
+          {
+             "itemid":1,
+             "itemname":"my test item 1",
+             "price":10,
+             "currency":"EUR",
+             "componentname":"local_shopping_cart",
+             "description":"item description",
+             "imageurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/pix\/edu.png",
+             "canceluntil":1669192848,
+             "serviceperiodstart":1667983248,
+             "serviceperiodend":1670575248
+          }
+       ],
+       "price":10,
+       "initialtotal":10,
+       "deductible":0,
+       "checkboxid":"eacee3",
+       "usecredit":1,
+       "expirationdate":1667984148,
+       "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+       "currency":"EUR",
+       "credit":0,
+       "remainingcredit":0,
+       "discount":0,
+       "mail":"info@edulabs.org",
+       "name":"HeidelindeBogner",
+       "userid":"2",
+       "historyitems":[
 
+       ],
+       "canpayback":true,
+       "identifier":"1667983317",
+       "successurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php?success=1&identifier=1667983317"
+    }
 }}
 
 {{#success}}

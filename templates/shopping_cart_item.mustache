@@ -50,8 +50,8 @@ data-currency='{{currency}}'
 data-userid='{{userid}}'>
     <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
     {{#iscashier}}
-        <span class="pull-right"><i class="fa fa-eur shopping-cart-lighter-text pl-2" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="discount" data-userid={{userid}}></i></span>
+        <span class="pull-right"><i class="fa fa-eur shopping-cart-lighter-text pl-2" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="discount" data-userid="{{userid}}"></i></span>
     {{/iscashier}}
-    <span class="pull-right"><i class="fa fa-trash-o shopping-cart-lighter-text pl-2" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="delete" data-userid={{userid}}></i></span>
+    <span class="pull-right"><i class="fa fa-trash-o shopping-cart-lighter-text pl-2" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}" data-action="delete" data-userid="{{userid}}"></i></span>
     <span class="item-price pull-right">{{price}}  {{currency}}</span>
 </li>
