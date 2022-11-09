@@ -49,7 +49,7 @@ require_once($CFG->libdir . '/externallib.php');
 class get_price extends external_api {
 
     /**
-     * Describes the paramters for add_item_to_cart.
+     * Describes the parameters for get_price.
      *
      * @return external_function_parameters
      */

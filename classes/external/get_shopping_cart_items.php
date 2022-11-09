@@ -50,7 +50,7 @@ require_once($CFG->libdir . '/externallib.php');
 class get_shopping_cart_items extends external_api {
 
     /**
-     * Describes the paramters for this service.
+     * Describes the parameters for this service.
      *
      * @return external_function_parameters
      */

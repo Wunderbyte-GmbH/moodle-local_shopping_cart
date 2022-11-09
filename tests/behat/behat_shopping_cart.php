@@ -48,7 +48,7 @@ class behat_shopping_cart extends behat_base {
     public function i_put_item_in_my_cart(string $itemname) {
 
         $item = new cartitem(1, $itemname, 10, 'EUR', 'mod_quiz', 'item description');
-        $data = $item->getitem();
+        $data = $item->as_array();
 
         $shoppingcart = new shopping_cart();
         $shoppingcart->add_item_to_cart('local_shopping_cart', 1, 0); // TODO: Fix this with the correct params!

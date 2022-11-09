@@ -49,7 +49,7 @@ require_once($CFG->libdir . '/externallib.php');
 class cancel_purchase extends external_api {
 
     /**
-     * Describes the paramters for add_item_to_cart.
+     * Describes the parameters for cancel_purchase.
      *
      * @return external_function_parameters
      */

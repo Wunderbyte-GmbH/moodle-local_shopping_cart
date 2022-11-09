@@ -108,7 +108,7 @@ class shopping_cart {
             // If reserveration is not successful, we have to react here.
             if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
                 // Get the itemdata as array.
-                $itemdata = $cartitem->getitem();
+                $itemdata = $cartitem->as_array();
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -285,9 +285,9 @@ class shopping_cart {
     /**
      * Function local_shopping_cart_get_cache_data
      * This function returns all the item and calculates live the price for them.
-     * This function also supports the credit system of this modle.
+     * This function also supports the credit system of this moodle.
      * If usecredit is true, the credit of the user is substracted from price...
-     * ... and supplementary informatin about the subsctraction is returend.
+     * ... and supplementary information about the subtraction is returned.
      *
      * @param int $userid
      * @param bool $usecredit
