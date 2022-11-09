@@ -56,8 +56,6 @@
         <i class="fa fa-3x fa-shopping-cart" aria-hidden="true"></i>
         <span id="countbadge" class="badge">{{count}}</span>
         <span class="expirationdate" data-expirationdate = '{{expirationdate}}'>[{{expirationdate}}]</span>
-        <div class="shopping-cart-total">
-        </div>
     {{/headertext}}
     {{$content}}
     <h4 class="p-2">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
@@ -88,13 +86,12 @@
     </div>
     {{/content}}
 {{/ core/popover_region }}
-{{^element.frozen}}
-    {{#js}}
-        require(['jquery', 'core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function($, controller, Ajax, cart) {
+
+{{#js}}
+    require(['jquery', 'core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function($, controller, Ajax, cart) {
         cart.init({{expirationdate}}, {{maxitems}});
         let container = $('#nav-shopping_cart-popover-container');
         let controller = new controller(container);
         controller.registerListNavigationEventListeners();
-        });
-    {{/js}}
-{{/element.frozen}}
+    });
+{{/js}}

@@ -31,179 +31,193 @@
 
     Example context (json):
     {
-      "count": 0,
-      "maxitems": "10",
-      "items": [],
-      "price": 0,
-      "initialtotal": 0,
-      "deductible": 0,
-      "checkboxid": "af7a6b",
-      "usecredit": 1,
-      "expirationdate": 1667988637,
-      "checkouturl": "http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
-      "currency": "EUR",
-      "credit": 0,
-      "remainingcredit": 0,
-      "buyforuserid": 3588,
-      "userid": 3588,
-      "userlastname": "Faulkner",
-      "userfirstname": "Graiden",
-      "useremail": "Graiden.Faulkner@mailinator.com",
-      "historyitems": [],
-      "canpayback": true,
-      "additonalcashiersection": "<div class=\"text_to_html\">..<\/div>",
-      "wwwroot": "http:\/\/localhost\/400_moodle",
-      "users": "[\"Caldwell Illana (Illana.Caldwell@mailinator.com) uid:512\",\"Ferguson Desirae (Desirae.Ferguson@mailinator.com) uid:768\",\"Lindsey Rose (Rose.Lindsey@example.com) uid:1024\",\"Oneil Octavius (Octavius.Oneil@example.com) uid:1280\",\"Franklin Francis (Francis.Franklin@example.com) uid:1536\"]",
-      "mail": "Graiden.Faulkner@mailinator.com",
-      "name": "Graiden Faulkner"
+       "count":0,
+       "maxitems":"10",
+       "items":[
+
+       ],
+       "price":0,
+       "initialtotal":0,
+       "deductible":0,
+       "checkboxid":"af7a6b",
+       "usecredit":1,
+       "expirationdate":1667988637,
+       "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+       "currency":"EUR",
+       "credit":0,
+       "remainingcredit":0,
+       "buyforuserid":3588,
+       "userid":3588,
+       "userlastname":"Faulkner",
+       "userfirstname":"Graiden",
+       "useremail":"Graiden.Faulkner@mailinator.com",
+       "historyitems":[
+
+       ],
+       "canpayback":true,
+       "additonalcashiersection":"<div class=\"text_to_html\">..<\/div>",
+       "wwwroot":"http:\/\/localhost\/400_moodle",
+       "users":"[\"Caldwell Illana (Illana.Caldwell@mailinator.com) uid:512\",\"Ferguson Desirae (Desirae.Ferguson@mailinator.com) uid:768\",\"Lindsey Rose (Rose.Lindsey@example.com) uid:1024\",\"Oneil Octavius (Octavius.Oneil@example.com) uid:1280\",\"Franklin Francis (Francis.Franklin@example.com) uid:1536\"]",
+       "mail":"Graiden.Faulkner@mailinator.com",
+       "name":"Graiden Faulkner"
     }
 
 }}
 
 <div id="shopping_cart-cashiers-section" class="container-fluid">
-   <div class="row">
-      <div class="col-md-8">
-         <div class="card">
-            <div class="card-header p-0">
-               {{#userid}}
-               <div class="text-center bg-primary text-white">
-                  <h2 class="label label-info">{{name}}</h2>
-                  <p>{{useremail}}</p>
-               </div>
-               {{/userid}}
-                {{^userid}}
-               <div class="text-center bg-primary text-white">
-                  <h2 class="label label-info">{{#str}} nouserselected, local_shopping_cart {{/str}}</h2>
-                  <p>{{#str}} selectuser, local_shopping_cart {{/str}}</p>
-               </div>
-               {{/userid}}
-               <ul class="nav m-0" id="cashiertabs" role="tablist">
-                  <li class="nav-item" role="presentation">
-                     <a href="{{wwwroot}}/local/shopping_cart/cashier.php">
-                        <span class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}} disabled" id="user-tab" data-toggle="tab" role="tab" aria-controls="home" aria-selected="true"></span>
-                     </a>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                     <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}} disabled" id="cart-tab" data-toggle="tab" role="tab" aria-controls="cart" aria-selected="false"></span>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                     <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" role="tab" aria-controls="checkout" aria-selected="false"></span>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                     <span class="nav-link disabled" id="success-tab" data-toggle="tab" role="tab" aria-controls="success" aria-selected="false"></span>
-                  </li>
-               </ul>
-            </div>
-            <div class="card-body">
-            {{! 1. Tab which lets you chose the user }}
-               <div class="tab-content" id="myTabContent">
-                  <div class="tab-pane fade {{^userid}}show active{{/userid}}" id="user" role="tabpanel" aria-labelledby="user-tab">
-                     {{#str}} selectuser, local_shopping_cart {{/str}}
-                     <div class="shopping-cart-autocomplete">
-                        <form  method="get" action="#cart">
-                           <input id="searchuser" autocomplete="off"  type="text" name="user" placeholder="{{#str}} user, local_shopping_cart {{/str}}">
-                           <input id="useridfield" type="hidden" name="userid"/>
-                           <input type="submit" name="submit"/>
-                        </form>
-                     </div>
-                  </div>
-            {{! 2. Tab which lets you chose the item }}
-                  <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
-                     <div class="d-flex flex-row-reverse">
-                        <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false">{{#str}} checkout, local_shopping_cart {{/str}}</a>
-                     </div>
-                     <p class="additonalcashiersection">
-                     {{#additonalcashiersection}}
-                     {{{additonalcashiersection}}}
-                     {{/additonalcashiersection}}
-                     </p>
-                  </div>
-            {{! 3. Tab before checkout }}
-                  <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
-                     <div class="row">
-                        <div class="col-md-12">
-                           <div class="sc_price_label" data-userid="{{userid}}">
-                              {{> local_shopping_cart/price_label }}
-                           </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header p-0">
+                    {{#userid}}
+                        <div class="text-center bg-primary text-white">
+                            <h2 class="label label-info">{{name}}</h2>
+                            <p>{{useremail}}</p>
                         </div>
-                     </div>
-                     <div>
-                        <a class="btn btn-danger d-block my-4 mx-2" id="cashpayment-btn" data-toggle="tab" href="{{wwwroot}}/local/shopping_cart/cashier.php" onclick="location.reload()" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}} cancel, core {{/str}}</a>
-                        <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" data-paymenttype="3" data-toggle="tab" href="#success" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} payedwithcash, local_shopping_cart {{/str}}</a>
-                        <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" data-paymenttype="5" data-toggle="tab" href="#success" role="tab" aria-controls="creditcardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} payedwithcreditcard, local_shopping_cart {{/str}}</a>
-                        <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="tab" aria-controls="debitcardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}} payedwithdebitcard, local_shopping_cart {{/str}}</a>
-                     </div>
-                     {{> local_shopping_cart/shopping_cart_items }}
-                  </div>
-            {{! 4. Tab to show success }}
-                  <div class="tab-pane fade" id="success" role="tabpanel" aria-labelledby="success-tab">
-                     <div class="row">
-                        <div class="col">
-                           <div>
-                           <div class="payment_message_result text-center"></div>
-                              <p>
-                                 {{> local_shopping_cart/shopping_cart_items }}
-                              </p>
-                              <a href="{{wwwroot}}/local/shopping_cart/receipt.php?id=" id="printbtn" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
-                              <a href="{{wwwroot}}/local/shopping_cart/cashier.php" class="btn btn-success">{{#str}} restart, local_shopping_cart {{/str}}</a>
-                           </div>
+                    {{/userid}}
+                    {{^userid}}
+                        <div class="text-center bg-primary text-white">
+                            <h2 class="label label-info">{{#str}} nouserselected, local_shopping_cart {{/str}}</h2>
+                            <p>{{#str}} selectuser, local_shopping_cart {{/str}}</p>
                         </div>
-                     </div>
-                  </div>
-               </div>
+                    {{/userid}}
+                    <ul class="nav m-0" id="cashiertabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}} disabled" id="user-tab" data-toggle="tab" role="tab" aria-controls="home"
+                               aria-selected="true" href="{{wwwroot}}/local/shopping_cart/cashier.php">
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}} disabled" id="cart-tab" data-toggle="tab" role="tab"
+                                  aria-controls="cart" aria-selected="false"></span>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" role="tab" aria-controls="checkout" aria-selected="false"></span>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <span class="nav-link disabled" id="success-tab" data-toggle="tab" role="tab" aria-controls="success" aria-selected="false"></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        {{! 1. Tab which lets you chose the user }}
+                        <div class="tab-pane fade {{^userid}}show active{{/userid}}" id="user" role="tabpanel" aria-labelledby="user-tab">
+                            <div class="shopping-cart-autocomplete">
+                                <form method="get" action="#cart">
+                                    <label for="shopping-cart-searchuser">{{#str}} selectuser, local_shopping_cart {{/str}}</label>
+                                    <input id="shopping-cart-searchuser" autocomplete="off" type="text" name="user" placeholder="{{#str}} user, local_shopping_cart {{/str}}">
+                                    <input id="useridfield" type="hidden" name="userid"/>
+                                    <input type="submit" name="submit"/>
+                                </form>
+                            </div>
+                        </div>
+                        {{! 2. Tab which lets you chose the item }}
+                        <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
+                            <div class="d-flex flex-row-reverse">
+                                <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="tab" aria-controls="checkout" aria-selected="false">{{#str}}
+                                    checkout, local_shopping_cart {{/str}}</a>
+                            </div>
+                            <p class="additonalcashiersection">
+                                {{#additonalcashiersection}}
+                                    {{{additonalcashiersection}}}
+                                {{/additonalcashiersection}}
+                            </p>
+                        </div>
+                        {{! 3. Tab before checkout }}
+                        <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="sc_price_label" data-userid="{{userid}}">
+                                        {{> local_shopping_cart/price_label }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <a class="btn btn-danger d-block my-4 mx-2" id="cashpayment-btn" data-toggle="tab" href="{{wwwroot}}/local/shopping_cart/cashier.php"
+                                   onclick="location.reload()" role="tab" aria-controls="cashpayment" aria-selected="false"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}}
+                                    cancel, core {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" data-paymenttype="3" data-toggle="tab" href="#success" role="tab"
+                                   aria-controls="cashpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
+                                    payedwithcash, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" data-paymenttype="5" data-toggle="tab" href="#success" role="tab"
+                                   aria-controls="creditcardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
+                                    payedwithcreditcard, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="tab"
+                                   aria-controls="debitcardpayment" aria-selected="false"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
+                                    payedwithdebitcard, local_shopping_cart {{/str}}</a>
+                            </div>
+                            {{> local_shopping_cart/shopping_cart_items }}
+                        </div>
+                        {{! 4. Tab to show success }}
+                        <div class="tab-pane fade" id="success" role="tabpanel" aria-labelledby="success-tab">
+                            <div class="row">
+                                <div class="col">
+                                    <div>
+                                        <div class="payment_message_result text-center"></div>
+                                        <p>
+                                            {{> local_shopping_cart/shopping_cart_items }}
+                                        </p>
+                                        <a href="{{wwwroot}}/local/shopping_cart/receipt.php?id=" id="printbtn" class="btn btn-success"><i class="fa fa-2x fa-print"></i> Print</a>
+                                        <a href="{{wwwroot}}/local/shopping_cart/cashier.php" class="btn btn-success">{{#str}} restart, local_shopping_cart {{/str}}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-      {{^userid}}
-      {{! Without userid sidebar contains only report links. }}
-      <div class="col-md-4">
-         <div id="shopping-cart-reports" class="card">
-            <div class="card-header text-center bg-primary text-white">
-               <i class="fa fa-table" aria-hidden="true"></i>
-               <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+        </div>
+        {{^userid}}
+        {{! Without userid sidebar contains only report links. }}
+            <div class="col-md-4">
+                <div id="shopping-cart-reports" class="card">
+                    <div class="card-header text-center bg-primary text-white">
+                        <i class="fa fa-table" aria-hidden="true"></i>
+                        <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+                    </div>
+                    <div class="card-body">
+                        <a class="btn btn-secondary" href="{{wwwroot}}/local/shopping_cart/report.php">
+                            <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-               <a class="btn btn-secondary" href="{{wwwroot}}/local/shopping_cart/report.php">
-                  <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
-               </a>
-            </div>
-         </div>
-      </div>
-      {{/userid}}
-      {{#userid}}
-      {{! Sidebar with cart items and hitory items }}
-      <div class="col-md-4">
-         <div id="shopping_cart-cashiers-cart" class="card">
-            <div class="card-header text-center bg-primary text-white">
-               <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-               <b class="d-block">Shopping Cart</b>
-            </div>
-            <div class="card-body">
-                {{> local_shopping_cart/shopping_cart_items }}
-            </div>
-         </div>
+        {{/userid}}
+        {{#userid}}
+        {{! Sidebar with cart items and hitory items }}
+            <div class="col-md-4">
+                <div id="shopping_cart-cashiers-cart" class="card">
+                    <div class="card-header text-center bg-primary text-white">
+                        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                        <b class="d-block">Shopping Cart</b>
+                    </div>
+                    <div class="card-body">
+                        {{> local_shopping_cart/shopping_cart_items }}
+                    </div>
+                </div>
 
-         {{! We use the card with the history items more than once. }}
-         {{> local_shopping_cart/history_card }}
+                {{! We use the card with the history items more than once. }}
+                {{> local_shopping_cart/history_card }}
 
-         <div id="shopping-cart-reports" class="card mt-4">
-            <div class="card-header text-center bg-primary text-white">
-               <i class="fa fa-table" aria-hidden="true"></i>
-               <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+                <div id="shopping-cart-reports" class="card mt-4">
+                    <div class="card-header text-center bg-primary text-white">
+                        <i class="fa fa-table" aria-hidden="true"></i>
+                        <b class="d-block">{{#str}} reports, local_shopping_cart {{/str}}</b>
+                    </div>
+                    <div class="card-body">
+                        <a class="btn btn-secondary" href="{{wwwroot}}/local/shopping_cart/report.php">
+                            <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-               <a class="btn btn-secondary" href="{{wwwroot}}/local/shopping_cart/report.php">
-                  <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
-               </a>
-            </div>
-         </div>
-      </div>
-      {{/userid}}
-   </div>
+        {{/userid}}
+    </div>
 </div>
 
 {{#js}}
     require(['local_shopping_cart/cashier'], function(cashier) {
-      cashier.init({{{users}}}, {{userid}});
+    cashier.init({{{users}}}, {{userid}});
     });
 {{/js}}

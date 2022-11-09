@@ -79,7 +79,7 @@ export const buttoninit = (id, component) => {
     }
 
     if (shoppingcart) {
-        const cartitem = shoppingcart.querySelector('#item-' + component + '-' + id);
+        const cartitem = shoppingcart.querySelector('[id^=item-' + component + '-' + id + ']');
         if (cartitem) {
             addtocartbutton.classList.add('disabled');
         }
@@ -222,7 +222,7 @@ export const deleteItem = (id, component, userid) => {
         done: function() {
 
             // We might display the item more often than once.
-            let items = document.querySelectorAll('#item-' + component + '-' + id);
+            let items = document.querySelectorAll('[id^=item-' + component + '-' + id + ']');
 
             items.forEach(item => {
                 if (item) {
@@ -257,7 +257,7 @@ export const deleteItem = (id, component, userid) => {
         fail: function(ex) {
             // eslint-disable-next-line no-console
             console.log(id, ex);
-            let item = document.querySelector('#item-' + component + '-' + id);
+            let item = document.querySelector('[id^=item-' + component + '-' + id + ']');
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
@@ -349,12 +349,12 @@ export const addItem = (id, component) => {
                         addtocartbutton.removeEventListener('click', deleteEvent);
                     }
 
-                    let items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-trash-o');
+                    let items = document.querySelectorAll('[id^=item-' + component + '-' + data.itemid + '] .fa-trash-o');
                     items.forEach(item => {
                         addDeleteevent(item, data.userid);
                     });
 
-                    items = document.querySelectorAll('#item-' + component + '-' + data.itemid + ' .fa-eur');
+                    items = document.querySelectorAll('[id^=item-' + component + '-' + data.itemid + '] .fa-eur');
                     items.forEach(item => {
                         addDiscountEvent(item, data.userid);
                     });
@@ -592,7 +592,9 @@ function deleteEvent() {
         console.log('item', item);
         // Item comes as #item-booking-213123.
         const idarray = item.dataset.id.split('-');
-
+        if (idarray.length > 3) {
+            idarray.pop();
+        }
         // eslint-disable-next-line no-console
         console.log('idarray', idarray);
         // First pop gets the id.

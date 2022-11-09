@@ -52,7 +52,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "#li_test_username1" "css_element"
     And I press "submit"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [id^=item-local_shopping_cart-1] i.fa-eur" "css_element"
     And I set the following fields to these values:
             | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -72,7 +72,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "#li_test_username1" "css_element"
     And I press "submit"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [id^=item-local_shopping_cart-1] i.fa-eur" "css_element"
     And I set the following fields to these values:
             | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -97,7 +97,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "#li_test_username1" "css_element"
     And I press "submit"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [id^=item-local_shopping_cart-1] i.fa-eur" "css_element"
     And I set the following fields to these values:
             | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -124,7 +124,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "#li_test_username1" "css_element"
     And I press "submit"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart #item-local_shopping_cart-1 i.fa-eur" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [id^=item-local_shopping_cart-1] i.fa-eur" "css_element"
     And I set the following fields to these values:
             | discountabsolute | 4.5 |
     And I press "Save changes"
