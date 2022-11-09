@@ -27,10 +27,10 @@ Feature: Test purchase process in shopping cart.
     And I visit "/local/shopping_cart/test.php"
     And I click on "#btn-local_shopping_cart-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "[id^=item-local_shopping_cart]" "css_element"
+    Then I should see "my test item 1" in the "[data-item=\"shopping_cart_item\"]" "css_element"
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "[id^=item-local_shopping_cart]" "css_element"
+    Then I should see "my test item 1" in the "[data-item=\"shopping_cart_item\"]" "css_element"
     And I wait "10" seconds
     And I click on ".popover-region-content-container a" "css_element"
     Then I should see "my test item 1" in the "div.checkoutgrid" "css_element"
@@ -42,7 +42,7 @@ Feature: Test purchase process in shopping cart.
     And I click on "#btn-local_shopping_cart-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
-    And I click on "[id^=item-local_shopping_cart] i.fa.fa-trash-o" "css_element"
+    And I click on "[data-item=\"shopping_cart_item\"] i.fa.fa-trash-o" "css_element"
     Then I should not see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I reload the page
     And I click on "#nav-shopping_cart-popover-container" "css_element"

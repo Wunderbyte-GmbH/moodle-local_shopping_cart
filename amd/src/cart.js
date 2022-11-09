@@ -45,12 +45,16 @@ export const reloadAllButtons = () => {
     });
 };
 
+const SELECTORS = {
+    SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
+};
+
 export const buttoninit = (id, component) => {
 
     // If there is no id, we browse the whole document and init all buttons individually.
     if (!id) {
 
-        const buttons = document.querySelectorAll("[id^='btn-" + component + "']");
+        const buttons = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
 
         buttons.forEach(button => {
             // We have to get only the last part of the id, the number.
@@ -79,7 +83,7 @@ export const buttoninit = (id, component) => {
     }
 
     if (shoppingcart) {
-        const cartitem = shoppingcart.querySelector('[id^=item-' + component + '-' + id + ']');
+        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + id + ']');
         if (cartitem) {
             addtocartbutton.classList.add('disabled');
         }
@@ -111,12 +115,12 @@ export const buttoninit = (id, component) => {
     countdownelement = document.querySelector('.expirationdate');
     initTimer(expirationdate);
     if (visbilityevent == false) {
-        let items = document.querySelectorAll('[id^=item-] .fa-trash-o');
+        let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
         items.forEach(item => {
             addDeleteevent(item);
         });
 
-        items = document.querySelectorAll('[id^=item-] .fa-eur');
+        items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-eur');
         items.forEach(item => {
             addDiscountEvent(item);
         });
@@ -177,7 +181,7 @@ export const deleteAllItems = () => {
         args: {
         },
         done: function() {
-            let item = document.querySelectorAll('[id^=item-]');
+            let item = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
             item.forEach(item => {
                 if (item) {
                     item.remove();
@@ -222,7 +226,7 @@ export const deleteItem = (id, component, userid) => {
         done: function() {
 
             // We might display the item more often than once.
-            let items = document.querySelectorAll('[id^=item-' + component + '-' + id + ']');
+            let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
 
             items.forEach(item => {
                 if (item) {
@@ -257,7 +261,7 @@ export const deleteItem = (id, component, userid) => {
         fail: function(ex) {
             // eslint-disable-next-line no-console
             console.log(id, ex);
-            let item = document.querySelector('[id^=item-' + component + '-' + id + ']');
+            let item = document.querySelector('[id^="item-' + component + '-' + id + ']');
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
@@ -349,12 +353,12 @@ export const addItem = (id, component) => {
                         addtocartbutton.removeEventListener('click', deleteEvent);
                     }
 
-                    let items = document.querySelectorAll('[id^=item-' + component + '-' + data.itemid + '] .fa-trash-o');
+                    let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
                     items.forEach(item => {
                         addDeleteevent(item, data.userid);
                     });
 
-                    items = document.querySelectorAll('[id^=item-' + component + '-' + data.itemid + '] .fa-eur');
+                    items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-eur');
                     items.forEach(item => {
                         addDiscountEvent(item, data.userid);
                     });
@@ -576,8 +580,8 @@ function dealWithZeroPrice(event) {
  * @param {int} userid
  */
 function addDeleteevent(item, userid = 0) {
-    if (userid != 0) {
-        item.dataset.userid = userid;
+    if (userid !== 0) {
+        item.dataset.userid = '' + userid;
     }
     item.addEventListener('click', deleteEvent);
 }
@@ -586,27 +590,19 @@ function addDeleteevent(item, userid = 0) {
  * Function called in listener.
  */
 function deleteEvent() {
-
         const item = this;
         // eslint-disable-next-line no-console
         console.log('item', item);
         // Item comes as #item-booking-213123.
-        const idarray = item.dataset.id.split('-');
-        if (idarray.length > 3) {
-            idarray.pop();
-        }
+        const id = item.dataset.id;
+        const component = item.dataset.component;
+        let userid = item.dataset.userid;
         // eslint-disable-next-line no-console
         console.log('idarray', idarray);
-        // First pop gets the id.
-        const id = idarray.pop();
-        // Second pop gets the component.
-        const component = idarray.pop();
-        let userid = parseInt(item.dataset.userid);
 
         if (!userid) {
             userid = 0;
         }
-
         deleteItem(id, component, userid);
     }
 

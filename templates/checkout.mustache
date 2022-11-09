@@ -87,7 +87,7 @@
             </div>
         {{/cartisempty}}
          {{#items}}
-         <li id="item-{{componentname}}-{{itemid}}-check" class="list-group-item">
+         <li id="item-{{componentname}}-{{itemid}}-check" data-sc_itemid="{{itemid}}" data-item="shopping_cart_item" data-component="{{componentname}}" class="list-group-item">
             <div class="row">
                <div class="col-md-2">
                     {{#imageurl}}
@@ -99,7 +99,7 @@
                </div>
                <div class="col">
                    <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
-                   <span class="pull-right ml-2"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}-check"></i></span>
+                   <span class="pull-right ml-2"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}"></i></span>
                    <span class="item-price pull-right"> {{price}} {{currency}}</span><br>
                    <div class="item-description">{{{description}}}</div>
                </div>
