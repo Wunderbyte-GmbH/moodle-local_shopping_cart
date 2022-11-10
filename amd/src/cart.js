@@ -333,7 +333,7 @@ export const addItem = (id, component) => {
                 }
 
                 Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                    let lastElements = document.querySelectorAll("[id^='liinitialtotal']");
+                    let lastElements = document.querySelectorAll("li.sc_initialtotal_cashier");
                     lastElements.forEach(lastElem => {
 
                         // eslint-disable-next-line no-console
@@ -341,7 +341,7 @@ export const addItem = (id, component) => {
 
                         // If we buy for a user, we only want to interact with the cashiers section.
                         if ((data.buyforuser == 0)
-                            || (lastElem.id === "liinitialtotal_cashier")) {
+                            || (lastElem.className === "sc_initialtotal_cashier")) {
                             lastElem.insertAdjacentHTML('beforeBegin', html);
                         }
                     });
