@@ -31,10 +31,85 @@
 
     Example context (json):
     {
-        "userid": 3,
-        "urls": {
-            "preferences": "http://www.moodle.com"
-        }
+       "count":0,
+       "maxitems":"10",
+       "items":[
+           {
+              "id":"2",
+              "userid":"2309",
+              "itemid":"1",
+              "itemname":"my test item 1",
+              "price":"10.00",
+              "discount":"0.00",
+              "currency":"EUR",
+              "componentname":"local_shopping_cart",
+              "identifier":"1668028796",
+              "payment":"3",
+              "paymentstatus":"2",
+              "usermodified":"2",
+              "timecreated":"1668028796",
+              "timemodified":"1668028796",
+              "canceluntil":"1669238377",
+              "serviceperiodstart":"0",
+              "serviceperiodend":"0",
+              "gateway":null,
+              "date":"2022-11-09",
+              "canceled":false,
+              "canceluntilstring":"2022-11-23",
+              "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+              "buttonclass":"disabled hidden",
+              "paymentstring":"in bar an der Kassa"
+           }
+       ],
+       "price":0,
+       "initialtotal":0,
+       "deductible":0,
+       "checkboxid":"af7a6b",
+       "usecredit":1,
+       "expirationdate":1667988637,
+       "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+       "currency":"EUR",
+       "credit":0,
+       "remainingcredit":0,
+       "buyforuserid":3588,
+       "userid":3588,
+       "userlastname":"Faulkner",
+       "userfirstname":"Graiden",
+       "useremail":"Graiden.Faulkner@mailinator.com",
+       "historyitems":[
+           {
+              "id":"2",
+              "userid":"2309",
+              "itemid":"1",
+              "itemname":"my test item 1",
+              "price":"10.00",
+              "discount":"0.00",
+              "currency":"EUR",
+              "componentname":"local_shopping_cart",
+              "identifier":"1668028796",
+              "payment":"3",
+              "paymentstatus":"2",
+              "usermodified":"2",
+              "timecreated":"1668028796",
+              "timemodified":"1668028796",
+              "canceluntil":"1669238377",
+              "serviceperiodstart":"0",
+              "serviceperiodend":"0",
+              "gateway":null,
+              "date":"2022-11-09",
+              "canceled":false,
+              "canceluntilstring":"2022-11-23",
+              "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+              "buttonclass":"disabled hidden",
+              "paymentstring":"in bar an der Kassa"
+           }
+       ],
+       "canpayback":true,
+       "additonalcashiersection":"<div class=\"text_to_html\">..<\/div>",
+       "wwwroot":"http:\/\/localhost\/400_moodle",
+       "users":"[\"Caldwell Illana (Illana.Caldwell@mailinator.com) uid:512\",\"Ferguson Desirae (Desirae.Ferguson@mailinator.com) uid:768\",\"Lindsey Rose (Rose.Lindsey@example.com) uid:1024\",\"Oneil Octavius (Octavius.Oneil@example.com) uid:1280\",\"Franklin Francis (Francis.Franklin@example.com) uid:1536\"]",
+       "mail":"Graiden.Faulkner@mailinator.com",
+       "name":"Graiden Faulkner"
     }
 
 }}
@@ -89,9 +164,9 @@
 
 {{#js}}
     require(['jquery', 'core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function($, controller, Ajax, cart) {
-        cart.init({{expirationdate}}, {{maxitems}});
-        let sc_container = $('#nav-shopping_cart-popover-container');
-        let sc_controller = new controller(sc_container);
-        sc_controller.registerListNavigationEventListeners();
+    cart.init({{expirationdate}}, {{maxitems}});
+    let sc_container = $('#nav-shopping_cart-popover-container');
+    let sc_controller = new controller(sc_container);
+    sc_controller.registerListNavigationEventListeners();
     });
 {{/js}}

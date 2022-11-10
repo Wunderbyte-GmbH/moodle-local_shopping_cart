@@ -31,7 +31,7 @@ Feature: Cashier actions in shopping cart.
     And I visit "/local/shopping_cart/cashier.php"
     And I set the following fields to these values:
             | user | user |
-    And I click on "#li_test_username1" "css_element"
+    And I click on "[data-firstname=\"Username1\"]" "css_element"
     And I press "submit"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
 

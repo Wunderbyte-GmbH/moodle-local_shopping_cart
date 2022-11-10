@@ -202,7 +202,7 @@ export const addPrintIdentifier = (identifier, userid) => {
                 b.innerHTML += "<strong>"
                         + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
                 b.innerHTML += arr[i].substr(index + val.length);
-                /* Insert a input field that will hold the current array item's value: */
+                /* Insert an input field that will hold the current array item's value: */
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 b.addEventListener("click", function() {
                     inp.value = this.getElementsByTagName("input")[0].value;
@@ -220,13 +220,13 @@ export const addPrintIdentifier = (identifier, userid) => {
         if (x) {
             x = x.getElementsByTagName("div");
         }
-        if (e.keyCode == 40) {
+        if (e.keyCode === 40) {
           currentFocus++;
           addActive(x);
-        } else if (e.keyCode == 38) {
+        } else if (e.keyCode === 38) {
           currentFocus--;
           addActive(x);
-        } else if (e.keyCode == 13) {
+        } else if (e.keyCode === 13) {
           e.preventDefault();
           if (currentFocus > -1) {
             if (x) {
@@ -271,7 +271,7 @@ export const addPrintIdentifier = (identifier, userid) => {
     function closeAllLists(elmnt) {
         var x = document.getElementsByClassName("autocomplete-items");
         for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
+            if (elmnt !== x[i] && elmnt !== inp) {
             x[i].parentNode.removeChild(x[i]);
             }
         }
@@ -290,7 +290,7 @@ export const addPrintIdentifier = (identifier, userid) => {
  export function addDiscountEvent(button, userid = 0) {
     // eslint-disable-next-line no-console
     console.log('add to button', button);
-    if (userid != 0) {
+    if (userid !== 0) {
         button.dataset.userid = userid;
     }
     if (button.dataset.initialized) {

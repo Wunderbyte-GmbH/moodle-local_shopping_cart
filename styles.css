@@ -167,7 +167,7 @@
     }
 }
 
-#cashiertabs span.nav-link {
+#cashiertabs .nav-link {
     outline: 0;
     box-shadow: none;
 }
@@ -183,7 +183,7 @@
     position: relative;
 }
 
-#cashiertabs li span:before {
+#cashiertabs li :before {
     position: relative;
     z-index: 3;
     width: 50px;
@@ -199,7 +199,7 @@
     text-align: center;
 }
 
-#cashiertabs li span:after {
+#cashiertabs li :after {
     content: '';
     width: 100%;
     height: 2px;
@@ -237,10 +237,10 @@
     content: "\f00c";
 }
 
-#cashiertabs li span.active:before,
-#cashiertabs li span.active:after,
-#cashiertabs li span.success:before,
-#cashiertabs li span.success:after {
+#cashiertabs li .active:before,
+#cashiertabs li .active:after,
+#cashiertabs li .success:before,
+#cashiertabs li .success:after {
     background: var(--success);
 }
 
@@ -253,7 +253,7 @@
     width: max-content;
 }
 
-#cashiertabs span.disabled {
+#cashiertabs .disabled {
     font-style: normal;
 }
 
