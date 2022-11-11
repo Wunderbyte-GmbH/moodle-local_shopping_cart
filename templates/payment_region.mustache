@@ -51,7 +51,7 @@
         <div class="mdl-align">
             <p>{{#str}} paymentrequired {{/str}}</p>
             <p><b>{{price}} {{currency}}</b></p>
-            <p><a href="{{config.wwwroot}}/login/">{{# str }} loginsite {{/str}}</a></p>
+            <p><a href="{{wwwroot}}/login/">{{# str }} loginsite {{/str}}</a></p>
         </div>
     {{/isguestuser}}
     {{^isguestuser}}
@@ -62,7 +62,7 @@
             data-action="core_payment/triggerPayment"
             data-component="local_shopping_cart"
             data-paymentarea="shopping_cart"
-            data-itemid="{{identifier}}"
+            data-identifier="{{identifier}}"
             data-userid="{{userid}}"
             data-cost="{{price}} {{currency}}"
             data-successurl="{{successurl}}"

@@ -49,33 +49,27 @@ const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
 };
 
-export const buttoninit = (id, component) => {
+export const buttoninit = (itemid, component) => {
 
-    // If there is no id, we browse the whole document and init all buttons individually.
-    if (!id) {
-
+    // If there is no itemid, we browse the whole document and init all buttons individually.
+    if (!itemid) {
         const buttons = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
-
         buttons.forEach(button => {
-            // We have to get only the last part of the id, the number.
-            const number = button.id.split(/[\s-]+/).pop();
+            const number = button.itemid;
             buttoninit(number, component);
         });
         return;
     }
 
     // First we get the button and delete the helper-span to secure js loading.
-    const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
+    const addtocartbutton = document.querySelector('#btn-' + component + '-' + itemid);
 
     // If we don't find the button, we abort.
-    if (!addtocartbutton
-        || addtocartbutton.dataset.initialized) {
+    if (!addtocartbutton || addtocartbutton.dataset.initialized === 'true') {
         return;
     }
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
-
-
     let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
 
     if (!shoppingcart) {
@@ -83,7 +77,7 @@ export const buttoninit = (id, component) => {
     }
 
     if (shoppingcart) {
-        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + id + ']');
+        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + itemid + ']');
         if (cartitem) {
             addtocartbutton.classList.add('disabled');
         }
@@ -92,7 +86,7 @@ export const buttoninit = (id, component) => {
     addtocartbutton.addEventListener('click', event => {
 
          // eslint-disable-next-line no-console
-         console.log('button clicked', id);
+         console.log('button clicked', itemid);
 
         // If we find the disabled class, the click event is aborted.
         if (addtocartbutton.classList.contains('disabled')) {
@@ -100,10 +94,9 @@ export const buttoninit = (id, component) => {
         }
         event.preventDefault();
         event.stopPropagation();
-        addItem(id, component);
+        addItem(itemid, component);
     });
-
-    addtocartbutton.dataset.initialized = true;
+    addtocartbutton.dataset.initialized = 'true';
 };
 
 /**
@@ -146,7 +139,7 @@ export const reinit = () => {
                 let container = document.querySelector('#nav-shopping_cart-popover-container .shopping-cart-items-container');
                 container.insertAdjacentHTML('afterbegin', html);
                 data.items.forEach(item => {
-                    buttoninit(item.itemid, item.itemcomponent);
+                    buttoninit(item.itemid, item.component);
                 });
                 let deleteaction = document.querySelectorAll('.fa-trash-o');
                 deleteaction.forEach(item => {
@@ -161,7 +154,6 @@ export const reinit = () => {
                     itemcount.classList.add("hidden");
                 }
                 initTimer(data.expirationdate);
-
                 return true;
             }).catch((e) => {
                 // eslint-disable-next-line no-console
@@ -214,12 +206,12 @@ export const deleteAllItems = () => {
     }]);
 };
 
-export const deleteItem = (id, component, userid) => {
+export const deleteItem = (itemid, component, userid) => {
 
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
-            'itemid': id,
+            'itemid': itemid,
             'component': component,
             'userid': userid
         },
@@ -252,16 +244,16 @@ export const deleteItem = (id, component, userid) => {
             }
 
             // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
-            const addtocartbutton = document.querySelector('#btn-' + component + '-' + id);
+            const addtocartbutton = document.querySelector('#btn-' + component + '-' + itemid);
             if (addtocartbutton) {
                 addtocartbutton.classList.remove('disabled');
-                buttoninit(id, component);
+                buttoninit(itemid, component);
             }
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
-            console.log(id, ex);
-            let item = document.querySelector('[id^="item-' + component + '-' + id + ']');
+            console.log(itemid, ex);
+            let item = document.querySelector('[id^="item-' + component + '-' + itemid + ']');
             if (item) {
                 item.remove();
                 let itemcount1 = document.getElementById("countbadge");
@@ -273,14 +265,13 @@ export const deleteItem = (id, component, userid) => {
 
                 // eslint-disable-next-line no-console
                 console.log('itemprice', itemprice);
-
                 updateTotalPrice(userid);
             }
         },
     }]);
 };
 
-export const addItem = (id, component) => {
+export const addItem = (itemid, component) => {
 
     const oncashier = window.location.href.indexOf("cashier.php");
 
@@ -293,12 +284,12 @@ export const addItem = (id, component) => {
         methodname: "local_shopping_cart_add_item",
         args: {
             'component': component,
-            'itemid': id,
+            'itemid': itemid,
             'userid': userid
         },
         done: function(data) {
             data.component = component;
-            data.id = id;
+            data.itemid = itemid;
             data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
 
             if (data.success != 1) {
@@ -594,13 +585,13 @@ function deleteEvent() {
         // eslint-disable-next-line no-console
         console.log('item', item);
         // Item comes as #item-booking-213123.
-        const id = item.dataset.id;
+        const itemid = item.dataset.itemid;
         const component = item.dataset.component;
         let userid = item.dataset.userid;
         if (!userid) {
             userid = 0;
         }
-        deleteItem(id, component, userid);
+        deleteItem(itemid, component, userid);
     }
 
 /**

@@ -31,16 +31,15 @@
 
     Example context (json):
     {
-        "userid": 3,
-        "urls": {
-            "preferences": "http://www.moodle.com"
-        }
+        "itemid": 3,
+        "componentname": "mod_booking",
+        "userid": 2
     }
 
 }}
 <button class="btn btn-light mt-0 mb-0 p-0 wb_shopping_cart"
         id="btn-{{componentname}}-{{itemid}}"
-        data-id="id"
+        data-itemid="{{itemid}}"
         data-userid="{{userid}}"
         data-objecttable="booking"
         data-component="{{componentname}}">

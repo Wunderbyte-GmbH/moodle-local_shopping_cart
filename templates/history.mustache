@@ -45,11 +45,11 @@
             data-price='{{price}}'
             data-name='{{itemname}}'
             data-component='{{componentname}}'
-            data-id='{{itemid}}'>
+            data-itemid='{{itemid}}'>
             <span class="item-name"><i class="fa fa-futbol-o" aria-hidden="true"></i> {{itemname}}</span>
             <span class="item-price pull-right">{{price}} {{currency}}</span>
             <br>
-            <span class="pull-right"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-id="item-{{componentname}}-{{itemid}}"
+            <span class="pull-right"><i class="fa fa-trash-o shopping-cart-lighter-text" aria-hidden="true" data-item="shopping_cart_item" data-component="{{componentname}}" data-itemid="{{itemid}}"
                                         data-action="delete"></i></span>
         </li>
     </ul>
