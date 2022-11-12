@@ -21,7 +21,7 @@
 
 import Ajax from 'core/ajax';
 import Url from 'core/url';
-import Notification from 'core/notification';
+import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
 
 import {updateTotalPrice} from 'local_shopping_cart/cart';
@@ -312,7 +312,7 @@ function discountModal() {
     console.log('closest', element);
 
     const price = element.dataset.price;
-    const itemid = element.dataset.id;
+    const itemid = element.dataset.itemid;
     const userid = element.dataset.userid;
     const componentname = element.dataset.component;
 
@@ -362,12 +362,12 @@ function displayPaymentMessage(message, success = true) {
             displaymessage.innerText = localizedmessage;
 
             if (success) {
-                Notification.addNotification({
+                showNotification({
                     message: localizedmessage,
                     type: "info"
                 });
             } else {
-                Notification.addNotification({
+                showNotification({
                     message: localizedmessage,
                     type: "error"
                 });

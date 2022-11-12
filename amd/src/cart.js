@@ -21,35 +21,76 @@
 
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
-import Notification from 'core/notification';
 
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 
 import {confirmPayment} from 'local_shopping_cart/cashier';
 import {addDiscountEvent} from 'local_shopping_cart/cashier';
+import {showNotification} from 'local_shopping_cart/notifications';
 
 import {
     get_strings as getStrings
         }
         from 'core/str';
 
-export var countdownelement = null;
 export var interval = null;
 export var visbilityevent = false;
 
-export const reloadAllButtons = () => {
-    const addtocartbuttons = document.querySelectorAll('[id^=btn-]');
-    addtocartbuttons.forEach(button => {
-        button.classList.remove('disabled');
-    });
-};
+
+
+// We need click listener on cart
+// Disabled should not be done by a check on cart, but either it's loaded via php, OR it is added right away with the click.
+// We should load the whole cart, including the price, with one function which always stays the same. (less css)
+
+
+
 
 const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
+    NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
+    TRASHCLASS: 'fa-trash-o',
+    BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
+    COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
+    CASHIERSCART: '#shopping_cart-cashiers-cart',
+    CHECKOUTCART: 'div.shopping-cart-checkout-items-container'
 };
 
 export const buttoninit = (itemid, component) => {
+
+    // Return all buttons with the add to cart functionality.
+    const buttons =
+    document.querySelectorAll(
+        'button'
+        + '[data-itemid="' + itemid + '"]'
+        + '[data-component="' + component + '"]'
+        + '[data-objecttable="local_shopping_cart"');
+
+    buttons.forEach(addtocartbutton => {
+
+        // We need to check all the buttons.
+        toggleActiveButtonState(addtocartbutton);
+
+        // We only ever initialize the button once.
+        if (!addtocartbutton || addtocartbutton.dataset.initialized === 'true') {
+            return;
+        }
+        addtocartbutton.dataset.initialized = 'true';
+
+        // Add click eventlistern to oneself.
+        addtocartbutton.addEventListener('click', event => {
+
+        // If we find the disabled class, the click event is aborted.
+        if (addtocartbutton.classList.contains('disabled')) {
+            return;
+        }
+            event.preventDefault();
+            event.stopPropagation();
+            addItem(itemid, component);
+        });
+    });
+
+    return;
 
     // If there is no itemid, we browse the whole document and init all buttons individually.
     if (!itemid) {
@@ -61,6 +102,8 @@ export const buttoninit = (itemid, component) => {
         return;
     }
 
+    // We don't know how many instances of this peticular button are on the site. So we need to be agnostic.
+
     // First we get the button and delete the helper-span to secure js loading.
     const addtocartbutton = document.querySelector('#btn-' + component + '-' + itemid);
 
@@ -68,6 +111,7 @@ export const buttoninit = (itemid, component) => {
     if (!addtocartbutton || addtocartbutton.dataset.initialized === 'true') {
         return;
     }
+    addtocartbutton.dataset.initialized = 'true';
 
     // Make sure item is not yet in shopping cart. If so, add disabled class.
     let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
@@ -82,21 +126,8 @@ export const buttoninit = (itemid, component) => {
             addtocartbutton.classList.add('disabled');
         }
     }
-    // Add click eventlistern to oneself.
-    addtocartbutton.addEventListener('click', event => {
 
-         // eslint-disable-next-line no-console
-         console.log('button clicked', itemid);
 
-        // If we find the disabled class, the click event is aborted.
-        if (addtocartbutton.classList.contains('disabled')) {
-            return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        addItem(itemid, component);
-    });
-    addtocartbutton.dataset.initialized = 'true';
 };
 
 /**
@@ -105,7 +136,42 @@ export const buttoninit = (itemid, component) => {
  */
 
  export const init = (expirationdate) => {
-    countdownelement = document.querySelector('.expirationdate');
+
+    // We might have more than one container.
+    let containers = [];
+    containers.push(document.querySelector(SELECTORS.NAVBARCONTAINER));
+    containers.push(document.querySelector(SELECTORS.CHECKOUTCART));
+
+    containers.filter(x => x !== null).forEach(container => {
+
+        container.addEventListener('click', event => {
+
+            // Decide the target of the click.
+            const element = event.target;
+
+            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
+
+                const userid = element.dataset.userid ? element.dataset.userid : 0;
+                const component = element.dataset.component;
+                const itemid = element.dataset.itemid;
+
+                deleteItem(itemid, component, userid);
+            }
+        });
+    });
+
+    if (visbilityevent == false) {
+        document.addEventListener("visibilitychange", function() {
+            visbilityevent = true;
+            if (document.visibilityState === 'visible') {
+                reinit();
+            }
+        });
+    }
+
+    return;
+
+    // countdownelement = document.querySelector('.expirationdate');
     initTimer(expirationdate);
     if (visbilityevent == false) {
         let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
@@ -117,43 +183,46 @@ export const buttoninit = (itemid, component) => {
         items.forEach(item => {
             addDiscountEvent(item);
         });
-        document.addEventListener("visibilitychange", function() {
-            visbilityevent = true;
-            if (document.visibilityState === 'visible') {
-                reinit();
-            }
-        });
+
     }
     updateTotalPrice();
 };
 
-export const reinit = () => {
-    reloadAllButtons();
+/**
+ * Function to reload the cart. We can pass on the certain component if we need to make sure that not only the cart is reloaded.
+ * This is the case when adding or deleting a certain item and a special button has to be reset.
+ * @param {*} userid
+ */
+export const reinit = (userid = 0) => {
+
+    // eslint-disable-next-line no-console
+    console.log('reinit', userid);
+
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
         args: {
         },
         done: function(data) {
-            Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html}) => {
-                document.querySelector('.shopping-cart-items').remove();
-                let container = document.querySelector('#nav-shopping_cart-popover-container .shopping-cart-items-container');
-                container.insertAdjacentHTML('afterbegin', html);
-                data.items.forEach(item => {
-                    buttoninit(item.itemid, item.component);
-                });
-                let deleteaction = document.querySelectorAll('.fa-trash-o');
-                deleteaction.forEach(item => {
-                    addDeleteevent(item);
-                });
-                let itemcount = document.getElementById("itemcount");
-                itemcount.innerHTML = data.count;
-                document.getElementById("countbadge").innerHTML = data.count;
-                if (data.count > 0) {
-                    itemcount.classList.remove("hidden");
-                } else {
-                    itemcount.classList.add("hidden");
-                }
+            Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
+
+                // We know we will always find the Navbar, so we can do this right away.
+                Templates.replaceNodeContents(SELECTORS.NAVBARCONTAINER, html, js);
+
+                const checkoutcontainer = document.querySelector(SELECTORS.CHECKOUTCART);
+
+                // eslint-disable-next-line no-console
+                console.log(checkoutcontainer);
+
+                // We know we will always find the Navbar, so we can do this right away.
+                Templates.replaceNodeContents(SELECTORS.CHECKOUTCART, html);
+
+                clearInterval(interval);
                 initTimer(data.expirationdate);
+
+                updateBadge(data.count);
+
+                toggleActiveButtonState();
+
                 return true;
             }).catch((e) => {
                 // eslint-disable-next-line no-console
@@ -196,8 +265,6 @@ export const deleteAllItems = () => {
                     btn.classList.remove('disabled');
                 }
             });
-            // eslint-disable-next-line no-console
-            console.log('All items have been removed from cart.');
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -217,56 +284,11 @@ export const deleteItem = (itemid, component, userid) => {
         },
         done: function() {
 
-            // We might display the item more often than once.
-            let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
-
-            items.forEach(item => {
-                if (item) {
-                    item.remove();
-                }
-            });
-
-            updateTotalPrice(userid);
-
-            let itemcount1 = document.getElementById("countbadge");
-            let itemcount2 = document.getElementById("itemcount");
-
-            itemcount1.innerHTM = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
-            itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-
-            // If we have only one item left, we set back the expiration date.
-            if (itemcount2.innerHTML == 0) {
-                itemcount2.classList.add("hidden");
-
-                // We clear the countdown and set back the timer.
-                clearInterval(interval);
-                initTimer();
-            }
-
-            // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
-            const addtocartbutton = document.querySelector('#btn-' + component + '-' + itemid);
-            if (addtocartbutton) {
-                addtocartbutton.classList.remove('disabled');
-                buttoninit(itemid, component);
-            }
+            reinit(itemid, component);
         },
-        fail: function(ex) {
-            // eslint-disable-next-line no-console
-            console.log(itemid, ex);
-            let item = document.querySelector('[id^="item-' + component + '-' + itemid + ']');
-            if (item) {
-                item.remove();
-                let itemcount1 = document.getElementById("countbadge");
-                let itemcount2 = document.getElementById("itemcount");
-                itemcount1.innerHTML = itemcount1.innerHTML > 0 ? itemcount1.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML = itemcount2.innerHTML > 0 ? itemcount2.innerHTML -= 1 : itemcount1.innerHTML;
-                itemcount2.innerHTML = itemcount2.innerHTML == 0 ? itemcount2.classList.add("hidden") : itemcount2.innerHTML;
-                let itemprice = item.dataset.price;
+        fail: function() {
 
-                // eslint-disable-next-line no-console
-                console.log('itemprice', itemprice);
-                updateTotalPrice(userid);
-            }
+            reinit();
         },
     }]);
 };
@@ -293,29 +315,13 @@ export const addItem = (itemid, component) => {
             data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
 
             if (data.success != 1) {
-                Notification.addNotification({
-                    message: "Cart is full",
-                    type: "danger"
-                });
-                setTimeout(() => {
-                    let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-danger');
-                    const notificatonelement = notificationslist[notificationslist.length - 1];
-                    notificatonelement.remove();
-                }, 5000);
+
+                showNotification("Cart is full", 'danger');
+
                 return;
             } else if (data.success == 1) {
-                Notification.addNotification({
-                    message: data.itemname + " added to cart",
-                    type: "success"
-                });
 
-                setTimeout(() => {
-                    let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-success');
-
-                    const notificatonelement = notificationslist[notificationslist.length - 1];
-
-                    notificatonelement.remove();
-                }, 5000);
+                showNotification(data.itemname + " added to cart", 'success');
 
                 // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
                 const oncashier = window.location.href.indexOf("cashier.php");
@@ -323,56 +329,9 @@ export const addItem = (itemid, component) => {
                     data.iscashier = true;
                 }
 
-                Templates.renderForPromise('local_shopping_cart/shopping_cart_item', data).then(({html}) => {
-                    let lastElements = document.querySelectorAll("li.sc_initialtotal_cashier");
-                    lastElements.forEach(lastElem => {
-
-                        // eslint-disable-next-line no-console
-                        console.log('found li', lastElem);
-
-                        // If we buy for a user, we only want to interact with the cashiers section.
-                        if ((data.buyforuser == 0)
-                            || (lastElem.className === "sc_initialtotal_cashier")) {
-                            lastElem.insertAdjacentHTML('beforeBegin', html);
-                        }
-                    });
-
-                    // Make sure addtocartbutton is disabled once the item is in the shopping cart.
-                    const addtocartbutton = document.querySelector('#btn-' + component + '-' + data.itemid);
-                    if (addtocartbutton) {
-                        addtocartbutton.classList.add('disabled');
-                        addtocartbutton.removeEventListener('click', deleteEvent);
-                    }
-
-                    let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
-                    items.forEach(item => {
-                        addDeleteevent(item, data.userid);
-                    });
-
-                    items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-eur');
-                    items.forEach(item => {
-                        addDiscountEvent(item, data.userid);
-                    });
-
-                    updateTotalPrice(data.userid);
-
-                    // If we buy for a user, we don't have to do the navbar stuff below.
-                    if (data.buyforuser != 0) {
-                        return;
-                    }
-                    document.getElementById("countbadge").innerHTML++;
-                    const badge = document.getElementById("itemcount");
-                    badge.innerHTML = (parseInt(badge.innerHTML) || 0) + 1;
-                    badge.classList.remove('hidden');
-                    updateTotalPrice(data.userid);
-                    clearInterval(interval);
-                    initTimer(data.expirationdate);
-                    return;
-                }).catch((e) => {
-                    // eslint-disable-next-line no-console
-                    console.log(e);
-                });
+                reinit(itemid, component);
             }
+
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -435,9 +394,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             usecredit
         },
         done: function(data) {
-
-            // eslint-disable-next-line no-console
-            console.log(data);
 
             // We take the usecredit value we receive from the server.
             if (data.usecredit == 1) {
@@ -631,6 +587,8 @@ function startTimer(duration, display) {
  *
  */
 function initTimer(expirationdate = null) {
+
+    const countdownelement = document.querySelector(SELECTORS.COUNTDOWN);
     if (interval) {
         clearInterval(interval);
     }
@@ -689,5 +647,81 @@ function initTimer(expirationdate = null) {
     }).catch(e => {
         // eslint-disable-next-line no-console
         console.log(e);
+    });
+}
+
+/**
+ * Function to update the page in the nav bar.
+ * @param {*} count
+ */
+function updateBadge(count) {
+
+    const badge = document.querySelector(SELECTORS.BADGECOUNT);
+
+    if (count > 0) {
+        badge.innerHTML = count;
+        badge.classList.remove('hidden');
+    } else {
+        badge.innerHTML = count;
+        badge.classList.add('hidden');
+    }
+}
+
+/**
+ * Function to toggle the active state.
+ * @param {*} button
+ */
+function toggleActiveButtonState(button = null) {
+
+    // eslint-disable-next-line no-console
+    console.log('toggleActiveButtonState');
+
+    let selector = '';
+    let component = null;
+    let itemid = null;
+
+    // If we have a button, we only look for this particular itemid.
+    if (button) {
+
+        // We'll find the right variables in the DOM.
+        itemid = button.dataset.itemid;
+        component = button.dataset.component;
+
+        selector =
+            'button'
+            + '[data-itemid="' + itemid + '"]'
+            + '[data-component="' + component + '"]'
+            + '[data-objecttable="local_shopping_cart"';
+    } else {
+        // As we might have more than one of these buttons, we always need to look for all of them in the document.
+        // We will update for all the buttons we find.
+        selector =
+        'button'
+        + '[data-objecttable="local_shopping_cart"';
+    }
+
+    const buttons = document.querySelectorAll(selector);
+
+    // Make sure item is not yet in shopping cart. If so, add disabled class.
+    let shoppingcart = document.querySelector(SELECTORS.CASHIERSCART);
+
+    if (!shoppingcart) {
+        shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
+    }
+
+    buttons.forEach(addtocartbutton => {
+
+        component = addtocartbutton.dataset.component;
+        itemid = addtocartbutton.dataset.itemid;
+
+        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + itemid + '"]');
+
+        if (cartitem) {
+
+            addtocartbutton.classList.add('disabled');
+        } else {
+
+            addtocartbutton.classList.remove('disabled');
+        }
     });
 }

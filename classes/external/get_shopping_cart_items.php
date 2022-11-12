@@ -92,10 +92,18 @@ class get_shopping_cart_items extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
+
         return new external_single_structure(
             array(
                 'count' => new external_value(PARAM_INT, 'Number of items'),
-                'price' => new external_value(PARAM_RAW, 'Total price'),
+                'price' => new external_value(PARAM_FLOAT, 'Total price'),
+                'credit' => new external_value(PARAM_FLOAT, 'Credit'),
+                'currency' => new external_value(PARAM_RAW, 'Currency'),
+                'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
+                'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
+                'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
+                'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
+                'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                 'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
                 'maxitems' => new external_value(PARAM_INT, 'Max Items'),
                 'items' => new external_multiple_structure (
@@ -107,6 +115,8 @@ class get_shopping_cart_items extends external_api {
                             'currency' => new external_value(PARAM_RAW, 'Currency'),
                             'componentname' => new external_value(PARAM_RAW, 'Component name'),
                             'description' => new external_value(PARAM_RAW, 'Item description'),
+                            'imageurl' => new external_value(PARAM_RAW, 'Image url'),
+                            'canceluntil' => new external_value(PARAM_INT, 'Timestamp until when cancel is possible'),
                             )
                         )
                 )

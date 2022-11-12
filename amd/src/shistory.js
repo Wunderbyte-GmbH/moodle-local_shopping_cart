@@ -29,7 +29,7 @@ import {
     get_strings as getStrings
         }
         from 'core/str';
-import Notification from 'core/notification';
+import {showNotification} from 'local_shopping_cart/notifications';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
@@ -129,7 +129,7 @@ function cancelPurchase(itemid, userid, componentname, historyid, currency, pric
 
                 getString('cancelsuccess', 'local_shopping_cart').then(message => {
 
-                    Notification.addNotification({
+                    showNotification({
                         message,
                         type: "success"
                     });

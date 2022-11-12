@@ -261,6 +261,22 @@
     border: none;
 }
 
+/* The images in the checkout page should be larger than in the navbar popup. */
+#page-local-shopping_cart-checkout .shopping-cart-checkout-items-container img.sc-cart-item-image {
+    width: 100px;
+}
+
+#page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items li {
+    padding: 20px;
+    margin: 20px;
+    border: 1px dashed black;
+}
+
+/* The price in the list of items should not be displayed on the checkout page. */
+#page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .sc_initialtotal {
+    visibility: hidden;
+}
+
 #page-local-shopping_cart-checkout .wunderbyteTableJavascript ul {
     padding: 0;
     border-top: 1px solid var(--primary);
@@ -272,12 +288,6 @@
     box-sizing: border-box;
 }
 
-#page-local-shopping_cart-checkout #checkout .shopping-cart-items {
-    padding: 20px;
-    margin: 20px;
-    border-top: 1px dashed black;
-}
-
 #page-local-shopping_cart-checkout #region-main-box #litotalprice {
     font-size: 20px;
     color: var(--warning);
@@ -285,4 +295,12 @@
 
 #page-local-shopping_cart-checkout #region-main-box #success #litotalprice {
     color: var(--success);
+}
+
+div.shopping-cart-items-container img.sc-cart-item-image {
+    width: 20px;
+}
+
+div.shopping-cart-items-container div.item-description {
+    visibility: hidden;
 }

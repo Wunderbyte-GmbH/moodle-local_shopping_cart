@@ -29,7 +29,7 @@ import Selectors from './selectors';
 import ModalEvents from 'core/modal_events';
 import PaymentEvents from 'core_payment/events';
 import {add as addToast, addToastRegion} from 'core/toast';
-import Notification from 'core/notification';
+import {showNotification} from 'local_shopping_cart/notifications';
 import ModalGateways from './modal_gateways';
 
 /**
@@ -90,10 +90,8 @@ const show = async(rootNode, {
             )
             .then(message => {
                 modal.hide();
-                Notification.addNotification({
-                    message: message,
-                    type: 'success',
-                });
+                showNotification(message, 'success');
+
                 location.href = rootNode.dataset.successurl;
 
                 // The following return statement is never reached. It is put here just to make eslint happy.
