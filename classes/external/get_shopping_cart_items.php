@@ -76,10 +76,12 @@ class get_shopping_cart_items extends external_api {
 
         $context = context_system::instance();
 
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
-            $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
-        } else {
+        if ($params['userid'] == 0 ) {
             $userid = (int)$USER->id;
+        } else if ($userid < 0) {
+            if (has_capability('local/shopping_cart:cashier', $context)) {
+                $userid = shopping_cart::return_buy_for_userid();
+            }
         }
 
         return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
@@ -109,11 +111,12 @@ class get_shopping_cart_items extends external_api {
                 'items' => new external_multiple_structure (
                         new external_single_structure(
                             array(
-                            'itemid' => new external_value(PARAM_RAW, 'Item id'),
-                            'itemname' => new external_value(PARAM_RAW, 'Item name'),
-                            'price' => new external_value(PARAM_RAW, 'Price of item'),
-                            'currency' => new external_value(PARAM_RAW, 'Currency'),
-                            'componentname' => new external_value(PARAM_RAW, 'Component name'),
+                            'userid' => new external_value(PARAM_INT, 'userid'),
+                            'itemid' => new external_value(PARAM_INT, 'Item id'),
+                            'itemname' => new external_value(PARAM_TEXT, 'Item name'),
+                            'price' => new external_value(PARAM_FLOAT, 'Price of item'),
+                            'currency' => new external_value(PARAM_ALPHA, 'Currency'),
+                            'componentname' => new external_value(PARAM_TEXT, 'Component name'),
                             'description' => new external_value(PARAM_RAW, 'Item description'),
                             'imageurl' => new external_value(PARAM_RAW, 'Image url'),
                             'canceluntil' => new external_value(PARAM_INT, 'Timestamp until when cancel is possible'),

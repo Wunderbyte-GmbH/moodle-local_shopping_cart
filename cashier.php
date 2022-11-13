@@ -48,7 +48,7 @@ $data = $cashier->returnaslist();
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
+$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/cashier.php");
 $PAGE->set_title(get_string('cashier', 'local_shopping_cart'));
 $PAGE->set_heading(get_string('cashier', 'local_shopping_cart'));
 

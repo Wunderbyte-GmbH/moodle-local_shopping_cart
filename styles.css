@@ -308,6 +308,10 @@
     color: var(--success);
 }
 
+#page-local-shopping_cart-cashier div.shopping-cart-cashier-items-container img.sc-cart-item-image {
+    width: 20px;
+}
+
 div.shopping-cart-items-container img.sc-cart-item-image {
     width: 20px;
 }

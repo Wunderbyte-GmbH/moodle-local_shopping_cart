@@ -317,6 +317,7 @@ class shopping_cart {
 
         // We create a new item to pass on in any case.
         $data = [];
+        $data['userid'] = $userid;
         $data['count'] = 0;
 
         $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
@@ -344,6 +345,12 @@ class shopping_cart {
 
             if ($count > 0) {
                 $data['items'] = array_values($cachedrawdata['items']);
+
+                // We need the userid in every item.
+                foreach ($data['items'] as $key => $value) {
+                    $data['items'][$key]['userid'] = $userid;
+                }
+
                 $data['price'] = array_sum(array_column($data['items'], 'price'));
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];

@@ -52,7 +52,7 @@ const SELECTORS = {
     TRASHCLASS: 'fa-trash-o',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
-    CASHIERSCART: '#shopping_cart-cashiers-cart',
+    CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
     PRICELABELAREA: '.sc_price_label',
@@ -69,6 +69,9 @@ export const buttoninit = (itemid, component) => {
         + '[data-objecttable="local_shopping_cart"');
 
     buttons.forEach(addtocartbutton => {
+
+        // eslint-disable-next-line no-console
+        console.log('buttoninit', itemid, component);
 
         // We need to check all the buttons.
         toggleActiveButtonState(addtocartbutton);
@@ -141,10 +144,14 @@ export const buttoninit = (itemid, component) => {
 
     // We might have more than one container.
     let containers = [];
-    containers.push(document.querySelector(SELECTORS.NAVBARCONTAINER));
-    containers.push(document.querySelector(SELECTORS.CHECKOUTCART));
+    containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
+        + "," + SELECTORS.CASHIERSCART
+        + "," + SELECTORS.CHECKOUTCART);
 
-    containers.filter(x => x !== null).forEach(container => {
+    // eslint-disable-next-line no-console
+    console.log(containers);
+
+    containers.forEach(container => {
 
         container.addEventListener('click', event => {
 
@@ -206,43 +213,64 @@ export const reinit = (userid = 0) => {
             userid
         },
         done: function(data) {
+
+            // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
+            const oncashier = window.location.href.indexOf("cashier.php");
+            if (oncashier) {
+                data.iscashier = true;
+            } else {
+                data.iscashier = false;
+            }
+
+            let containers = [];
+
+            // eslint-disable-next-line no-console
+            console.log(userid, data.iscashier);
+
+            if (userid != 0 && data.iscashier) {
+                containers = document.querySelectorAll(SELECTORS.CASHIERSCART);
+            } else {
+                containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
+                    + "," + SELECTORS.CHECKOUTCART);
+            }
+
             let promises = [];
-            promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
 
+            // eslint-disable-next-line no-console
+            console.log(containers);
+
+            // We render for promice for all the containers.
+            promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
+                containers.forEach(container => {
                 // We know we will always find the Navbar, so we can do this right away.
-                Templates.replaceNodeContents(SELECTORS.NAVBARCONTAINER, html, js);
-
+                    Templates.replaceNodeContents(container, html, js);
+                });
                 return true;
             }).catch((e) => {
                 // eslint-disable-next-line no-console
                 console.log(e);
             }));
 
-            promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
-
-                // We try to replace for Checkout page.
-                Templates.replaceNodeContents(SELECTORS.CHECKOUTCART, html, js);
-
-                return true;
-            }).catch((e) => {
-                // eslint-disable-next-line no-console
-                console.log(e);
-            }));
             Promise.all(promises).then(() => {
 
-                clearInterval(interval);
-                initTimer(data.expirationdate);
+                // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
+                if (!(userid != 0 && data.iscashier)) {
+                    clearInterval(interval);
+                    initTimer(data.expirationdate);
 
-                updateBadge(data.count);
+                    updateBadge(data.count);
+                }
 
                 toggleActiveButtonState();
 
                 updateTotalPrice(userid);
+
                 return;
             }).catch(e => {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
+
         },
         fail: ex => {
             // eslint-disable-next-line no-console
@@ -299,11 +327,11 @@ export const deleteItem = (itemid, component, userid) => {
         },
         done: function() {
 
-            reinit(itemid, component);
+            reinit(userid);
         },
         fail: function() {
 
-            reinit();
+            reinit(userid);
         },
     }]);
 };
@@ -338,13 +366,7 @@ export const addItem = (itemid, component) => {
 
                 showNotification(data.itemname + " added to cart", 'success');
 
-                // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
-                const oncashier = window.location.href.indexOf("cashier.php");
-                if (oncashier) {
-                    data.iscashier = true;
-                }
-
-                reinit(itemid, component);
+                reinit(userid);
             }
 
         },
@@ -367,6 +389,10 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
 
     // We must make sure the checkbox is only once visible on the site.
     const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+
+    if (!checkbox) {
+        return;
+    }
 
     // eslint-disable-next-line no-console
     console.log('checked', checkbox.checked, usecredit);
@@ -395,6 +421,8 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             console.log(data, data.usecreditvalue);
 
             data.checkboxid = Math.random().toString(36).slice(2, 5);
+
+            data.userid = userid;
 
             const labelareas = document.querySelectorAll(SELECTORS.PRICELABELAREA);
 
@@ -611,9 +639,6 @@ function updateBadge(count) {
  */
 function toggleActiveButtonState(button = null) {
 
-    // eslint-disable-next-line no-console
-    console.log('toggleActiveButtonState');
-
     let selector = '';
     let component = null;
     let itemid = null;
@@ -643,9 +668,15 @@ function toggleActiveButtonState(button = null) {
     // Make sure item is not yet in shopping cart. If so, add disabled class.
     let shoppingcart = document.querySelector(SELECTORS.CASHIERSCART);
 
+    // eslint-disable-next-line no-console
+    console.log(shoppingcart);
+
     if (!shoppingcart) {
         shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
     }
+
+    // eslint-disable-next-line no-console
+    console.log(shoppingcart);
 
     buttons.forEach(addtocartbutton => {
 
@@ -669,6 +700,9 @@ function toggleActiveButtonState(button = null) {
  * @param {*} userid
  */
 export function initPriceLabel(userid) {
+
+    // eslint-disable-next-line no-console
+    console.log('initPriceLabel', userid);
 
     if (userid < 1) {
         userid = 0;
