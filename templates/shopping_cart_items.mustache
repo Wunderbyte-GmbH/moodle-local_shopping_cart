@@ -43,23 +43,23 @@
     }
 }}
 
-<ul class="shopping-cart-items">
-    {{#items}}
-        {{> local_shopping_cart/shopping_cart_item }}
-    {{/items}}
-    <li class="sc_initialtotal">
-        <div class="text-right">
-        <span>
-            {{#str}} total, local_shopping_cart {{/str}}
-        </span>
-        <span class="pull-right">
-            <span class="initialtotal">
-                {{initialtotal}}
+    <ul class="shopping-cart-items">
+        {{#items}}
+            {{> local_shopping_cart/shopping_cart_item }}
+        {{/items}}
+        <li class="sc_initialtotal">
+            <div class="text-right">
+            <span>
+                {{#str}} total, local_shopping_cart {{/str}}
             </span>
-            <span class="currency_initialtotal">
-                {{currency}}
+            <span class="pull-right">
+                <span class="initialtotal">
+                    {{initialtotal}}
+                </span>
+                <span class="currency_initialtotal">
+                    {{currency}}
+                </span>
             </span>
-        </span>
-        </div>
-    </li>
-</ul>
+            </div>
+        </li>
+    </ul>

@@ -274,7 +274,18 @@
 
 /* The price in the list of items should not be displayed on the checkout page. */
 #page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .sc_initialtotal {
-    visibility: hidden;
+    display: none;
+}
+
+/* Even when a user is cashier, he should not see cashier elements on checkout page */
+#page-local-shopping_cart-checkout li.shopping_cart_history_paidback {
+    display: none;
+}
+
+/* The payment button checkout must be a little bit below. */
+#page-local-shopping_cart-checkout div.shopping_cart_payment_region {
+    padding-top: 50px;
+    padding-bottom: 50px;
 }
 
 #page-local-shopping_cart-checkout .wunderbyteTableJavascript ul {

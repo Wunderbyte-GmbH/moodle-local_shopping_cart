@@ -131,35 +131,25 @@
 
 {{^finished}}
 <div class="checkoutgrid checkout">
-   <div class="container-fluid">
-      <ul class="list-group">
-        {{#cartisempty}}
-            <div class="alert alert-warning" role="alert">
-                {{#str}} cartisempty, local_shopping_cart {{/str}}
-            </div>
-        {{/cartisempty}}
-
-      </ul>
-   </div>
-   <ul class="shopping-cart-items">
-    <li class="user-card mb-2">
-        <h2>{{name}}</h2><p>
-        {{mail}}
-        </p>
-    </li>
+    <ul class="shopping-cart-items">
+        <li class="user-card mb-2">
+            <h2>{{name}}</h2>
+            <p>
+            {{mail}}
+            </p>
+         </li>
     </ul>
     <div>
-        {{^cartisempty}}
          <div class="shopping-cart-checkout-items-container">
             {{> local_shopping_cart/shopping_cart_items }}
         </div>
+
         <div class="sc_price_label" data-userid="{{userid}}">
             {{> local_shopping_cart/price_label }}
         </div>
         <div>
             {{> local_shopping_cart/payment_region }}
         </div>
-        {{/cartisempty}}
    </div>
     <div class="card mt-4">
         <div class="card-header text-center bg-primary text-white">

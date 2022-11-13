@@ -48,7 +48,7 @@
         {{/discount}}
         <div class="text-center sc_credit">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" value="" {{usecreditclass}}>
+                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" value="" {{usecreditvalue}}>
                 <label class="custom-control-label" for="{{checkboxid}}">
                     {{#str}} usecredit, local_shopping_cart {{/str}} {{credit}} {{currency}}
                 </label>
@@ -70,3 +70,9 @@
         <span class="sc_totalprice">{{price}} {{currency}}</span>
     </div>
 </div>
+
+{{#js}}
+    require(['local_shopping_cart/cart'], function(cart) {
+        cart.initPriceLabel({{userid}});
+    });
+{{/js}}

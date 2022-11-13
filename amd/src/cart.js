@@ -53,7 +53,9 @@ const SELECTORS = {
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
     CASHIERSCART: '#shopping_cart-cashiers-cart',
-    CHECKOUTCART: 'div.shopping-cart-checkout-items-container'
+    CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
+    PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
+    PRICELABELAREA: '.sc_price_label',
 };
 
 export const buttoninit = (itemid, component) => {
@@ -201,20 +203,32 @@ export const reinit = (userid = 0) => {
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
         args: {
+            userid
         },
         done: function(data) {
-            Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
+            let promises = [];
+            promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
 
                 // We know we will always find the Navbar, so we can do this right away.
                 Templates.replaceNodeContents(SELECTORS.NAVBARCONTAINER, html, js);
 
-                const checkoutcontainer = document.querySelector(SELECTORS.CHECKOUTCART);
-
+                return true;
+            }).catch((e) => {
                 // eslint-disable-next-line no-console
-                console.log(checkoutcontainer);
+                console.log(e);
+            }));
 
-                // We know we will always find the Navbar, so we can do this right away.
-                Templates.replaceNodeContents(SELECTORS.CHECKOUTCART, html);
+            promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
+
+                // We try to replace for Checkout page.
+                Templates.replaceNodeContents(SELECTORS.CHECKOUTCART, html, js);
+
+                return true;
+            }).catch((e) => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            }));
+            Promise.all(promises).then(() => {
 
                 clearInterval(interval);
                 initTimer(data.expirationdate);
@@ -223,13 +237,14 @@ export const reinit = (userid = 0) => {
 
                 toggleActiveButtonState();
 
-                return true;
-            }).catch((e) => {
+                updateTotalPrice(userid);
+                return;
+            }).catch(e => {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
         },
-        fail: function(ex) {
+        fail: ex => {
             // eslint-disable-next-line no-console
             console.log("ex:" + ex);
         },
@@ -350,37 +365,11 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
     // eslint-disable-next-line no-console
     console.log('updatetotalprice');
 
-    // First, get the state of usecredit.
-    const oncashier = window.location.href.indexOf("cashier.php");
+    // We must make sure the checkbox is only once visible on the site.
+    const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
 
-    let labelareas = null;
-    if (oncashier > 0) {
-        labelareas = document.querySelectorAll('div.sc_price_label');
-    } else {
-        labelareas = document.querySelectorAll('li.sc_price_label');
-    }
-
-    labelareas.forEach(element => {
-
-        // eslint-disable-next-line no-console
-        console.log(element);
-
-        // First we update the userid, if possible.
-        userid = element.dataset.userid ? element.dataset.userid : userid;
-
-        const checkbox = element.querySelector('input.usecredit-checkbox');
-
-        if (checkbox) {
-            if (checkbox.checked) {
-
-                // eslint-disable-next-line no-console
-                console.log('checked', checkbox.checked);
-                usecredit = checkbox.checked;
-            } else {
-                usecredit = 0;
-            }
-        }
-    });
+    // eslint-disable-next-line no-console
+    console.log('checked', checkbox.checked, usecredit);
 
     usecredit = usecredit ? 1 : 0;
 
@@ -395,47 +384,32 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
         },
         done: function(data) {
 
-            // We take the usecredit value we receive from the server.
-            if (data.usecredit == 1) {
-                data.usecreditclass = 'checked';
+             // We take the usecredit value we receive from the server.
+             if (data.usecredit == 1) {
+                data.usecreditvalue = 'checked';
             } else {
-                data.usecreditclass = '';
+                data.usecreditvalue = '';
             }
 
-            const initialtotal = data.initialtotal;
+            // eslint-disable-next-line no-console
+            console.log(data, data.usecreditvalue);
 
-            let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
-            let cashierssection = null;
-            let checkoutcart = null;
-            let checkouttotals = null;
+            data.checkboxid = Math.random().toString(36).slice(2, 5);
 
-            if (!shoppingcart) {
-                shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
-                checkoutcart = document.querySelector('div.checkoutgrid.checkout');
+            const labelareas = document.querySelectorAll(SELECTORS.PRICELABELAREA);
+
+            // eslint-disable-next-line no-console
+            console.log(labelareas);
+
+            Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html, js}) => {
+
+                Templates.replaceNodeContents(SELECTORS.PRICELABELAREA, html, js);
+
+                return true;
+            }).catch((e => {
                 // eslint-disable-next-line no-console
-                console.log('1', checkoutcart);
-            } else {
-                cashierssection = document.querySelector('#shopping_cart-cashiers-section');
-            }
-
-            let totals = [];
-            if (cashierssection) {
-                totals = cashierssection.querySelectorAll('.initialtotal');
-            } else {
-                // First we add the total price from navbar.
-                totals = shoppingcart.querySelectorAll('.initialtotal');
-
-                // If we are on the checkout site, we deal with the totals there separately.
-                if (checkoutcart) {
-                    checkouttotals = checkoutcart.querySelectorAll('.initialtotal');
-
-                    if (checkouttotals) {
-                        checkouttotals.forEach(total => {
-                            total.innerHTML = initialtotal;
-                        });
-                    }
-                }
-            }
+                console.log(e);
+            }));
 
             let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
 
@@ -459,42 +433,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                     paymentbutton.removeEventListener('click', dealWithZeroPrice);
                 }
             }
-
-            // Run through the list of total prices and set them to the right one.
-            totals.forEach(total => {
-                total.innerHTML = initialtotal;
-            });
-
-            data.checkboxid = Math.random().toString(36).slice(2, 5);
-
-            Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html}) => {
-                labelareas.forEach(element => {
-                    // First, clean all children.
-                    let child = element.lastElementChild;
-                    while (child) {
-                        element.removeChild(child);
-                        child = element.lastElementChild;
-                    }
-                    element.insertAdjacentHTML("afterbegin", html);
-
-                    const checkbox = element.querySelector('input.usecredit-checkbox');
-
-                    if (checkbox) {
-                        checkbox.addEventListener('change', event => {
-
-                            // eslint-disable-next-line no-console
-                            console.log(event);
-
-                            updateTotalPrice(userid);
-                        });
-                    }
-
-                });
-                return true;
-            }).catch((e => {
-                // eslint-disable-next-line no-console
-                console.log(e);
-            }));
 
         },
         fail: function(ex) {
@@ -724,4 +662,31 @@ function toggleActiveButtonState(button = null) {
             addtocartbutton.classList.remove('disabled');
         }
     });
+}
+
+/**
+ * Function to init Price Label and add Listener.
+ * @param {*} userid
+ */
+export function initPriceLabel(userid) {
+
+    if (userid < 1) {
+        userid = 0;
+    }
+
+    const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+
+    if (checkbox) {
+        checkbox.addEventListener('change', event => {
+
+            // eslint-disable-next-line no-console
+            console.log(event);
+
+            if (event.currentTarget.checked) {
+                updateTotalPrice(userid, true);
+            } else {
+                updateTotalPrice(userid, false);
+            }
+        });
+    }
 }
