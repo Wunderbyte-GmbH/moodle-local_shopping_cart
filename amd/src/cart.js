@@ -50,12 +50,60 @@ const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
+    DISCOUNTCLASS: 'fa-eur',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
     PRICELABELAREA: '.sc_price_label',
+};
+/**
+ *
+ * @param {*} expirationdate
+ */
+
+ export const init = (expirationdate) => {
+
+    initTimer(expirationdate);
+
+    // We might have more than one container.
+    let containers = [];
+    containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
+        + "," + SELECTORS.CASHIERSCART
+        + "," + SELECTORS.CHECKOUTCART);
+
+    // eslint-disable-next-line no-console
+    console.log(containers);
+
+    containers.forEach(container => {
+
+        container.addEventListener('click', event => {
+
+            // Decide the target of the click.
+            const element = event.target;
+
+            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
+
+                const userid = element.dataset.userid ? element.dataset.userid : 0;
+                const component = element.dataset.component;
+                const itemid = element.dataset.itemid;
+
+                deleteItem(itemid, component, userid);
+            } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
+                addDiscountEvent(element);
+            }
+        });
+    });
+
+    if (visbilityevent == false) {
+        document.addEventListener("visibilitychange", function() {
+            visbilityevent = true;
+            if (document.visibilityState === 'visible') {
+                reinit();
+            }
+        });
+    }
 };
 
 export const buttoninit = (itemid, component) => {
@@ -93,68 +141,6 @@ export const buttoninit = (itemid, component) => {
     });
 
     return;
-};
-
-/**
- *
- * @param {*} expirationdate
- */
-
- export const init = (expirationdate) => {
-
-    // We might have more than one container.
-    let containers = [];
-    containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
-        + "," + SELECTORS.CASHIERSCART
-        + "," + SELECTORS.CHECKOUTCART);
-
-    // eslint-disable-next-line no-console
-    console.log(containers);
-
-    containers.forEach(container => {
-
-        container.addEventListener('click', event => {
-
-            // Decide the target of the click.
-            const element = event.target;
-
-            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
-
-                const userid = element.dataset.userid ? element.dataset.userid : 0;
-                const component = element.dataset.component;
-                const itemid = element.dataset.itemid;
-
-                deleteItem(itemid, component, userid);
-            }
-        });
-    });
-
-    if (visbilityevent == false) {
-        document.addEventListener("visibilitychange", function() {
-            visbilityevent = true;
-            if (document.visibilityState === 'visible') {
-                reinit();
-            }
-        });
-    }
-
-    return;
-
-    // countdownelement = document.querySelector('.expirationdate');
-    initTimer(expirationdate);
-    if (visbilityevent == false) {
-        let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
-        items.forEach(item => {
-            addDeleteevent(item);
-        });
-
-        items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-eur');
-        items.forEach(item => {
-            addDiscountEvent(item);
-        });
-
-    }
-    updateTotalPrice();
 };
 
 /**
@@ -380,7 +366,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
 
     // We must make sure the checkbox is only once visible on the site.
     // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
-
     usecredit = usecredit ? 1 : 0;
 
     // eslint-disable-next-line no-console
@@ -467,35 +452,6 @@ function dealWithZeroPrice(event) {
 }
 
 /**
- * Delete Event.
- * @param {HTMLElement} item
- * @param {int} userid
- */
-function addDeleteevent(item, userid = 0) {
-    if (userid !== 0) {
-        item.dataset.userid = '' + userid;
-    }
-    item.addEventListener('click', deleteEvent);
-}
-
-/**
- * Function called in listener.
- */
-function deleteEvent() {
-        const item = this;
-        // eslint-disable-next-line no-console
-        console.log('item', item);
-        // Item comes as #item-booking-213123.
-        const itemid = item.dataset.itemid;
-        const component = item.dataset.component;
-        let userid = item.dataset.userid;
-        if (!userid) {
-            userid = 0;
-        }
-        deleteItem(itemid, component, userid);
-    }
-
-/**
  * Start the timer.
  *
  * @param {integer} duration
@@ -534,6 +490,11 @@ function startTimer(duration, display) {
 function initTimer(expirationdate = null) {
 
     const countdownelement = document.querySelector(SELECTORS.COUNTDOWN);
+
+    if (!countdownelement) {
+        return;
+    }
+
     if (interval) {
         clearInterval(interval);
     }
