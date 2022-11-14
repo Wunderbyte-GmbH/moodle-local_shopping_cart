@@ -308,8 +308,16 @@
     color: var(--success);
 }
 
-#page-local-shopping_cart-cashier div.shopping-cart-cashier-items-container img.sc-cart-item-image {
+#shopping_cart-cashiers-cart div.shopping-cart-cashier-items-container img.sc-cart-item-image {
     width: 20px;
+}
+
+div.cashier-list-price-container div.shopping-cart-cashier-items-container img.sc-cart-item-image {
+    width: 100px;
+}
+
+#shopping_cart-cashiers-cart div.shopping-cart-cashier-items-container div.item-description {
+    display: none;
 }
 
 #page-local-shopping_cart-cashier div.shopping-cart-cashier-items-container .sc_initialtotal {

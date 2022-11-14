@@ -280,13 +280,7 @@ export const addItem = (itemid, component) => {
     let userid = transformUserIdForCashier();
 
     if (!Number.isInteger(userid)) {
-        // eslint-disable-next-line no-console
-        console.log('change type');
-
         userid = parseInt(userid);
-    } else {
-        // eslint-disable-next-line no-console
-        console.log('type ok');
     }
 
     Ajax.call([{
@@ -298,8 +292,6 @@ export const addItem = (itemid, component) => {
         },
         done: function(data) {
 
-            // eslint-disable-next-line no-console
-            console.log(data);
             data.component = component;
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
@@ -351,9 +343,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
     // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
     usecredit = usecredit ? 1 : 0;
 
-    // eslint-disable-next-line no-console
-    console.log('usecredit before ajax', usecredit, userid);
-
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
         args: {
@@ -369,21 +358,17 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 data.usecreditvalue = '';
             }
 
-            // eslint-disable-next-line no-console
-            console.log(data, data.usecreditvalue, userid);
-
             data.checkboxid = Math.random().toString(36).slice(2, 5);
 
             data.userid = userid;
 
             const labelareas = document.querySelectorAll(SELECTORS.PRICELABELAREA);
 
-            // eslint-disable-next-line no-console
-            console.log(labelareas);
-
             Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html, js}) => {
 
-                Templates.replaceNodeContents(SELECTORS.PRICELABELAREA, html, js);
+                labelareas.forEach(labelarea => {
+                    Templates.replaceNodeContents(labelarea, html, js);
+                });
 
                 return true;
             }).catch((e => {
