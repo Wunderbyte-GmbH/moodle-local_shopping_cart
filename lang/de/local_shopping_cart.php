@@ -57,6 +57,7 @@ $string['taxcategories'] = 'Steuerkategorien und anwendbare Steuersätze';
 $string['taxcategories_desc'] = 'Steuerkategorien und anwendbare Steuersätze (in %) pro User-Land.<br/>Z.B.: <pre>At A:20 B:10 C:0
 De A:19 B:10 C:0
 default A:0 B:0 C:0 </pre>';
+$string['taxcategories_invalid'] = 'Der eingegebene Text kann nicht als Steuerkategorien interpretiert werden!';
 $string['defaulttaxcategory'] = 'Standard Steuerkategorie';
 $string['defaulttaxcategory_desc'] = 'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';
 

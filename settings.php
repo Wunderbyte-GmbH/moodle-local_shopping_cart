@@ -23,6 +23,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shopping_cart\admin_setting_taxcategories;
+
 defined('MOODLE_INTERNAL') || die();
 
 $componentname = 'local_shopping_cart';
@@ -52,65 +54,64 @@ if ($hassiteconfig) {
 
         // If we have no payment accounts then show a static text instead.
         $settings->add(new admin_setting_description(
-            'nopaymentaccounts',
-            get_string('nopaymentaccounts', 'local_shopping_cart'),
-            get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
+                'nopaymentaccounts',
+                get_string('nopaymentaccounts', 'local_shopping_cart'),
+                get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
         ));
 
     } else {
         // Connect payment account.
         $settings->add(
-            new admin_setting_configselect(
-                $componentname .'/accountid',
-                get_string('accountid', $componentname),
-                get_string('accountid:description', $componentname),
-                null,
-                $paymentaccounts
-            )
+                new admin_setting_configselect(
+                        $componentname . '/accountid',
+                        get_string('accountid', $componentname),
+                        get_string('accountid:description', $componentname),
+                        null,
+                        $paymentaccounts
+                )
         );
     }
 
-
     // Max items in cart.
     $settings->add(
-        new admin_setting_configtext(
-            $componentname .'/maxitems',
-            get_string('maxitems', $componentname),
-            get_string('maxitems:description', $componentname),
-            10,
-            PARAM_INT
-        )
+            new admin_setting_configtext(
+                    $componentname . '/maxitems',
+                    get_string('maxitems', $componentname),
+                    get_string('maxitems:description', $componentname),
+                    10,
+                    PARAM_INT
+            )
     );
 
     // Item expiriation time in minutes.
     $settings->add(
-        new admin_setting_configtext(
-            $componentname . '/expirationtime',
-            get_string('expirationtime', $componentname),
-            get_string('expirationtime:description', $componentname),
-            15,
-            PARAM_INT
-        )
+            new admin_setting_configtext(
+                    $componentname . '/expirationtime',
+                    get_string('expirationtime', $componentname),
+                    get_string('expirationtime:description', $componentname),
+                    15,
+                    PARAM_INT
+            )
     );
 
     $settings->add(
-        new admin_setting_configtext(
-            $componentname . '/expirationtime',
-            get_string('expirationtime', $componentname),
-            get_string('expirationtime:description', $componentname),
-            15,
-            PARAM_INT
-        )
+            new admin_setting_configtext(
+                    $componentname . '/expirationtime',
+                    get_string('expirationtime', $componentname),
+                    get_string('expirationtime:description', $componentname),
+                    15,
+                    PARAM_INT
+            )
     );
 
     $settings->add(
-        new admin_setting_configtext(
-            $componentname . '/cancelationfee',
-            get_string('cancelationfee', $componentname),
-            get_string('cancelationfee:description', $componentname),
-            -1,
-            PARAM_FLOAT
-        )
+            new admin_setting_configtext(
+                    $componentname . '/cancelationfee',
+                    get_string('cancelationfee', $componentname),
+                    get_string('cancelationfee:description', $componentname),
+                    -1,
+                    PARAM_FLOAT
+            )
     );
 
     // Setting to round percentage discounts to full integers.
@@ -120,23 +121,23 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
     $settings->add(
-        new admin_setting_confightmleditor(
-            $componentname . '/additonalcashiersection',
-            get_string('additonalcashiersection', $componentname),
-            get_string('additonalcashiersection:description', $componentname),
-            '..',
-            PARAM_RAW
-        )
+            new admin_setting_confightmleditor(
+                    $componentname . '/additonalcashiersection',
+                    get_string('additonalcashiersection', $componentname),
+                    get_string('additonalcashiersection:description', $componentname),
+                    '..',
+                    PARAM_RAW
+            )
     );
 
     $settings->add(
-        new admin_setting_configtextarea(
-            $componentname . '/receipthtml',
-            get_string('receipthtml', $componentname),
-            get_string('receipthtml:description', $componentname),
-            '..',
-            PARAM_RAW
-        )
+            new admin_setting_configtextarea(
+                    $componentname . '/receipthtml',
+                    get_string('receipthtml', $componentname),
+                    get_string('receipthtml:description', $componentname),
+                    '..',
+                    PARAM_RAW
+            )
     );
 
     $fileid = 'local_shopping_cart_receiptimage';
@@ -147,7 +148,6 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
 
-
     // Setting to enable taxes processing
     $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', get_string('taxsettings', 'local_shopping_cart'));
     $taxsettings->add(
@@ -156,9 +156,9 @@ if ($hassiteconfig) {
                     get_string('enabletax_desc', 'local_shopping_cart'), 0));
 
     $taxProcessingEnabled = get_config('local_shopping_cart', 'enabletax') == 1;
-    if($taxProcessingEnabled) {
+    if ($taxProcessingEnabled) {
         $taxsettings->add(
-                new admin_setting_configtextarea(
+                new admin_setting_taxcategories(
                         $componentname . '/taxcategories',
                         get_string('taxcategories', $componentname),
                         get_string('taxcategories_desc', $componentname),

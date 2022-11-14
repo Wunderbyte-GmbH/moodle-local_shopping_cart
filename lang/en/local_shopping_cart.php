@@ -58,6 +58,7 @@ $string['taxcategories'] = 'Tax categories and their tax percentage';
 $string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage<br/>i.e.: <pre>At A:20 B:10 C:0
 De A:19 B:10 C:0
 default A:0 B:0 C:0 </pre>';
+$string['taxcategories_invalid'] = 'The given tax categories can not be parsed!';
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 
@@ -138,7 +139,8 @@ $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase fo
     You can specify the cancelation fee below. It will be deduced from the original purchase price.';
 
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
-$string['confirmpaidbackbody'] = 'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
+$string['confirmpaidbackbody'] =
+        'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidback'] = 'Confirm';
 
 $string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
@@ -168,7 +170,8 @@ $string['cashreport'] = 'Cash report';
 $string['cashreport_desc'] = 'Here you get an overview over all accounting transactions.
 You also can export the report in your preferred file format.';
 $string['accessdenied'] = 'Access denied';
-$string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
+$string['nopermissiontoaccesspage'] =
+        '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
 $string['showdailysums'] = '&sum; Show daily sums...';
 $string['titledailysums'] = 'Daily revenue';
 $string['titledailysums:all'] = 'Total revenue';
