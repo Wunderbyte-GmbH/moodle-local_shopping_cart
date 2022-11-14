@@ -233,35 +233,18 @@ export const reinit = (userid = 0) => {
     }]);
 };
 
+/**
+ * This function is only called when the timer invalidates the cart.
+ * This always works for the USER-user, so no userid is transmitted.
+ * The USER-user is chosen with the userid 0, we just reinit everything afert sending.
+ */
 export const deleteAllItems = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",
         args: {
         },
         done: function() {
-            let item = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
-            item.forEach(item => {
-                if (item) {
-                    item.remove();
-                }
-            });
-
-            updateTotalPrice();
-
-            let itemcount1 = document.getElementById("countbadge");
-            let itemcount2 = document.getElementById("itemcount");
-
-            itemcount1.innerHTML = 0;
-            itemcount2.innerHTML = 0;
-            itemcount2.classList.add("hidden");
-
-            // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
-            const addtocartbutton = document.querySelectorAll('[id^=btn-].disabled');
-            addtocartbutton.forEach(btn => {
-                if (btn) {
-                    btn.classList.remove('disabled');
-                }
-            });
+            reinit(0);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
