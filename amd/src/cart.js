@@ -26,11 +26,12 @@ import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 
 import {confirmPayment} from 'local_shopping_cart/cashier';
-import {addDiscountEvent} from 'local_shopping_cart/cashier';
+import {discountModal} from 'local_shopping_cart/cashier';
 import {showNotification} from 'local_shopping_cart/notifications';
 
 import {
-    get_strings as getStrings
+    get_strings as getStrings,
+    get_string as getString
         }
         from 'core/str';
 
@@ -73,9 +74,6 @@ const SELECTORS = {
         + "," + SELECTORS.CASHIERSCART
         + "," + SELECTORS.CHECKOUTCART);
 
-    // eslint-disable-next-line no-console
-    console.log(containers);
-
     containers.forEach(container => {
 
         container.addEventListener('click', event => {
@@ -91,7 +89,10 @@ const SELECTORS = {
 
                 deleteItem(itemid, component, userid);
             } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
-                addDiscountEvent(element);
+
+                // eslint-disable-next-line no-console
+                console.log('click event for DISCOUNTCLASS');
+                discountModal(event);
             }
         });
     });
@@ -150,13 +151,7 @@ export const buttoninit = (itemid, component) => {
  */
 export const reinit = (userid = 0) => {
 
-    // eslint-disable-next-line no-console
-    console.log('reinit', userid);
-
     userid = transformUserIdForCashier(userid);
-
-    // eslint-disable-next-line no-console
-    console.log('reinit', userid);
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
@@ -168,8 +163,6 @@ export const reinit = (userid = 0) => {
             // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
             const oncashier = window.location.href.indexOf("cashier.php");
 
-            // eslint-disable-next-line no-console
-            console.log(oncashier);
             if (oncashier > 0) {
                 data.iscashier = true;
             } else {
@@ -177,9 +170,6 @@ export const reinit = (userid = 0) => {
             }
 
             let containers = [];
-
-            // eslint-disable-next-line no-console
-            console.log(userid, data.iscashier);
 
             if (userid != 0 && data.iscashier) {
                 containers = document.querySelectorAll(SELECTORS.CASHIERSCART);
@@ -189,9 +179,6 @@ export const reinit = (userid = 0) => {
             }
 
             let promises = [];
-
-            // eslint-disable-next-line no-console
-            console.log(containers);
 
             // We render for promice for all the containers.
             promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
@@ -298,14 +285,23 @@ export const addItem = (itemid, component) => {
 
             if (data.success != 1) {
 
-                // TODO: FIX messages!
-
-                showNotification("Cart is full", 'danger');
+                getString('cartisfull', 'local_shopping_cart').then(message => {
+                    showNotification(message, 'danger');
+                    return;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
 
                 return;
             } else if (data.success == 1) {
-
-                showNotification(data.itemname + " added to cart", 'success');
+                getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
+                    showNotification(message, 'success');
+                    return;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
 
                 reinit(userid);
             }
@@ -324,9 +320,6 @@ export const addItem = (itemid, component) => {
  * @param {*} usecredit
  */
 export const updateTotalPrice = (userid = 0, usecredit = true) => {
-
-    // eslint-disable-next-line no-console
-    console.log('updatetotalprice');
 
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
@@ -383,18 +376,13 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 const price = data.price;
                 const currency = data.currency;
 
-                // eslint-disable-next-line no-console
-                console.log("paymentbutton", price, currency);
-
                 paymentbutton.dataset.cost = price + " " + currency;
 
                 if (price == 0) {
-                    // eslint-disable-next-line no-console
-                    console.log('price is 0');
+
                     paymentbutton.addEventListener('click', dealWithZeroPrice);
                 } else {
-                    // eslint-disable-next-line no-console
-                    console.log('price is not 0');
+
                     paymentbutton.removeEventListener('click', dealWithZeroPrice);
                 }
             }
@@ -503,9 +491,6 @@ function initTimer(expirationdate = null) {
 
                     const userid = element.dataset.userid;
 
-                    // eslint-disable-next-line no-console
-                    console.log(userid);
-
                     if (userid) {
                         confirmPayment(userid);
                     }
@@ -603,9 +588,6 @@ function toggleActiveButtonState(button = null) {
  */
 export function initPriceLabel(userid) {
 
-    // eslint-disable-next-line no-console
-    console.log('initPriceLabel', userid);
-
     if (userid < 1) {
         userid = 0;
     }
@@ -614,9 +596,6 @@ export function initPriceLabel(userid) {
 
     if (checkbox) {
         checkbox.addEventListener('change', event => {
-
-            // eslint-disable-next-line no-console
-            console.log(event);
 
             if (event.currentTarget.checked) {
                 updateTotalPrice(userid, true);
@@ -636,9 +615,6 @@ function transformUserIdForCashier(userid = null) {
 
     const oncashier = window.location.href.indexOf("cashier.php");
 
-    // eslint-disable-next-line no-console
-    console.log(userid, oncashier);
-
     if ((userid == CASHIERUSER || !(userid === 0 || userid === "0")) && oncashier > 0) {
         userid = CASHIERUSER;
     } else if (userid === null) {
@@ -648,9 +624,6 @@ function transformUserIdForCashier(userid = null) {
     if (!Number.isInteger(userid)) {
         userid = parseInt(userid);
     }
-
-    // eslint-disable-next-line no-console
-    console.log(userid, oncashier);
 
     return userid;
 }

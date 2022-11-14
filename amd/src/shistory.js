@@ -36,9 +36,6 @@ import ModalForm from 'core_form/modalform';
 
 export const init = (cancelationFee = null) => {
 
-    // eslint-disable-next-line no-console
-    console.log('init shopping cart history');
-
     const buttons = document.querySelectorAll(".cashier-history-items .shopping_cart_history_cancel_button");
 
     buttons.forEach(button => {
@@ -54,8 +51,6 @@ export const init = (cancelationFee = null) => {
                     event.stopPropagation();
 
                     if (button.dataset.canceled == false) {
-                        // eslint-disable-next-line no-console
-                        console.log('button clicked');
 
                         // We find out if we are on the cachiers page. Only there, we set the cachiers modal.
 
@@ -77,17 +72,12 @@ export const init = (cancelationFee = null) => {
 
     elements.forEach(element => {
 
-        // eslint-disable-next-line no-console
-        console.log('initialize paid back', element);
-
         if (!element.dataset.initialized) {
             element.addEventListener('click', event => {
 
                 event.preventDefault();
                 event.stopPropagation();
 
-                 // eslint-disable-next-line no-console
-                 console.log('button clicked');
                  confirmPaidBackModal(element);
             });
             element.dataset.initialized = true;
@@ -108,9 +98,6 @@ export const init = (cancelationFee = null) => {
  */
 function cancelPurchase(itemid, userid, componentname, historyid, currency, price, credit, button) {
 
-    // eslint-disable-next-line no-console
-    console.log('button clicked', historyid);
-
     Ajax.call([{
         methodname: "local_shopping_cart_cancel_purchase",
         args: {
@@ -122,23 +109,11 @@ function cancelPurchase(itemid, userid, componentname, historyid, currency, pric
         },
         done: function(data) {
 
-            // eslint-disable-next-line no-console
-            console.log(data);
-
             if (data.success == 1) {
 
                 getString('cancelsuccess', 'local_shopping_cart').then(message => {
 
-                    showNotification({
-                        message,
-                        type: "success"
-                    });
-
-                    setTimeout(() => {
-                        let notificationslist = document.querySelectorAll('#user-notifications div.alert');
-                        const notificatonelement = notificationslist[notificationslist.length - 1];
-                        notificatonelement.remove();
-                    }, 5000);
+                    showNotification(message, "success");
 
                     return;
                 }).catch(e => {
@@ -146,8 +121,6 @@ function cancelPurchase(itemid, userid, componentname, historyid, currency, pric
                     console.log(e);
                 });
 
-                // eslint-disable-next-line no-console
-                console.log('data returned', data.success);
                 setButtonToCanceled(button);
 
                 showCredit(data.credit, currency, userid);
@@ -179,8 +152,7 @@ function cancelPurchase(itemid, userid, componentname, historyid, currency, pric
                         console.log(e);
                     });
                 } else {
-                     // eslint-disable-next-line no-console
-                     console.log(addtocartbutton);
+
                      addtocartbutton.classList.remove('disabled');
                      addtocartbutton.dataset.initialized = false;
                      buttoninit(itemid, componentname);
@@ -189,16 +161,7 @@ function cancelPurchase(itemid, userid, componentname, historyid, currency, pric
             } else {
                 getString('canceldidntwork', 'local_shopping_cart').then(message => {
 
-                    Notification.addNotification({
-                        message,
-                        type: "danger"
-                    });
-
-                    setTimeout(() => {
-                        let notificationslist = document.querySelectorAll('#user-notifications div.alert');
-                        const notificatonelement = notificationslist[notificationslist.length - 1];
-                        notificatonelement.remove();
-                    }, 5000);
+                    showNotification(message, "danger");
 
                     return;
                 }).catch(e => {
@@ -228,8 +191,6 @@ function setButtonToCanceled(button) {
     button.dataset.canceled = true;
 
     getString('canceled', 'local_shopping_cart').then(result => {
-        // eslint-disable-next-line no-console
-        console.log(result);
 
         button.innerText = result;
         return;
@@ -297,7 +258,7 @@ function confirmPaidBack(element) {
         done: function(data) {
 
             // eslint-disable-next-line no-console
-            console.log(data, userid);
+            console.log(data);
 
             let creditelement = document.querySelector('.credit_total');
 
@@ -307,15 +268,15 @@ function confirmPaidBack(element) {
             let licreditelement = document.querySelector('.shopping_cart_history_paidback');
             licreditelement.classList.add('hidden');
 
-            Notification.addNotification({
-                message: "Credit paid back",
-                type: "success"
+            getString('creditpaidback', 'local_shopping_cart').then(message => {
+
+                showNotification(message, 'success');
+
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
             });
-            setTimeout(() => {
-                let notificationslist = document.querySelectorAll('#user-notifications div.alert.alert-success');
-                const notificatonelement = notificationslist[notificationslist.length - 1];
-                notificatonelement.remove();
-            }, 5000);
 
              // We also need to call the udpateTotalPrice function from this place to make sure everything is uptodate.
             updateTotalPrice();
@@ -352,9 +313,6 @@ function confirmCancelModal(button, cancelationFee) {
                     modal.setBody(strings[1]);
                     modal.setSaveButtonText(strings[2]);
                     modal.getRoot().on(ModalEvents.save, function() {
-
-                        // eslint-disable-next-line no-console
-                        console.log('we saved');
 
                         const historyid = button.dataset.historyid;
                         const itemid = button.dataset.itemid;
@@ -413,7 +371,7 @@ function confirmCancelAndSetCreditModal(button) {
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
         // eslint-disable-next-line no-console
-        console.log('confirmCancelAndSetCreditModal response: ', response);
+        console.log(response);
         window.location.reload();
     });
 
@@ -440,9 +398,6 @@ function confirmPaidBackModal(element) {
                 modal.setBody(strings[1]);
                 modal.setSaveButtonText(strings[2]);
                 modal.getRoot().on(ModalEvents.save, function() {
-
-                    // eslint-disable-next-line no-console
-                    console.log('we saved');
 
                     confirmPaidBack(element);
                 });

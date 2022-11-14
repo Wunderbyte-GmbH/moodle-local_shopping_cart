@@ -81,8 +81,10 @@ $string['success'] = 'Success';
 $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
 
+$string['cartisfull'] = 'Your shopping cart is full.';
 $string['cartisempty'] = 'Your shopping cart is empty.';
 $string['yourcart'] = 'Your shopping cart';
+$string['addedtocart'] = '{$a} was added to your cart.';
 
 // Cashier.
 $string['paymentonline'] = 'online';
@@ -136,6 +138,7 @@ $string['confirmzeropricecheckout'] = 'Confirm';
 
 $string['deletecredit'] = 'Refunded';
 $string['credit'] = 'Credit:';
+$string['creditpaidback'] = 'Credit paid back.';
 
 $string['cashier'] = 'Cashier';
 
