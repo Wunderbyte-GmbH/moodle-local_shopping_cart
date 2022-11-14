@@ -75,6 +75,8 @@ class get_price extends external_api {
             'usecredit' => $usecredit
         ]);
 
+        global $USER;
+
         require_login();
 
         $context = context_system::instance();
@@ -84,11 +86,23 @@ class get_price extends external_api {
 
         $usecredit = $params['usecredit'] == 1 ? true : false;
 
+        // As we need the userid in two functions below, we have this logic here.
+        $context = context_system::instance();
+        if ($params['userid'] == 0 ) {
+            $userid = (int)$USER->id;
+        } else if ($params['userid'] < 0) {
+            if (has_capability('local/shopping_cart:cashier', $context)) {
+                $userid = (int)shopping_cart::return_buy_for_userid();
+            }
+        } else {
+            $userid = (int)$params['userid'];
+        }
+
         // Add the state to the cache.
-        shopping_cart::save_used_credit_state($params['userid'], $usecredit);
+        shopping_cart::save_used_credit_state($userid, $usecredit);
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
-        $data = shopping_cart::local_shopping_cart_get_cache_data($params['userid'], $usecredit);
+        $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
 
         // For the webservice, we must make sure that the keys exist.
 

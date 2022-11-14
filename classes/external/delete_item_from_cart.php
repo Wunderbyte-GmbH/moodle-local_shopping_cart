@@ -78,6 +78,8 @@ class delete_item_from_cart extends external_api {
             'userid' => $userid
         ]);
 
+        global $USER;
+
         require_login();
 
         $context = context_system::instance();
@@ -85,8 +87,19 @@ class delete_item_from_cart extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
+        $context = context_system::instance();
+        if ($params['userid'] == 0 ) {
+            $userid = (int)$USER->id;
+        } else if ($params['userid'] < 0) {
+            if (has_capability('local/shopping_cart:cashier', $context)) {
+                $userid = shopping_cart::return_buy_for_userid();
+            }
+        } else {
+            $userid = $params['userid'];
+        }
+
         // This treats the cache side.
-        if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $params['userid'])) {
+        if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $userid)) {
             return ['success' => 1];
         }
         return ['success' => 0];

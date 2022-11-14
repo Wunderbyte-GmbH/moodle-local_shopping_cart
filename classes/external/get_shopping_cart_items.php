@@ -75,13 +75,14 @@ class get_shopping_cart_items extends external_api {
         require_login();
 
         $context = context_system::instance();
-
         if ($params['userid'] == 0 ) {
             $userid = (int)$USER->id;
-        } else if ($userid < 0) {
+        } else if ($params['userid'] < 0) {
             if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = shopping_cart::return_buy_for_userid();
+                $userid = (int)shopping_cart::return_buy_for_userid();
             }
+        } else {
+            $userid = (int)$params['userid'];
         }
 
         return shopping_cart::local_shopping_cart_get_cache_data($userid, true);

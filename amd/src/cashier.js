@@ -24,7 +24,7 @@ import Url from 'core/url';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
 
-import {updateTotalPrice} from 'local_shopping_cart/cart';
+import {reinit} from 'local_shopping_cart/cart';
 
 import {
     get_string as getString
@@ -94,32 +94,9 @@ export const confirmPayment = (userid, paymenttype) => {
 
                     document.getElementById('success-tab').classList.add('success');
 
-                    if (data.credit) {
-                        const credittotal = document.querySelector('span.credit_total');
-                        credittotal.innerText = data.credit;
-                    }
-
-                    // We might display the item more often than once.
-                    let items = document.querySelectorAll('#shopping_cart-cashiers-cart ul.shopping-cart-items li.clearfix');
-
-                    items.forEach(item => {
-                        // eslint-disable-next-line no-console
-                        console.log(item);
-                        if (item) {
-                            item.remove();
-                        }
-                    });
-                    let totalprices = document.querySelectorAll('#shopping_cart-cashiers-cart .initialtotal');
-
-                    totalprices.forEach(item => {
-                        // eslint-disable-next-line no-console
-                        console.log(item);
-                        if (item) {
-                            item.innerText = 0;
-                        }
-                    });
-
                     displayPaymentMessage('paymentsuccessful');
+
+
                 }
 
             } else {
@@ -340,7 +317,7 @@ function discountModal() {
         // eslint-disable-next-line no-console
         console.log('confirmCancelAndSetCreditModal response: ', response);
 
-        updateTotalPrice(userid);
+        reinit(-1);
     });
 
     // Show the form.

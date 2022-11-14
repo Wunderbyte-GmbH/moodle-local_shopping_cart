@@ -348,7 +348,7 @@ class shopping_cart {
 
                 // We need the userid in every item.
                 foreach ($data['items'] as $key => $value) {
-                    $data['items'][$key]['userid'] = $userid;
+                    $data['items'][$key]['userid'] = $userid != $USER->id ? -1 : 0;
                 }
 
                 $data['price'] = array_sum(array_column($data['items'], 'price'));

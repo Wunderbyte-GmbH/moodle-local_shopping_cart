@@ -126,6 +126,9 @@
                         <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
                             <div class="row">
                                 <div class="col-md-12">
+                                    <div class="shopping-cart-cashier-items-container">
+                                        {{> local_shopping_cart/shopping_cart_items }}
+                                    </div>
                                     <div class="sc_price_label" data-userid="{{userid}}">
                                         {{> local_shopping_cart/price_label }}
                                     </div>
@@ -144,9 +147,6 @@
                                 <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="button"
                                    aria-controls="debitcardpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
                                     payedwithdebitcard, local_shopping_cart {{/str}}</a>
-                            </div>
-                            <div class="shopping-cart-cashier-items-container">
-                                {{> local_shopping_cart/shopping_cart_items }}
                             </div>
                         </div>
                         {{! 4. Tab to show success }}

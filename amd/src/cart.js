@@ -39,12 +39,12 @@ export var visbilityevent = false;
 
 
 
-// We need click listener on cart
-// Disabled should not be done by a check on cart, but either it's loaded via php, OR it is added right away with the click.
-// We should load the whole cart, including the price, with one function which always stays the same. (less css)
+// This file inits the cart on every page, on checkout and cashier.
+// The cart is always loaed entirely and replaced via css.
+// The cashiers cart are identified in the DOM via userid -1 (CASHIERUSER).
+// The translation to real userids is done in the PHP only.
 
-
-
+const CASHIERUSER = -1;
 
 const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
@@ -70,9 +70,6 @@ export const buttoninit = (itemid, component) => {
 
     buttons.forEach(addtocartbutton => {
 
-        // eslint-disable-next-line no-console
-        console.log('buttoninit', itemid, component);
-
         // We need to check all the buttons.
         toggleActiveButtonState(addtocartbutton);
 
@@ -96,43 +93,6 @@ export const buttoninit = (itemid, component) => {
     });
 
     return;
-
-    // If there is no itemid, we browse the whole document and init all buttons individually.
-    if (!itemid) {
-        const buttons = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
-        buttons.forEach(button => {
-            const number = button.itemid;
-            buttoninit(number, component);
-        });
-        return;
-    }
-
-    // We don't know how many instances of this peticular button are on the site. So we need to be agnostic.
-
-    // First we get the button and delete the helper-span to secure js loading.
-    const addtocartbutton = document.querySelector('#btn-' + component + '-' + itemid);
-
-    // If we don't find the button, we abort.
-    if (!addtocartbutton || addtocartbutton.dataset.initialized === 'true') {
-        return;
-    }
-    addtocartbutton.dataset.initialized = 'true';
-
-    // Make sure item is not yet in shopping cart. If so, add disabled class.
-    let shoppingcart = document.querySelector('#shopping_cart-cashiers-cart');
-
-    if (!shoppingcart) {
-        shoppingcart = document.querySelector('#nav-shopping_cart-popover-container');
-    }
-
-    if (shoppingcart) {
-        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + itemid + ']');
-        if (cartitem) {
-            addtocartbutton.classList.add('disabled');
-        }
-    }
-
-
 };
 
 /**
@@ -207,6 +167,11 @@ export const reinit = (userid = 0) => {
     // eslint-disable-next-line no-console
     console.log('reinit', userid);
 
+    userid = transformUserIdForCashier(userid);
+
+    // eslint-disable-next-line no-console
+    console.log('reinit', userid);
+
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
         args: {
@@ -216,7 +181,10 @@ export const reinit = (userid = 0) => {
 
             // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
             const oncashier = window.location.href.indexOf("cashier.php");
-            if (oncashier) {
+
+            // eslint-disable-next-line no-console
+            console.log(oncashier);
+            if (oncashier > 0) {
                 data.iscashier = true;
             } else {
                 data.iscashier = false;
@@ -318,6 +286,8 @@ export const deleteAllItems = () => {
 
 export const deleteItem = (itemid, component, userid) => {
 
+    userid = transformUserIdForCashier(userid);
+
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
@@ -338,11 +308,16 @@ export const deleteItem = (itemid, component, userid) => {
 
 export const addItem = (itemid, component) => {
 
-    const oncashier = window.location.href.indexOf("cashier.php");
+    let userid = transformUserIdForCashier();
 
-    let userid = 0;
-    if (oncashier > 0) {
-        userid = -1;
+    if (!Number.isInteger(userid)) {
+        // eslint-disable-next-line no-console
+        console.log('change type');
+
+        userid = parseInt(userid);
+    } else {
+        // eslint-disable-next-line no-console
+        console.log('type ok');
     }
 
     Ajax.call([{
@@ -353,11 +328,16 @@ export const addItem = (itemid, component) => {
             'userid': userid
         },
         done: function(data) {
+
+            // eslint-disable-next-line no-console
+            console.log(data);
             data.component = component;
             data.itemid = itemid;
-            data.userid = data.buyforuser; // For the mustache template, we need to obey structure.
+            data.userid = userid; // For the mustache template, we need to obey structure.
 
             if (data.success != 1) {
+
+                // TODO: FIX messages!
 
                 showNotification("Cart is full", 'danger');
 
@@ -387,20 +367,24 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
     // eslint-disable-next-line no-console
     console.log('updatetotalprice');
 
-    // We must make sure the checkbox is only once visible on the site.
-    const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+    // On cashier, update price must always be for cashier user.
+    const oncashier = window.location.href.indexOf("cashier.php");
 
-    if (!checkbox) {
-        return;
+    if (oncashier > 0) {
+        userid = CASHIERUSER;
     }
 
-    // eslint-disable-next-line no-console
-    console.log('checked', checkbox.checked, usecredit);
+    if (!Number.isInteger(userid)) {
+        userid = parseInt(userid);
+    }
+
+    // We must make sure the checkbox is only once visible on the site.
+    // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
 
     usecredit = usecredit ? 1 : 0;
 
     // eslint-disable-next-line no-console
-    console.log('usecredit before ajax', usecredit);
+    console.log('usecredit before ajax', usecredit, userid);
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
@@ -418,7 +402,7 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             }
 
             // eslint-disable-next-line no-console
-            console.log(data, data.usecreditvalue);
+            console.log(data, data.usecreditvalue, userid);
 
             data.checkboxid = Math.random().toString(36).slice(2, 5);
 
@@ -476,13 +460,8 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
  */
 function dealWithZeroPrice(event) {
 
-    // eslint-disable-next-line no-console
-    console.log('onlymyclickcounts');
-
         event.stopPropagation();
         event.preventDefault();
-        // eslint-disable-next-line no-console
-        console.log('onlymyclickcounts', event.target);
 
         confirmZeroPriceCheckoutModal(event.target);
 }
@@ -668,15 +647,9 @@ function toggleActiveButtonState(button = null) {
     // Make sure item is not yet in shopping cart. If so, add disabled class.
     let shoppingcart = document.querySelector(SELECTORS.CASHIERSCART);
 
-    // eslint-disable-next-line no-console
-    console.log(shoppingcart);
-
     if (!shoppingcart) {
         shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
     }
-
-    // eslint-disable-next-line no-console
-    console.log(shoppingcart);
 
     buttons.forEach(addtocartbutton => {
 
@@ -723,4 +696,32 @@ export function initPriceLabel(userid) {
             }
         });
     }
+}
+
+/**
+ * We need to know if we are on the cashier page to transform userid if necessary.
+ * @param {integer} userid
+ * @returns {integer}
+ */
+function transformUserIdForCashier(userid = null) {
+
+    const oncashier = window.location.href.indexOf("cashier.php");
+
+    // eslint-disable-next-line no-console
+    console.log(userid, oncashier);
+
+    if ((userid == CASHIERUSER || !(userid === 0 || userid === "0")) && oncashier > 0) {
+        userid = CASHIERUSER;
+    } else if (userid === null) {
+        userid = 0;
+    }
+
+    if (!Number.isInteger(userid)) {
+        userid = parseInt(userid);
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(userid, oncashier);
+
+    return userid;
 }

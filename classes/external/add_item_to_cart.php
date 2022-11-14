@@ -78,12 +78,16 @@ class add_item_to_cart extends external_api {
             'userid' => $userid
         ]);
 
+        global $USER;
+
         require_login();
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
+
+        // The transformation of the userid will be done in the add_item_to_cart function
 
         return shopping_cart::add_item_to_cart($params['component'], $params['itemid'], $params['userid']);
     }

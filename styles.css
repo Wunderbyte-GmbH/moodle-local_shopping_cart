@@ -312,6 +312,10 @@
     width: 20px;
 }
 
+#page-local-shopping_cart-cashier div.shopping-cart-cashier-items-container .sc_initialtotal {
+    display: none;
+}
+
 div.shopping-cart-items-container img.sc-cart-item-image {
     width: 20px;
 }
