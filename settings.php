@@ -30,7 +30,7 @@ $componentname = 'local_shopping_cart';
 // Default for users that have site config.
 if ($hassiteconfig) {
     // Add the category to the local plugin branch.
-    $settings = new admin_settingpage('local_shopping_cart_settings', get_string('pluginname', 'local_shopping_cart'));
+    $settings = new admin_settingpage('local_shopping_cart_settings', '');
     $ADMIN->add('localplugins', new admin_category($componentname, get_string('pluginname', $componentname)));
     $ADMIN->add($componentname, $settings);
 
