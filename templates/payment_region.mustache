@@ -38,8 +38,9 @@
 
     Example context (json):
     {
-        "price": "$108.50",
-        "instanceid": 11,
+        "price": "108.50",
+        "currency": "EUR",
+        "identifier": 11,
         "description": "Enrolment in course Introduction to algorithms",
         "successurl": "https://moodlesite/course/view.php?id=2",
         "isguestuser": false
@@ -63,6 +64,7 @@
             data-component="local_shopping_cart"
             data-paymentarea="shopping_cart"
             data-identifier="{{identifier}}"
+            data-itemid="{{identifier}}"
             data-userid="{{userid}}"
             data-cost="{{price}} {{currency}}"
             data-successurl="{{successurl}}"
