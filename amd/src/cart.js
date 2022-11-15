@@ -38,8 +38,6 @@ import {
 export var interval = null;
 export var visbilityevent = false;
 
-
-
 // This file inits the cart on every page, on checkout and cashier.
 // The cart is always loaed entirely and replaced via css.
 // The cashiers cart are identified in the DOM via userid -1 (CASHIERUSER).
@@ -81,7 +79,7 @@ const SELECTORS = {
             // Decide the target of the click.
             const element = event.target;
 
-            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
+            if (element.classList.contains(SELECTORS.TRASHCLASS)) {
 
                 const userid = element.dataset.userid ? element.dataset.userid : 0;
                 const component = element.dataset.component;
@@ -90,8 +88,6 @@ const SELECTORS = {
                 deleteItem(itemid, component, userid);
             } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
 
-                // eslint-disable-next-line no-console
-                console.log('click event for DISCOUNTCLASS');
                 discountModal(event);
             }
         });
@@ -104,6 +100,17 @@ const SELECTORS = {
                 reinit();
             }
         });
+    }
+
+    // Initially, we need to add the zeroPriceListener once.
+
+    const paymentbutton = document.querySelector('div.shopping_cart_payment_region button');
+    if (paymentbutton) {
+        const data = {
+            price: paymentbutton.dataset.price,
+            currency: paymentbutton.dataset.currency,
+        };
+        addZeroPriceListener(data);
     }
 };
 
@@ -361,6 +368,8 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
 
                 labelareas.forEach(labelarea => {
                     Templates.replaceNodeContents(labelarea, html, js);
+
+                    addZeroPriceListener(data);
                 });
 
                 return true;
@@ -369,24 +378,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 console.log(e);
             }));
 
-            let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
-
-            if (paymentbutton) {
-
-                const price = data.price;
-                const currency = data.currency;
-
-                paymentbutton.dataset.cost = price + " " + currency;
-
-                if (price == 0) {
-
-                    paymentbutton.addEventListener('click', dealWithZeroPrice);
-                } else {
-
-                    paymentbutton.removeEventListener('click', dealWithZeroPrice);
-                }
-            }
-
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -394,6 +385,31 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
         }
     }], true);
 };
+
+/**
+ * Looks for the payment buttun, updates cost and adds the listener.
+ * @param {*} data
+ */
+function addZeroPriceListener(data) {
+
+    let paymentbutton = document.querySelector(".shopping_cart_payment_region button");
+
+    if (paymentbutton) {
+
+        const price = data.price;
+        const currency = data.currency;
+
+        paymentbutton.dataset.cost = price + " " + currency;
+
+        if (price == 0) {
+
+            paymentbutton.addEventListener('click', dealWithZeroPrice);
+        } else {
+
+            paymentbutton.removeEventListener('click', dealWithZeroPrice);
+        }
+    }
+}
 
 /**
  *
@@ -492,7 +508,9 @@ function initTimer(expirationdate = null) {
                     const userid = element.dataset.userid;
 
                     if (userid) {
-                        confirmPayment(userid);
+                        // The second parameter designs the payment method.
+                        // In the cart, the constant PAYMENT_METHOD_CREDITS translates to 2.
+                        confirmPayment(userid, 2);
                     }
                 });
 
