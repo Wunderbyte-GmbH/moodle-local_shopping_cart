@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pages main view page.
+ * Cashier main view page.
  *
  * @package         local_shopping_cart
  * @author          Thomas Winkler
@@ -30,6 +30,9 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
+$context = context_system::instance();
+// Only cashiers can visit this page.
+require_capability('local/shopping_cart:cashier', $context);
 
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
