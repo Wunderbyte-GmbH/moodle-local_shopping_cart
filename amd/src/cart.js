@@ -26,11 +26,12 @@ import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 
 import {confirmPayment} from 'local_shopping_cart/cashier';
-import {addDiscountEvent} from 'local_shopping_cart/cashier';
+import {discountModal} from 'local_shopping_cart/cashier';
 import {showNotification} from 'local_shopping_cart/notifications';
 
 import {
-    get_strings as getStrings
+    get_strings as getStrings,
+    get_string as getString
         }
         from 'core/str';
 
@@ -50,12 +51,60 @@ const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
+    DISCOUNTCLASS: 'fa-eur',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
     PRICELABELAREA: '.sc_price_label',
+};
+/**
+ *
+ * @param {*} expirationdate
+ */
+
+ export const init = (expirationdate) => {
+
+    initTimer(expirationdate);
+
+    // We might have more than one container.
+    let containers = [];
+    containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
+        + "," + SELECTORS.CASHIERSCART
+        + "," + SELECTORS.CHECKOUTCART);
+
+    containers.forEach(container => {
+
+        container.addEventListener('click', event => {
+
+            // Decide the target of the click.
+            const element = event.target;
+
+            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
+
+                const userid = element.dataset.userid ? element.dataset.userid : 0;
+                const component = element.dataset.component;
+                const itemid = element.dataset.itemid;
+
+                deleteItem(itemid, component, userid);
+            } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
+
+                // eslint-disable-next-line no-console
+                console.log('click event for DISCOUNTCLASS');
+                discountModal(event);
+            }
+        });
+    });
+
+    if (visbilityevent == false) {
+        document.addEventListener("visibilitychange", function() {
+            visbilityevent = true;
+            if (document.visibilityState === 'visible') {
+                reinit();
+            }
+        });
+    }
 };
 
 export const buttoninit = (itemid, component) => {
@@ -96,81 +145,13 @@ export const buttoninit = (itemid, component) => {
 };
 
 /**
- *
- * @param {*} expirationdate
- */
-
- export const init = (expirationdate) => {
-
-    // We might have more than one container.
-    let containers = [];
-    containers = document.querySelectorAll(SELECTORS.NAVBARCONTAINER
-        + "," + SELECTORS.CASHIERSCART
-        + "," + SELECTORS.CHECKOUTCART);
-
-    // eslint-disable-next-line no-console
-    console.log(containers);
-
-    containers.forEach(container => {
-
-        container.addEventListener('click', event => {
-
-            // Decide the target of the click.
-            const element = event.target;
-
-            if (element.classList.contains(SELECTORS.TRASHCLASS))  {
-
-                const userid = element.dataset.userid ? element.dataset.userid : 0;
-                const component = element.dataset.component;
-                const itemid = element.dataset.itemid;
-
-                deleteItem(itemid, component, userid);
-            }
-        });
-    });
-
-    if (visbilityevent == false) {
-        document.addEventListener("visibilitychange", function() {
-            visbilityevent = true;
-            if (document.visibilityState === 'visible') {
-                reinit();
-            }
-        });
-    }
-
-    return;
-
-    // countdownelement = document.querySelector('.expirationdate');
-    initTimer(expirationdate);
-    if (visbilityevent == false) {
-        let items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-trash-o');
-        items.forEach(item => {
-            addDeleteevent(item);
-        });
-
-        items = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM + ' .fa-eur');
-        items.forEach(item => {
-            addDiscountEvent(item);
-        });
-
-    }
-    updateTotalPrice();
-};
-
-/**
  * Function to reload the cart. We can pass on the certain component if we need to make sure that not only the cart is reloaded.
  * This is the case when adding or deleting a certain item and a special button has to be reset.
  * @param {*} userid
  */
 export const reinit = (userid = 0) => {
 
-    // eslint-disable-next-line no-console
-    console.log('reinit', userid);
-
     userid = transformUserIdForCashier(userid);
-
-    // eslint-disable-next-line no-console
-    console.log('reinit', userid);
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
@@ -182,8 +163,6 @@ export const reinit = (userid = 0) => {
             // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
             const oncashier = window.location.href.indexOf("cashier.php");
 
-            // eslint-disable-next-line no-console
-            console.log(oncashier);
             if (oncashier > 0) {
                 data.iscashier = true;
             } else {
@@ -191,9 +170,6 @@ export const reinit = (userid = 0) => {
             }
 
             let containers = [];
-
-            // eslint-disable-next-line no-console
-            console.log(userid, data.iscashier);
 
             if (userid != 0 && data.iscashier) {
                 containers = document.querySelectorAll(SELECTORS.CASHIERSCART);
@@ -203,9 +179,6 @@ export const reinit = (userid = 0) => {
             }
 
             let promises = [];
-
-            // eslint-disable-next-line no-console
-            console.log(containers);
 
             // We render for promice for all the containers.
             promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
@@ -247,35 +220,18 @@ export const reinit = (userid = 0) => {
     }]);
 };
 
+/**
+ * This function is only called when the timer invalidates the cart.
+ * This always works for the USER-user, so no userid is transmitted.
+ * The USER-user is chosen with the userid 0, we just reinit everything afert sending.
+ */
 export const deleteAllItems = () => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",
         args: {
         },
         done: function() {
-            let item = document.querySelectorAll(SELECTORS.SHOPPING_CART_ITEM);
-            item.forEach(item => {
-                if (item) {
-                    item.remove();
-                }
-            });
-
-            updateTotalPrice();
-
-            let itemcount1 = document.getElementById("countbadge");
-            let itemcount2 = document.getElementById("itemcount");
-
-            itemcount1.innerHTML = 0;
-            itemcount2.innerHTML = 0;
-            itemcount2.classList.add("hidden");
-
-            // Make sure addtocartbutton active againe once the item is removed from the shopping cart.
-            const addtocartbutton = document.querySelectorAll('[id^=btn-].disabled');
-            addtocartbutton.forEach(btn => {
-                if (btn) {
-                    btn.classList.remove('disabled');
-                }
-            });
+            reinit(0);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -311,13 +267,7 @@ export const addItem = (itemid, component) => {
     let userid = transformUserIdForCashier();
 
     if (!Number.isInteger(userid)) {
-        // eslint-disable-next-line no-console
-        console.log('change type');
-
         userid = parseInt(userid);
-    } else {
-        // eslint-disable-next-line no-console
-        console.log('type ok');
     }
 
     Ajax.call([{
@@ -329,22 +279,29 @@ export const addItem = (itemid, component) => {
         },
         done: function(data) {
 
-            // eslint-disable-next-line no-console
-            console.log(data);
             data.component = component;
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
 
             if (data.success != 1) {
 
-                // TODO: FIX messages!
-
-                showNotification("Cart is full", 'danger');
+                getString('cartisfull', 'local_shopping_cart').then(message => {
+                    showNotification(message, 'danger');
+                    return;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
 
                 return;
             } else if (data.success == 1) {
-
-                showNotification(data.itemname + " added to cart", 'success');
+                getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
+                    showNotification(message, 'success');
+                    return;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
 
                 reinit(userid);
             }
@@ -364,9 +321,6 @@ export const addItem = (itemid, component) => {
  */
 export const updateTotalPrice = (userid = 0, usecredit = true) => {
 
-    // eslint-disable-next-line no-console
-    console.log('updatetotalprice');
-
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
 
@@ -380,11 +334,7 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
 
     // We must make sure the checkbox is only once visible on the site.
     // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
-
     usecredit = usecredit ? 1 : 0;
-
-    // eslint-disable-next-line no-console
-    console.log('usecredit before ajax', usecredit, userid);
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
@@ -401,21 +351,17 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 data.usecreditvalue = '';
             }
 
-            // eslint-disable-next-line no-console
-            console.log(data, data.usecreditvalue, userid);
-
             data.checkboxid = Math.random().toString(36).slice(2, 5);
 
             data.userid = userid;
 
             const labelareas = document.querySelectorAll(SELECTORS.PRICELABELAREA);
 
-            // eslint-disable-next-line no-console
-            console.log(labelareas);
-
             Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html, js}) => {
 
-                Templates.replaceNodeContents(SELECTORS.PRICELABELAREA, html, js);
+                labelareas.forEach(labelarea => {
+                    Templates.replaceNodeContents(labelarea, html, js);
+                });
 
                 return true;
             }).catch((e => {
@@ -430,18 +376,13 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 const price = data.price;
                 const currency = data.currency;
 
-                // eslint-disable-next-line no-console
-                console.log("paymentbutton", price, currency);
-
                 paymentbutton.dataset.cost = price + " " + currency;
 
                 if (price == 0) {
-                    // eslint-disable-next-line no-console
-                    console.log('price is 0');
+
                     paymentbutton.addEventListener('click', dealWithZeroPrice);
                 } else {
-                    // eslint-disable-next-line no-console
-                    console.log('price is not 0');
+
                     paymentbutton.removeEventListener('click', dealWithZeroPrice);
                 }
             }
@@ -465,35 +406,6 @@ function dealWithZeroPrice(event) {
 
         confirmZeroPriceCheckoutModal(event.target);
 }
-
-/**
- * Delete Event.
- * @param {HTMLElement} item
- * @param {int} userid
- */
-function addDeleteevent(item, userid = 0) {
-    if (userid !== 0) {
-        item.dataset.userid = '' + userid;
-    }
-    item.addEventListener('click', deleteEvent);
-}
-
-/**
- * Function called in listener.
- */
-function deleteEvent() {
-        const item = this;
-        // eslint-disable-next-line no-console
-        console.log('item', item);
-        // Item comes as #item-booking-213123.
-        const itemid = item.dataset.itemid;
-        const component = item.dataset.component;
-        let userid = item.dataset.userid;
-        if (!userid) {
-            userid = 0;
-        }
-        deleteItem(itemid, component, userid);
-    }
 
 /**
  * Start the timer.
@@ -534,6 +446,11 @@ function startTimer(duration, display) {
 function initTimer(expirationdate = null) {
 
     const countdownelement = document.querySelector(SELECTORS.COUNTDOWN);
+
+    if (!countdownelement) {
+        return;
+    }
+
     if (interval) {
         clearInterval(interval);
     }
@@ -573,9 +490,6 @@ function initTimer(expirationdate = null) {
                 modal.getRoot().on(ModalEvents.save, function() {
 
                     const userid = element.dataset.userid;
-
-                    // eslint-disable-next-line no-console
-                    console.log(userid);
 
                     if (userid) {
                         confirmPayment(userid);
@@ -674,9 +588,6 @@ function toggleActiveButtonState(button = null) {
  */
 export function initPriceLabel(userid) {
 
-    // eslint-disable-next-line no-console
-    console.log('initPriceLabel', userid);
-
     if (userid < 1) {
         userid = 0;
     }
@@ -685,9 +596,6 @@ export function initPriceLabel(userid) {
 
     if (checkbox) {
         checkbox.addEventListener('change', event => {
-
-            // eslint-disable-next-line no-console
-            console.log(event);
 
             if (event.currentTarget.checked) {
                 updateTotalPrice(userid, true);
@@ -707,9 +615,6 @@ function transformUserIdForCashier(userid = null) {
 
     const oncashier = window.location.href.indexOf("cashier.php");
 
-    // eslint-disable-next-line no-console
-    console.log(userid, oncashier);
-
     if ((userid == CASHIERUSER || !(userid === 0 || userid === "0")) && oncashier > 0) {
         userid = CASHIERUSER;
     } else if (userid === null) {
@@ -719,9 +624,6 @@ function transformUserIdForCashier(userid = null) {
     if (!Number.isInteger(userid)) {
         userid = parseInt(userid);
     }
-
-    // eslint-disable-next-line no-console
-    console.log(userid, oncashier);
 
     return userid;
 }

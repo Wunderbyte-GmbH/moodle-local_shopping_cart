@@ -258,32 +258,14 @@ export const addPrintIdentifier = (identifier, userid) => {
     });
   };
 
-
-/**
- * Delete Event.
- * @param {HTMLElement} button
- * @param {int} userid
- */
- export function addDiscountEvent(button, userid = 0) {
-    // eslint-disable-next-line no-console
-    console.log('add to button', button);
-    if (userid !== 0) {
-        button.dataset.userid = userid;
-    }
-    if (button.dataset.initialized) {
-        return;
-    }
-    button.dataset.initialized = true;
-    button.addEventListener('click', discountModal);
-}
-
 /**
  *
+ * @param {*} event
  */
-function discountModal() {
+export function discountModal(event) {
 
     // We two parents up, we find the right element with the necessary information.
-    const element = this.closest('li');
+    const element = event.target.closest('li');
 
     // eslint-disable-next-line no-console
     console.log('closest', element);
@@ -339,15 +321,9 @@ function displayPaymentMessage(message, success = true) {
             displaymessage.innerText = localizedmessage;
 
             if (success) {
-                showNotification({
-                    message: localizedmessage,
-                    type: "info"
-                });
+                showNotification(localizedmessage, "info");
             } else {
-                showNotification({
-                    message: localizedmessage,
-                    type: "error"
-                });
+                showNotification(localizedmessage, "error");
             }
             return;
         }).catch(e => {

@@ -48,8 +48,17 @@ class modal_add_discount_to_item extends dynamic_form {
 
         $mform = $this->_form;
 
-        $userid = $this->_ajaxformdata["userid"] == 0
-            ? $USER->id : $this->_ajaxformdata["userid"];
+        // The userid ist -1 if we are on cashier site.
+
+        if ($this->_ajaxformdata["userid"] == -1) {
+            $userid = shopping_cart::return_buy_for_userid();
+        } else if ($this->_ajaxformdata["userid"] == 0) {
+            $userid = $USER->id;
+        } else {
+            $userid = $this->_ajaxformdata["userid"];
+        }
+
+        $this->_ajaxformdata["userid"] = $userid;
 
         $mform->addElement('static', 'bodytext', '', get_string('adddiscounttoitem', 'local_shopping_cart'));
 

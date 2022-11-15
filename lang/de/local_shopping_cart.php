@@ -80,8 +80,10 @@ $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
 
+$string['cartisfull'] = 'Ihr Warenkorb ist voll.';
 $string['cartisempty'] = 'Ihr Warenkorb ist leer.';
 $string['yourcart'] = 'Ihr Warenkorb';
+$string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
 
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
@@ -135,6 +137,7 @@ $string['confirmzeropricecheckout'] = 'Bestätige';
 
 $string['deletecredit'] = 'Ausbezahlt';
 $string['credit'] = 'Guthaben:';
+$string['creditpaidback'] = 'Guthaben ausgezahlt';
 
 $string['cashier'] = 'Kassa';
 
