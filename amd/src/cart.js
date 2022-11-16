@@ -116,6 +116,18 @@ const SELECTORS = {
 
 export const buttoninit = (itemid, component) => {
 
+    if (itemid === null) {
+        const allbuttons = document.querySelectorAll(
+            '[data-component="' + component + '"]'
+            + '[data-objecttable="local_shopping_cart"');
+
+        allbuttons.forEach(button => {
+            const itemid = button.dataset.itemid;
+            buttoninit(itemid, component);
+        });
+        return;
+    }
+
     // Return all buttons with the add to cart functionality.
     const buttons =
     document.querySelectorAll(
