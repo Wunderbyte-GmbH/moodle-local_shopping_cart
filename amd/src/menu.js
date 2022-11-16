@@ -85,6 +85,9 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         window.console.log(e.detail);
 
+        // Reload window after cancelling.
+        window.location.reload();
+
         // eslint-disable-next-line no-console
         console.log('confirmCancelAllUsersAndSetCreditModal: form submitted');
     });
