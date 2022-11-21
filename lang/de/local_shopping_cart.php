@@ -98,7 +98,7 @@ $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
 $string['restart'] = 'Nächste/r KundIn';
 $string['print'] = 'Drucken';
 $string['previouspurchases'] = 'Bisherige Käufe';
-$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung...';
+$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung';
 $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = 'Teilnehmerin...';
