@@ -30,7 +30,7 @@ require_once(__DIR__ . '/../../config.php');
 require_login();
 
 $syscontext = context_system::instance();
-
+global $PAGE, $OUTPUT;
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url('/test.php');
@@ -44,16 +44,19 @@ $renderer = $PAGE->get_renderer('local_shopping_cart');
 
 $canceluntil = strtotime('+14 days', time());
 
-$item = new cartitem(1, 'Testitem 1', 10.00, 'EUR', 'local_shopping_cart', 'My Testitem 1 description', '', $canceluntil);
-$data = $item->as_array();
-$data = new button($data);
-echo $renderer->render_button($data);
-$item = new cartitem(2, 'asdsad 2', 20.3, 'EUR', 'local_shopping_cart', 'My Testitem 2 description', '', $canceluntil);
-$data = $item->as_array();
-$data = new button($data);
+// this cartitem data is not really used (except for itemid), because data is fetched from service_provider.
+// See \local_shopping_cart\shopping_cart\service_provider for real values
+$item = new cartitem(1, '1', 10.00, 'EUR', 'local_shopping_cart', '', '', $canceluntil);
+$button = new button($item->as_array());
+echo $renderer->render_button($button);
+
+$item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', '', '', $canceluntil);
+$button = new button($item->as_array());
+echo $renderer->render_button($button);
+
 global $USER;
 $history = new shopping_cart_history();
 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 /* $data = $history->prepare_data_from_cache($USER->id);*/
-echo $renderer->render_button($data);
+
 echo $OUTPUT->footer();

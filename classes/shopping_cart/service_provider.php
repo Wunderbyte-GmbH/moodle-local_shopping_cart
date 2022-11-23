@@ -50,7 +50,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                             $imageurl->out(),
                             $canceluntil,
                             $serviceperiodstart,
-                            $serviceperiodend
+                            $serviceperiodend,
+                            rand(0, 1) == 1 ? 'A' : 'B' // put this item in a random tax category
                             );
     }
 

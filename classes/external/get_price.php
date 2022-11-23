@@ -121,6 +121,7 @@ class get_price extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(array(
             'price' => new external_value(PARAM_FLOAT, 'Total price'),
+            'count' => new external_value(PARAM_INT, 'Number of items'),
             'credit' => new external_value(PARAM_FLOAT, 'Credit'),
             'currency' => new external_value(PARAM_RAW, 'Currency'),
             'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),

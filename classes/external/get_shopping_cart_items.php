@@ -116,6 +116,7 @@ class get_shopping_cart_items extends external_api {
                             'itemid' => new external_value(PARAM_INT, 'Item id'),
                             'itemname' => new external_value(PARAM_TEXT, 'Item name'),
                             'price' => new external_value(PARAM_FLOAT, 'Price of item'),
+                            'taxcategory' => new external_value(PARAM_TAG, 'Tax category of item'),
                             'currency' => new external_value(PARAM_ALPHA, 'Currency'),
                             'componentname' => new external_value(PARAM_TEXT, 'Component name'),
                             'description' => new external_value(PARAM_RAW, 'Item description'),

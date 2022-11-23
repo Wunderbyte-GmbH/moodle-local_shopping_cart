@@ -301,6 +301,7 @@ class shopping_cart {
         }
 
         $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
+        $usetaxes = get_config('local_shopping_cart', 'enabletax') == 1;
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
