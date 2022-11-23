@@ -301,7 +301,15 @@ class shopping_cart {
         }
 
         $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-        $usetaxes = get_config('local_shopping_cart', 'enabletax') == 1;
+        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+        if ($taxesenabled) {
+            $taxcategories = taxcategories::from_raw_string(
+                    get_config('local_shopping_cart', 'defaulttaxcategory'),
+                    get_config('local_shopping_cart', 'taxcategories')
+            );
+        } else {
+            $taxcategories = null;
+        }
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
@@ -310,7 +318,7 @@ class shopping_cart {
         // If we have cachedrawdata, we need to check the expiration date.
         if ($cachedrawdata) {
             if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                && $cachedrawdata['expirationdate'] < time()) {
+                    && $cachedrawdata['expirationdate'] < time()) {
                 self::delete_all_items_from_cart($userid);
                 $cachedrawdata = $cache->get($cachekey);
             }
@@ -345,14 +353,10 @@ class shopping_cart {
             $data['remainingcredit'] = $data['credit'];
 
             if ($count > 0) {
-                $data['items'] = array_values($cachedrawdata['items']);
+                $data['items'] = self::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $userid);
 
-                // We need the userid in every item.
-                foreach ($data['items'] as $key => $value) {
-                    $data['items'][$key]['userid'] = $userid != $USER->id ? -1 : 0;
-                }
-
-                $data['price'] = array_sum(array_column($data['items'], 'price'));
+                $data['price'] = self::calculate_total_price($data["items"]);
+                $data['price_net'] = self::calculate_total_price($data["items"], true);
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
             }
@@ -882,5 +886,50 @@ class shopping_cart {
                 break;
         }
         return $success;
+    }
+
+    private static function update_item_price_data($items, ?taxcategories $taxcategories, $userid) {
+        global $USER;
+        $countrycode = null; // TODO get countrycode from user info
+
+        foreach ($items as $key => $item) {
+            // We need the userid in every item.
+            $items[$key]['userid'] = $userid != $USER->id ? -1 : 0;
+
+            if ($taxcategories) {
+                $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
+                if ($taxpercent > 0) {
+                    $items[$key]['taxpercentage'] = $taxpercent;
+                    $netprice = $items[$key]['price']; // "price" is now considered a net price
+                    $items[$key]['price_net'] = $netprice;
+                    // add tax to price (= gross price)
+                    $items[$key]['price_gross'] = $netprice * (1 + $taxpercent);
+                    // add net tax info
+                    $items[$key]['tax'] = $items[$key]['price_gross'] - $netprice;
+                }
+            }
+        }
+        return $items;
+    }
+
+    private static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
+        return array_reduce($items, function($sum, $item) use ($calculatenetprice) {
+            if ($calculatenetprice) {
+                // calculate net price
+                if (key_exists('price_net', $item)) {
+                    $sum += $item['price_net'];
+                } else {
+                    $sum += $item['price']; // this is the net price
+                }
+            } else {
+                // calculate gross price
+                if (key_exists('price_gross', $item)) {
+                    $sum += $item['price_gross'];
+                } else {
+                    $sum += $item['price']; // this is the gross price
+                }
+            }
+            return $sum;
+        }, 0.0);
     }
 }

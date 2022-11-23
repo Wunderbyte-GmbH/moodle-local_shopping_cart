@@ -98,31 +98,36 @@ class get_shopping_cart_items extends external_api {
 
         return new external_single_structure(
             array(
-                'count' => new external_value(PARAM_INT, 'Number of items'),
-                'price' => new external_value(PARAM_FLOAT, 'Total price'),
-                'credit' => new external_value(PARAM_FLOAT, 'Credit'),
-                'currency' => new external_value(PARAM_RAW, 'Currency'),
-                'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
-                'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
-                'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
-                'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
-                'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
-                'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
-                'maxitems' => new external_value(PARAM_INT, 'Max Items'),
-                'items' => new external_multiple_structure (
+                    'count' => new external_value(PARAM_INT, 'Number of items'),
+                    'price' => new external_value(PARAM_FLOAT, 'Total price'),
+                    'price_net' => new external_value(PARAM_FLOAT, 'Total net price', false),
+                    'credit' => new external_value(PARAM_FLOAT, 'Credit'),
+                    'currency' => new external_value(PARAM_RAW, 'Currency'),
+                    'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
+                    'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
+                    'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
+                    'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
+                    'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
+                    'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
+                    'maxitems' => new external_value(PARAM_INT, 'Max Items'),
+                    'items' => new external_multiple_structure (
                         new external_single_structure(
-                            array(
-                            'userid' => new external_value(PARAM_INT, 'userid'),
-                            'itemid' => new external_value(PARAM_INT, 'Item id'),
-                            'itemname' => new external_value(PARAM_TEXT, 'Item name'),
-                            'price' => new external_value(PARAM_FLOAT, 'Price of item'),
-                            'taxcategory' => new external_value(PARAM_TAG, 'Tax category of item'),
-                            'currency' => new external_value(PARAM_ALPHA, 'Currency'),
-                            'componentname' => new external_value(PARAM_TEXT, 'Component name'),
-                            'description' => new external_value(PARAM_RAW, 'Item description'),
-                            'imageurl' => new external_value(PARAM_RAW, 'Image url'),
-                            'canceluntil' => new external_value(PARAM_INT, 'Timestamp until when cancel is possible'),
-                            )
+                                array(
+                                        'userid' => new external_value(PARAM_INT, 'userid'),
+                                        'itemid' => new external_value(PARAM_INT, 'Item id'),
+                                        'itemname' => new external_value(PARAM_TEXT, 'Item name'),
+                                        'price' => new external_value(PARAM_FLOAT, 'Price of item'),
+                                        'price_gross' => new external_value(PARAM_FLOAT, 'Gross price of item', false),
+                                        'tax' => new external_value(PARAM_FLOAT, 'Net tax of item price', false),
+                                        'taxcategory' => new external_value(PARAM_TAG, 'Tax category of item'),
+                                        'taxpercentage' => new external_value(PARAM_FLOAT, 'Tax percentage of item price', false),
+                                        'currency' => new external_value(PARAM_ALPHA, 'Currency'),
+                                        'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                                        'description' => new external_value(PARAM_RAW, 'Item description'),
+                                        'imageurl' => new external_value(PARAM_RAW, 'Image url'),
+                                        'canceluntil' => new external_value(PARAM_INT,
+                                                'Timestamp until when cancel is possible'),
+                                )
                         )
                 )
             )

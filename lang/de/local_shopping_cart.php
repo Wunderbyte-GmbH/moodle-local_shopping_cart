@@ -152,7 +152,7 @@ $string['creditpaidback'] = 'Guthaben ausgezahlt';
 
 $string['cashier'] = 'Kassa';
 
-$string['initialtotal'] = 'Preis:';
+$string['initialtotal'] = 'Preis: ';
 $string['usecredit'] = 'Verwende Guthaben:';
 $string['deductible'] = 'Abziehbar:';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';

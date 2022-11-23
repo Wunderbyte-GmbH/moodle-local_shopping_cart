@@ -57,11 +57,33 @@ class taxcategories {
      *
      * @param $category string|null
      * @param $countrycode string|null
-     * @return float
+     * @return float the tax percentage in float (0.0-1.0), or -1 if the given $category is invalid
      */
-    public function tax_for_category($category, $countrycode): float {
+    public function tax_for_category(?string $category = null, ?string $countrycode = null): float {
+        if (empty($category)) {
+            // use default category as a fallback
+            $category = $this->defaultcategory;
+        }
+        if (in_array($category, $this->categories)) {
+            $taxdata = $this->taxdata_for_countrycode($countrycode);
+            if (key_exists($category, $taxdata)) {
+                // given category exists for country
+                return $taxdata[$category];
+            } else {
+                // use category from default fallback
+                return $this->taxdata_for_countrycode(null)[$category];
+            }
+        }
+        // this $category is invalid
+        return -1;
+    }
 
-        return 0.0;
+    public function taxdata_for_countrycode(?string $countrycode = null): array {
+        if (key_exists($countrycode, $this->taxmatrix)) {
+            return $this->taxmatrix[$countrycode];
+        } else {
+            return $this->taxmatrix[self::DEFAULT_COUNTRY_INDEX];
+        }
     }
 
     public function defaultcategory(): string {
@@ -89,6 +111,9 @@ class taxcategories {
     public static function from_raw_string($defaultcategory, $rawcategories): ?taxcategories {
         if (!self::is_valid_raw_string($rawcategories)) {
             return null;
+        }
+        if (empty($defaultcategory)) {
+            $defaultcategory = self::DEFAULT_CATEGORY_KEY;
         }
         $categories = self::extract_categories($rawcategories);
         if (!in_array($defaultcategory, $categories)) {

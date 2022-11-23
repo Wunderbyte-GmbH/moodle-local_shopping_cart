@@ -153,7 +153,7 @@ $string['creditpaidback'] = 'Credit paid back.';
 
 $string['cashier'] = 'Cashier';
 
-$string['initialtotal'] = 'Price:';
+$string['initialtotal'] = 'Price: ';
 $string['usecredit'] = 'Use credit:';
 $string['deductible'] = 'Deductible:';
 $string['remainingcredit'] = 'Remaining credit:';

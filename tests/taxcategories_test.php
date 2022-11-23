@@ -85,6 +85,18 @@ class taxcategories_test extends TestCase {
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
 
+    public function test_single_value_empty_default_category() {
+        $raw = '20';
+        $fromraw = taxcategories::from_raw_string("", $raw);
+
+        $this->assertEquals(taxcategories::DEFAULT_CATEGORY_KEY, $fromraw->defaultcategory(), "Unexpected default category");
+        $this->assertEqualsCanonicalizing(array(taxcategories::DEFAULT_CATEGORY_KEY), $fromraw->validcategories());
+        $expected = [
+                taxcategories::DEFAULT_COUNTRY_INDEX => [taxcategories::DEFAULT_CATEGORY_KEY => 0.2]
+        ];
+        $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
+    }
+
     public function test_multi_line() {
         $raw = '
         default A:0 B:0 C:0
@@ -98,6 +110,53 @@ class taxcategories_test extends TestCase {
                 "at" => ["A" => 0.2, "B" => 0.1, "C" => 0.0]
         ];
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
+    }
+
+    public function test_tax_for_category_no_country_code() {
+        $raw = 'A:25 B:10 C:1';
+        $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        $this->assertEquals(0.25, $taxcategories->tax_for_category("A"));
+        $this->assertEquals(0.10, $taxcategories->tax_for_category("B"));
+        $this->assertEquals(0.01, $taxcategories->tax_for_category("C"));
+
+        // unknown category
+        $this->assertEquals(-1, $taxcategories->tax_for_category("X"));
+    }
+
+    public function test_tax_for_no_category_no_country_code() {
+        $raw = 'A:25 B:10 C:1';
+        $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        // default category is used
+        $this->assertEquals(0.25, $taxcategories->tax_for_category(""));
+    }
+
+    public function test_tax_for_no_category_but_country_code() {
+        $raw = 'default A:25
+        mycountry A:30';
+        $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        $this->assertEquals(0.30, $taxcategories->tax_for_category("", "mycountry"));
+        $this->assertEquals(0.25, $taxcategories->tax_for_category("", "other"));
+    }
+
+    public function test_tax_for_category_and_country_code() {
+        $raw = 'default A:25
+        mycountry A:30';
+        $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        $this->assertEquals(0.3, $taxcategories->tax_for_category("A", "mycountry"));
+        $this->assertEquals(0.25, $taxcategories->tax_for_category("A", "other"));
+    }
+
+    public function test_tax_for_category_and_country_code_use_default_fallback() {
+        $raw = 'default A:25 C:10
+        mycountry A:30';
+        $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        $this->assertEquals(0.1, $taxcategories->tax_for_category("C", "mycountry"));
+        $this->assertEquals(0.1, $taxcategories->tax_for_category("C", "other"));
     }
 
 }
