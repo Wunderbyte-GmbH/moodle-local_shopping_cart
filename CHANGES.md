@@ -1,3 +1,7 @@
+## Version 0.3.3 (2022112300)
+**Improvements:**
+* Small design improvements and linting.
+
 ## Version 0.3.2 (2022111600)
 **Improvements:**
 * More robust js working
