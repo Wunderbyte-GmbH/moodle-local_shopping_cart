@@ -54,6 +54,14 @@ $item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', '', '', $cancel
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
+echo '<div style="width: 300px" class="mt-3">';
+$data = [
+        'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
+        'count' => 2
+];
+echo $OUTPUT->render_from_template('local_shopping_cart/checkout_button', $data);
+echo '</div>';
+
 $history = new shopping_cart_history();
 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 /* $data = $history->prepare_data_from_cache($USER->id);*/
