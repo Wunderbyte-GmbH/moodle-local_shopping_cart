@@ -67,7 +67,7 @@ class shopping_cart_credits {
         list($balance, $currency) = self::get_balance($userid);
 
         $data['initialtotal'] = $data['price'];
-        if ($data['price_net']) {
+        if (isset($data['price_net'])) {
             $data['initialtotal_net'] = $data['price_net'];
         }
         $data['currency'] = $currency ?: $data['currency'];

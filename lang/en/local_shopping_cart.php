@@ -55,9 +55,8 @@ $string['taxsettings'] = 'Shopping Cart Taxes';
 $string['enabletax'] = 'Enable Tax processing';
 $string['enabletax_desc'] = 'Should tax information processing be enabled for this module';
 $string['taxcategories'] = 'Tax categories and their tax percentage';
-$string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage<br/>i.e.: <pre>At A:20 B:10 C:0
-De A:19 B:10 C:0
-default A:0 B:0 C:0 </pre>';
+$string['taxcategories_examples_button'] = '(Examples)';
+$string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';
 $string['taxcategories_invalid'] = 'The given tax categories can not be parsed!';
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
