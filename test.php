@@ -30,7 +30,7 @@ require_once(__DIR__ . '/../../config.php');
 require_login();
 
 $syscontext = context_system::instance();
-global $PAGE, $OUTPUT;
+global $PAGE, $OUTPUT, $CFG;
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url('/test.php');
@@ -54,7 +54,6 @@ $item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', '', '', $cancel
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
-global $USER;
 $history = new shopping_cart_history();
 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 /* $data = $history->prepare_data_from_cache($USER->id);*/

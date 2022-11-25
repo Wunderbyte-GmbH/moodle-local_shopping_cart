@@ -68,10 +68,10 @@
                                             data-action="delete" data-userid="{{userid}}"></i></span>
     <span class="item-price pull-right">
         {{! prices have tax information }}
-        {{#taxpercentage}}<b>{{price_gross}} {{currency}}</b><br/> ({{price_net}} {{currency}} + {{taxpercentage}}%){{/taxpercentage}}
+        {{#taxesenabled}}<b>{{price_gross}} {{currency}}</b><br/> ({{price_net}} {{currency}} + {{taxpercentage}}%){{/taxesenabled}}
 
         {{! prices without tax information }}
-        {{^taxpercentage}}{{price}}{{/taxpercentage}}
+        {{^taxesenabled}}{{price}} {{currency}}{{/taxesenabled}}
 
         </span>
     <div class="item-description">{{{description}}}</div>

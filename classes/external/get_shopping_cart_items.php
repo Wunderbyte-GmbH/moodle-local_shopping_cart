@@ -103,6 +103,7 @@ class get_shopping_cart_items extends external_api {
                         'price_net' => new external_value(PARAM_FLOAT, 'Total net price', false),
                         'credit' => new external_value(PARAM_FLOAT, 'Credit'),
                         'currency' => new external_value(PARAM_RAW, 'Currency'),
+                        'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled'),
                         'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
                         'initialtotal_net' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits net amount',
                                 false),

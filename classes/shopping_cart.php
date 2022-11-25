@@ -334,6 +334,7 @@ class shopping_cart {
         $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
         $data['items'] = [];
         $data['price'] = 0.00;
+        $data['taxesenabled'] = $taxesenabled;
         $data['initialtotal'] = 0.00;
         $data['deductible'] = 0.00;
         $data['checkboxid'] = bin2hex(random_bytes(3));

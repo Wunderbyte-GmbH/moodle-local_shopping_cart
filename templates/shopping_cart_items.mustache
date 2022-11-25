@@ -47,19 +47,24 @@
     {{#items}}
         {{> local_shopping_cart/shopping_cart_item }}
     {{/items}}
+    {{^items}}
+        <div class="text-center">{{#str}} cartisempty, local_shopping_cart {{/str}}</div>
+    {{/items}}
     <li class="sc_initialtotal">
 
         {{! price have tax info}}
-        {{#initialtotal_net}}
-            <div class="text-right">
+        {{#taxesenabled}}
+            {{#initialtotal_net}}
+                <div class="text-right">
                 <span>
                     {{#str}} total_net, local_shopping_cart {{/str}}
                 </span>
-                <span>
+                    <span>
                     {{initialtotal_net}}
-                    {{currency}}
+                        {{currency}}
                 </span>
-            </div>
+                </div>
+            {{/initialtotal_net}}
             <div class="text-right">
                 <span>
                     {{#str}} total, local_shopping_cart {{/str}}
@@ -69,10 +74,10 @@
                     {{currency}}
                 </span>
             </div>
-        {{/initialtotal_net}}
+        {{/taxesenabled}}
 
         {{! prices without tax information }}
-        {{^initialtotal_net}}
+        {{^taxesenabled}}
             <div class="text-right">
                 <span>
                     {{#str}} total, local_shopping_cart {{/str}}
@@ -82,6 +87,6 @@
                     {{currency}}
                 </span>
             </div>
-        {{/initialtotal_net}}
+        {{/taxesenabled}}
     </li>
 </ul>
