@@ -55,9 +55,9 @@ class get_price extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            'usecredit'  => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
-            )
+                        'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
+                        'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
+                )
         );
     }
 
@@ -71,8 +71,8 @@ class get_price extends external_api {
      */
     public static function execute(int $userid, int $usecredit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid,
-            'usecredit' => $usecredit
+                'userid' => $userid,
+                'usecredit' => $usecredit
         ]);
 
         global $USER;
@@ -88,14 +88,14 @@ class get_price extends external_api {
 
         // As we need the userid in two functions below, we have this logic here.
         $context = context_system::instance();
-        if ($params['userid'] == 0 ) {
-            $userid = (int)$USER->id;
+        if ($params['userid'] == 0) {
+            $userid = (int) $USER->id;
         } else if ($params['userid'] < 0) {
             if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = (int)shopping_cart::return_buy_for_userid();
+                $userid = (int) shopping_cart::return_buy_for_userid();
             }
         } else {
-            $userid = (int)$params['userid'];
+            $userid = (int) $params['userid'];
         }
 
         // Add the state to the cache.
@@ -120,16 +120,18 @@ class get_price extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(array(
-            'price' => new external_value(PARAM_FLOAT, 'Total price'),
-            'count' => new external_value(PARAM_INT, 'Number of items'),
-            'credit' => new external_value(PARAM_FLOAT, 'Credit'),
-            'currency' => new external_value(PARAM_RAW, 'Currency'),
-            'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
-            'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation'),
-            'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
-            'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
-            'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
-            )
+                        'price' => new external_value(PARAM_FLOAT, 'Total price'),
+                        'count' => new external_value(PARAM_INT, 'Number of items'),
+                        'credit' => new external_value(PARAM_FLOAT, 'Credit'),
+                        'currency' => new external_value(PARAM_RAW, 'Currency'),
+                        'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
+                        'initialtotal_net' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits net amount',
+                                false),
+                        'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction'),
+                        'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
+                        'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
+                        'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
+                )
         );
     }
 }

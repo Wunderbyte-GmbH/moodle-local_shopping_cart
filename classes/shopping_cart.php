@@ -16,11 +16,13 @@
 
 /**
  * Entities Class to display list of entity records.
+ *
  * @package local_shopping_cart
  * @author Thomas Winkler
  * @copyright 2021 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -356,7 +358,9 @@ class shopping_cart {
                 $data['items'] = self::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $userid);
 
                 $data['price'] = self::calculate_total_price($data["items"]);
-                $data['price_net'] = self::calculate_total_price($data["items"], true);
+                if ($taxesenabled) {
+                    $data['price_net'] = self::calculate_total_price($data["items"], true);
+                }
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
             }
@@ -430,9 +434,9 @@ class shopping_cart {
         $cachedrawdata = $cache->get($cachekey);
 
         if (!$cachedrawdata
-            || !isset($cachedrawdata['items'])
-            || (count($cachedrawdata['items']) < 1)) {
-                return;
+                || !isset($cachedrawdata['items'])
+                || (count($cachedrawdata['items']) < 1)) {
+            return;
         }
         // Now we schedule tasks to delete item from cart after some time.
         foreach ($cachedrawdata['items'] as $taskdata) {
@@ -511,19 +515,19 @@ class shopping_cart {
                 } else if (!has_capability('local/shopping_cart:cashier', $context)) {
                     // The cashier could call this to pay for herself, therefore only for non cashiers, we return here.
                     return [
-                        'status' => 0,
-                        'error' => get_string('notenoughcredit', 'local_shopping_cart'),
-                        'credit' => $data['remainingcredit'],
-                        'identifier' => $identifier
+                            'status' => 0,
+                            'error' => get_string('notenoughcredit', 'local_shopping_cart'),
+                            'credit' => $data['remainingcredit'],
+                            'identifier' => $identifier
                     ];
                 }
             } else {
                 if (!has_capability('local/shopping_cart:cashier', $context)) {
                     return [
-                        'status' => 0,
-                        'error' => get_string('nopermission', 'local_shopping_cart'),
-                        'credit' => '',
-                        'identifier' => $identifier
+                            'status' => 0,
+                            'error' => get_string('nopermission', 'local_shopping_cart'),
+                            'credit' => '',
+                            'identifier' => $identifier
                     ];
                 }
             }
@@ -540,12 +544,12 @@ class shopping_cart {
 
         // Check if we have items for this user.
         if (!isset($data['items'])
-            || count($data['items']) < 1) {
+                || count($data['items']) < 1) {
             return [
-                'status' => 0,
-                'error' => get_string('noitemsincart', 'local_shopping_cart'),
-                'credit' => '',
-                'identifier' => $identifier
+                    'status' => 0,
+                    'error' => get_string('noitemsincart', 'local_shopping_cart'),
+                    'credit' => '',
+                    'identifier' => $identifier
             ];
         }
 
@@ -557,7 +561,7 @@ class shopping_cart {
 
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
 
-            $item = (array)$item;
+            $item = (array) $item;
 
             // If the item identifier is specified (this is only the case, when we get data from history)...
             // ... we use the identifier. Else, it stays the same.
@@ -598,19 +602,19 @@ class shopping_cart {
                     $item['discount'] = $item['discount'] ?? 0;
 
                     shopping_cart_history::create_entry_in_history(
-                        $userid,
-                        $item['itemid'],
-                        $item['itemname'],
-                        $item['price'],
-                        $item['discount'],
-                        $item['currency'],
-                        $item['componentname'],
-                        $identifier,
-                        $paymentmethod,
-                        PAYMENT_SUCCESS,
-                        $item['canceluntil'] ?? null,
-                        $item['serviceperiodstart'] ?? null,
-                        $item['serviceperiodend'] ?? null
+                            $userid,
+                            $item['itemid'],
+                            $item['itemname'],
+                            $item['price'],
+                            $item['discount'],
+                            $item['currency'],
+                            $item['componentname'],
+                            $identifier,
+                            $paymentmethod,
+                            PAYMENT_SUCCESS,
+                            $item['canceluntil'] ?? null,
+                            $item['serviceperiodstart'] ?? null,
+                            $item['serviceperiodend'] ?? null
                     );
                 }
 
@@ -619,8 +623,8 @@ class shopping_cart {
 
         // In our ledger, the credits table, we add an entry and make sure we actually deduce any credit we might have.
         if (isset($data['usecredit'])
-            && $data['usecredit'] === true) {
-                shopping_cart_credits::use_credit($userid, $data);
+                && $data['usecredit'] === true) {
+            shopping_cart_credits::use_credit($userid, $data);
         } else {
             $data['remainingcredit'] = 0;
         }
@@ -628,25 +632,25 @@ class shopping_cart {
         if ($success) {
 
             return [
-                'status' => 1,
-                'error' => '',
-                'credit' => $data['remainingcredit'],
-                'identifier' => $identifier
+                    'status' => 1,
+                    'error' => '',
+                    'credit' => $data['remainingcredit'],
+                    'identifier' => $identifier
 
             ];
         } else {
             return [
-                'status' => 0,
-                'error' => implode('<br>', $error),
-                'credit' => $data['remainingcredit'],
-                'identifier' => $identifier
+                    'status' => 0,
+                    'error' => implode('<br>', $error),
+                    'credit' => $data['remainingcredit'],
+                    'identifier' => $identifier
             ];
         }
     }
 
-
     /**
      * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
+     *
      * @param int $itemid
      * @param int $userid
      * @param string $componentname
@@ -656,7 +660,7 @@ class shopping_cart {
      * @return array
      */
     public static function cancel_purchase(int $itemid, int $userid, string $componentname,
-        int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
+            int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
 
         global $USER;
 
@@ -664,22 +668,22 @@ class shopping_cart {
 
         if (!self::allowed_to_cancel($historyid, $itemid, $userid)) {
             return [
-                'success' => 0,
-                'error' => get_string('nopermission', 'local_shopping_cart'),
-                'credit' => 0
+                    'success' => 0,
+                    'error' => get_string('nopermission', 'local_shopping_cart'),
+                    'credit' => 0
             ];
         }
 
         if (!self::cancel_purchase_for_component($componentname, $itemid, $userid)) {
             return [
-                'success' => 0,
-                'error' => get_string('canceldidntwork', 'local_shopping_cart'),
-                'credit' => 0
+                    'success' => 0,
+                    'error' => get_string('canceldidntwork', 'local_shopping_cart'),
+                    'credit' => 0
             ];
         }
 
         list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase($itemid,
-            $userid, $componentname, $historyid);
+                $userid, $componentname, $historyid);
 
         if (empty($customcredit)) {
             $customcredit = $credit;
@@ -692,8 +696,8 @@ class shopping_cart {
             we deduce this fee from the credit. */
             if ($userid == $USER->id) {
                 if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
-                    && $cancelationfee > 0) {
-                        $customcredit = $customcredit - $cancelationfee;
+                        && $cancelationfee > 0) {
+                    $customcredit = $customcredit - $cancelationfee;
                 }
             }
 
@@ -706,9 +710,9 @@ class shopping_cart {
         }
 
         return [
-            'success' => $success,
-            'error' => $error,
-            'credit' => $newcredit
+                'success' => $success,
+                'error' => $error,
+                'credit' => $newcredit
         ];
     }
 
@@ -718,26 +722,26 @@ class shopping_cart {
      * @param int $userid
      * @return array
      */
-    public static function credit_paid_back(int $userid):array {
+    public static function credit_paid_back(int $userid): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             return [
-                'status' => 0,
-                'error' => get_string('nopermission', 'local_shopping_cart'),
+                    'status' => 0,
+                    'error' => get_string('nopermission', 'local_shopping_cart'),
             ];
         }
 
         if (!shopping_cart_credits::credit_paid_back($userid)) {
             return [
-                'status' => 0,
-                'error' => 'couldntpayback'
+                    'status' => 0,
+                    'error' => 'couldntpayback'
             ];
         }
 
         return [
-            'status' => 1,
-            'error' => ''
+                'status' => 1,
+                'error' => ''
         ];
     }
 
@@ -750,7 +754,7 @@ class shopping_cart {
      * @param int $userid
      * @return bool
      */
-    public static function allowed_to_cancel(int $historyid, int $itemid, int $userid):bool {
+    public static function allowed_to_cancel(int $historyid, int $itemid, int $userid): bool {
 
         global $DB;
 
@@ -787,11 +791,11 @@ class shopping_cart {
      * @return array
      */
     public static function add_discount_to_item(
-        string $component,
-        int $itemid,
-        int $userid,
-        float $percent,
-        float $absolute): array {
+            string $component,
+            int $itemid,
+            int $userid,
+            float $percent,
+            float $absolute): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -830,10 +834,10 @@ class shopping_cart {
 
             // If setting to round discounts is turned on, we round to full int.
             $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
-                $discountprecision);
+                    $discountprecision);
 
             $cachedrawdata['items'][$cacheitemkey]['price'] =
-                $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
+                    $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
         } else if (!empty($absolute)) {
             // Validation of absolute value.
             if ($absolute < 0 || $absolute > $initialprice) {
@@ -842,9 +846,9 @@ class shopping_cart {
             $cachedrawdata['items'][$cacheitemkey]['discount'] = $absolute;
             // If setting to round discounts is turned on, we round to full int.
             $cachedrawdata['items'][$cacheitemkey]['discount'] = round($cachedrawdata['items'][$cacheitemkey]['discount'],
-                $discountprecision);
+                    $discountprecision);
             $cachedrawdata['items'][$cacheitemkey]['price'] =
-                $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
+                    $initialprice - $cachedrawdata['items'][$cacheitemkey]['discount'];
         } else {
             // If both are empty, we unset discount.
             $cachedrawdata['items'][$cacheitemkey]['price'] = $initialprice;
@@ -866,7 +870,7 @@ class shopping_cart {
     public static function add_record_to_ledger_table(stdClass $record) {
         global $DB;
         $success = true;
-        switch($record->paymentstatus) {
+        switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
                 if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
                     $success = false;
@@ -899,7 +903,7 @@ class shopping_cart {
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent > 0) {
-                    $items[$key]['taxpercentage'] = $taxpercent;
+                    $items[$key]['taxpercentage'] = $taxpercent * 100;
                     $netprice = $items[$key]['price']; // "price" is now considered a net price
                     $items[$key]['price_net'] = $netprice;
                     // add tax to price (= gross price)

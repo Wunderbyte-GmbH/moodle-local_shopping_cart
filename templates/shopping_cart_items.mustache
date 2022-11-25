@@ -43,23 +43,45 @@
     }
 }}
 
-    <ul class="shopping-cart-items">
-        {{#items}}
-            {{> local_shopping_cart/shopping_cart_item }}
-        {{/items}}
-        <li class="sc_initialtotal">
+<ul class="shopping-cart-items">
+    {{#items}}
+        {{> local_shopping_cart/shopping_cart_item }}
+    {{/items}}
+    <li class="sc_initialtotal">
+
+        {{! price have tax info}}
+        {{#initialtotal_net}}
             <div class="text-right">
-            <span>
-                {{#str}} total, local_shopping_cart {{/str}}
-            </span>
-            <span class="pull-right">
-                <span class="initialtotal">
-                    {{initialtotal}}
+                <span>
+                    {{#str}} total_net, local_shopping_cart {{/str}}
                 </span>
-                <span class="currency_initialtotal">
+                <span>
+                    {{initialtotal_net}}
                     {{currency}}
                 </span>
-            </span>
             </div>
-        </li>
-    </ul>
+            <div class="text-right">
+                <span>
+                    {{#str}} total, local_shopping_cart {{/str}}
+                </span>
+                <span>
+                    {{initialtotal}}
+                    {{currency}}
+                </span>
+            </div>
+        {{/initialtotal_net}}
+
+        {{! prices without tax information }}
+        {{^initialtotal_net}}
+            <div class="text-right">
+                <span>
+                    {{#str}} total, local_shopping_cart {{/str}}
+                </span>
+                <span>
+                    {{initialtotal}}
+                    {{currency}}
+                </span>
+            </div>
+        {{/initialtotal_net}}
+    </li>
+</ul>

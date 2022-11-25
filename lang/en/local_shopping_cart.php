@@ -82,6 +82,8 @@ $string['error:cachiercapabilitymissing'] = 'ERROR: You are missing the cashier 
 
 // Cart.
 $string['total'] = 'Total:';
+$string['total_net'] = 'Total Net:';
+$string['total_gross'] = 'Total Gross:';
 $string['paymentsuccessful'] = 'Payment successful!';
 $string['paymentdenied'] = 'Payment denied!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';

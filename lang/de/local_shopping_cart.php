@@ -82,6 +82,8 @@ $string['error:cachiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigun
 
 // Cart.
 $string['total'] = 'Gesamt:';
+$string['total_net'] = 'Gesamt Netto:';
+$string['total_gross'] = 'Gesamt Brutto:';
 $string['paymentsuccessful'] = 'Zahlung erfolgreich!';
 $string['paymentdenied'] = 'Zahlung abgelehnt!';
 $string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
