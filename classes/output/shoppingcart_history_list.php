@@ -187,6 +187,10 @@ class shoppingcart_history_list implements renderable, templatable {
             $data['cancelationfee'] = $historyarray['cancelationfee'];
         }
 
+        if (!empty($historyarray['historyitems'])) {
+            $data['has_historyitems'] = true;
+        }
+
         if (isset($historyarray['canpayback'])) {
             $data['canpayback'] = $historyarray['canpayback'];
         }
@@ -207,6 +211,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if (!empty($this->cancelationfee)) {
             $returnarray['cancelationfee'] = $this->cancelationfee;
+        }
+
+        if (!empty($this->historyitemse)) {
+            $returnarray['has_historyitems'] = true;
         }
 
         if (!empty($this->credit)) {
