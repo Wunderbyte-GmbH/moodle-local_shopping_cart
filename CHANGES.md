@@ -1,3 +1,6 @@
+## Version 0.3.4 (2022112900)
+**New features:**
+* Added tax support.
 ## Version 0.3.3 (2022112300)
 **Improvements:**
 * Small design improvements and linting.

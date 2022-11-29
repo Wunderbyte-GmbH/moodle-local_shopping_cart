@@ -261,7 +261,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022110300, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2022111600) {
+    if ($oldversion < 2022112900) {
         // add tax information to history and ledger tables
 
         $historytable = new xmldb_table('local_shopping_cart_history');
@@ -294,7 +294,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2022111600, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2022112900, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
