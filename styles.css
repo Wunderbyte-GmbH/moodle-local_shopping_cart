@@ -331,3 +331,12 @@ div.shopping-cart-items-container img.sc-cart-item-image {
 div.shopping-cart-items-container div.item-description {
     visibility: hidden;
 }
+
+.shopping-cart-items .item-button {
+    cursor: pointer;
+    color: #abb0be;
+}
+
+.shopping-cart-items .item-button:hover {
+    color: rgb(29, 33, 37);
+}

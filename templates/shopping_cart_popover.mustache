@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template message_output_popup/shopping_cart_popover
+    @template local_shopping_cart/shopping_cart_popover
 
     This template will render the shopping_cart popover for the navigation bar.
 
@@ -118,7 +118,7 @@
     {{$classes}}popover-region-shopping_carts{{/classes}}
     {{$attributes}}id="nav-shopping_cart-popover-container" data-userid="{{userid}}"{{/attributes}}
 
-    {{$togglelabel}}}{{/togglelabel}}
+    {{$togglelabel}}{{/togglelabel}}
     {{$togglecontent}}
         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
         <div id="itemcount" class="count-container {{^count}}hidden{{/count}}" data-region="count-container"
@@ -136,9 +136,7 @@
     <div class="shopping-cart-items-container">
         {{> local_shopping_cart/shopping_cart_items }}
     </div>
-    <div>
-        <a href="{{checkouturl}}" class="btn btn-primary p-3 d-block mx-4">{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right"></i></a>
-    </div>
+    {{> local_shopping_cart/checkout_button }}
     {{/content}}
 {{/ core/popover_region }}
 

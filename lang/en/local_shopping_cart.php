@@ -51,6 +51,15 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Clic
 $string['showdescription'] = 'Show description';
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
+$string['taxsettings'] = 'Shopping Cart Taxes';
+$string['enabletax'] = 'Enable Tax processing';
+$string['enabletax_desc'] = 'Should tax information processing be enabled for this module';
+$string['taxcategories'] = 'Tax categories and their tax percentage';
+$string['taxcategories_examples_button'] = '(Examples)';
+$string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';
+$string['taxcategories_invalid'] = 'The given tax categories can not be parsed!';
+$string['defaulttaxcategory'] = 'Default tax category';
+$string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
@@ -72,6 +81,8 @@ $string['error:cachiercapabilitymissing'] = 'ERROR: You are missing the cashier 
 
 // Cart.
 $string['total'] = 'Total:';
+$string['total_net'] = 'Total Net:';
+$string['total_gross'] = 'Total Gross:';
 $string['paymentsuccessful'] = 'Payment successful!';
 $string['paymentdenied'] = 'Payment denied!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
@@ -129,7 +140,8 @@ $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase fo
     You can specify the cancelation fee below. It will be deduced from the original purchase price.';
 
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
-$string['confirmpaidbackbody'] = 'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
+$string['confirmpaidbackbody'] =
+        'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidback'] = 'Confirm';
 
 $string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
@@ -142,7 +154,7 @@ $string['creditpaidback'] = 'Credit paid back.';
 
 $string['cashier'] = 'Cashier';
 
-$string['initialtotal'] = 'Price:';
+$string['initialtotal'] = 'Price: ';
 $string['usecredit'] = 'Use credit:';
 $string['deductible'] = 'Deductible:';
 $string['remainingcredit'] = 'Remaining credit:';
@@ -159,7 +171,8 @@ $string['cashreport'] = 'Cash report';
 $string['cashreport_desc'] = 'Here you get an overview over all accounting transactions.
 You also can export the report in your preferred file format.';
 $string['accessdenied'] = 'Access denied';
-$string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
+$string['nopermissiontoaccesspage'] =
+        '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
 $string['showdailysums'] = '&sum; Show daily sums...';
 $string['titledailysums'] = 'Daily revenue';
 $string['titledailysums:all'] = 'Total revenue';

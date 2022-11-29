@@ -16,6 +16,7 @@
 
 /**
  * Shopping_cart_credits class for local shopping cart.
+ *
  * @package     local_shopping_cart
  * @author      Georg Maißer
  * @copyright   2022 Wunderbyte GmbH <info@wunderbyte.at>
@@ -30,6 +31,7 @@ use stdClass;
 
 /**
  * Class shopping_cart_credits.
+ *
  * @author      Georg Maißer
  * @copyright   2022 Wunderbyte GmbH <info@wunderbyte.at>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -65,7 +67,10 @@ class shopping_cart_credits {
         list($balance, $currency) = self::get_balance($userid);
 
         $data['initialtotal'] = $data['price'];
-        $data['currency'] = $currency ? $currency : $data['currency'];
+        if (isset($data['price_net'])) {
+            $data['initialtotal_net'] = $data['price_net'];
+        }
+        $data['currency'] = $currency ?: $data['currency'];
 
         // Now we account for discounts.
         if (isset($data['discount'])) {
@@ -207,6 +212,7 @@ class shopping_cart_credits {
     /**
      * This function only uses the data already calculated in prepare checkout...
      * ...and stores the result in DB.
+     *
      * @param int $userid
      * @param array $checkoutdata
      * @return void
@@ -243,10 +249,11 @@ class shopping_cart_credits {
     /**
      * Check balance is a way to make sure we don't have an error in our balance calculation.
      * Returns the current balance and currency, if everything works fine, else throws an error.
+     *
      * @param int $userid
      * @return array
      */
-    private static function check_balance(int $userid):array {
+    private static function check_balance(int $userid): array {
 
         global $DB;
 
@@ -277,7 +284,6 @@ class shopping_cart_credits {
         return [round($balance, 2), $currency];
     }
 
-
     /**
      * This function just get's the current balance and sets it to 0.
      *
@@ -302,8 +308,8 @@ class shopping_cart_credits {
         $now = time();
         $ledgerrecord->userid = $userid;
         $ledgerrecord->itemid = 0;
-        $ledgerrecord->price = (float)(-1.0) * $data['deductible'];
-        $ledgerrecord->credits = (float)(-1.0) * $data['deductible'];
+        $ledgerrecord->price = (float) (-1.0) * $data['deductible'];
+        $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->currency = $currency;
         $ledgerrecord->componentname = 'local_shopping_cart';
         $ledgerrecord->payment = PAYMENT_METHOD_CREDITS_PAID_BACK;
@@ -355,7 +361,7 @@ class shopping_cart_credits {
      * @param int $userid
      * @return int
      */
-    public static function use_credit_fallback($usecredit, int $userid):int {
+    public static function use_credit_fallback($usecredit, int $userid): int {
         // If usecredit is null, we know we got the data from history.
         // Therefore, we need to get the information from cache, if we want to use the credit.
         if ($usecredit === null) {

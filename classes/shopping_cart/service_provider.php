@@ -31,18 +31,18 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * Callback function that returns the costs and the accountid
      * for the course, just for testing.
      *
-     * @param int $optionid
+     * @param int $itemid
      * @param int $userid
      * @return cartitem
      */
-    public static function load_cartitem(int $optionid, int $userid = 0): cartitem {
+    public static function load_cartitem(int $itemid, int $userid = 0): cartitem {
         $canceluntil = strtotime('+14 days', time());
         $serviceperiodstart = time();
         $serviceperiodend = strtotime('+30 days', time());
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
-        return new cartitem($optionid,
-                            'my test item ' . $optionid,
+        return new cartitem($itemid,
+                            'my test item ' . $itemid,
                             10,
                             'EUR',
                             'local_shopping_cart',
@@ -50,7 +50,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                             $imageurl->out(),
                             $canceluntil,
                             $serviceperiodstart,
-                            $serviceperiodend
+                            $serviceperiodend,
+                            rand(0, 1) == 1 ? 'A' : 'B' // put this item in a random tax category
                             );
     }
 

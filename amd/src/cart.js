@@ -56,6 +56,7 @@ const SELECTORS = {
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
     PRICELABELAREA: '.sc_price_label',
+    CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
 };
 /**
  *
@@ -179,7 +180,7 @@ export const reinit = (userid = 0) => {
         },
         done: function(data) {
 
-            // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
+            // If we are on the cashier page, we add the possibility to add a discount to the cart items.
             const oncashier = window.location.href.indexOf("cashier.php");
 
             if (oncashier > 0) {
@@ -202,7 +203,7 @@ export const reinit = (userid = 0) => {
             // We render for promice for all the containers.
             promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
                 containers.forEach(container => {
-                // We know we will always find the Navbar, so we can do this right away.
+                    // We know we will always find the Navbar, so we can do this right away.
                     Templates.replaceNodeContents(container, html, js);
                 });
                 return true;
@@ -213,7 +214,7 @@ export const reinit = (userid = 0) => {
 
             Promise.all(promises).then(() => {
 
-                // If we are on the cashier page, we add the possiblity to add a discount to the cart items.
+                // If we are on the cashier page, we add the possibility to add a discount to the cart items.
                 if (!(userid != 0 && data.iscashier)) {
                     clearInterval(interval);
                     initTimer(data.expirationdate);
@@ -363,8 +364,8 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
         },
         done: function(data) {
 
-             // We take the usecredit value we receive from the server.
-             if (data.usecredit == 1) {
+            // We take the usecredit value we receive from the server.
+            if (data.usecredit == 1) {
                 data.usecreditvalue = 'checked';
             } else {
                 data.usecreditvalue = '';
@@ -389,6 +390,13 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
                 // eslint-disable-next-line no-console
                 console.log(e);
             }));
+
+            const checkoutButton = document.querySelector(SELECTORS.CHECKOUTBUTTON);
+            if (data.count == 0) {
+                checkoutButton.classList.add("disabled");
+            } else {
+                checkoutButton.classList.remove("disabled");
+            }
 
         },
         fail: function(ex) {
@@ -429,10 +437,10 @@ function addZeroPriceListener(data) {
  */
 function dealWithZeroPrice(event) {
 
-        event.stopPropagation();
-        event.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
 
-        confirmZeroPriceCheckoutModal(event.target);
+    confirmZeroPriceCheckoutModal(event.target);
 }
 
 /**
@@ -501,7 +509,7 @@ function initTimer(expirationdate = null) {
  *
  * @param {*} element
  */
- function confirmZeroPriceCheckoutModal(element) {
+function confirmZeroPriceCheckoutModal(element) {
 
     getStrings([
         {key: 'confirmzeropricecheckouttitle', component: 'local_shopping_cart'},

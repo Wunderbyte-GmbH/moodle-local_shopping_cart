@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template price_label/shopping_cart_popover
+    @template local_shopping_cart/price_label
 
-    This template will render the shopping_cart popover for the navigation bar.
+    This template will render the price label below the shopping cart items in the cashier and checkout page
 
     Classes required for JS:
     * none
@@ -65,14 +65,32 @@
         {{/discount}}
     {{/credit}}
 
-    <div class="pull-right">
-        <span>{{#str}} total, local_shopping_cart {{/str}}</span>
-        <span class="sc_totalprice">{{price}} {{currency}}</span>
-    </div>
+    {{! prices have tax info}}
+    {{#taxesenabled}}
+
+        <div class="pull-right text-right mr-3">
+            {{#price_net}}
+                <span>{{#str}} total_net, local_shopping_cart {{/str}}</span>
+                <span class="sc_totalprice_net">{{price_net}} {{currency}}</span>
+                <br/>
+            {{/price_net}}
+            <span>{{#str}} total, local_shopping_cart {{/str}}</span>
+            <span class="sc_totalprice">{{price}} {{currency}}</span>
+        </div>
+    {{/taxesenabled}}
+
+    {{! prices without tax information }}
+    {{^taxesenabled}}
+
+        <div class="pull-right mr-3">
+            <span>{{#str}} total, local_shopping_cart {{/str}}</span>
+            <span class="sc_totalprice">{{price}} {{currency}}</span>
+        </div>
+    {{/taxesenabled}}
 </div>
 
 {{#js}}
     require(['local_shopping_cart/cart'], function(cart) {
-        cart.initPriceLabel({{userid}});
+    cart.initPriceLabel({{userid}});
     });
 {{/js}}

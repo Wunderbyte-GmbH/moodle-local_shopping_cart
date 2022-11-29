@@ -44,12 +44,24 @@ $string['addon:description'] = 'Zeit, die zur Ablaufzeit hinzugefügt wird, nach
 $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';
 $string['accountid'] = 'Zahlungsanbieter-Konto';
-$string['accountid:description'] = 'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
+$string['accountid:description'] =
+        'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
-$string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
+$string['nopaymentaccountsdesc'] =
+        '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
 $string['showdescription'] = 'Zeige Beschreibung';
 $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
+$string['taxsettings'] = 'Warenkorb Steuern';
+$string['enabletax'] = 'MWSt aktivieren';
+$string['enabletax_desc'] = 'Soll MWSt im Wartenkorb angezeigt und verwendet werden';
+$string['taxcategories'] = 'Steuerkategorien und anwendbare Steuersätze';
+$string['taxcategories_examples_button'] = '(Beispiele)';
+$string['taxcategories_desc'] = 'Steuerkategorien und anwendbare Steuersätze (in %) pro User-Land.';
+$string['taxcategories_invalid'] = 'Der eingegebene Text kann nicht als Steuerkategorien interpretiert werden!';
+$string['defaulttaxcategory'] = 'Standard Steuerkategorie';
+$string['defaulttaxcategory_desc'] =
+        'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
@@ -71,6 +83,8 @@ $string['error:cachiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigun
 
 // Cart.
 $string['total'] = 'Gesamt:';
+$string['total_net'] = 'Gesamt Netto:';
+$string['total_gross'] = 'Gesamt Brutto:';
 $string['paymentsuccessful'] = 'Zahlung erfolgreich!';
 $string['paymentdenied'] = 'Zahlung abgelehnt!';
 $string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
@@ -141,7 +155,7 @@ $string['creditpaidback'] = 'Guthaben ausgezahlt';
 
 $string['cashier'] = 'Kassa';
 
-$string['initialtotal'] = 'Preis:';
+$string['initialtotal'] = 'Preis: ';
 $string['usecredit'] = 'Verwende Guthaben:';
 $string['deductible'] = 'Abziehbar:';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';

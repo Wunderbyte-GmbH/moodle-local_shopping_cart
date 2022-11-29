@@ -261,6 +261,42 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022110300, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2022111600) {
+        // add tax information to history and ledger tables
+
+        $historytable = new xmldb_table('local_shopping_cart_history');
+        $ledgertable = new xmldb_table('local_shopping_cart_ledger');
+
+        $taxfield = new xmldb_field('tax', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null, 'price');
+        $taxpercentagefield = new xmldb_field('taxpercentage', XMLDB_TYPE_NUMBER, '5, 4', null, null, null, null, 'tax');
+        $taxcategoryfield = new xmldb_field('taxcategory', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'taxpercentage');
+
+        // add new fields to local_shopping_cart_history table
+        if (!$dbman->field_exists($historytable, $taxfield)) {
+            $dbman->add_field($historytable, $taxfield);
+        }
+        if (!$dbman->field_exists($historytable, $taxpercentagefield)) {
+            $dbman->add_field($historytable, $taxpercentagefield);
+        }
+        if (!$dbman->field_exists($historytable, $taxcategoryfield)) {
+            $dbman->add_field($historytable, $taxcategoryfield);
+        }
+
+        // add new fields to local_shopping_cart_ledger table
+        if (!$dbman->field_exists($ledgertable, $taxfield)) {
+            $dbman->add_field($ledgertable, $taxfield);
+        }
+        if (!$dbman->field_exists($ledgertable, $taxpercentagefield)) {
+            $dbman->add_field($ledgertable, $taxpercentagefield);
+        }
+        if (!$dbman->field_exists($ledgertable, $taxcategoryfield)) {
+            $dbman->add_field($ledgertable, $taxcategoryfield);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022111600, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

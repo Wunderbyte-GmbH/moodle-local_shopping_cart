@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pages main view page.
+ * Checkout page.
  *
  * @package         local_shopping_cart
  * @author          Thomas Winkler
@@ -28,12 +28,12 @@ use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 
+global $USER, $PAGE, $OUTPUT, $CFG;
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
-global $USER;
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
 $identifier = optional_param('identifier', null, PARAM_INT);
@@ -83,10 +83,10 @@ if (isset($success)) {
 
 }
 
-$schistory = new shopping_cart_history();
-$scdata = $schistory->prepare_data_from_cache($userid);
+$history = new shopping_cart_history();
+$scdata = $history->prepare_data_from_cache($userid);
 
-$schistory->store_in_schistory_cache($scdata);
+$history->store_in_schistory_cache($scdata);
 
 $sp = new service_provider();
 
