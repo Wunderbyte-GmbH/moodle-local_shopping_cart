@@ -56,6 +56,7 @@ class delete_item_from_cart extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
             'component'  => new external_value(PARAM_RAW, 'component name like mod_booking', VALUE_DEFAULT, ''),
+            'area'  => new external_value(PARAM_RAW, 'area like main', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, '0'),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
             )
@@ -66,14 +67,16 @@ class delete_item_from_cart extends external_api {
      * Excecute this websrvice.
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      *
      * @return array
      */
-    public static function execute(string $component, int $itemid, int $userid) {
+    public static function execute(string $component, string $area, int $itemid, int $userid) {
         $params = self::validate_parameters(self::execute_parameters(), [
             'component' => $component,
+            'area' => $area,
             'itemid' => $itemid,
             'userid' => $userid
         ]);
@@ -99,7 +102,7 @@ class delete_item_from_cart extends external_api {
         }
 
         // This treats the cache side.
-        if (shopping_cart::delete_item_from_cart($params['component'], $params['itemid'], $userid)) {
+        if (shopping_cart::delete_item_from_cart($params['component'], $params['area'], $params['itemid'], $userid)) {
             return ['success' => 1];
         }
         return ['success' => 0];

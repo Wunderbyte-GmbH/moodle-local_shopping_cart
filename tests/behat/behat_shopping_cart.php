@@ -47,7 +47,7 @@ class behat_shopping_cart extends behat_base {
      */
     public function i_put_item_in_my_cart(string $itemname) {
 
-        $item = new cartitem(1, $itemname, 10, 'EUR', 'mod_quiz', 'item description');
+        $item = new cartitem(1, $itemname, 10, 'EUR', 'mod_quiz', 'main', 'item description');
         $data = $item->getitem();
 
         $shoppingcart = new shopping_cart();

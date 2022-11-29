@@ -83,9 +83,10 @@ const SELECTORS = {
 
                 const userid = element.dataset.userid ? element.dataset.userid : 0;
                 const component = element.dataset.component;
+                const area = element.dataset.area;
                 const itemid = element.dataset.itemid;
 
-                deleteItem(itemid, component, userid);
+                deleteItem(itemid, component, area, userid);
             } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
 
                 discountModal(event);
@@ -114,16 +115,17 @@ const SELECTORS = {
     }
 };
 
-export const buttoninit = (itemid, component) => {
+export const buttoninit = (itemid, component, area) => {
 
     if (itemid === null) {
         const allbuttons = document.querySelectorAll(
             '[data-component="' + component + '"]'
+            + '[data-area="' + area + '"]'
             + '[data-objecttable="local_shopping_cart"');
 
         allbuttons.forEach(button => {
             const itemid = button.dataset.itemid;
-            buttoninit(itemid, component);
+            buttoninit(itemid, component, area);
         });
         return;
     }
@@ -134,6 +136,7 @@ export const buttoninit = (itemid, component) => {
         'button'
         + '[data-itemid="' + itemid + '"]'
         + '[data-component="' + component + '"]'
+        + '[data-area="' + area + '"]'
         + '[data-objecttable="local_shopping_cart"');
 
     buttons.forEach(addtocartbutton => {
@@ -156,7 +159,7 @@ export const buttoninit = (itemid, component) => {
         }
             event.preventDefault();
             event.stopPropagation();
-            addItem(itemid, component);
+            addItem(itemid, component, area);
         });
     });
 
@@ -259,7 +262,7 @@ export const deleteAllItems = () => {
     }]);
 };
 
-export const deleteItem = (itemid, component, userid) => {
+export const deleteItem = (itemid, component, area, userid) => {
 
     userid = transformUserIdForCashier(userid);
 
@@ -268,6 +271,7 @@ export const deleteItem = (itemid, component, userid) => {
         args: {
             'itemid': itemid,
             'component': component,
+            'area': area,
             'userid': userid
         },
         done: function() {
@@ -281,7 +285,7 @@ export const deleteItem = (itemid, component, userid) => {
     }]);
 };
 
-export const addItem = (itemid, component) => {
+export const addItem = (itemid, component, area) => {
 
     let userid = transformUserIdForCashier();
 
@@ -292,6 +296,7 @@ export const addItem = (itemid, component) => {
     Ajax.call([{
         methodname: "local_shopping_cart_add_item",
         args: {
+            'area': area,
             'component': component,
             'itemid': itemid,
             'userid': userid
@@ -299,6 +304,7 @@ export const addItem = (itemid, component) => {
         done: function(data) {
 
             data.component = component;
+            data.area = area;
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
 
@@ -564,6 +570,7 @@ function toggleActiveButtonState(button = null) {
 
     let selector = '';
     let component = null;
+    let area = null;
     let itemid = null;
 
     // If we have a button, we only look for this particular itemid.
@@ -572,11 +579,13 @@ function toggleActiveButtonState(button = null) {
         // We'll find the right variables in the DOM.
         itemid = button.dataset.itemid;
         component = button.dataset.component;
+        area = button.dataset.area;
 
         selector =
             'button'
             + '[data-itemid="' + itemid + '"]'
             + '[data-component="' + component + '"]'
+            + '[data-area="' + area + '"]'
             + '[data-objecttable="local_shopping_cart"';
     } else {
         // As we might have more than one of these buttons, we always need to look for all of them in the document.
@@ -598,9 +607,10 @@ function toggleActiveButtonState(button = null) {
     buttons.forEach(addtocartbutton => {
 
         component = addtocartbutton.dataset.component;
+        area = addtocartbutton.dataset.area;
         itemid = addtocartbutton.dataset.itemid;
 
-        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + itemid + '"]');
+        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + area + '-' + itemid + '"]');
 
         if (cartitem) {
 

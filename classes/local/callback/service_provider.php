@@ -39,43 +39,51 @@ interface service_provider {
     /**
      * Callback function that returns the price and description of the given item in the specified area
      *
+     * @param string $component
+     * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      *
      * @return cartitem
      */
-    public static function load_cartitem(int $itemid, int $userid = 0): cartitem;
+    public static function load_cartitem(string $component, string $area, int $itemid, int $userid = 0): cartitem;
 
     /**
      * Callback function that unloads an item from the cart.
      * This has to be implemented in case of limited ressources where...
      * ... one reserved item can't be booked by another user.
      *
+     * @param string $component
+     * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      *
      * @return bool
      */
-    public static function unload_cartitem(int $itemid, int $userid = 0): bool;
+    public static function unload_cartitem(string $component, string $area, int $itemid, int $userid = 0): bool;
 
     /**
      * Callback function that is executed when the item is successfully bought.
      *
+     * @param string $component
+     * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to
      *
      * @return bool Whether successful or not
      */
-    public static function successful_checkout(int $itemid, int $paymentid, int $userid): bool;
+    public static function successful_checkout(string $component, string $area, int $itemid, int $paymentid, int $userid): bool;
 
     /**
      * Callback function that cancels an already bought item.
      *
+     * @param string $component
+     * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      *
      * @return bool
      */
-    public static function cancel_purchase(int $itemid, int $userid = 0): bool;
+    public static function cancel_purchase(string $component, string $area, int $itemid, int $userid = 0): bool;
 }

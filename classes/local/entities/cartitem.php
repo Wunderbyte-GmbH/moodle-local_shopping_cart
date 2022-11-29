@@ -68,6 +68,13 @@ class cartitem {
     private $componentname;
 
     /**
+     * Name of area (like main)
+     *
+     * @var string
+     */
+    private $area;
+
+    /**
      * Description of the item
      *
      * @var string
@@ -110,6 +117,7 @@ class cartitem {
      * @param float $price item price
      * @param string $currency currency for purchase
      * @param string $componentname moodle compoment that sells the item
+     * @param string $area moodle area that applies
      * @param string $description item description
      * @param string $imageurl url to the item image
      * @param int|null $canceluntil cancellation possible until
@@ -121,6 +129,7 @@ class cartitem {
         float $price,
         string $currency,
         string $componentname,
+        string $area,
         string $description = '',
         string $imageurl = '',
         ?int $canceluntil = null,
@@ -131,6 +140,7 @@ class cartitem {
         $this->price = $price;
         $this->currency = $currency;
         $this->componentname = $componentname;
+        $this->area = $area;
         $this->description = $description;
         $this->imageurl = $imageurl;
         $this->canceluntil = $canceluntil;
@@ -150,6 +160,7 @@ class cartitem {
         $item['price'] = $this->price;
         $item['currency'] = $this->currency;
         $item['componentname'] = $this->componentname;
+        $item['area'] = $this->area;
         $item['description'] = $this->description;
         $item['imageurl'] = $this->imageurl;
         $item['canceluntil'] = $this->canceluntil;

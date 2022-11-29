@@ -118,6 +118,7 @@ class get_shopping_cart_items extends external_api {
                             'price' => new external_value(PARAM_FLOAT, 'Price of item'),
                             'currency' => new external_value(PARAM_ALPHA, 'Currency'),
                             'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                            'area' => new external_value(PARAM_TEXT, 'Area'),
                             'description' => new external_value(PARAM_RAW, 'Item description'),
                             'imageurl' => new external_value(PARAM_RAW, 'Image url'),
                             'canceluntil' => new external_value(PARAM_INT, 'Timestamp until when cancel is possible'),

@@ -56,6 +56,7 @@ class add_item_to_cart extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
             'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
+            'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             )
@@ -66,14 +67,16 @@ class add_item_to_cart extends external_api {
      * Webservice for shopping_cart class to add a new item to the cart.
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      *
      * @return array
      */
-    public static function execute(string $component, int $itemid, int $userid): array {
+    public static function execute(string $component, string $area, int $itemid, int $userid): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'component' => $component,
+            'area' => $area,
             'itemid' => $itemid,
             'userid' => $userid
         ]);
@@ -89,7 +92,7 @@ class add_item_to_cart extends external_api {
 
         // The transformation of the userid will be done in the add_item_to_cart function.
 
-        return shopping_cart::add_item_to_cart($params['component'], $params['itemid'], $params['userid']);
+        return shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
     }
 
     /**
@@ -104,6 +107,7 @@ class add_item_to_cart extends external_api {
             'price' => new external_value(PARAM_RAW, 'Item price', VALUE_DEFAULT, ''),
             'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_DEFAULT, ''),
             'componentname' => new external_value(PARAM_RAW, 'Component name', VALUE_DEFAULT, ''),
+            'area' => new external_value(PARAM_RAW, 'Area', VALUE_DEFAULT, ''),
             'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),

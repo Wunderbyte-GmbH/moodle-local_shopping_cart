@@ -56,12 +56,13 @@ class shopping_cart {
      * - For any fail, we return success 0.
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      *
      * @return array
      */
-    public static function add_item_to_cart(string $component, int $itemid, int $userid): array {
+    public static function add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
         global $USER;
 
@@ -87,7 +88,7 @@ class shopping_cart {
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
-        $cacheitemkey = $component . '-' . $itemid;
+        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Check if maxitems is exceeded.
         if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
@@ -106,7 +107,7 @@ class shopping_cart {
         if ($success) {
             // This gets the data from the componennt and also triggers reserveration.
             // If reserveration is not successful, we have to react here.
-            if ($cartitem = self::load_cartitem($component, $itemid, $userid)) {
+            if ($cartitem = self::load_cartitem($component, $area, $itemid, $userid)) {
                 // Get the itemdata as array.
                 $itemdata = $cartitem->getitem();
 
@@ -152,12 +153,13 @@ class shopping_cart {
      * This is to return all parent entities from the database
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @param bool $unload
      * @return bool
      */
-    public static function delete_item_from_cart(string $component, int $itemid, int $userid, bool $unload = true): bool {
+    public static function delete_item_from_cart(string $component, string $area, int $itemid, int $userid, bool $unload = true): bool {
 
         global $USER;
 
@@ -168,7 +170,7 @@ class shopping_cart {
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $cacheitemkey = $component . '-' . $itemid;
+            $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
                 $cache->set($cachekey, $cachedrawdata);
@@ -177,7 +179,7 @@ class shopping_cart {
 
         if ($unload) {
             // This treats the related component side.
-            self::unload_cartitem($component, $itemid, $userid);
+            self::unload_cartitem($component, $area, $itemid, $userid);
         }
 
         return true;
@@ -210,10 +212,11 @@ class shopping_cart {
      * Get the name of the service provider class
      *
      * @param string $component The component
+     * @param string $area the area, todo, to be implemented
      * @return string
      * @throws \coding_exception
      */
-    private static function get_service_provider_classname(string $component) {
+    private static function get_service_provider_classname(string $component, string $area) {
         $providerclass = "$component\\shopping_cart\\service_provider";
 
         if (class_exists($providerclass)) {
@@ -229,57 +232,61 @@ class shopping_cart {
      * Asks the cartitem from the related component.
      *
      * @param string $component Name of the component that the cartitems belong to
+     * @param string $area Name of area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
      * @return local\entities\cartitem
      */
-    public static function load_cartitem(string $component, int $itemid, int $userid): local\entities\cartitem {
-        $providerclass = static::get_service_provider_classname($component);
+    public static function load_cartitem(string $component, string $area, int $itemid, int $userid): local\entities\cartitem {
+        $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'load_cartitem', [$itemid, $userid]);
+        return component_class_callback($providerclass, 'load_cartitem', [$area, $itemid, $userid]);
     }
 
     /**
      * Unloads the cartitem from the related component.
      *
      * @param string $component Name of the component that the cartitems belong to
+     * @param string $area Name of the area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
      * @return local\entities\cartitem
      */
-    public static function unload_cartitem(string $component, int $itemid, int $userid): bool {
-        $providerclass = static::get_service_provider_classname($component);
+    public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): bool {
+        $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'unload_cartitem', [$itemid, $userid]);
+        return component_class_callback($providerclass, 'unload_cartitem', [$area, $itemid, $userid]);
     }
 
     /**
      * Confirms Payment and successful checkout for item.
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @return local\entities\cartitem
      */
-    public static function successful_checkout(string $component, int $itemid, int $userid): bool {
-        $providerclass = static::get_service_provider_classname($component);
+    public static function successful_checkout(string $component, string $area, int $itemid, int $userid): bool {
+        $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'successful_checkout', [$itemid, PAYMENT_METHOD_CASHIER, $userid]);
+        return component_class_callback($providerclass, 'successful_checkout', [$area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
     }
 
     /**
      * Cancels Purchase.
      *
      * @param string $component Name of the component that the cartitems belong to
+     * @param string $area Name of the area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
      * @return local\entities\cartitem
      */
-    public static function cancel_purchase_for_component(string $component, int $itemid, int $userid): bool {
+    public static function cancel_purchase_for_component(string $component, string $area, int $itemid, int $userid): bool {
 
-        $providerclass = static::get_service_provider_classname($component);
+        $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'cancel_purchase', [$itemid, $userid]);
+        return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid]);
     }
 
     /**
@@ -563,13 +570,13 @@ class shopping_cart {
                 $item['itemname'] = $item['itemid'];
             }
 
-            if (!self::successful_checkout($item['componentname'], $item['itemid'], $userid)) {
+            if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
             } else {
                 // Delete Item from cache.
                 // Here, we don't need to unload the component, so the last parameter is false.
-                self::delete_item_from_cart($item['componentname'], $item['itemid'], $userid, false);
+                self::delete_item_from_cart($item['componentname'], $item['area'], $item['itemid'], $userid, false);
 
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
@@ -600,6 +607,7 @@ class shopping_cart {
                         $item['discount'],
                         $item['currency'],
                         $item['componentname'],
+                        $item['area'],
                         $identifier,
                         $paymentmethod,
                         PAYMENT_SUCCESS,
@@ -645,12 +653,13 @@ class shopping_cart {
      * @param int $itemid
      * @param int $userid
      * @param string $componentname
+     * @param string $area
      * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname,
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, $area,
         int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
 
         global $USER;
@@ -665,7 +674,7 @@ class shopping_cart {
             ];
         }
 
-        if (!self::cancel_purchase_for_component($componentname, $itemid, $userid)) {
+        if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
             return [
                 'success' => 0,
                 'error' => get_string('canceldidntwork', 'local_shopping_cart'),
@@ -674,7 +683,7 @@ class shopping_cart {
         }
 
         list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase($itemid,
-            $userid, $componentname, $historyid);
+            $userid, $componentname, $area, $historyid);
 
         if (empty($customcredit)) {
             $customcredit = $credit;
@@ -775,6 +784,7 @@ class shopping_cart {
      * - For any fail, we return success 0.
      *
      * @param string $component
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @param float $percent
@@ -783,6 +793,7 @@ class shopping_cart {
      */
     public static function add_discount_to_item(
         string $component,
+        string $area,
         int $itemid,
         int $userid,
         float $percent,
@@ -797,7 +808,7 @@ class shopping_cart {
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
-        $cacheitemkey = $component . '-' . $itemid;
+        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Item has to be there.
         if (!isset($cachedrawdata['items'][$cacheitemkey])) {
