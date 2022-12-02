@@ -240,7 +240,7 @@ class shopping_cart {
     public static function load_cartitem(string $component, string $area, int $itemid, int $userid): local\entities\cartitem {
         $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'load_cartitem', [$area, $itemid, $userid]);
+        return component_class_callback($providerclass, 'load_cartitem', [$component, $area, $itemid, $userid]);
     }
 
     /**
@@ -255,7 +255,7 @@ class shopping_cart {
     public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): bool {
         $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'unload_cartitem', [$area, $itemid, $userid]);
+        return component_class_callback($providerclass, 'unload_cartitem', [$component, $area, $itemid, $userid]);
     }
 
     /**
@@ -270,7 +270,7 @@ class shopping_cart {
     public static function successful_checkout(string $component, string $area, int $itemid, int $userid): bool {
         $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'successful_checkout', [$area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
+        return component_class_callback($providerclass, 'successful_checkout', [$component, $area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
     }
 
     /**
@@ -286,7 +286,7 @@ class shopping_cart {
 
         $providerclass = static::get_service_provider_classname($component, $area);
 
-        return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid]);
+        return component_class_callback($providerclass, 'cancel_purchase', [$component, $area, $itemid, $userid]);
     }
 
     /**
@@ -516,7 +516,7 @@ class shopping_cart {
                         'status' => 0,
                         'error' => get_string('notenoughcredit', 'local_shopping_cart'),
                         'credit' => $data['remainingcredit'],
-                        'identifier' => $identifier
+                        'identifier' => $identifier,
                     ];
                 }
             } else {
@@ -525,7 +525,7 @@ class shopping_cart {
                         'status' => 0,
                         'error' => get_string('nopermission', 'local_shopping_cart'),
                         'credit' => '',
-                        'identifier' => $identifier
+                        'identifier' => $identifier,
                     ];
                 }
             }
@@ -547,7 +547,7 @@ class shopping_cart {
                 'status' => 0,
                 'error' => get_string('noitemsincart', 'local_shopping_cart'),
                 'credit' => '',
-                'identifier' => $identifier
+                'identifier' => $identifier,
             ];
         }
 
@@ -613,7 +613,7 @@ class shopping_cart {
                         PAYMENT_SUCCESS,
                         $item['canceluntil'] ?? null,
                         $item['serviceperiodstart'] ?? null,
-                        $item['serviceperiodend'] ?? null
+                        $item['serviceperiodend'] ?? null,
                     );
                 }
 
@@ -634,7 +634,7 @@ class shopping_cart {
                 'status' => 1,
                 'error' => '',
                 'credit' => $data['remainingcredit'],
-                'identifier' => $identifier
+                'identifier' => $identifier,
 
             ];
         } else {
@@ -642,7 +642,7 @@ class shopping_cart {
                 'status' => 0,
                 'error' => implode('<br>', $error),
                 'credit' => $data['remainingcredit'],
-                'identifier' => $identifier
+                'identifier' => $identifier,
             ];
         }
     }
@@ -659,7 +659,7 @@ class shopping_cart {
      * @param float $cancelationfee
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, $area,
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area,
         int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
 
         global $USER;
@@ -670,7 +670,7 @@ class shopping_cart {
             return [
                 'success' => 0,
                 'error' => get_string('nopermission', 'local_shopping_cart'),
-                'credit' => 0
+                'credit' => 0,
             ];
         }
 
@@ -678,7 +678,7 @@ class shopping_cart {
             return [
                 'success' => 0,
                 'error' => get_string('canceldidntwork', 'local_shopping_cart'),
-                'credit' => 0
+                'credit' => 0,
             ];
         }
 
@@ -712,7 +712,7 @@ class shopping_cart {
         return [
             'success' => $success,
             'error' => $error,
-            'credit' => $newcredit
+            'credit' => $newcredit,
         ];
     }
 
@@ -735,13 +735,13 @@ class shopping_cart {
         if (!shopping_cart_credits::credit_paid_back($userid)) {
             return [
                 'status' => 0,
-                'error' => 'couldntpayback'
+                'error' => 'couldntpayback',
             ];
         }
 
         return [
             'status' => 1,
-            'error' => ''
+            'error' => '',
         ];
     }
 

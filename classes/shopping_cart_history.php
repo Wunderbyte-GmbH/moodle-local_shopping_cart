@@ -60,9 +60,14 @@ class shopping_cart_history {
     private $itemname;
 
     /**
-     * @var int
+     * @var string
      */
     private $componentname;
+
+    /**
+     * @var string
+     */
+    private $area;
 
     /**
      * History constructor
@@ -75,6 +80,7 @@ class shopping_cart_history {
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
+            $this->area = $data->area;
         }
     }
 
@@ -148,9 +154,10 @@ class shopping_cart_history {
      *
      * @param int $optionid
      * @param string $componentname
+     * @param string $area
      * @return array
      */
-    public static function get_user_list_for_option(int $optionid, string $componentname) {
+    public static function get_user_list_for_option(int $optionid, string $componentname, string $area) {
         global $DB;
         $sql = "SELECT sch.id, u.id as userid, u.firstname, u.lastname, u.email, sch.itemid, sch.price, sch.currency
                 FROM {user} u
@@ -158,10 +165,13 @@ class shopping_cart_history {
                 ON u.id=sch.userid
                 WHERE sch.itemid=:optionid
                 AND sch.componentname=:componentname
+                AND sch.area=:area
                 AND sch.paymentstatus=2";
 
         $params = ['optionid' => $optionid,
-                   'componentname' => $componentname];
+                   'componentname' => $componentname,
+                   'area' => $area,
+                ];
 
         return $DB->get_records_sql($sql, $params);
     }
@@ -210,6 +220,7 @@ class shopping_cart_history {
      * @param float $discount
      * @param string $currency
      * @param string $componentname
+     * @param string $area
      * @param string $identifier
      * @param string $payment
      * @param int $paymentstatus
@@ -224,6 +235,7 @@ class shopping_cart_history {
             float $discount,
             string $currency,
             string $componentname,
+            string $area,
             string $identifier,
             string $payment,
             int $paymentstatus = PAYMENT_PENDING,
@@ -242,6 +254,7 @@ class shopping_cart_history {
         $data->discount = $discount;
         $data->currency = $currency;
         $data->componentname = $componentname;
+        $data->area = $area;
         $data->identifier = $identifier;
         $data->payment = $payment;
         $data->paymentstatus = $paymentstatus;
@@ -260,11 +273,12 @@ class shopping_cart_history {
      * @param int $itemid
      * @param int $userid
      * @param string $componentname
+     * @param string $area
      * @param int|null $entryid
      * @param float $credit
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, int $entryid = null,
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area, int $entryid = null,
         $credit = null): array {
 
         global $DB;
@@ -280,13 +294,16 @@ class shopping_cart_history {
                     WHERE itemid=:itemid
                     AND  userid=:userid
                     AND componentname=:componentname
+                    AND area=:area
                     AND paymentstatus = " . PAYMENT_SUCCESS . "
                     ORDER BY timemodified
                     LIMIT 1";
 
             $params = ['itemid' => $itemid,
                        'userid' => $userid,
-                        'componentname' => $componentname];
+                        'componentname' => $componentname,
+                        'area' => $area,
+            ];
             $record = $DB->get_record_sql($sql, $params);
         }
 
