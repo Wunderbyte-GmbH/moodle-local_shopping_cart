@@ -297,6 +297,20 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022112900, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2022120400) {
+        // Define index userid-currency (not unique) to be added to local_shopping_cart_credits.
+        $table = new xmldb_table('local_shopping_cart_credits');
+        $index = new xmldb_index('userid-currency', XMLDB_INDEX_NOTUNIQUE, ['userid, currency']);
+
+        // Conditionally launch add index userid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2022120400, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

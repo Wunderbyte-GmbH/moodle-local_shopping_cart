@@ -58,6 +58,7 @@
             <INDEXES>
                 <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
                 <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
+                <INDEX NAME="userid-currency" UNIQUE="false" FIELDS="userid, currency" COMMENT="userid and currency used in WHERE"/>
             </INDEXES>
         </TABLE>
         <TABLE NAME="local_shopping_cart_ledger" COMMENT="This ledger only supports insert and works as a reliable record of all payments.">
