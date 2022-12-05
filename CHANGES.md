@@ -1,3 +1,9 @@
+## Version 0.3.5 (2022120500)
+**Improvements:**
+* Add index for local_shopping_cart_credits for better performance.
+* Better string for submit button ("choose").
+* Code quality (linting).
+
 ## Version 0.3.4 (2022112900)
 **New features:**
 * Added tax support.
