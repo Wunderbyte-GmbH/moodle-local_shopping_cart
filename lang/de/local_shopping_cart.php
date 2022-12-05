@@ -117,6 +117,7 @@ $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = 'Teilnehmerin...';
 $string['searchforitem'] = 'Suche...';
+$string['choose'] = 'Auswählen';
 
 $string['payedwithcash'] = 'Barzahlung bestätigen';
 $string['payedwithcreditcard'] = 'Kreditkartenzahlung bestätigen';

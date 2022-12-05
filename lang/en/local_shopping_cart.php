@@ -115,6 +115,7 @@ $string['nouserselected'] = 'No user selected';
 $string['selectuser'] = 'Select a user...';
 $string['user'] = 'User...';
 $string['searchforitem'] = 'Search for item...';
+$string['choose'] = 'Choose';
 
 $string['payedwithcash'] = 'Confirm cash payment';
 $string['payedwithcreditcard'] = 'Confirm credit card payment';
