@@ -262,7 +262,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022112900) {
-        // add tax information to history and ledger tables
+        // Add tax information to history and ledger tables.
 
         $historytable = new xmldb_table('local_shopping_cart_history');
         $ledgertable = new xmldb_table('local_shopping_cart_ledger');
@@ -271,7 +271,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $taxpercentagefield = new xmldb_field('taxpercentage', XMLDB_TYPE_NUMBER, '5, 4', null, null, null, null, 'tax');
         $taxcategoryfield = new xmldb_field('taxcategory', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'taxpercentage');
 
-        // add new fields to local_shopping_cart_history table
+        // Add new fields to local_shopping_cart_history table.
         if (!$dbman->field_exists($historytable, $taxfield)) {
             $dbman->add_field($historytable, $taxfield);
         }
@@ -282,7 +282,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
             $dbman->add_field($historytable, $taxcategoryfield);
         }
 
-        // add new fields to local_shopping_cart_ledger table
+        // Add new fields to local_shopping_cart_ledger table.
         if (!$dbman->field_exists($ledgertable, $taxfield)) {
             $dbman->add_field($ledgertable, $taxfield);
         }
