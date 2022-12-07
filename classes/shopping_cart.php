@@ -364,8 +364,8 @@ class shopping_cart {
             $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
             $data['count'] = $count;
 
-            $data['currency'] = $cachedrawdata['currency'];
-            $data['credit'] = $cachedrawdata['credit'];
+            $data['currency'] = $cachedrawdata['currency'] ?? null;
+            $data['credit'] = $cachedrawdata['credit'] ?? null;
             $data['remainingcredit'] = $data['credit'];
 
             if ($count > 0) {

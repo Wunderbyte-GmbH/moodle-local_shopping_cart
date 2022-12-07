@@ -142,8 +142,6 @@ class shopping_cart_credits {
         $sql = "SELECT SUM(credits) credits, currency
                 FROM {local_shopping_cart_credits}
                 WHERE userid =:userid
-                AND currency IS NOT NULL
-                AND currency <> ''
                 GROUP BY (currency)";
 
         $params = ['userid' => $userid];
