@@ -154,6 +154,12 @@ export const buttoninit = (itemid, component, area) => {
         }
         addtocartbutton.dataset.initialized = 'true';
 
+        // If the button has the nojs flag, we don't add the listener at all.
+
+        if (addtocartbutton.dataset.nojs) {
+            return;
+        }
+
         // Add click eventlistern to oneself.
         addtocartbutton.addEventListener('click', event => {
 
