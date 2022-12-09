@@ -329,7 +329,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         // Add new fields to local_shopping_cart_history table.
         if ($dbman->field_exists($table, $taxfield)) {
-            $dbman->change_field_precision($historytable, $taxfield);
+            $dbman->change_field_precision($table, $taxfield);
         }
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2022120701, 'local', 'shopping_cart');
