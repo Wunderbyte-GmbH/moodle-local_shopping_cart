@@ -88,6 +88,7 @@ export const init = (cancelationFee = null) => {
 /**
  * This triggers the ajax call to acutally cancel the purchase.
  * @param {int} itemid
+ * @param {string} area
  * @param {int} userid
  * @param {string} componentname
  * @param {int} historyid
@@ -96,13 +97,14 @@ export const init = (cancelationFee = null) => {
  * @param {string} credit
  * @param {type} button
  */
-function cancelPurchase(itemid, userid, componentname, historyid, currency, price, credit, button) {
+function cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, credit, button) {
 
     Ajax.call([{
         methodname: "local_shopping_cart_cancel_purchase",
         args: {
             'itemid': itemid,
             'componentname': componentname,
+            'area': area,
             'userid': userid,
             'historyid': historyid,
             'credit': credit
@@ -319,9 +321,10 @@ function confirmCancelModal(button, cancelationFee) {
                         const userid = button.dataset.userid;
                         const currency = button.dataset.currency;
                         const componentname = button.dataset.componentname;
+                        const area = button.dataset.area;
                         const price = button.dataset.price;
 
-                        cancelPurchase(itemid, userid, componentname, historyid, currency, price, 0, button);
+                        cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button);
                     });
 
                     modal.show();
@@ -349,6 +352,7 @@ function confirmCancelAndSetCreditModal(button) {
     const userid = button.dataset.userid;
     const currency = button.dataset.currency;
     const componentname = button.dataset.componentname;
+    const area = button.dataset.area;
 
     const modalForm = new ModalForm({
 
@@ -360,7 +364,8 @@ function confirmCancelAndSetCreditModal(button) {
                'itemid': itemid,
                'userid': userid,
                'currency': currency,
-               'componentname': componentname},
+               'componentname': componentname,
+               'area': area},
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:

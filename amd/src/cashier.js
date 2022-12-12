@@ -279,9 +279,10 @@ export function discountModal(event) {
     const itemid = element.dataset.itemid;
     const userid = element.dataset.userid;
     const componentname = element.dataset.component;
+    const area = element.dataset.area;
 
     // eslint-disable-next-line no-console
-    console.log('discountModal', price, itemid, userid, componentname);
+    console.log('discountModal', price, itemid, userid, componentname, 'area ' + area);
 
     const modalForm = new ModalForm({
 
@@ -291,7 +292,8 @@ export function discountModal(event) {
         args: {'price': price,
                'itemid': itemid,
                'userid': userid,
-               'componentname': componentname},
+               'componentname': componentname,
+               'area': area},
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('applydiscount', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
