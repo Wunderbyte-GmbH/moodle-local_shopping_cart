@@ -58,6 +58,7 @@ class modal_cancel_addcredit extends dynamic_form {
         $mform->addElement('hidden', 'userid', $this->_ajaxformdata["userid"]);
         $mform->addElement('hidden', 'currency', $this->_ajaxformdata["currency"]);
         $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
+        $mform->addElement('hidden', 'area', $this->_ajaxformdata["area"]);
 
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
         $mform->setDefault('cancelationfee', $cancelationfee);
@@ -94,7 +95,7 @@ class modal_cancel_addcredit extends dynamic_form {
         // Subtract cancellation fee from price to get credit for the user.
         $credit = $data->price - $cancelationfee;
 
-        shopping_cart::cancel_purchase($data->itemid, $data->userid, $data->componentname, $data->historyid,
+        shopping_cart::cancel_purchase($data->itemid, $data->area, $data->userid, $data->componentname, $data->historyid,
             $credit, $cancelationfee);
 
         return $data;

@@ -46,6 +46,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                             10,
                             'EUR',
                             'local_shopping_cart',
+                            $area,
                             'item description',
                             $imageurl->out(),
                             $canceluntil,

@@ -65,6 +65,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $mform->addElement('hidden', 'itemid', $this->_ajaxformdata["itemid"]);
         $mform->addElement('hidden', 'userid', $userid);
         $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
+        $mform->addElement('hidden', 'area', $this->_ajaxformdata["area"]);
 
         $mform->addElement('float', 'discountpercent', get_string('discountpercent', 'local_shopping_cart'));
         $mform->addHelpButton('discountpercent', 'discountpercent', 'local_shopping_cart');
@@ -108,6 +109,7 @@ class modal_add_discount_to_item extends dynamic_form {
 
         shopping_cart::add_discount_to_item(
             $data->componentname,
+            $data->area,
             $data->itemid,
             $data->userid,
             $data->discountpercent,
@@ -136,12 +138,13 @@ class modal_add_discount_to_item extends dynamic_form {
 
         $itemid = $this->_ajaxformdata["itemid"];
         $component = $this->_ajaxformdata["componentname"];
+        $area = $this->_ajaxformdata["area"];
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
-        $cacheitemkey = $component . '-' . $itemid;
+        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Item has to be there.
         if (!isset($cachedrawdata['items'][$cacheitemkey])) {
@@ -153,7 +156,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $discount = $item['discount'] ?? 0;
 
         // We have to guess if the value comes from percentage or absolute.
-        if (!empty($discount)
+        if (!empty($discount) && !empty($item['price'])
             && (0 === (($discount * 100) % $item['price']))) {
 
             // This seems to come from percentage, because we get a nice number.
