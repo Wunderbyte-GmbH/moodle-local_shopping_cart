@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/shopping_cart/db" VERSION="2022110900" COMMENT="XMLDB file for Moodle local/shopping_cart"
+<XMLDB PATH="local/shopping_cart/db" VERSION="2022121200" COMMENT="XMLDB file for Moodle local/shopping_cart"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -30,6 +30,7 @@
                        COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
                 <FIELD NAME="serviceperiodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
                        COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
+                <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -92,6 +93,7 @@
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
