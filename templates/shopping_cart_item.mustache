@@ -33,6 +33,7 @@
     {
         "itemid": 3,
         "componentname": "mod_booking",
+        "area": "main",
         "price": 133,
         "expirationdate": 1642155164,
         "itemname": "Tenniscourse"
@@ -40,11 +41,12 @@
 
 }}
 
-<li id="item-{{componentname}}-{{itemid}}"
+<li id="item-{{componentname}}-{{area}}-{{itemid}}"
     class="clearfix"
     data-price='{{price}}'
     data-name='{{itemname}}'
     data-component='{{componentname}}'
+    data-area='{{area}}'
     data-itemid='{{itemid}}'
     data-item="shopping_cart_item"
     data-currency='{{currency}}'
@@ -61,10 +63,10 @@
         {{itemname}}
     </span>
     {{#iscashier}}
-        <span class="item-button pull-right"><i class="fa fa-eur pl-2" aria-hidden="true" data-item="shopping_cart_item" data-component="{{componentname}}" data-itemid="{{itemid}}"
+        <span class="item-button pull-right"><i class="fa fa-eur pl-2" aria-hidden="true" data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"" data-itemid="{{itemid}}"
                                                 data-action="discount" data-userid="{{userid}}"></i></span>
     {{/iscashier}}
-    <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
+    <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}" data-area="{{area}}""
                                             data-action="delete" data-userid="{{userid}}"></i></span>
     <span class="item-price pull-right">
         {{! prices have tax information }}
