@@ -82,4 +82,17 @@ interface service_provider {
      * @return bool
      */
     public static function cancel_purchase(string $area, int $itemid, int $userid = 0): bool;
+
+    /**
+     * Callback function to give back a float value how much of the initially bought item is already consumed.
+     * 1 stands for everything, 0.5 for 50%.
+     * This is used in cancellation, to know how much of the initial price is returned.
+     *
+     * @param string $area
+     * @param int $itemid An identifier that is known to the plugin
+     * @param int $userid
+     *
+     * @return float
+     */
+    public static function quota_consumed(string $area, int $itemid, int $userid = 0): bool;
 }

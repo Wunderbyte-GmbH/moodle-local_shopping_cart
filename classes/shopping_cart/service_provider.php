@@ -92,4 +92,21 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     public static function cancel_purchase(string $area, int $itemid, int $userid = 0): bool {
         return true;
     }
+
+    /**
+     * Callback function to give back a float value how much of the initially bought item is already consumed.
+     * 1 stands for everything, 0.5 for 50%.
+     * This is used in cancellation, to know how much of the initial price is returned.
+     *
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @return float
+     */
+    public static function quota_consumed(string $area, int $itemid, int $userid = 0): bool {
+        // In this test situation, we return a random value.
+
+        $consumedquota = rand(0, 100) / 100;
+        return $consumedquota;
+    }
 }

@@ -36,7 +36,8 @@ $services = array(
                         'local_shopping_cart_cancel_purchase',
                         'local_shopping_cart_get_price',
                         'local_shopping_cart_credit_paid_back',
-                        'local_shopping_cart_confirm_cash_payment'
+                        'local_shopping_cart_confirm_cash_payment',
+                        'local_shopping_cart_quota_consumed',
                 ),
                 'restrictedusers' => 1,
                 'shortname' => 'local_shopping_cart_external',
@@ -105,14 +106,22 @@ $functions = array(
                 'classname' => 'local_shopping_cart\external\credit_paid_back',
                 'classpath' => '',
                 'description' => 'Register paid back credit',
-                'type' => 'read',
-                'capabilities' => '',
+                'type' => 'write',
+                'capabilities' => 'local/shopping_cart:cashier',
                 'ajax' => 1
         ),
         'local_shopping_cart_get_history_items' => array(
                 'classname' => 'local_shopping_cart\external\get_history_items',
                 'classpath' => '',
                 'description' => 'Get History items',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
+        ),
+        'local_shopping_cart_quota_consumed' => array(
+                'classname' => 'local_shopping_cart\external\quota_consumed',
+                'classpath' => '',
+                'description' => 'Return the consumed quota from a given item',
                 'type' => 'read',
                 'capabilities' => '',
                 'ajax' => 1

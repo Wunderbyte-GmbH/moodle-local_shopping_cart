@@ -60,6 +60,9 @@ $string['taxcategories_desc'] = 'Tax categories per user-country and their tax p
 $string['taxcategories_invalid'] = 'The given tax categories can not be parsed!';
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
+$string['calculateconsumation'] = 'Credit on cancelation minus already consumed value.';
+$string['calculateconsumation_desc'] = 'On cancelation, the credit is calculated depending on the already consumed share of a bought article.';
+
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
@@ -133,7 +136,7 @@ $string['confirmcanceltitle'] = 'Confirm Cancelation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
  The user who purchased will get his money back of which the cancellation fee will be subtracted.';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase.
-                                    You\'l get the costs of your purchase minus a cancelation fee ({$a} Euro) as a credit for your next purchase.';
+                                    You\'ll get the costs of your purchase minus a cancelation fee ({$a} Euro) as a credit for your next purchase.';
 
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
     The following users will get their money back as credit:

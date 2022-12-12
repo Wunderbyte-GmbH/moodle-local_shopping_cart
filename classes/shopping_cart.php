@@ -953,4 +953,41 @@ class shopping_cart {
             return $sum;
         }, 0.0);
     }
+
+    /**
+     * Get consumed quota of item via callback.
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @param int $historyid
+     *
+     * @return array
+     */
+    public static function get_quota_consumed(string $component, string $area, int $itemid, int $userid, int $historyid): array {
+
+        // First we calculate the quota from the item.
+        $providerclass = static::get_service_provider_classname($component);
+        $quota = component_class_callback($providerclass, 'quota_consumed', [$area, $itemid, $userid]);
+
+        $item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid);
+
+        // Now get the historyitem in order to check the initial price and calculate the rest.
+        if ($quota >= 0 && $item) {
+            $initialprice = $item->price;
+            $remainingvalue = $initialprice * $quota;
+            $currency = $item->currency;
+            $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
+            $success = $cancelationfee < 0 ? 0 : 1; // Cancelation not allowed.
+        }
+
+        return [
+            'success' => $success ?? 0,
+            'quota' => $quota ?? 0,
+            'remainingvalue' => $remainingvalue ?? 0,
+            'initialprice' => $initialvalue ?? 0,
+            'currency' => $currency ?? '',
+            'cancelationfee' => $cancelationfee ?? 0,
+        ];
+    }
 }

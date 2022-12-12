@@ -116,6 +116,12 @@ if ($hassiteconfig) {
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
+        new admin_setting_configcheckbox($componentname . '/calculateconsumation',
+                get_string('calculateconsumation', 'local_shopping_cart'),
+                get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
             new admin_setting_configcheckbox($componentname . '/rounddiscounts',
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
@@ -164,7 +170,7 @@ if ($hassiteconfig) {
 <div class="collapse mb-5" id="collapseExample">
   <div class="card card-body">
     Multi country multi tax categories:
-    <pre class="mb-1 p-1">default A:0 B:0 C:0 
+    <pre class="mb-1 p-1">default A:0 B:0 C:0
 At A:20 B:10 C:0
 De A:19 B:10 C:0</pre><hr/>
     Multi tax categories, no countries:
