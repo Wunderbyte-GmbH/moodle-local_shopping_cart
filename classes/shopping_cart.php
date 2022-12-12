@@ -678,8 +678,19 @@ class shopping_cart {
 
         global $USER;
 
-        // Check if cancelation is still within the allowed periode set in shopping_cart_history.
+        // A user can only cancel for herself, unless she is cashier.
+        if ($USER->id != $userid) {
+            $context = context_system::instance();
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
+                return [
+                    'success' => 0,
+                    'error' => get_string('nopermission', 'local_shopping_cart'),
+                    'credit' => 0
+                ];
+            }
+        }
 
+        // Check if cancelation is still within the allowed periode set in shopping_cart_history.
         if (!self::allowed_to_cancel($historyid, $itemid, $area, $userid)) {
             return [
                     'success' => 0,
@@ -696,9 +707,18 @@ class shopping_cart {
             ];
         }
 
+        // The credit field can only be transmitted by authorized user.
+        if (!empty($customcredit)) {
+            $context = context_system::instance();
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
+                $customcredit = 0.0;
+            }
+        }
+
         list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase($itemid,
             $userid, $componentname, $area, $historyid);
 
+        // Only the Cashier can override the credit. If she has done so, we use it.
         if (empty($customcredit)) {
             $customcredit = $credit;
         }
@@ -774,6 +794,11 @@ class shopping_cart {
         global $DB;
 
         if (!$item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid)) {
+            return false;
+        }
+
+        // We can only cancel items that are successfully paid.
+        if ($item->paymentstatus != PAYMENT_SUCCESS) {
             return false;
         }
 
