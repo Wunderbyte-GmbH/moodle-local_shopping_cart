@@ -56,7 +56,7 @@ class get_shopping_cart_items extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-                'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
         ));
     }
 
@@ -70,7 +70,7 @@ class get_shopping_cart_items extends external_api {
         global $USER;
 
         $params = self::validate_parameters(self::execute_parameters(), [
-                'userid' => $userid
+            'userid' => $userid
         ]);
 
         require_login();
@@ -128,6 +128,7 @@ class get_shopping_cart_items extends external_api {
                                                         false),
                                                 'currency' => new external_value(PARAM_ALPHA, 'Currency'),
                                                 'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                                                'area' => new external_value(PARAM_TEXT, 'Area'),
                                                 'description' => new external_value(PARAM_RAW, 'Item description'),
                                                 'imageurl' => new external_value(PARAM_RAW, 'Image url'),
                                                 'canceluntil' => new external_value(PARAM_INT,

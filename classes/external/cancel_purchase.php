@@ -55,11 +55,12 @@ class cancel_purchase extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'componentname'  => new external_value(PARAM_RAW, 'componentname', VALUE_DEFAULT, ''),
-            'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_DEFAULT, 0),
-            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_DEFAULT, 0)
+            'componentname'  => new external_value(PARAM_RAW, 'componentname', VALUE_REQUIRED),
+            'area'  => new external_value(PARAM_RAW, 'area', VALUE_REQUIRED),
+            'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
+            'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
+            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED)
             )
         );
     }
@@ -68,19 +69,21 @@ class cancel_purchase extends external_api {
      * Webservice for shopping_cart class to add a new item to the cart.
      *
      * @param string $componentname
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @param int $historyid
      * @param float $credit
      * @return array
      */
-    public static function execute(string $componentname, int $itemid, int $userid, int $historyid, float $credit): array {
+    public static function execute(string $componentname, string $area, int $itemid, int $userid, int $historyid, float $credit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
+            'area' => $area,
             'itemid' => $itemid,
             'userid' => $userid,
             'historyid' => $historyid,
-            'credit' => $credit
+            'credit' => $credit,
         ]);
 
         require_login();
@@ -90,7 +93,7 @@ class cancel_purchase extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::cancel_purchase($params['itemid'], $params['userid'], $params['componentname'],
+        return shopping_cart::cancel_purchase($params['itemid'], $params['area'], $params['userid'], $params['componentname'],
             $params['historyid'],  $params['credit']);
     }
 
