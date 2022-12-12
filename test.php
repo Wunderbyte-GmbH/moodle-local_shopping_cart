@@ -46,11 +46,11 @@ $canceluntil = strtotime('+14 days', time());
 
 // this cartitem data is not really used (except for itemid), because data is fetched from service_provider.
 // See \local_shopping_cart\shopping_cart\service_provider for real values
-$item = new cartitem(1, '1', 10.00, 'EUR', 'local_shopping_cart', '', '', $canceluntil);
+$item = new cartitem(1, '1', 10.00, 'EUR', 'local_shopping_cart', 'main', '', '', $canceluntil);
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
-$item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', '', '', $canceluntil);
+$item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', 'main', '', '', $canceluntil);
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
@@ -65,5 +65,7 @@ echo '</div>';
 $history = new shopping_cart_history();
 // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 /* $data = $history->prepare_data_from_cache($USER->id);*/
+
+echo format_text("[shoppingcarthistory]");
 
 echo $OUTPUT->footer();

@@ -30,12 +30,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     /**
      * Callback function that returns the costs and the accountid
      * for the course, just for testing.
-     *
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @return cartitem
      */
-    public static function load_cartitem(int $itemid, int $userid = 0): cartitem {
+    public static function load_cartitem(string $area, int $itemid, int $userid = 0): cartitem {
         $canceluntil = strtotime('+14 days', time());
         $serviceperiodstart = time();
         $serviceperiodend = strtotime('+30 days', time());
@@ -60,34 +60,36 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * Callback function that unloads a cart item and thus frees
      * Used only in test.php for test purches.
      *
+     * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      * @return bool
      */
-    public static function unload_cartitem(int $itemid, int $userid = 0): bool {
+    public static function unload_cartitem(string $area, int $itemid, int $userid = 0): bool {
         return true;
     }
 
     /**
      * Callback function that handles inscripiton after fee was paid.
+     * @param string $area
      * @param int $itemid
      * @param int $paymentid
      * @param int $userid
      * @return bool
      */
-    public static function successful_checkout(int $itemid, int $paymentid, int $userid): bool {
+    public static function successful_checkout(string $area, int $itemid, int $paymentid, int $userid): bool {
         // TODO: Set booking_answer to 1.
         return true;
     }
 
     /**
      * Callback function that handles cancelation after purchase.
-     *
+     * @param string $area
      * @param int $itemid
      * @param int $userid
      * @return bool
      */
-    public static function cancel_purchase(int $itemid, int $userid = 0): bool {
+    public static function cancel_purchase(string $area, int $itemid, int $userid = 0): bool {
         return true;
     }
 }
