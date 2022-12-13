@@ -94,5 +94,5 @@ interface service_provider {
      *
      * @return float
      */
-    public static function quota_consumed(string $area, int $itemid, int $userid = 0): bool;
+    public static function quota_consumed(string $area, int $itemid, int $userid = 0): float;
 }

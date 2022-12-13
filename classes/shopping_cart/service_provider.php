@@ -103,7 +103,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param int $userid
      * @return float
      */
-    public static function quota_consumed(string $area, int $itemid, int $userid = 0): bool {
+    public static function quota_consumed(string $area, int $itemid, int $userid = 0): float {
         // In this test situation, we return a random value.
 
         $consumedquota = rand(0, 100) / 100;
