@@ -57,6 +57,7 @@ const SELECTORS = {
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
     PRICELABELAREA: '.sc_price_label',
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
+    PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
 };
 /**
  *
@@ -106,7 +107,7 @@ const SELECTORS = {
 
     // Initially, we need to add the zeroPriceListener once.
 
-    const paymentbutton = document.querySelector('div.shopping_cart_payment_region button');
+    const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
     if (paymentbutton) {
         const data = {
             price: paymentbutton.dataset.price,
