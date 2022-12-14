@@ -28,6 +28,7 @@ namespace local_shopping_cart\output;
 use context_system;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use mod_booking\booking_option;
 use moodle_url;
 use renderable;
 use renderer_base;
@@ -97,6 +98,16 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
+
+            // We fetch the consumed quota as well.
+
+            $providerclass = shopping_cart::get_service_provider_classname($item->componentname);
+            $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
+                [
+                    'area' => $item->area,
+                    'itemid' => $item->itemid,
+                    'userid' => $userid,
+            ]);
 
             $item->date = date('Y-m-d', $item->timemodified);
             $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;

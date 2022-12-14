@@ -217,7 +217,7 @@ class shopping_cart {
      * @return string
      * @throws \coding_exception
      */
-    private static function get_service_provider_classname(string $component) {
+    public static function get_service_provider_classname(string $component) {
         $providerclass = "$component\\shopping_cart\\service_provider";
 
         if (class_exists($providerclass)) {

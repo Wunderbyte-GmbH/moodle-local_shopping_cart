@@ -302,9 +302,28 @@ function confirmCancelModal(button, cancelationFee) {
         cancelationFee = 0;
     }
 
+    const price = parseFloat(button.dataset.price).toFixed(2);
+    const quotaconsumed = parseFloat(button.dataset.quotaconsumed).toFixed(2);
+    const credit = price - (price * quotaconsumed) - cancelationFee;
+    const currency = button.dataset.currency;
+    const percentage = (1 - quotaconsumed) * 100 + "%";
+    const params = {
+        price: price,
+        quotaconsumed: quotaconsumed,
+        cancelationfee: cancelationFee,
+        credit: credit.toFixed(2),
+        percentage: percentage,
+        currency: currency,
+    };
+
+    let bodystring = quotaconsumed > 0 ? 'confirmcancelbodyuserconsumption' : 'confirmcancelbodyuser';
+
+    // eslint-disable-next-line no-console
+    console.log(params);
+
     getStrings([
             {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
-            {key: 'confirmcancelbodyuser', component: 'local_shopping_cart', param: cancelationFee},
+            {key: bodystring, component: 'local_shopping_cart', param: params},
             {key: 'cancelpurchase', component: 'local_shopping_cart'}
         ]
         ).then(strings => {
