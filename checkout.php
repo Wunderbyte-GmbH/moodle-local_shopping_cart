@@ -43,7 +43,7 @@ if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
     $url = html_entity_decode($ME);
     $urlcomponents = parse_url($url);
     parse_str($urlcomponents['query'], $params);
-    $identifier = $params['identifier'];
+    $identifier = $params['identifier'] ?? null;
 }
 
 // Setup the page.
