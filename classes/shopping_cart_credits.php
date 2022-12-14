@@ -66,6 +66,15 @@ class shopping_cart_credits {
 
         list($balance, $currency) = self::get_balance($userid);
 
+        // If there is no price key, we need to calculate it from items.
+        if (!isset($data['price']) && isset($data['items'])) {
+            $price = 0;
+            foreach ($data['items'] as $item) {
+                $price += $item->price;
+            }
+            $data['price'] = $price;
+        }
+
         $data['initialtotal'] = $data['price'];
         if (isset($data['price_net'])) {
             $data['initialtotal_net'] = $data['price_net'];

@@ -541,6 +541,11 @@ class shopping_cart {
             // Even if we get the data from history, we still need to look in cache.
             // With this, we will know how much the user actually paid and how much comes from her credits.
             shopping_cart_credits::prepare_checkout($data, $userid);
+
+            // Now we need to store the new credit balance.
+            if ($data['deductible'] > 0) {
+                shopping_cart_credits::use_credit($userid, $data);
+            }
         }
 
         // Check if we have items for this user.
