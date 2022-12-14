@@ -28,15 +28,23 @@ use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 
-global $USER, $PAGE, $OUTPUT, $CFG;
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
+global $USER, $PAGE, $OUTPUT, $CFG;
+
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
-$identifier = optional_param('identifier', null, PARAM_INT);
+
+// As we might get a malformed URL, we have to jump through a few loops.
+if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
+    $url = html_entity_decode($ME);
+    $urlcomponents = parse_url($url);
+    parse_str($urlcomponents['query'], $params);
+    $identifier = $params['identifier'];
+}
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
