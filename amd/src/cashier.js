@@ -81,7 +81,12 @@ export const confirmPayment = (userid, paymenttype) => {
 
                     const identifier = data.identifier;
 
-                    const newurl = Url.fileUrl("/local/shopping_cart/checkout.php?success=1&identifier=" + identifier, "");
+                    let params = {
+                        success: 1,
+                        identifier: identifier,
+                    };
+
+                    const newurl = Url.relativeUrl("/local/shopping_cart/checkout.php", params, false);
 
                     location.href = newurl;
 
