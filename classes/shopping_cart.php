@@ -722,8 +722,11 @@ class shopping_cart {
 
         // Only the Cashier can override the credit. If she has done so, we use it.
         // Else, we use the normal credit.
-        if (empty($customcredit)) {
-            $customcredit = $credit;
+        $context = context_system::instance();
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
+            if (empty($customcredit)) {
+                $customcredit = $credit;
+            }
         }
 
         if ($success == 1) {
@@ -1010,7 +1013,7 @@ class shopping_cart {
 
         // Now get the historyitem in order to check the initial price and calculate the rest.
         if ($quota >= 0 && $item) {
-            $initialprice = $item->price;
+            $initialprice = (float)$item->price;
             $remainingvalue = $initialprice - ($initialprice * $quota);
             $currency = $item->currency;
             $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
@@ -1021,7 +1024,7 @@ class shopping_cart {
             'success' => $success ?? 0,
             'quota' => $quota ?? 0,
             'remainingvalue' => $remainingvalue ?? 0,
-            'initialprice' => $initialvalue ?? 0,
+            'initialprice' => $initialprice ?? 0,
             'currency' => $currency ?? '',
             'cancelationfee' => $cancelationfee ?? 0,
         ];

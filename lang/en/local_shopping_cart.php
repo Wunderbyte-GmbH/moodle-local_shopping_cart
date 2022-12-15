@@ -38,6 +38,7 @@ $string['maxitems:description'] = 'Set the maximum number of items for the user 
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
 $string['cancelationfee'] = 'Cancelation fee';
+$string['credittopayback'] = 'Amount to pay back';
 $string['cancelationfee:description'] = 'Automatically deducted fee for cancelation by user.
                                         -1 means that cancelation by user is not possible.';
 $string['addon'] = 'Set addon time';
@@ -135,6 +136,14 @@ $string['youcannotcancelanymore'] = 'No cancelation possible.';
 $string['confirmcanceltitle'] = 'Confirm Cancelation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
  The user who purchased will get his money back of which the cancellation fee will be subtracted.';
+ $string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this purchase? It can\'t be undone.
+                                    The user who purchased will get the costs of {$a->price} {$a->currency} minus the already consumed share of {$a->percentage} minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
+                                    <br><br>
+                                    <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+                                    </div>';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<br>
                                     You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
 $string['confirmcancelbodyuserconsumption'] = 'Do you really want to cancel this purchase?<br>

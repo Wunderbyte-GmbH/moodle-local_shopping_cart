@@ -37,6 +37,7 @@ $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb f�
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
 $string['cancelationfee'] = 'Stornierungsgebühr';
+$string['credittopayback'] = 'Zurückerstatteter Betrag';
 $string['cancelationfee:description'] = 'Automatisch vom Guthaben abgezogene Gebühr bei einer Stornierung durch die/den KäuferIn.
                                         -1 bedeutet, dass Stornierung durch Userin nicht möglich ist.';
 $string['addon'] = 'Zusätzliche Zeit festlegen';
@@ -137,7 +138,10 @@ $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
 
 $string['confirmcanceltitle'] = 'Bestätige Stornierung';
 $string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
-                                Der/die Käufer*in bekommt den Kaufpreis abzüglich der Stornierungsgebühr gutgeschrieben.';
+                                Der/die Käufer*in bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich der Stornierungsgebühr von {$a->cancelationfee} {a->currency} gutgeschrieben.';
+$string['confirmcancelbodyconsumption'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
+                                Der/die Käufer*in bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich des bereits verbrauchten Anteils von {$a->percentage} und einer Stornierungsgebühr von {$a->cancelationfee} {a->currency} gutgeschrieben.';
+
 $string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
                                     Sie bekommen den Kaufpreis ({$a->price} {$a->currency}) abzüglich einer Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
 $string['confirmcancelbodyuserconsumption'] = 'Möchten Sie wirklich den Kauf stornieren?<br>

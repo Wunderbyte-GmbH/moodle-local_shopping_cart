@@ -46,8 +46,6 @@ class modal_cancel_addcredit extends dynamic_form {
 
         $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
 
-        $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbody', 'local_shopping_cart'));
-
         if (!$cancelationfee || $cancelationfee < 0) {
             $cancelationfee = 0;
         }
@@ -60,8 +58,30 @@ class modal_cancel_addcredit extends dynamic_form {
         $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
         $mform->addElement('hidden', 'area', $this->_ajaxformdata["area"]);
 
+        $consumed = (object)shopping_cart::get_quota_consumed(
+            $this->_ajaxformdata["componentname"],
+            $this->_ajaxformdata["area"],
+            $this->_ajaxformdata["itemid"],
+            $this->_ajaxformdata["userid"],
+            $this->_ajaxformdata["historyid"],
+        );
+        $consumed->percentage = $consumed->quota * 100 . '%';
+        $consumed->price = $consumed->initialprice;
+        $consumed->credit = $consumed->remainingvalue;
+
+        if (empty($consumed->quota)) {
+            $remainingvalue = $this->_ajaxformdata["price"];
+            $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbody', 'local_shopping_cart', $consumed));
+        } else {
+            $remainingvalue = $consumed->remainingvalue;
+            $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbodyconsumption', 'local_shopping_cart', $consumed));
+        }
+
+        $mform->addElement('float', 'credittopayback', get_string('credittopayback', 'local_shopping_cart'));
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
+
         $mform->setDefault('cancelationfee', $cancelationfee);
+        $mform->setDefault('credittopayback', $remainingvalue);
     }
 
     /**
@@ -88,12 +108,19 @@ class modal_cancel_addcredit extends dynamic_form {
 
         // Set cancellation fee.
         $cancelationfee = $data->cancelationfee ?? 0;
+
+        $credittopayback = $data->credittopayback ?? 0;
+
         if ($data->cancelationfee < 0) {
                 $cancelationfee = 0;
         }
 
-        // Subtract cancellation fee from price to get credit for the user.
-        $credit = $data->price - $cancelationfee;
+        if ($data->credittopayback < 0) {
+            $credittopayback = 0;
+        }
+
+        // Subtract cancellation fee from credit to get credit for the user.
+        $credit = $credittopayback - $cancelationfee;
 
         shopping_cart::cancel_purchase($data->itemid, $data->area, $data->userid, $data->componentname, $data->historyid,
             $credit, $cancelationfee);
