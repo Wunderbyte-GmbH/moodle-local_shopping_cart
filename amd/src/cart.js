@@ -66,9 +66,6 @@ const SELECTORS = {
 
  export const init = (expirationdate) => {
 
-    // eslint-disable-next-line no-console
-    console.log('cart init');
-
     initTimer(expirationdate);
 
     // We might have more than one container.
@@ -122,14 +119,16 @@ const SELECTORS = {
 
 export const buttoninit = (itemid, component, area) => {
 
-    if (itemid === null) {
+    // If we don't have an itemid, we need to look for all the buttons.
+    if (!itemid || !component || !area) {
+        const selector = '[data-objecttable="local_shopping_cart"';
         const allbuttons = document.querySelectorAll(
-            '[data-component="' + component + '"]'
-            + '[data-area="' + area + '"]'
-            + '[data-objecttable="local_shopping_cart"');
+            selector);
 
         allbuttons.forEach(button => {
             const itemid = button.dataset.itemid;
+            const area = button.dataset.area;
+            const component = button.dataset.component;
             buttoninit(itemid, component, area);
         });
         return;
