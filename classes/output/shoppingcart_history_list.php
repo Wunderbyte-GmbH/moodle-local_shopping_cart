@@ -32,6 +32,7 @@ use mod_booking\booking_option;
 use moodle_url;
 use renderable;
 use renderer_base;
+use stdClass;
 use templatable;
 
 /**
@@ -99,15 +100,8 @@ class shoppingcart_history_list implements renderable, templatable {
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
 
-            // We fetch the consumed quota as well.
-
-            $providerclass = shopping_cart::get_service_provider_classname($item->componentname);
-            $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
-                [
-                    'area' => $item->area,
-                    'itemid' => $item->itemid,
-                    'userid' => $userid,
-            ]);
+            self::add_quota_consumed($item, $userid);
+            self::add_round_config($item);
 
             $item->date = date('Y-m-d', $item->timemodified);
             $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
@@ -254,5 +248,34 @@ class shoppingcart_history_list implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
 
         return $this->return_list();
+    }
+
+    /**
+     * Receive quota consumed via callback to component.
+     *
+     * @param stdClass $item
+     * @param integer $userid
+     * @return void
+     */
+    private static function add_quota_consumed(stdClass &$item, int $userid) {
+
+        if (empty($item->componentname) || empty($item->area)) {
+            return;
+        }
+        // We fetch the consumed quota as well.
+        $providerclass = shopping_cart::get_service_provider_classname($item->componentname);
+        $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
+            [
+                'area' => $item->area,
+                'itemid' => $item->itemid,
+                'userid' => $userid,
+        ]);
+    }
+
+    private static function add_round_config(stdClass &$item) {
+
+        if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
+            $item->round = $round == 1 ? true : false;
+        }
     }
 }

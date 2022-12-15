@@ -319,10 +319,11 @@ class shopping_cart_history {
         try {
             $DB->update_record('local_shopping_cart_history', $record);
 
+            // There might have been a credit value set manually by the cashier.
             // The credit can be the whole price, or it can be just a fraction.
             // If there is no price or the credit is higher than the price, we use the price.
-
-            if ($credit === null
+            // This is to prevent malusage, where users get higher credit than they actually paid for.
+            if (empty($credit)
                 || ($credit > $record->price)) {
                 return [1, '', $record->price, $record->currency, $record];
             } else {

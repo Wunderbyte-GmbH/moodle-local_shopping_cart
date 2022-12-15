@@ -719,6 +719,7 @@ class shopping_cart {
             $userid, $componentname, $area, $historyid);
 
         // Only the Cashier can override the credit. If she has done so, we use it.
+        // Else, we use the normal credit.
         if (empty($customcredit)) {
             $customcredit = $credit;
         }
@@ -729,6 +730,14 @@ class shopping_cart {
             /* If the user canceled herself and a cancelation fee is set in config settings
             we deduce this fee from the credit. */
             if ($userid == $USER->id) {
+
+                // The credit might be reduced by the consumption.
+                $consumption = get_config('local_shopping_cart', 'calculateconsumation');
+                if ($consumption == 1) {
+                    $quota = self::get_quota_consumed($componentname, $area, $itemid, $userid, $historyid);
+                    $customcredit = $quota['remainingvalue'];
+                }
+
                 if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
                         && $cancelationfee > 0) {
                     $customcredit = $customcredit - $cancelationfee;
@@ -1000,7 +1009,7 @@ class shopping_cart {
         // Now get the historyitem in order to check the initial price and calculate the rest.
         if ($quota >= 0 && $item) {
             $initialprice = $item->price;
-            $remainingvalue = $initialprice * $quota;
+            $remainingvalue = $initialprice - ($initialprice * $quota);
             $currency = $item->currency;
             $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
             $success = $cancelationfee < 0 ? 0 : 1; // Cancelation not allowed.

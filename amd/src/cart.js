@@ -66,6 +66,9 @@ const SELECTORS = {
 
  export const init = (expirationdate) => {
 
+    // eslint-disable-next-line no-console
+    console.log('cart init');
+
     initTimer(expirationdate);
 
     // We might have more than one container.

@@ -138,7 +138,13 @@ $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It c
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<br>
                                     You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
 $string['confirmcancelbodyuserconsumption'] = 'Do you really want to cancel this purchase?<br>
-                                    You\'ll get the not consumed share ({$a->percentage}) of the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
+                                    You\'ll get the not consumed share ({$a->percentage}) of the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
+                                    <br><br>
+                                    <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+                                    </div>';
 
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
     The following users will get their money back as credit:

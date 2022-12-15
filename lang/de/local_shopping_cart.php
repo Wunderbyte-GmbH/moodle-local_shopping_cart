@@ -141,7 +141,13 @@ $string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Da
 $string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
                                     Sie bekommen den Kaufpreis ({$a->price} {$a->currency}) abzüglich einer Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
 $string['confirmcancelbodyuserconsumption'] = 'Möchten Sie wirklich den Kauf stornieren?<br>
-                                    Sie bekommen den nicht verbrauchten Anteil ({$a->percentage}) des Kaufpreises ({$a->price} {$a->currency}) minus eine Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
+                                    Sie bekommen den nicht verbrauchten Anteil ({$a->percentage}) des Kaufpreises ({$a->price} {$a->currency}) minus eine Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})
+                                    <br><br>
+                                    <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+                                    </div>';
 
 $string['confirmcancelallbody'] = 'Möchten Sie wirklich den Kauf für alle aktuellen Käufer*innen stornieren?
     Folgende Nutzer*innen erhalten den Kaufpreis zurück:

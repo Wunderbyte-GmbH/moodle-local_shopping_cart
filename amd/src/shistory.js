@@ -298,23 +298,36 @@ function confirmPaidBack(element) {
  */
 function confirmCancelModal(button, cancelationFee) {
 
+    // Before showing the cancel modal, we need to gather some information and pass it to the string.
     if (cancelationFee === null) {
         cancelationFee = 0;
     }
 
-    const price = parseFloat(button.dataset.price).toFixed(2);
-    const quotaconsumed = parseFloat(button.dataset.quotaconsumed).toFixed(2);
+    const price = parseFloat(button.dataset.price);
+    // Quota consumed is always on two deciamals.
+    const quotaconsumed = parseFloat(button.dataset.quotaconsumed);
+
     const credit = price - (price * quotaconsumed) - cancelationFee;
     const currency = button.dataset.currency;
-    const percentage = (1 - quotaconsumed) * 100 + "%";
+    // We always round percentages.
+    const percentage = Math.round(quotaconsumed * 100);
+
     const params = {
-        price: price,
-        quotaconsumed: quotaconsumed,
-        cancelationfee: cancelationFee,
-        credit: credit.toFixed(2),
-        percentage: percentage,
+        quotaconsumed: quotaconsumed.toFixed(2),
+        percentage: percentage + '%',
         currency: currency,
     };
+
+    const roundvalues = button.dataset.round;
+    if (roundvalues) {
+        params.price = Math.round(price);
+        params.credit = Math.round(credit);
+        params.cancelationfee = Math.round(cancelationFee);
+    } else {
+        params.price = price.toFixed(2);
+        params.credit = credit.toFixed(2);
+        params.cancelationfee = cancelationFee.toFixed(2);
+    }
 
     let bodystring = quotaconsumed > 0 ? 'confirmcancelbodyuserconsumption' : 'confirmcancelbodyuser';
 
