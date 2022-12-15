@@ -1,3 +1,8 @@
+## Version 0.3.6 (2022121500)
+**Improvements:**
+* Add area functionality for more than one item from every component
+* Add function to calculate paid back price via consumption
+
 ## Version 0.3.5 (2022120500)
 **Improvements:**
 * Add index for local_shopping_cart_credits for better performance.
