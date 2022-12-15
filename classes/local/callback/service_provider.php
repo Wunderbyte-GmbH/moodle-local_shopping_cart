@@ -43,9 +43,9 @@ interface service_provider {
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
      *
-     * @return cartitem
+     * @return array
      */
-    public static function load_cartitem(string $area, int $itemid, int $userid = 0): cartitem;
+    public static function load_cartitem(string $area, int $itemid, int $userid = 0): array;
 
     /**
      * Callback function that unloads an item from the cart.

@@ -109,9 +109,10 @@ class shopping_cart {
         if ($success) {
             // This gets the data from the componennt and also triggers reserveration.
             // If reserveration is not successful, we have to react here.
-            if ($cartitem = self::load_cartitem($component, $area, $itemid, $userid)) {
+            $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
+            if (isset($cartitemarray['cartitem'])) {
                 // Get the itemdata as array.
-                $itemdata = $cartitem->as_array();
+                $itemdata = $cartitemarray['cartitem']->as_array();
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -129,6 +130,7 @@ class shopping_cart {
                 $itemdata = [];
                 $itemdata['success'] = 0;
                 $itemdata['expirationdate'] = 0;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
             }
         } else {
             // This case means that we have the item already in the cart.
@@ -236,9 +238,9 @@ class shopping_cart {
      * @param string $area Name of area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
-     * @return local\entities\cartitem
+     * @return array
      */
-    public static function load_cartitem(string $component, string $area, int $itemid, int $userid): local\entities\cartitem {
+    public static function load_cartitem(string $component, string $area, int $itemid, int $userid): array {
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'load_cartitem', [$area, $itemid, $userid]);
@@ -251,7 +253,7 @@ class shopping_cart {
      * @param string $area Name of the area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
-     * @return local\entities\cartitem
+     * @return bool
      */
     public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): bool {
         $providerclass = static::get_service_provider_classname($component);

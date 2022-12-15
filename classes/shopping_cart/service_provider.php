@@ -33,27 +33,29 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param string $area
      * @param int $itemid
      * @param int $userid
-     * @return cartitem
+     * @return array
      */
-    public static function load_cartitem(string $area, int $itemid, int $userid = 0): cartitem {
+    public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
         $canceluntil = strtotime('+14 days', time());
         $serviceperiodstart = time();
         $serviceperiodend = strtotime('+30 days', time());
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
-        return new cartitem($itemid,
-                            'my test item ' . $itemid,
-                            10,
-                            'EUR',
-                            'local_shopping_cart',
-                            $area,
-                            'item description',
-                            $imageurl->out(),
-                            $canceluntil,
-                            $serviceperiodstart,
-                            $serviceperiodend,
-                            rand(0, 1) == 1 ? 'A' : 'B' // put this item in a random tax category
-                            );
+        $cartitem = new cartitem($itemid,
+            'my test item ' . $itemid,
+            10,
+            'EUR',
+            'local_shopping_cart',
+            $area,
+            'item description',
+            $imageurl->out(),
+            $canceluntil,
+            $serviceperiodstart,
+            $serviceperiodend,
+            rand(0, 1) == 1 ? 'A' : 'B' // put this item in a random tax category
+            );
+
+        return ['cartitem' => $cartitem];
     }
 
     /**
