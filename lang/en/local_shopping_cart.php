@@ -154,7 +154,8 @@ $string['confirmcancelbodyuserconsumption'] = 'Do you really want to cancel this
                                     style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
                                     aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
                                     </div>';
-
+$string['confirmcancelbodynocredit'] = 'Do you really want to cancel this purchase?<br>
+                                    The user has already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
     The following users will get their money back as credit:
     {$a->userlist}

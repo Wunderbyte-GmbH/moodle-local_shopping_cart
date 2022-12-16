@@ -72,6 +72,10 @@ class modal_cancel_addcredit extends dynamic_form {
         if (empty($consumed->quota)) {
             $remainingvalue = $this->_ajaxformdata["price"];
             $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbody', 'local_shopping_cart', $consumed));
+        } else if ($consumed->quota == 1) {
+            $remainingvalue = 0;
+            $cancelationfee = 0;
+            $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbodynocredit', 'local_shopping_cart', $consumed));
         } else {
             $remainingvalue = $consumed->remainingvalue;
             $mform->addElement('static', 'bodytext', '', get_string('confirmcancelbodyconsumption', 'local_shopping_cart', $consumed));

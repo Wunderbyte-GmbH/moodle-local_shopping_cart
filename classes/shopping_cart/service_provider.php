@@ -36,23 +36,45 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return array
      */
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
-        $canceluntil = strtotime('+14 days', time());
-        $serviceperiodstart = time();
-        $serviceperiodend = strtotime('+30 days', time());
+        $now = time();
+        $canceluntil = strtotime('+14 days', $now);
+        $serviceperiodestart = $now;
+        $serviceperiodeend = strtotime('+100 days', $now);
+
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
+
+        // For behat tests, we want clear separtion of items and no random values.
+        switch ($itemid) {
+            case 1:
+                $price = 10.00;
+                $tax = 'A';
+                break;
+            case 2:
+                $price = 20.30;
+                $tax = 'B';
+                break;
+            case 3:
+                $price = 13.8;
+                $tax = 'C';
+                break;
+            default:
+                $price = 12.12;
+                $tax = 'A';
+                break;
+        }
 
         $cartitem = new cartitem($itemid,
             'my test item ' . $itemid,
-            10,
+            $price,
             'EUR',
             'local_shopping_cart',
             $area,
             'item description',
             $imageurl->out(),
             $canceluntil,
-            $serviceperiodstart,
-            $serviceperiodend,
-            rand(0, 1) == 1 ? 'A' : 'B' // put this item in a random tax category
+            $serviceperiodestart,
+            $serviceperiodeend,
+            $tax,
             );
 
         return ['cartitem' => $cartitem];
@@ -106,9 +128,15 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return float
      */
     public static function quota_consumed(string $area, int $itemid, int $userid = 0): float {
-        // In this test situation, we return a random value.
 
-        $consumedquota = rand(0, 100) / 100;
-        return $consumedquota;
+        // In this test situation, we return a value for each item to be able to test all cases.
+        switch ($itemid) {
+            case 1:
+                return 0.67;
+            case 2:
+                return 0;
+            case 3:
+                return 1;
+        }
     }
 }

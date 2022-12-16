@@ -42,15 +42,58 @@ echo $OUTPUT->header();
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
-$canceluntil = strtotime('+14 days', time());
+$now = time();
+$canceluntil = strtotime('+14 days', $now);
+$serviceperiodestart = $now;
+$serviceperiodeend = strtotime('+100 days', $now);
 
 // this cartitem data is not really used (except for itemid), because data is fetched from service_provider.
 // See \local_shopping_cart\shopping_cart\service_provider for real values
-$item = new cartitem(1, '1', 10.00, 'EUR', 'local_shopping_cart', 'main', '', '', $canceluntil);
+$item = new cartitem(
+        1,
+        '1',
+        10.00,
+        'EUR',
+        'local_shopping_cart',
+        'main',
+        '',
+        '',
+        $canceluntil,
+        $serviceperiodestart,
+        $serviceperiodeend,
+        'A');
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
-$item = new cartitem(2, '2', 20.3, 'EUR', 'local_shopping_cart', 'main', '', '', $canceluntil);
+$item = new cartitem(
+        2,
+        '2',
+        20.30,
+        'EUR',
+        'local_shopping_cart',
+        'main',
+        '',
+        '',
+        $canceluntil,
+        $serviceperiodestart,
+        $serviceperiodeend,
+        'B');
+$button = new button($item->as_array());
+echo $renderer->render_button($button);
+
+$item = new cartitem(
+        3,
+        '3',
+        13.8,
+        'EUR',
+        'local_shopping_cart',
+        'main',
+        '',
+        '',
+        $canceluntil,
+        $serviceperiodestart,
+        $serviceperiodeend,
+        'C');
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
