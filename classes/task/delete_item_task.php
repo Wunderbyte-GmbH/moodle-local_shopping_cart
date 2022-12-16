@@ -63,7 +63,7 @@ class delete_item_task extends \core\task\adhoc_task {
 
         $userid = $this->get_userid();
 
-        shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->itemid, $userid);
+        shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->area, $taskdata->itemid, $userid);
 
         mtrace('Deleted item ' . $taskdata->itemid . ' from ' . $taskdata->componentname . ' for user .' . $userid);
 
