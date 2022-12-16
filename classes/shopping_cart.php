@@ -746,7 +746,15 @@ class shopping_cart {
                 if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
                         && $cancelationfee > 0) {
                     $customcredit = $customcredit - $cancelationfee;
+
                 }
+            }
+
+            // Make sure customcredit is never negative due to cancelation fee.
+            // For cashier as well as for self booking users.
+            if ($customcredit < 0) {
+                $cancelationfee = $cancelationfee + $customcredit; // We reduce cancelationfee by the negative customcredit.
+                $customcredit = 0;
             }
 
             list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
