@@ -42,7 +42,9 @@ $success = optional_param('success', null, PARAM_INT);
 if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
     $url = html_entity_decode($ME);
     $urlcomponents = parse_url($url);
-    parse_str($urlcomponents['query'], $params);
+    if (isset($urlcomponents['query'])) {
+        parse_str($urlcomponents['query'], $params);
+    }
     $identifier = $params['identifier'] ?? null;
 }
 
