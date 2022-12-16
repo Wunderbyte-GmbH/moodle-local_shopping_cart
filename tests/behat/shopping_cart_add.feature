@@ -25,7 +25,7 @@ Feature: Test purchase process in shopping cart.
   Scenario: Add an item to the shopping cart
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I reload the page
@@ -38,7 +38,7 @@ Feature: Test purchase process in shopping cart.
   Scenario: Delete item from the shopping cart
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I click on "[data-item=\"shopping_cart_item\"] i.fa.fa-trash-o" "css_element"

@@ -25,7 +25,7 @@ Feature: Cashier actions in shopping cart.
   Scenario: Add an item for user to the shopping cart
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
@@ -39,7 +39,7 @@ Feature: Cashier actions in shopping cart.
   Scenario: Cashier adds discount
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
@@ -63,7 +63,7 @@ Feature: Cashier actions in shopping cart.
   Scenario: Cashier adds discount without rounding
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
@@ -83,7 +83,7 @@ Feature: Cashier actions in shopping cart.
   Scenario: Cashier buys discounted item
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
@@ -110,7 +110,7 @@ Feature: Cashier actions in shopping cart.
   Scenario: Cashier gives refund
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
