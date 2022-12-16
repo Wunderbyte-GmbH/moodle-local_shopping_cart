@@ -58,16 +58,24 @@ class modal_cancel_addcredit extends dynamic_form {
         $mform->addElement('hidden', 'componentname', $this->_ajaxformdata["componentname"]);
         $mform->addElement('hidden', 'area', $this->_ajaxformdata["area"]);
 
-        $consumed = (object)shopping_cart::get_quota_consumed(
-            $this->_ajaxformdata["componentname"],
-            $this->_ajaxformdata["area"],
-            $this->_ajaxformdata["itemid"],
-            $this->_ajaxformdata["userid"],
-            $this->_ajaxformdata["historyid"],
-        );
-        $consumed->percentage = $consumed->quota * 100 . '%';
-        $consumed->price = $consumed->initialprice;
-        $consumed->credit = $consumed->remainingvalue;
+        $consumptionon = get_config('local_shopping_cart', 'calculateconsumation');
+        if ($consumptionon == 1) {
+            $consumed = (object)shopping_cart::get_quota_consumed(
+                $this->_ajaxformdata["componentname"],
+                $this->_ajaxformdata["area"],
+                $this->_ajaxformdata["itemid"],
+                $this->_ajaxformdata["userid"],
+                $this->_ajaxformdata["historyid"],
+            );
+            $consumed->percentage = $consumed->quota * 100 . '%';
+            $consumed->price = $consumed->initialprice;
+            $consumed->credit = $consumed->remainingvalue;
+        } else {
+            $consumed = (object)[
+                'quota' => 0,
+                'remainingvalue' => $this->_ajaxformdata["price"],
+            ];
+        }
 
         if (empty($consumed->quota)) {
             $remainingvalue = $this->_ajaxformdata["price"];
