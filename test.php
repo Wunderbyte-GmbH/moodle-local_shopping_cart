@@ -47,8 +47,8 @@ $canceluntil = strtotime('+14 days', $now);
 $serviceperiodestart = $now;
 $serviceperiodeend = strtotime('+100 days', $now);
 
-// this cartitem data is not really used (except for itemid), because data is fetched from service_provider.
-// See \local_shopping_cart\shopping_cart\service_provider for real values
+// This cartitem data is not really used (except for itemid), because data is fetched from service_provider.
+// See \local_shopping_cart\shopping_cart\service_provider for real values.
 $item = new cartitem(
         1,
         '1',

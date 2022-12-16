@@ -76,7 +76,13 @@ class cancel_purchase extends external_api {
      * @param float $credit
      * @return array
      */
-    public static function execute(string $componentname, string $area, int $itemid, int $userid, int $historyid, float $credit): array {
+    public static function execute(
+            string $componentname,
+            string $area,
+            int $itemid,
+            int $userid,
+            int $historyid,
+            float $credit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
             'area' => $area,

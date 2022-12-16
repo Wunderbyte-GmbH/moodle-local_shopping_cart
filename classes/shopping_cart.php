@@ -163,7 +163,12 @@ class shopping_cart {
      * @param bool $unload
      * @return bool
      */
-    public static function delete_item_from_cart(string $component, string $area, int $itemid, int $userid, bool $unload = true): bool {
+    public static function delete_item_from_cart(
+            string $component,
+            string $area,
+            int $itemid,
+            int $userid,
+            bool $unload = true): bool {
 
         global $USER;
 
@@ -958,7 +963,7 @@ class shopping_cart {
 
     private static function update_item_price_data($items, ?taxcategories $taxcategories, $userid) {
         global $USER;
-        $countrycode = null; // TODO get countrycode from user info
+        $countrycode = null; // TODO get countrycode from user info.
 
         foreach ($items as $key => $item) {
             // We need the userid in every item.
@@ -968,11 +973,11 @@ class shopping_cart {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent > 0) {
                     $items[$key]['taxpercentage'] = $taxpercent * 100;
-                    $netprice = $items[$key]['price']; // "price" is now considered a net price
+                    $netprice = $items[$key]['price']; // Price is now considered a net price.
                     $items[$key]['price_net'] = $netprice;
-                    // add tax to price (= gross price)
+                    // Add tax to price (= gross price).
                     $items[$key]['price_gross'] = $netprice * (1 + $taxpercent);
-                    // add net tax info
+                    // And net tax info.
                     $items[$key]['tax'] = $items[$key]['price_gross'] - $netprice;
                 }
             }
@@ -983,18 +988,18 @@ class shopping_cart {
     private static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
         return array_reduce($items, function($sum, $item) use ($calculatenetprice) {
             if ($calculatenetprice) {
-                // calculate net price
+                // Calculate net price.
                 if (key_exists('price_net', $item)) {
                     $sum += $item['price_net'];
                 } else {
-                    $sum += $item['price']; // this is the net price
+                    $sum += $item['price']; // This is the net price.
                 }
             } else {
-                // calculate gross price
+                // Calculate gross price.
                 if (key_exists('price_gross', $item)) {
                     $sum += $item['price_gross'];
                 } else {
-                    $sum += $item['price']; // this is the gross price
+                    $sum += $item['price']; // This is the gross price.
                 }
             }
             return $sum;
