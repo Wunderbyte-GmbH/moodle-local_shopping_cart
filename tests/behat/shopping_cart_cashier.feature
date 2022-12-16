@@ -126,10 +126,10 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolute | 4.5 |
+            | discountabsolute | 2.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "7.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
@@ -137,7 +137,7 @@ Feature: Cashier actions in shopping cart.
     And I set the following fields to these values:
             | cancelationfee | 2 |
     And I press "Save changes"
-    Then I should see "3.5" in the "ul.cashier-history-items span.credit_total" "css_element"
+    Then I should see "5.5" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I press "Refunded"
     And I click on "button[data-action=\"save\"]" "css_element"
     Then I should see "Credit paid back" in the ".notifications" "css_element"
