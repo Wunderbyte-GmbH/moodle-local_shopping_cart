@@ -48,7 +48,7 @@
         {{/discount}}
         <div class="text-center sc_credit">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" value="" {{usecreditvalue}}>
+                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" xxx {{#usecredit}} checked {{/usecredit}}>
                 <label class="custom-control-label" for="{{checkboxid}}">
                     {{#str}} usecredit, local_shopping_cart {{/str}} {{credit}} {{currency}}
                 </label>
