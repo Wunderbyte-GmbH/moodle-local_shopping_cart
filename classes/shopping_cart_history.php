@@ -180,7 +180,7 @@ class shopping_cart_history {
      * write_to_db.
      *
      * @param stdClass $data
-     * @return bool
+     * @return bool true if the history was written to the database, false otherwise
      */
     private static function write_to_db(stdClass $data): bool {
         global $DB;
@@ -225,7 +225,7 @@ class shopping_cart_history {
      * @param string $payment
      * @param int $paymentstatus
      * @param int|null $canceluntil
-     * @return void
+     * @return bool
      */
     public static function create_entry_in_history(
             int $userid,
@@ -263,12 +263,11 @@ class shopping_cart_history {
         $data->timecreated = $now;
         $data->canceluntil = $canceluntil;
 
-        $result = self::write_to_db($data);
-        return $result;
+        return self::write_to_db($data);
     }
 
     /**
-     * This function updates the entry in shppping cart history and sets the status to "canceled".
+     * This function updates the entry in shopping cart history and sets the status to "canceled".
      *
      * @param int $itemid
      * @param int $userid
@@ -444,18 +443,27 @@ class shopping_cart_history {
         $cachekey = $userid . '_shopping_cart';
         $dataarr = [];
 
+        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+        if ($taxesenabled) {
+            $taxcategories = taxcategories::from_raw_string(
+                    get_config('local_shopping_cart', 'defaulttaxcategory'),
+                    get_config('local_shopping_cart', 'taxcategories')
+            );
+        } else {
+            $taxcategories = null;
+        }
+
         if (!$cachedrawdata = $cache->get($cachekey)) {
             return ['identifier' => ''];
         }
 
-        $totalprice = 0;
         $currency = '';
         if (!isset($cachedrawdata["items"])) {
             $cachedrawdata["items"] = [];
         }
-        foreach ($cachedrawdata["items"] as $item) {
+        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $userid);
+        foreach ($items as $item) {
             $data = $item;
-            $totalprice += $item['price'];
             $currency = $item['currency'];
             $data['expirationtime'] = $cachedrawdata["expirationdate"];
             $data['identifier'] = $identifier; // The identifier of the cart session.
@@ -469,7 +477,14 @@ class shopping_cart_history {
 
         // As the identifier will always stay the same, we pass it here for easy acces.
         $dataarr['identifier'] = $identifier;
-        $dataarr['price'] = $totalprice;
+        if (!empty($items)) {
+            $dataarr['price'] = shopping_cart::calculate_total_price($dataarr["items"]);
+            if ($taxesenabled) {
+                $dataarr['price_net'] = shopping_cart::calculate_total_price($dataarr["items"], true);
+            }
+        } else {
+            $dataarr['price'] = 0.0;
+        }
         $dataarr['currency'] = $currency;
         return $dataarr;
     }
