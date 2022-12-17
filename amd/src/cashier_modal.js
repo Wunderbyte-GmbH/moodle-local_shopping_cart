@@ -31,6 +31,7 @@ import PaymentEvents from 'core_payment/events';
 import {add as addToast, addToastRegion} from 'core/toast';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalGateways from './modal_gateways';
+import Notification from 'core/notification';
 
 /**
  * Register event listeners for the module.
