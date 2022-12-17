@@ -63,14 +63,16 @@
         {{itemname}}
     </span>
     {{#iscashier}}
-        <span class="item-button pull-right"><i class="fa fa-eur pl-2" aria-hidden="true" data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"" data-itemid="{{itemid}}"
+        <span class="item-button pull-right"><i class="fa fa-eur pl-2" aria-hidden="true" data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
+                                                data-itemid="{{itemid}}"
                                                 data-action="discount" data-userid="{{userid}}"></i></span>
     {{/iscashier}}
-    <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}" data-area="{{area}}""
+    <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
+                                            data-area="{{area}}"
                                             data-action="delete" data-userid="{{userid}}"></i></span>
     <span class="item-price pull-right">
         {{! prices have tax information }}
-        {{#taxesenabled}}<b>{{price_gross}} {{currency}}</b><br/> ({{price_net}} {{currency}} + {{taxpercentage}}%){{/taxesenabled}}
+        {{#taxesenabled}}<b>{{price_gross}} {{currency}}</b><br/><small>({{price_net}} {{currency}} + {{taxpercentage}}%)</small>{{/taxesenabled}}
 
         {{! prices without tax information }}
         {{^taxesenabled}}{{price}} {{currency}}{{/taxesenabled}}
