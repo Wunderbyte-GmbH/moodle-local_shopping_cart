@@ -961,7 +961,7 @@ class shopping_cart {
         return $success;
     }
 
-    private static function update_item_price_data($items, ?taxcategories $taxcategories, $userid) {
+    public static function update_item_price_data($items, ?taxcategories $taxcategories, $userid) {
         global $USER;
         $countrycode = null; // TODO get countrycode from user info.
 
@@ -972,7 +972,8 @@ class shopping_cart {
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent >= 0) {
-                    $items[$key]['taxpercentage'] = round($taxpercent * 100, 2);
+                    $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
+                    $items[$key]['taxpercentage'] = round($taxpercent, 2);
                     $netprice = $items[$key]['price']; // Price is now considered a net price.
                     $grossprice = round($netprice * (1 + $taxpercent), 2);
                     $items[$key]['price_net'] = $netprice;
@@ -993,7 +994,7 @@ class shopping_cart {
      * @param bool $calculatenetprice true to calculate net price, false to calculate gross price
      * @return float the total price (net or gross) of all items rounded to two decimal places
      */
-    private static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
+    public static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
         return round(array_reduce($items, function($sum, $item) use ($calculatenetprice) {
             if ($calculatenetprice) {
                 // Calculate net price.
