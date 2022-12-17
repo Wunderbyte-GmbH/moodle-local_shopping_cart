@@ -140,9 +140,9 @@ class taxcategories {
             $matrix = self::taxmatrix_from_raw_string($rawcategories, $categories);
             // there has to be a default key
             if (key_exists(self::DEFAULT_COUNTRY_INDEX, $matrix)) {
-                $defaultValues = $matrix[self::DEFAULT_COUNTRY_INDEX];
+                $defaultvalues = $matrix[self::DEFAULT_COUNTRY_INDEX];
                 // default key categories have to match the categories
-                return is_array($defaultValues) && array_keys($defaultValues) == $categories;
+                return is_array($defaultvalues) && array_keys($defaultvalues) == $categories;
             }
         }
         return false;

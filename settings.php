@@ -154,15 +154,15 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
 
-    // Setting to enable taxes processing
+    // Setting to enable taxes processing.
     $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', get_string('taxsettings', 'local_shopping_cart'));
     $taxsettings->add(
             new admin_setting_configcheckbox($componentname . '/enabletax',
                     get_string('enabletax', 'local_shopping_cart'),
                     get_string('enabletax_desc', 'local_shopping_cart'), 0));
 
-    $taxProcessingEnabled = get_config('local_shopping_cart', 'enabletax') == 1;
-    if ($taxProcessingEnabled) {
+    $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+    if ($taxprocessingenabled) {
         $taxcategoriesexample = '
   <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     ' . get_string('taxcategories_examples_button', $componentname) . '

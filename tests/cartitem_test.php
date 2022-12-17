@@ -55,7 +55,7 @@ class cartitem_test extends TestCase {
 
     public function test_as_array_contains_all_fields() {
         $reflection = new ReflectionClass(cartitem::class);
-        $defined_properties = $reflection->getProperties();
+        $definedproperties = $reflection->getProperties();
 
         $cartitem = new cartitem(1,
                 'Testitem 1',
@@ -66,11 +66,11 @@ class cartitem_test extends TestCase {
                 'My Testitem 1 description',
         );
 
-        $cartitem_array = $cartitem->as_array();
+        $cartitemarray = $cartitem->as_array();
 
-        $this->assertIsArray($cartitem_array);
-        foreach ($defined_properties as $property) {
-            $this->assertArrayHasKey($property->getName(), $cartitem_array);
+        $this->assertIsArray($cartitemarray);
+        foreach ($definedproperties as $property) {
+            $this->assertArrayHasKey($property->getName(), $cartitemarray);
         }
     }
 }
