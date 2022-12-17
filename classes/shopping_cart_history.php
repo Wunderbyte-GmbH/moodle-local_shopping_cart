@@ -461,7 +461,7 @@ class shopping_cart_history {
         if (!isset($cachedrawdata["items"])) {
             $cachedrawdata["items"] = [];
         }
-        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $userid);
+        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories);
         foreach ($items as $item) {
             $data = $item;
             $currency = $item['currency'];

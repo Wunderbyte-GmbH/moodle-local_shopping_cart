@@ -70,13 +70,8 @@
     <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
                                             data-area="{{area}}"
                                             data-action="delete" data-userid="{{userid}}"></i></span>
-    <span class="item-price pull-right">
-        {{! prices have tax information }}
-        {{#taxesenabled}}<b>{{price_gross}} {{currency}}</b><br/><small>({{price_net}} {{currency}} + {{taxpercentage_visual}}%)</small>{{/taxesenabled}}
-
-        {{! prices without tax information }}
-        {{^taxesenabled}}{{price}} {{currency}}{{/taxesenabled}}
-
-        </span>
+    <div class="pull-right">
+        {{> local_shopping_cart/item_price }}
+    </div>
     <div class="item-description">{{{description}}}</div>
 </li>
