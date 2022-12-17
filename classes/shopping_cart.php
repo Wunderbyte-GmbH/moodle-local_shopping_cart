@@ -971,22 +971,30 @@ class shopping_cart {
 
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
-                if ($taxpercent > 0) {
-                    $items[$key]['taxpercentage'] = $taxpercent * 100;
+                if ($taxpercent >= 0) {
+                    $items[$key]['taxpercentage'] = round($taxpercent * 100, 2);
                     $netprice = $items[$key]['price']; // Price is now considered a net price.
+                    $grossprice = round($netprice * (1 + $taxpercent), 2);
                     $items[$key]['price_net'] = $netprice;
                     // Add tax to price (= gross price).
-                    $items[$key]['price_gross'] = $netprice * (1 + $taxpercent);
+                    $items[$key]['price_gross'] = $grossprice;
                     // And net tax info.
-                    $items[$key]['tax'] = $items[$key]['price_gross'] - $netprice;
+                    $items[$key]['tax'] = $grossprice - $netprice;
                 }
             }
         }
         return $items;
     }
 
+    /**
+     * Calculates the total price of all items
+     *
+     * @param array $items list of shopping cart items
+     * @param bool $calculatenetprice true to calculate net price, false to calculate gross price
+     * @return float the total price (net or gross) of all items rounded to two decimal places
+     */
     private static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
-        return array_reduce($items, function($sum, $item) use ($calculatenetprice) {
+        return round(array_reduce($items, function($sum, $item) use ($calculatenetprice) {
             if ($calculatenetprice) {
                 // Calculate net price.
                 if (key_exists('price_net', $item)) {
@@ -1003,7 +1011,7 @@ class shopping_cart {
                 }
             }
             return $sum;
-        }, 0.0);
+        }, 0.0), 2);
     }
 
     /**

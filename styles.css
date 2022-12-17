@@ -60,6 +60,7 @@
     display: block;
     font-size: 16px;
 }
+
 .shopping-cart .shopping-cart-items .item-detail {
     display: block;
     font-size: 12px;
@@ -67,10 +68,13 @@
     white-space: nowrap;
     overflow: hidden;
 }
-#nav-shopping_cart-popover-container .shopping-cart .shopping-cart-items .item-price {
+
+.shopping-cart-items .item-price {
     color: #333;
     margin-right: 8px;
+    line-height: 1;
 }
+
 #nav-shopping_cart-popover-container .item-time {
     color: #abb0be;
 }
@@ -329,7 +333,7 @@ div.shopping-cart-items-container img.sc-cart-item-image {
 }
 
 div.shopping-cart-items-container div.item-description {
-    visibility: hidden;
+    display: none;
 }
 
 .shopping-cart-items .item-button {
