@@ -29,6 +29,7 @@ class cartitem_test extends TestCase {
                 $price,
                 'EUR',
                 'local_shopping_cart',
+                'main',
                 'My Testitem 1 description');
 
         $this->assertNull($cartitem->tax_category());
@@ -41,6 +42,7 @@ class cartitem_test extends TestCase {
                 $price,
                 'EUR',
                 'local_shopping_cart',
+                'main',
                 'My Testitem 1 description',
                 '',
                 null,
@@ -60,6 +62,7 @@ class cartitem_test extends TestCase {
                 10.0,
                 'EUR',
                 'local_shopping_cart',
+                'main',
                 'My Testitem 1 description',
         );
 
