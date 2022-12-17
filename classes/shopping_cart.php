@@ -369,7 +369,13 @@ class shopping_cart {
             $data['remainingcredit'] = $data['credit'];
 
             if ($count > 0) {
-                $data['items'] = self::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $userid);
+                // We need the userid in every item.
+                $items = array_map(function($item) use ($USER, $userid) {
+                    $item['userid'] = $userid != $USER->id ? -1 : 0;
+                    return $item;
+                }, $cachedrawdata['items']);
+
+                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
 
                 $data['price'] = self::calculate_total_price($data["items"]);
                 if ($taxesenabled) {
@@ -961,13 +967,18 @@ class shopping_cart {
         return $success;
     }
 
-    public static function update_item_price_data($items, ?taxcategories $taxcategories, $userid) {
+    /**
+     * Enriches the cart item with tax information if given
+     *
+     * @param $items array of cart items
+     * @param taxcategories|null $taxcategories
+     * @return array
+     */
+    public static function update_item_price_data(array $items, ?taxcategories $taxcategories): array {
         global $USER;
         $countrycode = null; // TODO get countrycode from user info.
 
         foreach ($items as $key => $item) {
-            // We need the userid in every item.
-            $items[$key]['userid'] = $userid != $USER->id ? -1 : 0;
 
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);

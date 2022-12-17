@@ -28,6 +28,7 @@ namespace local_shopping_cart\output;
 use context_system;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\taxcategories;
 use mod_booking\booking_option;
 use moodle_url;
 use renderable;
@@ -78,7 +79,15 @@ class shoppingcart_history_list implements renderable, templatable {
     private $canpayback = false;
 
     /**
+     * if taxes are enabled for this module
+     *
+     * @var bool
+     */
+    private $taxesenabled;
+
+    /**
      * Constructor.
+     *
      * @param int $userid
      * @param int $identifier
      */
@@ -97,11 +106,16 @@ class shoppingcart_history_list implements renderable, templatable {
             $this->canpayback = true;
         }
 
+        $this->taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
 
             self::add_quota_consumed($item, $userid);
             self::add_round_config($item);
+            if ($this->taxesenabled) {
+                self::add_tax_info($item);
+            }
 
             $item->date = date('Y-m-d', $item->timemodified);
             $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
@@ -234,6 +248,10 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['canpayback'] = true;
         }
 
+        if ($this->taxesenabled) {
+            $returnarray['taxesenabled'] = true;
+        }
+
         return $returnarray;
     }
 
@@ -265,17 +283,29 @@ class shoppingcart_history_list implements renderable, templatable {
         // We fetch the consumed quota as well.
         $providerclass = shopping_cart::get_service_provider_classname($item->componentname);
         $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
-            [
-                'area' => $item->area,
-                'itemid' => $item->itemid,
-                'userid' => $userid,
-        ]);
+                [
+                        'area' => $item->area,
+                        'itemid' => $item->itemid,
+                        'userid' => $userid,
+                ]);
     }
 
     private static function add_round_config(stdClass &$item) {
 
         if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
             $item->round = $round == 1 ? true : false;
+        }
+    }
+
+    private static function add_tax_info(stdClass &$item) {
+        if (isset($item->tax)) {
+            $item->price_gross = $item->price + $item->tax;
+            $item->price_net = $item->price;
+            $item->taxpercentage_visual = round($item->taxpercentage * 100, 2);
+        } else {
+            $item->price_gross = $item->price;
+            $item->price_net = $item->price;
+            $item->taxpercentage_visual = 0;
         }
     }
 }
