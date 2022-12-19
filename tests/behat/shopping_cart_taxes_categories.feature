@@ -41,7 +41,7 @@ Feature: Admin tax actions with categories in shopping cart.
     ##And I should see "A" in the "#id_s_local_shopping_cart_defaulttaxcategory" "css_element"
 
   @javascript
-  Scenario: Enable tax processing with categories
+  Scenario: Add single item for user to the shopping cart when tax enabled
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "Enable Tax processing" to "checked"
@@ -63,4 +63,5 @@ Feature: Admin tax actions with categories in shopping cart.
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I should see "11.5 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
-    ## And I should see "11.5 EUR" in the "li.sc_initialtotal" "css_element"
+    And I should see "Total:" in the "li.sc_initialtotal" "css_element"
+    And I should see "11.5" in the "li.sc_initialtotal" "css_element"
