@@ -68,13 +68,18 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
 
     const itemid = button.dataset.id;
     const componentname = button.dataset.componentname;
+    const area = button.dataset.area;
 
     const modalForm = new ModalForm({
 
         // Name of the class where form is defined (must extend \core_form\dynamic_form):
         formClass: "local_shopping_cart\\form\\modal_cancel_all_addcredit",
         // Add as many arguments as you need, they will be passed to the form:
-        args: {'itemid': itemid, 'componentname': componentname},
+        args: {
+            'itemid': itemid,
+            'componentname': componentname,
+            'area': area,
+        },
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
