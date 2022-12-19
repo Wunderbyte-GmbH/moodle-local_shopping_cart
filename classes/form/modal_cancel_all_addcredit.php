@@ -52,8 +52,6 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $componentname = $this->_ajaxformdata['componentname'];
         $area = $this->_ajaxformdata['area'];
 
-        $settings = singleton_service::get_instance_of_booking_option_settings($itemid);
-
         if (!$bookedusers = shopping_cart_history::get_user_list_for_option($itemid, $componentname, $area)) {
             $bookedusers = [];
         }
@@ -127,7 +125,8 @@ class modal_cancel_all_addcredit extends dynamic_form {
         foreach ($bookedusers as $buser) {
 
             $credit = $buser->price - $cancelationfee;
-            shopping_cart::cancel_purchase($buser->itemid, $buser->userid, $componentname, $area, $buser->id, $credit, $cancelationfee);
+            shopping_cart::cancel_purchase($buser->itemid, $buser->userid, $componentname,
+                $area, $buser->id, $credit, $cancelationfee);
 
         }
 

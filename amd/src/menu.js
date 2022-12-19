@@ -30,45 +30,7 @@ export var countdownelement = null;
 export var interval = null;
 export var visbilityevent = false;
 
-
-export const init = () => {
-
-    // eslint-disable-next-line no-console
-    console.log('menu init');
-
-    const buttons = document.querySelectorAll('.dropdown-item.cancelallusers');
-
-    buttons.forEach(button => {
-
-        if (button.dataset.initialized == true) {
-            return;
-        }
-
-        // This is a functionality only linked to shopping cart, so we only make it visible here.
-        button.classList.remove('hidden');
-
-        button.dataset.initialized = true;
-
-        button.addEventListener('click', () => {
-
-            // eslint-disable-next-line no-console
-            console.log('button clicked');
-
-            confirmCancelAllUsersAndSetCreditModal(button);
-        });
-
-    });
-};
-
-/**
- *
- * @param {*} button
- */
-function confirmCancelAllUsersAndSetCreditModal(button) {
-
-    const itemid = button.dataset.id;
-    const componentname = button.dataset.componentname;
-    const area = button.dataset.area;
+export const confirmCancelAllUsersAndSetCreditModal = (itemid, componentname, area) => {
 
     const modalForm = new ModalForm({
 
@@ -83,7 +45,7 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
         // Pass any configuration settings to the modal dialogue, for example, the title:
         modalConfig: {title: getString('confirmcanceltitle', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
-        returnFocus: button,
+        // returnFocus: button,
     });
     // Listen to events if you want to execute something on form submit.
     // Event detail will contain everything the process() function returned:
@@ -99,4 +61,4 @@ function confirmCancelAllUsersAndSetCreditModal(button) {
 
     // Show the form.
     modalForm.show();
-}
+};
