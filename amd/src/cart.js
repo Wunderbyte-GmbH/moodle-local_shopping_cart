@@ -119,6 +119,9 @@ const SELECTORS = {
 
 export const buttoninit = (itemid, component, area) => {
 
+    // eslint-disable-next-line no-console
+    console.log('buttoninit', itemid, component, area);
+
     // If we don't have an itemid, we need to look for all the buttons.
     if (!itemid || !component || !area) {
         const selector = '[data-objecttable="local_shopping_cart"';
@@ -137,7 +140,7 @@ export const buttoninit = (itemid, component, area) => {
     // Return all buttons with the add to cart functionality.
     const buttons =
     document.querySelectorAll(
-        'button'
+        'div'
         + '[data-itemid="' + itemid + '"]'
         + '[data-component="' + component + '"]'
         + '[data-area="' + area + '"]'
@@ -599,7 +602,7 @@ function toggleActiveButtonState(button = null) {
         area = button.dataset.area;
 
         selector =
-            'button'
+            'div'
             + '[data-itemid="' + itemid + '"]'
             + '[data-component="' + component + '"]'
             + '[data-area="' + area + '"]'
@@ -608,7 +611,7 @@ function toggleActiveButtonState(button = null) {
         // As we might have more than one of these buttons, we always need to look for all of them in the document.
         // We will update for all the buttons we find.
         selector =
-        'button'
+        'div'
         + '[data-objecttable="local_shopping_cart"';
     }
 
