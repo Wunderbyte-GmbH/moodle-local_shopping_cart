@@ -41,7 +41,7 @@ Feature: Admin tax actions with categories in shopping cart.
     And the field "Default tax category" matches value "A"
 
   @javascript
-  Scenario: Add single item for user to the shopping cart when tax enabled
+  Scenario: Add single item for user to the shopping cart when tax categories enabled
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "Enable Tax processing" to "checked"
@@ -64,3 +64,35 @@ Feature: Admin tax actions with categories in shopping cart.
     And I should see "11.5 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.5" in the "li.sc_initialtotal" "css_element"
+
+  @javascript
+  Scenario: Add two items for user to the shopping cart when tax categories enabled
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I set the field "Enable Tax processing" to "checked"
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
+    And I set the following fields to these values:
+      | Tax categories and their tax percentage | A:15 B:10 |
+      | Default tax category | A |
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And the field "Tax categories and their tax percentage" matches value "A:15 B:10"
+    And the field "Default tax category" matches value "A"
+    And I log out
+    Given I log in as "user1"
+    And I visit "/local/shopping_cart/test.php"
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
+    And I click on "#btn-local_shopping_cart-main-2" "css_element"
+    And I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "my test item 1" in the "#item-local_shopping_cart-main-1" "css_element"
+    And I should see "11.5 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "my test item 2" in the "#item-local_shopping_cart-main-2" "css_element"
+    And I should see "22.33 EUR" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
+    And I should see "(20.3 EUR + 10%)" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
+    And I should see "Total Net:" in the "li.sc_initialtotal" "css_element"
+    And I should see "30.3" in the "li.sc_initialtotal" "css_element"
+    And I should see "Total:" in the "li.sc_initialtotal" "css_element"
+    And I should see "33.83" in the "li.sc_initialtotal" "css_element"
