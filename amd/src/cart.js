@@ -168,11 +168,14 @@ export const buttoninit = (itemid, component, area) => {
 
         // If we find the disabled class, the click event is aborted.
         if (addtocartbutton.classList.contains('disabled')) {
-            return;
-        }
+            event.preventDefault();
+            event.stopPropagation();
+            deleteItem(itemid, component, area);
+        } else {
             event.preventDefault();
             event.stopPropagation();
             addItem(itemid, component, area);
+        }
         });
     });
 
@@ -287,7 +290,15 @@ export const deleteItem = (itemid, component, area, userid) => {
             'area': area,
             'userid': userid
         },
-        done: function() {
+        done: function(data) {
+
+            getString('item_deleted', 'local_shopping_cart', data.itemname).then(message => {
+                showNotification(message, 'success');
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
 
             reinit(userid);
         },
