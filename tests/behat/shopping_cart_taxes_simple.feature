@@ -24,7 +24,7 @@ Feature: Admin tax actions in shopping cart.
       | teacher  | C1     | editingteacher |
 
   @javascript
-  Scenario: Enable simple tax processing
+  Scenario: Enable tax processing without categories
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "Enable Tax processing" to "checked"
@@ -32,7 +32,32 @@ Feature: Admin tax actions in shopping cart.
     Then I should see "Changes saved"
     And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
     And I set the following fields to these values:
-            | s_local_shopping_cart_taxcategories | 15 |
+      | Tax categories and their tax percentage | 15 |
     And I press "Save changes"
     Then I should see "Changes saved"
-    And I should see "15" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
+    And the field "Tax categories and their tax percentage" matches value "15"
+    And the field "Default tax category" matches value ""
+
+  @javascript
+  Scenario: Add single item for user to the shopping cart when tax without categories enabled
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I set the field "Enable Tax processing" to "checked"
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
+    And I set the following fields to these values:
+      | Tax categories and their tax percentage | 15 |
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And the field "Tax categories and their tax percentage" matches value "15"
+    And the field "Default tax category" matches value ""
+    And I log out
+    Given I log in as "user1"
+    And I visit "/local/shopping_cart/test.php"
+    And I click on "#btn-local_shopping_cart-main-4" "css_element"
+    And I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "my test item 4" in the "ul.shopping-cart-items" "css_element"
+    And I should see "13.94 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(12.12 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "13.94" in the "li.sc_initialtotal" "css_element"

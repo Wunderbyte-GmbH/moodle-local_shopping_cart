@@ -97,6 +97,22 @@ $item = new cartitem(
 $button = new button($item->as_array());
 echo $renderer->render_button($button);
 
+$item = new cartitem(
+    4,
+    '4',
+    12.12,
+    'EUR',
+    'local_shopping_cart',
+    'main',
+    '',
+    '',
+    $canceluntil,
+    $serviceperiodestart,
+    $serviceperiodeend,
+    '');
+$button = new button($item->as_array());
+echo $renderer->render_button($button);
+
 echo '<div style="width: 300px" class="mt-3">';
 $data = [
         'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
