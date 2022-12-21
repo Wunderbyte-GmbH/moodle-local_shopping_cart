@@ -59,7 +59,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 break;
             default:
                 $price = 12.12;
-                $tax = 'A';
+                $tax = '';
                 break;
         }
 
