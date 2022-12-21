@@ -58,6 +58,6 @@ Feature: Admin tax actions in shopping cart.
     And I click on "#btn-local_shopping_cart-main-4" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 4" in the "ul.shopping-cart-items" "css_element"
-    And I should see "13.94 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
-    And I should see "(12.12 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "13.94 EUR" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
+    And I should see "(12.12 EUR + 15%)" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
     And I should see "13.94" in the "li.sc_initialtotal" "css_element"
