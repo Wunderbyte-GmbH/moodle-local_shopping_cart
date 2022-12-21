@@ -117,7 +117,11 @@ class taxcategories {
         }
         $categories = self::extract_categories($rawcategories);
         if (!in_array($defaultcategory, $categories)) {
-            return null;
+            if (!empty($categories)) {
+                $defaultcategory = $categories[0];
+            } else {
+                return null;
+            }
         }
         $taxmatrix = self::taxmatrix_from_raw_string($rawcategories, $categories);
         return new taxcategories(
