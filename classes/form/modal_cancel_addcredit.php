@@ -74,6 +74,10 @@ class modal_cancel_addcredit extends dynamic_form {
             $consumed = (object)[
                 'quota' => 0,
                 'remainingvalue' => $this->_ajaxformdata["price"],
+                'currency' => $this->_ajaxformdata["currency"],
+                'price' => $this->_ajaxformdata["price"],
+                'cancelationfee' => $cancelationfee,
+
             ];
         }
 

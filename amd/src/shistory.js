@@ -329,7 +329,16 @@ function confirmCancelModal(button, cancelationFee) {
         params.cancelationfee = cancelationFee.toFixed(2);
     }
 
-    let bodystring = quotaconsumed > 0 ? 'confirmcancelbodyuserconsumption' : 'confirmcancelbodyuser';
+    let bodystring = 'confirmcancelbodyuser';
+    if (quotaconsumed > 0 && quotaconsumed < 1) {
+        bodystring = 'confirmcancelbodyuserconsumption';
+    }
+
+    // Finally, make sure that we don't have negative values.
+    if (params.credit < 0) {
+        params.cancelationFee = 0 - params.credit; // Will be between 0 and cancelationfee.
+        params.credit = 0;
+    }
 
     // eslint-disable-next-line no-console
     console.log(params);
