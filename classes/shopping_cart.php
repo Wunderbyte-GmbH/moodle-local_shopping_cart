@@ -640,7 +640,10 @@ class shopping_cart {
                             PAYMENT_SUCCESS,
                             $item['canceluntil'] ?? null,
                             $item['serviceperiodstart'] ?? null,
-                            $item['serviceperiodend'] ?? null
+                            $item['serviceperiodend'] ?? null,
+                            $item['tax'] ?? null,
+                            $item['taxpercentage'] ?? null,
+                            $item['taxcategory'] ?? null,
                     );
                 }
 

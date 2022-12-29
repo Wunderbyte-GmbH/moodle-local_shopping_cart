@@ -213,8 +213,8 @@ class shopping_cart_history {
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
      *
-     * @param int $userid
-     * @param int $itemid
+     * @param integer $userid
+     * @param integer $itemid
      * @param string $itemname
      * @param float $price
      * @param float $discount
@@ -223,9 +223,12 @@ class shopping_cart_history {
      * @param string $area
      * @param string $identifier
      * @param string $payment
-     * @param int $paymentstatus
-     * @param int|null $canceluntil
-     * @return bool
+     * @param [type] $paymentstatus
+     * @param integer|null $canceluntil
+     * @param float|null $tax
+     * @param float|null $taxpercentage
+     * @param string|null $taxcategory
+     * @return void
      */
     public static function create_entry_in_history(
             int $userid,
@@ -239,7 +242,12 @@ class shopping_cart_history {
             string $identifier,
             string $payment,
             int $paymentstatus = PAYMENT_PENDING,
-            int $canceluntil = null
+            int $canceluntil = null,
+            int $serviceperiodstart = 0,
+            int $serviceperiodend = 0,
+            float $tax = null,
+            float $taxpercentage = null,
+            string $taxcategory = null,
             ) {
 
         global $USER;
@@ -262,6 +270,10 @@ class shopping_cart_history {
         $data->timemodified = $now;
         $data->timecreated = $now;
         $data->canceluntil = $canceluntil;
+        $data->tax = round($tax, 2);
+        $data->taxpercentage = round($taxpercentage, 2);
+        $data->taxcategory = $taxcategory;
+
 
         return self::write_to_db($data);
     }
