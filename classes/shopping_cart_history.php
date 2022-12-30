@@ -247,7 +247,7 @@ class shopping_cart_history {
             int $serviceperiodend = 0,
             float $tax = null,
             float $taxpercentage = null,
-            string $taxcategory = null,
+            string $taxcategory = null
             ) {
 
         global $USER;
