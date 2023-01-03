@@ -332,6 +332,8 @@ function confirmCancelModal(button, cancelationFee) {
     let bodystring = 'confirmcancelbodyuser';
     if (quotaconsumed > 0 && quotaconsumed < 1) {
         bodystring = 'confirmcancelbodyuserconsumption';
+    } else if ( quotaconsumed == 1) {
+        bodystring = 'confirmcancelbodyusernocredit';
     }
 
     // Finally, make sure that we don't have negative values.
