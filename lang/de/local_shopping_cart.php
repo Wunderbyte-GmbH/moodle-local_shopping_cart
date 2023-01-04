@@ -31,6 +31,11 @@ $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['addtocart'] = 'In den Warenkorb';
 $string['mycart'] = 'Mein Warenkorb';
 
+// Address handling
+$string['addresses:button'] = 'Weiter zur Adresseingabe';
+$string['addresses:pagetitle'] = 'Adresse';
+$string['addresses:heading'] = 'Adresse';
+
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
