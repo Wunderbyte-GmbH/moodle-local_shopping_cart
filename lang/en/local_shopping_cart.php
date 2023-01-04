@@ -51,6 +51,11 @@ $string['testing:title'] = 'Shopping cart demo';
 $string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
 $string['testing:item'] = 'Test item';
 
+// Address handling
+$string['addresses:button'] = 'Continue to address';
+$string['addresses:pagetitle'] = 'Address';
+$string['addresses:heading'] = 'Address';
+
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';

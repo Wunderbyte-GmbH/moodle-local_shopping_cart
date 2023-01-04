@@ -40,6 +40,11 @@ $string['rebookingcredit'] = 'Umbuchungsgutschrift';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
 
+// Address handling
+$string['addresses:button'] = 'Weiter zur Adresseingabe';
+$string['addresses:pagetitle'] = 'Adresse';
+$string['addresses:heading'] = 'Adresse';
+
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
