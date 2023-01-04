@@ -352,3 +352,15 @@ div.shopping-cart-items-container div.item-description {
 .shopping-cart-items .item-button:hover {
     color: rgb(29, 33, 37);
 }
+
+
+.addressselection .requiredaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.addressselection .savedaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+}
