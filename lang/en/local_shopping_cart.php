@@ -81,6 +81,10 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Clic
 $string['showdescription'] = 'Show description';
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
+$string['addresses_required:title'] = 'Address processing enabled';
+$string['addresses_required:desc'] = 'Ask for address during checkout';
+$string['addresses_required:billing'] = 'Billing address';
+$string['addresses_required:shipping'] = 'Shipping address';
 $string['taxsettings'] = 'Shopping Cart Taxes';
 $string['enabletax'] = 'Enable Tax processing';
 $string['enabletax_desc'] = 'Should tax information processing be enabled for this module';

@@ -134,6 +134,9 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+            new admin_setting_configcheckbox($componentname . '/calculateconsumation',
+                    get_string('calculateconsumation', 'local_shopping_cart'),
+                    get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
         new admin_setting_configcheckbox($componentname . '/bookingfeeonlyonce',
                 get_string('bookingfeeonlyonce', 'local_shopping_cart'),
                 get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1));
@@ -144,6 +147,17 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
+    // Setting to enable address processing during checkout
+    $settings->add(
+            new admin_setting_configmulticheckbox($componentname . '/addresses_required',
+                    get_string('addresses_required:title', 'local_shopping_cart'),
+                    get_string('addresses_required:desc', 'local_shopping_cart'),
+                    [""],
+                    [
+                            'address_billing' => get_string('addresses_required:billing', 'local_shopping_cart'),
+                            'address_shipping' => get_string('addresses_required:shipping', 'local_shopping_cart')
+                    ]
+            ));
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/samecostcenter',
