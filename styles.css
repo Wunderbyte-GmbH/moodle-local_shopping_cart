@@ -434,3 +434,14 @@ div.shopping-cart-items-container div.item-description {
 #page-local-shopping_cart-demo .testitem-container {
     width: 500px;
 }
+
+.addressselection .requiredaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.addressselection .savedaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+}

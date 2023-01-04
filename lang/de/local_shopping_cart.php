@@ -44,6 +44,11 @@ $string['showorderid'] = 'Order-ID anzeigen...';
 $string['addresses:button'] = 'Weiter zur Adresseingabe';
 $string['addresses:pagetitle'] = 'Adresse';
 $string['addresses:heading'] = 'Adresse';
+$string['addresses:select'] = 'Wähle eine {$a}';
+$string['addresses:billing'] = 'Rechnungsadresse';
+$string['addresses:shipping'] = 'Lieferadresse';
+$string['addresses:addnew'] = 'Neue Adresse eingeben';
+$string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
@@ -79,8 +84,6 @@ $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
 $string['addresses_required:title'] = 'Adresseingabe aktivieren';
 $string['addresses_required:desc'] = 'Adresse während dem Checkout abfragen';
-$string['addresses_required:billing'] = 'Rechnungsadresse';
-$string['addresses_required:shipping'] = 'Lieferadresse';
 $string['taxsettings'] = 'Warenkorb Steuern';
 $string['enabletax'] = 'MWSt aktivieren';
 $string['enabletax_desc'] = 'Soll MWSt im Wartenkorb angezeigt und verwendet werden';

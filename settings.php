@@ -154,8 +154,8 @@ if ($hassiteconfig) {
                     get_string('addresses_required:desc', 'local_shopping_cart'),
                     [""],
                     [
-                            'address_billing' => get_string('addresses_required:billing', 'local_shopping_cart'),
-                            'address_shipping' => get_string('addresses_required:shipping', 'local_shopping_cart')
+                            'billing' => ucfirst(get_string('addresses:billing', 'local_shopping_cart')),
+                            'shipping' => ucfirst(get_string('addresses:shipping', 'local_shopping_cart'))
                     ]
             ));
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
