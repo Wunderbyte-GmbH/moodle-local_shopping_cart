@@ -15,54 +15,49 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pages main view page.
+ * Address selection page.
  *
  * @package         local_shopping_cart
- * @author          Thomas Winkler
+ * @author          Maurice Whlk
  * @copyright       2021 Wunderbyte GmbH
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\output\shoppingcart_history_list;
+use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
-use core_user_external;
+use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
-global $USER;
-// Get the id of the page to be displayed.
-$success = optional_param('success', null, PARAM_INT);
+$addressesrequired = get_config('local_shopping_cart', 'addresses_required');
+if (empty($addressesrequired)) {
+    redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php');
+    return;
+}
+
+global $USER, $PAGE, $OUTPUT, $CFG;
 
 // Setup the page.
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
-$PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
+$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/address.php");
+$PAGE->set_title(get_string('addresses:pagetitle', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('addresses:heading', 'local_shopping_cart'));
 
 // Set the page layout.
-
-$PAGE->set_pagelayout('standard');
-
+$PAGE->set_pagelayout('base');
 
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
 $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
-$data["mail"] = $USER->email;
-$data["name"] = $USER->firstname . $USER->lastname;
-if (isset($success)) {
-    if ($success) {
-        $data['success'] = 1;
-    } else {
-        $data['failed'] = 1;
-    }
-}
-$data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
-$data['addresses_required'] = get_config('local_shopping_cart', 'addresses_required');
+$data["usermail"] = $USER->email;
+$data["username"] = $USER->firstname . $USER->lastname;
+$data["userid"] = $USER->id;
 
-$test = get_users(true, '', '', array(), '', '', '', '', $recordsperpage = 21);
-echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+echo $OUTPUT->render_from_template('local_shopping_cart/address', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

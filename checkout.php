@@ -110,6 +110,7 @@ if (empty($data['currency'])) {
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+$data['addresses_required'] = get_config('local_shopping_cart', 'addresses_required');
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
