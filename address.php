@@ -58,6 +58,20 @@ $data["usermail"] = $USER->email;
 $data["username"] = $USER->firstname . $USER->lastname;
 $data["userid"] = $USER->id;
 
+$data['saved_addresses'] = [];
+
+// insert localized string for required address types
+$requiredaddresseslocalized = [];
+foreach (explode(',', $addressesrequired) as $addresstype) {
+    $requiredaddresseslocalized[] = [
+            "addresskey" => $addresstype,
+            "requiredaddress" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
+    ];
+}
+$data['required_addresses'] = $requiredaddresseslocalized;
+
+//var_dump($data);
+
 echo $OUTPUT->render_from_template('local_shopping_cart/address', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

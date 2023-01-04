@@ -36,6 +36,11 @@ $string['mycart'] = 'My Cart';
 $string['addresses:button'] = 'Continue to address';
 $string['addresses:pagetitle'] = 'Address';
 $string['addresses:heading'] = 'Address';
+$string['addresses:select'] = 'Select an {$a}';
+$string['addresses:billing'] = 'billing address';
+$string['addresses:shipping'] = 'shipping address';
+$string['addresses:addnew'] = 'Enter new address';
+$string['addresses:newaddress'] = 'Add new address';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
@@ -59,8 +64,6 @@ $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
 $string['addresses_required:title'] = 'Address processing enabled';
 $string['addresses_required:desc'] = 'Ask for address during checkout';
-$string['addresses_required:billing'] = 'Billing address';
-$string['addresses_required:shipping'] = 'Shipping address';
 $string['taxsettings'] = 'Shopping Cart Taxes';
 $string['enabletax'] = 'Enable Tax processing';
 $string['enabletax_desc'] = 'Should tax information processing be enabled for this module';
