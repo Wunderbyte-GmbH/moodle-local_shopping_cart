@@ -73,4 +73,3 @@ Feature: Cashier actions in shopping cart with consumption enabled.
     And the field "Cancelation fee" matches value "0"
     And I press "Save changes"
     Then I should see "23.6" in the "ul.cashier-history-items span.credit_total" "css_element"
-    

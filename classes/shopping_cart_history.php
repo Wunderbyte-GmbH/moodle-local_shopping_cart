@@ -213,8 +213,8 @@ class shopping_cart_history {
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
      *
-     * @param integer $userid
-     * @param integer $itemid
+     * @param int $userid
+     * @param int $itemid
      * @param string $itemname
      * @param float $price
      * @param float $discount
@@ -224,7 +224,9 @@ class shopping_cart_history {
      * @param string $identifier
      * @param string $payment
      * @param [type] $paymentstatus
-     * @param integer|null $canceluntil
+     * @param int|null $canceluntil
+     * @param int|null $serviceperiodstart
+     * @param int|null $serviceperiodend
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
@@ -273,7 +275,6 @@ class shopping_cart_history {
         $data->tax = round($tax, 2);
         $data->taxpercentage = round($taxpercentage, 2);
         $data->taxcategory = $taxcategory;
-
 
         return self::write_to_db($data);
     }

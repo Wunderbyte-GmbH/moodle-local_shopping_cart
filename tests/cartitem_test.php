@@ -14,14 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * phpUnit cartitem_test class definitions.
+ *
+ * @package    local_shopping_cart
+ * @category   test
+ * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\entities\cartitem;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+/**
+ * Test for cartitem
+ */
 class cartitem_test extends TestCase {
 
+    /**
+     * Test taxcategory not set
+     * 
+     * @return [type]
+     */
     public function test_taxcategory_not_set() {
         $price = 10.00;
         $cartitem = new cartitem(1,
@@ -35,6 +52,11 @@ class cartitem_test extends TestCase {
         $this->assertNull($cartitem->tax_category());
     }
 
+    /**
+     * Test taxcategory set
+     * 
+     * @return [type]
+     */
     public function test_taxcategory_set() {
         $price = 10.00;
         $cartitem = new cartitem(1,
@@ -53,6 +75,11 @@ class cartitem_test extends TestCase {
         $this->assertEquals('A', $cartitem->tax_category());
     }
 
+    /**
+     * Test array contains all fields
+     * 
+     * @return [type]
+     */
     public function test_as_array_contains_all_fields() {
         $reflection = new ReflectionClass(cartitem::class);
         $definedproperties = $reflection->getProperties();

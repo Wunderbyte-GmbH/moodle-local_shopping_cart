@@ -973,7 +973,7 @@ class shopping_cart {
     /**
      * Enriches the cart item with tax information if given
      *
-     * @param $items array of cart items
+     * @param array $items array of cart items
      * @param taxcategories|null $taxcategories
      * @return array
      */

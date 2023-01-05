@@ -76,9 +76,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
     Then I should see "21.6" in the ".history .cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"1\"]" "css_element"
     And I wait "1" seconds
-    And I should see "You have already consumed the whole article and won't get any refund of the price paid: 14 EUR" in the ".show .modal-content" "css_element"    
+    And I should see "You have already consumed the whole article and won't get any refund of the price paid: 14 EUR" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     ## Then I should see "21" in the ".history .cashier-history-items span.credit_total" "css_element"
     Then I should see "21.6" in the ".history .cashier-history-items span.credit_total" "css_element"
-    

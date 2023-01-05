@@ -42,9 +42,9 @@ class taxcategories {
     private $taxmatrix = [[]];
 
     /**
-     * @param $categories array<string> list of all possible tax categories
-     * @param $defaultcategory string the default category to use when a cartitem does not supply it
-     * @param $taxmatrix
+     * @param array<string> $categories  list of all possible tax categories
+     * @param string $defaultcategory  the default category to use when a cartitem does not supply it
+     * @param mixed $taxmatrix
      */
     private function __construct($categories, $defaultcategory, $taxmatrix) {
         $this->categories = $categories;
@@ -55,29 +55,37 @@ class taxcategories {
     /**
      * Gets the tax percentage in float (0=0%, 1=100%) for the given category and country
      *
-     * @param $category string|null
-     * @param $countrycode string|null
+     * @param string|null $category
+     * @param string|null $countrycode
+     * 
      * @return float the tax percentage in float (0.0-1.0), or -1 if the given $category is invalid
      */
     public function tax_for_category(?string $category = null, ?string $countrycode = null): float {
         if (empty($category)) {
-            // use default category as a fallback
+            // Use default category as a fallback
             $category = $this->defaultcategory;
         }
         if (in_array($category, $this->categories)) {
             $taxdata = $this->taxdata_for_countrycode($countrycode);
             if (key_exists($category, $taxdata)) {
-                // given category exists for country
+                // Given category exists for country.
                 return $taxdata[$category];
             } else {
-                // use category from default fallback
+                // Use category from default fallback.
                 return $this->taxdata_for_countrycode(null)[$category];
             }
         }
-        // this $category is invalid
+        // This $category is invalid.
         return -1;
     }
 
+    /**
+     * Returns the taxmatrix data for the given country
+     * 
+     * @param string|null $countrycode
+     * 
+     * @return array
+     */
     public function taxdata_for_countrycode(?string $countrycode = null): array {
         if (key_exists($countrycode, $this->taxmatrix)) {
             return $this->taxmatrix[$countrycode];
@@ -86,15 +94,27 @@ class taxcategories {
         }
     }
 
+    /**
+     * Returns the default tax category
+     * 
+     * @return string
+     */
     public function defaultcategory(): string {
         return $this->defaultcategory;
     }
 
+    /**
+     * Returns the valid tax categories
+     * 
+     * @return array
+     */
     public function validcategories(): array {
         return $this->categories;
     }
 
     /**
+     * Returns the taxmatrix
+     * 
      * @return array[]
      */
     public function taxmatrix(): array {
@@ -104,8 +124,9 @@ class taxcategories {
     /**
      * Creates a new taxcategories from a default category and the raw tax categories string.
      *
-     * @param $defaultcategory
-     * @param $rawcategories
+     * @param mixed $defaultcategory
+     * @param mixed $rawcategories
+     * 
      * @return taxcategories|null the newly created taxcategories or null if the input can not be parsed
      */
     public static function from_raw_string($defaultcategory, $rawcategories): ?taxcategories {
@@ -134,44 +155,60 @@ class taxcategories {
     /**
      * Tests if a given raw categories string is valid syntactically
      *
-     * @param $rawcategories string
-     * @return bool true when valid, false otherwise
+     * @param string $rawcategories
+     * 
+     * @return bool
      */
     public static function is_valid_raw_string(string $rawcategories): bool {
         $categories = self::extract_categories($rawcategories);
-        // categories have to be existing and not empty
+        // Categories have to be existing and not empty.
         if (!empty($categories)) {
             $matrix = self::taxmatrix_from_raw_string($rawcategories, $categories);
-            // there has to be a default key
+            // There has to be a default key.
             if (key_exists(self::DEFAULT_COUNTRY_INDEX, $matrix)) {
                 $defaultvalues = $matrix[self::DEFAULT_COUNTRY_INDEX];
-                // default key categories have to match the categories
+                // Default key categories have to match the categories.
                 return is_array($defaultvalues) && array_keys($defaultvalues) == $categories;
             }
         }
         return false;
     }
 
+    /**
+     * Extracts extract categories
+     * 
+     * @param string $rawcategories
+     * 
+     * @return array
+     */
     private static function extract_categories(string $rawcategories): array {
-        if ($rawcategories === "") { // special case of empty line
-            return array(); // no categories
+        if ($rawcategories === "") { // Special case of empty line.
+            return array(); // No categories.
         }
-        if (is_numeric(trim($rawcategories))) { // special case of value only
-            return array(self::DEFAULT_CATEGORY_KEY); // just one category which is default
+        if (is_numeric(trim($rawcategories))) { // Special case of value only.
+            return array(self::DEFAULT_CATEGORY_KEY); // Just one category which is default.
         }
         $rows = preg_split('/\n/', trim($rawcategories));
         if ($rows === false) {
-            return array(); // no categories
+            return array(); // No categories.
         }
         $firstrow = $rows[0];
         $catandvalue = self::categories_from_raw_line($firstrow);
         return array_keys(array_values($catandvalue)[0]);
     }
 
+    /**
+     * Extract the taxmatrix from the raw string
+     * 
+     * @param string $rawcategories
+     * @param array $categories
+     * 
+     * @return array
+     */
     private static function taxmatrix_from_raw_string(string $rawcategories, array $categories): array {
         $rows = preg_split('/\n/', trim($rawcategories));
         if ($rows === false) {
-            return array(); // no categories
+            return array(); // No categories.
         }
 
         $matrix = [];
@@ -184,17 +221,24 @@ class taxcategories {
         return $matrix;
     }
 
+    /**
+     * Extracts the tax categories from the raw line
+     * 
+     * @param string $rawline
+     * 
+     * @return array|null
+     */
     private static function categories_from_raw_line(string $rawline): ?array {
         $trimmedrawline = trim($rawline);
         $linevalues = explode(' ', $trimmedrawline);
         if ($linevalues === false || count($linevalues) < 2) {
-            if (is_numeric($trimmedrawline)) { // this might be a single value row
+            if (is_numeric($trimmedrawline)) { // This might be a single value row.
                 return array(self::DEFAULT_COUNTRY_INDEX => array(self::DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100));
             }
-            // lines with no data are invalid
+            // Tines with no data are invalid.
             return null;
         }
-        if (!str_contains($linevalues[0], ':')) { // assume first value is country code
+        if (!str_contains($linevalues[0], ':')) { // Assume first value is country code.
             $countrycode = array_shift($linevalues);
         } else {
             $countrycode = self::DEFAULT_COUNTRY_INDEX;
@@ -216,7 +260,7 @@ class taxcategories {
 }
 
 
-// based on original work from the PHP Laravel framework
+// Based on original work from the PHP Laravel framework.
 if (!function_exists('str_contains')) {
     function str_contains($haystack, $needle) {
         return $needle !== '' && mb_strpos($haystack, $needle) !== false;

@@ -28,6 +28,13 @@
 
     Context variables required for this template:
     * str
+
+    
+    Example context (json):
+    {
+        "checkouturl": "http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+        "count": 2
+    }
 }}
 <div>
     <a href="{{checkouturl}}" id="shopping-cart-checkout-button" class="btn btn-primary p-3 d-block mx-4 {{^count}}disabled{{/count}}">{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right"></i></a>

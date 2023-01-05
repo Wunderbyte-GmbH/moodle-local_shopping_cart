@@ -61,7 +61,7 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I should see "13.8 EUR" in the "#shopping_cart-cashiers-section ul.shopping-cart-items #item-local_shopping_cart-main-3 .item-price" "css_element"
     And I should see "(13.8 EUR + 0%)" in the "#shopping_cart-cashiers-section ul.shopping-cart-items #item-local_shopping_cart-main-3 .item-price" "css_element"
     And I should see "44.1" in the "#shopping_cart-cashiers-section .sc_totalprice_net" "css_element"
-    And I should see "47.63" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"    
+    And I should see "47.63" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page

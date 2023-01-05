@@ -232,7 +232,7 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['cancelationfee'] = $this->cancelationfee;
         }
 
-        if (!empty($this->historyitemse)) {
+        if (!empty($this->historyitems)) {
             $returnarray['has_historyitems'] = true;
         }
 
@@ -272,8 +272,8 @@ class shoppingcart_history_list implements renderable, templatable {
      * Receive quota consumed via callback to component.
      *
      * @param stdClass $item
-     * @param integer $userid
-     * @return void
+     * @param int $userid
+     * @return [type]
      */
     private static function add_quota_consumed(stdClass &$item, int $userid) {
 
@@ -290,6 +290,13 @@ class shoppingcart_history_list implements renderable, templatable {
                 ]);
     }
 
+    /**
+     * Add round config 
+     * 
+     * @param stdClass $item
+     * 
+     * @return [type]
+     */
     private static function add_round_config(stdClass &$item) {
 
         if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
@@ -297,6 +304,13 @@ class shoppingcart_history_list implements renderable, templatable {
         }
     }
 
+    /**
+     * Add tax info
+     * 
+     * @param stdClass $item
+     * 
+     * @return [type]
+     */
     private static function add_tax_info(stdClass &$item) {
         if (isset($item->tax)) {
             $item->price_gross = $item->price + $item->tax;

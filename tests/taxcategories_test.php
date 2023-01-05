@@ -14,14 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * phpUnit taxcategories_test class definitions.
+ *
+ * @package    local_shopping_cart
+ * @category   test
+ * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\entities\cartitem;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+/**
+ * Test for taxcategories
+ */
 class taxcategories_test extends TestCase {
 
+    /**
+     * Test complex raw string is valid
+     * 
+     * @return [type]
+     */
     public function test_complex_raw_string_is_valid() {
         // we test different valid permutations of a complex configuration string
         $validrawstring = 'at A:20 B:10 C:0
@@ -46,6 +63,11 @@ class taxcategories_test extends TestCase {
         $this->assertTrue(taxcategories::is_valid_raw_string($validrawstring));
     }
 
+    /**
+     * Test complex raw string without default category is invalid
+     * 
+     * @return [type]
+     */
     public function test_complex_raw_string_without_default_category_is_invalid() {
         $invalidrawstring = 'at A:20 B:10 C:0
     de A:19 B:10 C:0
@@ -53,26 +75,51 @@ class taxcategories_test extends TestCase {
         $this->assertFalse(taxcategories::is_valid_raw_string($invalidrawstring));
     }
 
+    /**
+     * Test empty raw string is invalid
+     * 
+     * @return [type]
+     */
     public function test_empty_raw_string_is_invalid() {
         $raw = '';
         $this->assertFalse(taxcategories::is_valid_raw_string($raw));
     }
 
+    /**
+     * Test single value raw string is valid
+     * 
+     * @return [type]
+     */
     public function test_single_value_raw_string_is_valid() {
         $raw = '20';
         $this->assertTrue(taxcategories::is_valid_raw_string($raw));
     }
 
+    /**
+     * Test single line raw string is valid
+     * 
+     * @return [type]
+     */
     public function test_single_line_raw_string_is_valid() {
         $raw = 'A:20 B:10 C:0';
         $this->assertTrue(taxcategories::is_valid_raw_string($raw), "'$raw' is not a valid raw string");
     }
 
+    /**
+     * Test multi line raw string is valid
+     * 
+     * @return [type]
+     */
     public function test_multi_line_raw_string_is_valid() {
         $raw = "at A:20 B:10 C:0\nde A:19 B:9 C:0\ndefault A:0 B:0 C:0";
         $this->assertTrue(taxcategories::is_valid_raw_string($raw), "'$raw' is not a valid raw string");
     }
 
+    /**
+     * Test single line
+     * 
+     * @return [type]
+     */
     public function test_single_line() {
         $raw = 'A:20 B:10 C:0';
         $fromraw = taxcategories::from_raw_string("A", $raw);
@@ -85,6 +132,11 @@ class taxcategories_test extends TestCase {
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
 
+    /**
+     * Test single value empty default category
+     * 
+     * @return [type]
+     */
     public function test_single_value_empty_default_category() {
         $raw = '20';
         $fromraw = taxcategories::from_raw_string("", $raw);
@@ -97,6 +149,11 @@ class taxcategories_test extends TestCase {
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
 
+    /**
+     * Test multi line
+     * 
+     * @return [type]
+     */
     public function test_multi_line() {
         $raw = '
         default A:0 B:0 C:0
@@ -112,6 +169,11 @@ class taxcategories_test extends TestCase {
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
 
+    /**
+     * Test tax for category no country code
+     * 
+     * @return [type]
+     */
     public function test_tax_for_category_no_country_code() {
         $raw = 'A:25 B:10 C:1';
         $taxcategories = taxcategories::from_raw_string("A", $raw);
@@ -124,6 +186,11 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(-1, $taxcategories->tax_for_category("X"));
     }
 
+    /**
+     * Test tax for no category no country code
+     * 
+     * @return [type]
+     */
     public function test_tax_for_no_category_no_country_code() {
         $raw = 'A:25 B:10 C:1';
         $taxcategories = taxcategories::from_raw_string("A", $raw);
@@ -132,6 +199,11 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(0.25, $taxcategories->tax_for_category(""));
     }
 
+    /**
+     * Test tax for no category but country code
+     * 
+     * @return [type]
+     */
     public function test_tax_for_no_category_but_country_code() {
         $raw = 'default A:25
         mycountry A:30';
@@ -141,6 +213,11 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(0.25, $taxcategories->tax_for_category("", "other"));
     }
 
+    /**
+     * Test tax for category and country code
+     * 
+     * @return [type]
+     */
     public function test_tax_for_category_and_country_code() {
         $raw = 'default A:25
         mycountry A:30';
@@ -150,6 +227,11 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(0.25, $taxcategories->tax_for_category("A", "other"));
     }
 
+    /**
+     * Test tax for category and country code use default fallback
+     * 
+     * @return [type]
+     */
     public function test_tax_for_category_and_country_code_use_default_fallback() {
         $raw = 'default A:25 C:10
         mycountry A:30';
