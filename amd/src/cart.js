@@ -119,9 +119,6 @@ const SELECTORS = {
 
 export const buttoninit = (itemid, component, area) => {
 
-    // eslint-disable-next-line no-console
-    console.log('buttoninit', itemid, component, area);
-
     // If we don't have an itemid, we need to look for all the buttons.
     if (!itemid || !component || !area) {
         const selector = '[data-objecttable="local_shopping_cart"';
