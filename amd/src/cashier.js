@@ -31,7 +31,7 @@ import {
         }
         from 'core/str';
 
-export const init = (users, userid = 0) => {
+export const init = (userid = 0) => {
     // eslint-disable-next-line no-console
     console.log('run init', userid);
 
@@ -56,7 +56,6 @@ export const init = (users, userid = 0) => {
             console.log('click');
         });
     }
-    autocomplete(document.getElementById("shopping-cart-searchuser"), users);
 };
 
 export const confirmPayment = (userid, paymenttype) => {
@@ -137,131 +136,6 @@ export const addPrintIdentifier = (identifier, userid) => {
    let href = printbtn.getAttribute('href');
    printbtn.setAttribute('href', href + identifier + '&userid=' + userid);
 };
-
-/**
- * The autocomplete function takes two arguments.
- * The text field element and an array of possible autocompleted values.
- * @param {string} inp
- * @param {array} arr
- */
- export const autocomplete = (inp, arr) => {
-    var currentFocus;
-    const useridfield = document.querySelector('#useridfield');
-    inp.addEventListener("input", function() {
-        var a, b, i;
-        let val = this.value;
-        closeAllLists();
-        if (!val) {
-            return false;
-        }
-        currentFocus = -1;
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        this.parentNode.appendChild(a);
-        for (i = 0; i < arr.length; i++) {
-            if (arr[i].toUpperCase().indexOf(val.toUpperCase()) > -1) {
-
-                /* Make the matching letters bold: */
-                let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
-
-                /* Create a DIV element for each matching element: */
-                b = document.createElement("DIV");
-
-                const namearray = arr[i].split(' ');
-                const firstname = namearray[0].toLowerCase();
-                const lastname = namearray[1].toLowerCase();
-                const email = namearray[2].toLowerCase().replace(/^\(/, '').replace(/\)$/, '');
-                const userid = namearray[3].toLowerCase().replace(/^uid:/, '');
-
-                b.dataset.firstname = firstname;
-                b.dataset.lastname = lastname;
-                b.id = 'li_' + firstname + '_' + lastname;
-                b.dataset.email = email;
-                b.dataset.userid = userid;
-
-                b.innerHTML = arr[i].substr(0, index);
-                b.innerHTML += "<strong>"
-                        + arr[i].substr(arr[i].toUpperCase().indexOf(val.toUpperCase()), val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(index + val.length);
-                /* Insert an input field that will hold the current array item's value: */
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                b.addEventListener("click", function() {
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    useridfield.value = this.getElementsByTagName("input")[0].value.split('uid:')[1];
-                    closeAllLists();
-                });
-                a.appendChild(b);
-            }
-        }
-        return null;
-    });
-
-    inp.addEventListener("keydown", function(e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) {
-            x = x.getElementsByTagName("div");
-        }
-        if (e.keyCode === 40) {
-          currentFocus++;
-          addActive(x);
-        } else if (e.keyCode === 38) {
-          currentFocus--;
-          addActive(x);
-        } else if (e.keyCode === 13) {
-          e.preventDefault();
-          if (currentFocus > -1) {
-            if (x) {
-                x[currentFocus].click();
-            }
-          }
-        }
-    });
-
-    /**
-     * Add active.
-     * @param {*} x
-     */
-    function addActive(x) {
-        if (!x) {
-            return;
-        }
-        removeActive(x);
-        if (currentFocus >= x.length) {
-            currentFocus = 0;
-        }
-        if (currentFocus < 0) {
-            currentFocus = (x.length - 1);
-        }
-        x[currentFocus].classList.add("autocomplete-active");
-    }
-
-    /**
-     * Remove active.
-     * @param {*} x
-     */
-    function removeActive(x) {
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
-    }
-
-    /**
-     * Close all list elements.
-     * @param {*} elmnt
-     */
-    function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt !== x[i] && elmnt !== inp) {
-            x[i].parentNode.removeChild(x[i]);
-            }
-        }
-    }
-    document.addEventListener("click", function(e) {
-        closeAllLists(e.target);
-    });
-  };
 
 /**
  *

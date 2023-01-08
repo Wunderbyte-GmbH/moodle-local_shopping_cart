@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\form\dynamic_select_users;
 use local_shopping_cart\output\cashier;
 use local_shopping_cart\shopping_cart;
 
@@ -69,16 +70,8 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
 $data['userid'] = $userid;
 $data['wwwroot'] = $CFG->wwwroot;
 
-$users = get_users_by_capability($context, 'local/shopping_cart:canbuy', 'u.id, u.lastname, u.firstname, u.email');
-$data['users'] = [];
-foreach ($users as $user) {
-    if ($userid == $user->id) {
-        $data["mail"] = $user->email;
-        $data["name"] = $user->firstname . " " .  $user->lastname;
-    }
-    $data['users'][] = $user->lastname . ' ' . $user->firstname . ' (' . $user->email . ')' . ' uid:' . $user->id;
-}
-$data['users'] = json_encode($data['users']);
+$selectuserform = new dynamic_select_users();
+$data['selectuserform'] = $selectuserform->render();
 
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 // Now output the footer.

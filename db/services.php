@@ -126,5 +126,13 @@ $functions = array(
                 'capabilities' => '',
                 'ajax' => 1
         ),
+        'local_shopping_cart_search_users' => array(
+                'classname' => 'local_shopping_cart\external\search_users',
+                'classpath' => '',
+                'description' => 'Search a list of all users',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1
+        ),
 );
 

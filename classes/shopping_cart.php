@@ -1065,4 +1065,63 @@ class shopping_cart {
             'cancelationfee' => $cancelationfee ?? 0,
         ];
     }
+
+    /**
+     * Function to lazyload userlist for autocomplete.
+     *
+     * @param string $query
+     * @return array
+     */
+    public static function load_users(string $query) {
+
+        global $DB;
+
+        $values = explode(' ', $query);
+
+        $fullsql = $DB->sql_concat('u.firstname', '\'\'', 'u.lastname', '\'\'', 'u.email');
+
+        $sql = "SELECT *
+                FROM ( SELECT u.id, u.firstname, u.lastname, u.email, $fullsql as fulltextstring
+                    FROM {user} u) as fulltexttable";
+
+        if (!empty($query)) {
+            // We search for every word extra to get better results.
+            $firstrun = true;
+            $counter = 1;
+            foreach ($values as $value) {
+
+                $sql .= $firstrun ? ' WHERE ' : ' AND ';
+                $sql .= " " . $DB->sql_like('fulltextstring', ':param' . $counter, false) . " ";
+                $params['param' . $counter] = "%$value%";
+                $firstrun = false;
+                $counter++;
+            }
+        }
+
+        // We don't return more than 100 records, so we don't need to fetch more from db.
+        $sql .= " limit 102";
+
+        $rs = $DB->get_recordset_sql($sql, $params);
+        $count = 0;
+        $list = [];
+
+        foreach ($rs as $record) {
+            $user = (object)[
+                'id' => $record->id,
+                'firstname' => $record->firstname,
+                'lastname' => $record->lastname,
+                'email' => $record->email,
+            ];
+
+            $count++;
+            $list[$record->id] = $user;
+        }
+
+        $rs->close();
+
+        return [
+            'warnings' => count($list) > 100 ? get_string('toomanyuserstoshow', 'core', '> 100') : '',
+            'list' => count($list) > 100 ? [] : $list,
+        ];
+    }
 }

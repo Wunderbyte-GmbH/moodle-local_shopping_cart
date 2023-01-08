@@ -82,6 +82,7 @@ $string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:cachiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
+$string['selectuserfirst'] = 'Select user first';
 
 // Cart.
 $string['total'] = 'Total:';

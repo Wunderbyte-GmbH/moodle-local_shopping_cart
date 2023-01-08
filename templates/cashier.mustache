@@ -103,12 +103,7 @@
                         {{! 1. Tab which lets you chose the user }}
                         <div class="tab-pane fade {{^userid}}show active{{/userid}}" id="user" role="tabpanel" aria-labelledby="user-tab">
                             <div class="shopping-cart-autocomplete">
-                                <form method="get" action="#cart">
-                                    <label for="shopping-cart-searchuser">{{#str}} selectuser, local_shopping_cart {{/str}}</label>
-                                    <input id="shopping-cart-searchuser" autocomplete="off" type="text" name="user" placeholder="{{#str}} user, local_shopping_cart {{/str}}">
-                                    <input id="useridfield" type="hidden" name="userid"/>
-                                    <input type="submit" name="submit" value="{{#str}} choose, local_shopping_cart {{/str}}"/>
-                                </form>
+                                {{{selectuserform}}}
                             </div>
                         </div>
                         {{! 2. Tab which lets you chose the item }}
@@ -221,6 +216,6 @@
 
 {{#js}}
     require(['local_shopping_cart/cashier'], function(cashier) {
-        cashier.init({{{users}}}, {{userid}});
+        cashier.init({{userid}});
     });
 {{/js}}
