@@ -122,9 +122,18 @@ $string['user'] = 'User...';
 $string['searchforitem'] = 'Search for item...';
 $string['choose'] = 'Choose';
 
-$string['payedwithcash'] = 'Confirm cash payment';
-$string['payedwithcreditcard'] = 'Confirm credit card payment';
-$string['payedwithdebitcard'] = 'Confirm debit card payment';
+$string['cashout'] = 'Cash transactions';
+$string['cashoutamount'] = 'Amount of cash transation';
+$string['noamountgiven'] = 'Booking 0 is not possible';
+$string['cashoutamount_desc'] = 'Negative amount is cashout, positive amount is a deposit.';
+$string['cashoutreason'] = 'Reason for the transaction';
+$string['cashoutreasonnecessary'] = 'You need to give a reason';
+$string['cashoutreason_desc'] = 'Possible reasons are change monex, bank deposit etc.';
+
+$string['paidwithcash'] = 'Confirm cash payment';
+$string['paidwithcreditcard'] = 'Confirm credit card payment';
+$string['paidwithdebitcard'] = 'Confirm debit card payment';
+$string['flexcashpayment'] = 'Book Cash amount';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';

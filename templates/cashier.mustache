@@ -136,13 +136,16 @@
                                     cancel, core {{/str}}</a>
                                 <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" data-paymenttype="3" data-toggle="tab" href="#success" role="button"
                                    aria-controls="cashpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    payedwithcash, local_shopping_cart {{/str}}</a>
+                                    paidwithcash, local_shopping_cart {{/str}}</a>
                                 <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" data-paymenttype="5" data-toggle="tab" href="#success" role="button"
                                    aria-controls="creditcardpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    payedwithcreditcard, local_shopping_cart {{/str}}</a>
+                                    paidwithcreditcard, local_shopping_cart {{/str}}</a>
                                 <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="button"
                                    aria-controls="debitcardpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    payedwithdebitcard, local_shopping_cart {{/str}}</a>
+                                    paidwithdebitcard, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_flexcashpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="button"
+                                   aria-controls="btn_flexcashpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
+                                    flexcashpayment, local_shopping_cart {{/str}}</a>
                             </div>
                         </div>
                         {{! 4. Tab to show success }}
@@ -178,6 +181,17 @@
                         <a class="btn btn-secondary" href="{{wwwroot}}/local/shopping_cart/report.php">
                             <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashreport, local_shopping_cart {{/str}}
                         </a>
+                    </div>
+                </div>
+                <div id="shopping-cart-cashout" class="card">
+                    <div class="card-header text-center bg-primary text-white">
+                        <i class="fa fa-table" aria-hidden="true"></i>
+                        <b class="d-block">{{#str}} cashout, local_shopping_cart {{/str}}</b>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn btn-secondary shopping-cart-cashout-button">
+                            <i class="fa fa-table" aria-hidden="true"></i> {{#str}} cashout, local_shopping_cart {{/str}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -217,5 +231,8 @@
 {{#js}}
     require(['local_shopping_cart/cashier'], function(cashier) {
         cashier.init({{userid}});
+    });
+    require(['local_shopping_cart/cashout'], function(cashout) {
+        cashout.init();
     });
 {{/js}}

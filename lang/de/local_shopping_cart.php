@@ -125,9 +125,18 @@ $string['user'] = 'Teilnehmerin...';
 $string['searchforitem'] = 'Suche...';
 $string['choose'] = 'Auswählen';
 
-$string['payedwithcash'] = 'Barzahlung bestätigen';
-$string['payedwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
-$string['payedwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
+$string['cashout'] = 'Barzahlungen';
+$string['cashoutamount'] = 'Barzahlungsbetrag';
+$string['noamountgiven'] = 'Es können keine Nullbuchungen durchgeführt werden';
+$string['cashoutamount_desc'] = 'Negative Beträge sind Entnahmen, positive Beträge Einzahlungen.';
+$string['cashoutreason'] = 'Grund für die Bartransaktion';
+$string['cashoutreasonnecessary'] = 'Sie müssen einen Grund eingeben.';
+$string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.';
+
+$string['paidwithcash'] = 'Barzahlung bestätigen';
+$string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
+$string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
+$string['flexcashpayment'] = 'Buche Barbetrag';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
