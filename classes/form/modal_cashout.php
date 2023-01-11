@@ -81,8 +81,8 @@ class modal_cashout extends dynamic_form {
         $data = $this->get_data();
 
         shopping_cart_history::create_entry_in_history(
-            0, // userid is 0, it doesn't concern a user.
-            0, // itemid is 0, it doesn't concern an item.
+            0, // Userid is 0, it doesn't concern a user.
+            0, // Itemid is 0, it doesn't concern an item.
             $data->cashoutreason,
             $data->cashoutamount,
             0,

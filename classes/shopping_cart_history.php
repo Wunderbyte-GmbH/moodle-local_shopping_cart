@@ -70,6 +70,17 @@ class shopping_cart_history {
     private $area;
 
     /**
+     *
+     * @var int
+     */
+    private $relateduserid;
+
+    /**
+     * @var array
+     */
+    private $other;
+
+    /**
      * History constructor
      * @param stdClass $data
      * @return void
@@ -566,26 +577,14 @@ class shopping_cart_history {
      * @return void
      */
     public function validate_data() {
-        if (!isset($this->uid)) {
-            throw new \coding_exception('The \'relateduserid\' must be set.');
+        if (empty($this->uid)) {
+            throw new \coding_exception('The \'uid\' must be set.');
         }
-
-        if (!isset($this->other['assignid'])) {
+        if (empty($this->other['assignid'])) {
             throw new \coding_exception('The \'assignid\' value must be set in other.');
         }
-        if (!isset($this->relateduserid)) {
+        if (empty($this->relateduserid)) {
             throw new \coding_exception('The \'relateduserid\' must be set.');
-        }
-
-        if (!isset($this->other['assignid'])) {
-            throw new \coding_exception('The \'assignid\' value must be set in other.');
-        }
-        if (!isset($this->relateduserid)) {
-            throw new \coding_exception('The \'relateduserid\' must be set.');
-        }
-
-        if (!isset($this->other['assignid'])) {
-            throw new \coding_exception('The \'assignid\' value must be set in other.');
         }
     }
 
