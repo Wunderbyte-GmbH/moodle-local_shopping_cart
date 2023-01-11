@@ -63,7 +63,7 @@ export function cashoutModal(button) {
         // Add as many arguments as you need, they will be passed to the form:
         args: {},
         // Pass any configuration settings to the modal dialogue, for example, the title:
-        modalConfig: {title: getString('applydiscount', 'local_shopping_cart')},
+        modalConfig: {title: getString('cashout', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
         returnFocus: button
     });
@@ -72,7 +72,7 @@ export function cashoutModal(button) {
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
         // eslint-disable-next-line no-console
-        console.log('confirmCancelAndSetCreditModal response: ', response);
+        console.log('cashoutModal response: ', response);
 
         showNotification('erfolg', 'info');
     });
