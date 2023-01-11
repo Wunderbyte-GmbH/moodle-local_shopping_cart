@@ -191,7 +191,7 @@ class cartitem {
 
     /**
      * Returns the tax category
-     * 
+     *
      * @return string|null the tax category for this item
      */
     public function tax_category(): ?string {
@@ -227,7 +227,7 @@ class cartitem {
 
     /**
      *  Returns imageurl
-     * 
+     *
      * @return string|null
      */
     public function imageurl(): ?string {

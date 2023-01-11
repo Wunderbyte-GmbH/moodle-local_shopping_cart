@@ -36,7 +36,7 @@ class cartitem_test extends TestCase {
 
     /**
      * Test taxcategory not set
-     * 
+     *
      * @return [type]
      */
     public function test_taxcategory_not_set() {
@@ -54,7 +54,7 @@ class cartitem_test extends TestCase {
 
     /**
      * Test taxcategory set
-     * 
+     *
      * @return [type]
      */
     public function test_taxcategory_set() {
@@ -77,7 +77,7 @@ class cartitem_test extends TestCase {
 
     /**
      * Test array contains all fields
-     * 
+     *
      * @return [type]
      */
     public function test_as_array_contains_all_fields() {

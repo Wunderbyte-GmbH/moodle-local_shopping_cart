@@ -681,12 +681,13 @@ class shopping_cart {
      * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
      *
      * @param int $itemid
+     * @param string $area
      * @param int $userid
      * @param string $componentname
-     * @param string $area
      * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
+     *
      * @return array
      */
     public static function cancel_purchase(int $itemid, string $area, int $userid, string $componentname,

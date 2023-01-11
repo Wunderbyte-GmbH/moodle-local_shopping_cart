@@ -35,8 +35,8 @@ use ReflectionClass;
 class taxcategories_test extends TestCase {
 
     /**
-     * Test complex raw string is valid
-     * 
+     * Test complex raw string is valid: taxcategories::is_valid_raw_string()
+     *
      * @return [type]
      */
     public function test_complex_raw_string_is_valid() {
@@ -64,8 +64,8 @@ class taxcategories_test extends TestCase {
     }
 
     /**
-     * Test complex raw string without default category is invalid
-     * 
+     * Test complex raw string without default category is invalid: taxcategories::is_valid_raw_string() 
+     *
      * @return [type]
      */
     public function test_complex_raw_string_without_default_category_is_invalid() {
@@ -77,7 +77,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test empty raw string is invalid
-     * 
+     *
      * @return [type]
      */
     public function test_empty_raw_string_is_invalid() {
@@ -87,7 +87,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single value raw string is valid
-     * 
+     *
      * @return [type]
      */
     public function test_single_value_raw_string_is_valid() {
@@ -97,7 +97,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single line raw string is valid
-     * 
+     *
      * @return [type]
      */
     public function test_single_line_raw_string_is_valid() {
@@ -107,7 +107,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test multi line raw string is valid
-     * 
+     *
      * @return [type]
      */
     public function test_multi_line_raw_string_is_valid() {
@@ -117,7 +117,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single line
-     * 
+     *
      * @return [type]
      */
     public function test_single_line() {
@@ -134,7 +134,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single value empty default category
-     * 
+     *
      * @return [type]
      */
     public function test_single_value_empty_default_category() {
@@ -151,7 +151,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test multi line
-     * 
+     *
      * @return [type]
      */
     public function test_multi_line() {
@@ -171,7 +171,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for category no country code
-     * 
+     *
      * @return [type]
      */
     public function test_tax_for_category_no_country_code() {
@@ -188,7 +188,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for no category no country code
-     * 
+     *
      * @return [type]
      */
     public function test_tax_for_no_category_no_country_code() {
@@ -201,7 +201,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for no category but country code
-     * 
+     *
      * @return [type]
      */
     public function test_tax_for_no_category_but_country_code() {
@@ -215,7 +215,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for category and country code
-     * 
+     *
      * @return [type]
      */
     public function test_tax_for_category_and_country_code() {
@@ -228,8 +228,8 @@ class taxcategories_test extends TestCase {
     }
 
     /**
-     * Test tax for category and country code use default fallback
-     * 
+     * Test tax for tax_for_category() and country code use defaults taxcategories::from_raw_string()
+     *
      * @return [type]
      */
     public function test_tax_for_category_and_country_code_use_default_fallback() {

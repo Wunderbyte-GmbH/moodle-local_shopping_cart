@@ -291,10 +291,10 @@ class shoppingcart_history_list implements renderable, templatable {
     }
 
     /**
-     * Add round config 
-     * 
+     * Add round config
+     *
      * @param stdClass $item
-     * 
+     *
      * @return [type]
      */
     private static function add_round_config(stdClass &$item) {
@@ -306,9 +306,9 @@ class shoppingcart_history_list implements renderable, templatable {
 
     /**
      * Add tax info
-     * 
+     *
      * @param stdClass $item
-     * 
+     *
      * @return [type]
      */
     private static function add_tax_info(stdClass &$item) {
