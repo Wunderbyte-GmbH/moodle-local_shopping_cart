@@ -70,17 +70,6 @@ class shopping_cart_history {
     private $area;
 
     /**
-     *
-     * @var int
-     */
-    private $relateduserid;
-
-    /**
-     * @var array
-     */
-    private $other;
-
-    /**
      * History constructor
      * @param stdClass $data
      * @return void
@@ -570,22 +559,6 @@ class shopping_cart_history {
      */
     public static function create_unique_cart_identifier(int $userid): string {
         return time();
-    }
-
-    /**
-     * Validate data.
-     * @return void
-     */
-    public function validate_data() {
-        if (empty($this->uid)) {
-            throw new \coding_exception('The \'uid\' must be set.');
-        }
-        if (empty($this->other['assignid'])) {
-            throw new \coding_exception('The \'assignid\' value must be set in other.');
-        }
-        if (empty($this->relateduserid)) {
-            throw new \coding_exception('The \'relateduserid\' must be set.');
-        }
     }
 
     /**
