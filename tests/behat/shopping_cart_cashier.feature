@@ -29,10 +29,13 @@ Feature: Cashier actions in shopping cart.
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "[data-email=\"toolgenerator1@example.com\"]" "css_element"
-    And I press "submit"
+    ## And I click on "Select a user..." "field"
+    ## And I type "Username1"
+    ## And I click on "ul.form-autocomplete-suggestions li" "css_element"
+    ## And I press "Choose"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
 
   @javascript
@@ -47,10 +50,9 @@ Feature: Cashier actions in shopping cart.
             | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "#li_test_username1" "css_element"
-    And I press "submit"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -67,10 +69,9 @@ Feature: Cashier actions in shopping cart.
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "#li_test_username1" "css_element"
-    And I press "submit"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -92,10 +93,9 @@ Feature: Cashier actions in shopping cart.
     And I press "Save changes"
 
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "#li_test_username1" "css_element"
-    And I press "submit"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -119,10 +119,9 @@ Feature: Cashier actions in shopping cart.
     And I press "Save changes"
 
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "#li_test_username1" "css_element"
-    And I press "submit"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -133,6 +132,10 @@ Feature: Cashier actions in shopping cart.
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
+    And I wait "1" seconds
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
             | cancelationfee | 2 |

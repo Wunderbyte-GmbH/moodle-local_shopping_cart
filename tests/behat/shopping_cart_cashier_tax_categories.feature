@@ -45,10 +45,9 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
-    And I set the following fields to these values:
-            | user | user |
-    And I click on "#li_test_username1" "css_element"
-    And I press "submit"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     And I wait "2" seconds
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-section ul.shopping-cart-items" "css_element"
@@ -65,7 +64,10 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
-    And I wait "2" seconds
+    And I wait "1" seconds
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Choose" "button"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "11.5 EUR" in the "ul.cashier-history-items" "css_element"
     ## And I should see "10 EUR + 15%" in the "ul.cashier-history-items div.item-price" "css_element"
