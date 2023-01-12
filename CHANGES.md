@@ -1,3 +1,11 @@
+## Version 0.3.7 (2023011200)
+**Improvements:**
+* Lots of bugfixes.
+* Improved tax support.
+* Better code quality.
+* Added cashout functionality.
+* Behat tests.
+
 ## Version 0.3.6 (2022121500)
 **Improvements:**
 * Add area functionality for more than one item from every component
