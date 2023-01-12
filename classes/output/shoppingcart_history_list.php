@@ -93,6 +93,11 @@ class shoppingcart_history_list implements renderable, templatable {
      */
     public function __construct(int $userid, int $identifier = 0) {
 
+        // This might be called from users that are not logged in. we ignore it.
+        if (empty($userid)) {
+            return;
+        }
+
         // If we provide an identifier, we only get the items from history with this identifier, else, we get all for this user.
         if ($identifier != 0) {
             $items = shopping_cart_history::return_data_via_identifier($identifier, $userid);
