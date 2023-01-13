@@ -40,7 +40,7 @@ class taxcategories_test extends TestCase {
      * @return [type]
      */
     public function test_complex_raw_string_is_valid() {
-        // we test different valid permutations of a complex configuration string
+        // We test different valid permutations of a complex configuration string.
         $validrawstring = 'at A:20 B:10 C:0
     de A:19 B:10 C:0
     default A:0 B:0 C:0';
@@ -64,7 +64,7 @@ class taxcategories_test extends TestCase {
     }
 
     /**
-     * Test complex raw string without default category is invalid: taxcategories::is_valid_raw_string() 
+     * Test complex raw string without default category is invalid: taxcategories::is_valid_raw_string()
      *
      * @return [type]
      */

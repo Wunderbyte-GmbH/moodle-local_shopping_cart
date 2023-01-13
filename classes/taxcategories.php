@@ -42,6 +42,8 @@ class taxcategories {
     private $taxmatrix = [[]];
 
     /**
+     * Create new instance of taxcategories entity
+     *
      * @param array<string> $categories  list of all possible tax categories
      * @param string $defaultcategory  the default category to use when a cartitem does not supply it
      * @param mixed $taxmatrix
@@ -254,7 +256,7 @@ class taxcategories {
 
         return array($countrycode => $validcats);
     }
-    
+
     /**
     * Default country index for tax categories per country.
     */
