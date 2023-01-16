@@ -31,11 +31,13 @@ use ReflectionClass;
 
 /**
  * Test for cartitem
+ * @covers \cartitem
  */
 class cartitem_test extends TestCase {
 
     /**
      * Test taxcategory not set
+     * @covers \cartitem->tax_category
      *
      * @return [type]
      */
@@ -54,6 +56,7 @@ class cartitem_test extends TestCase {
 
     /**
      * Test taxcategory set
+     * @covers \cartitem->tax_category
      *
      * @return [type]
      */
@@ -77,6 +80,7 @@ class cartitem_test extends TestCase {
 
     /**
      * Test array contains all fields
+     * @covers \cartitem->as_array
      *
      * @return [type]
      */

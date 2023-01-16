@@ -7,7 +7,7 @@ Feature: Cashier actions in shopping cart.
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname     | email                       |
+      | username | firstname  | lastname    | email                       |
       | user1    | Username1  | Test        | toolgenerator1@example.com  |
       | user2    | Username2  | Test        | toolgenerator2@example.com  |
       | teacher  | Teacher    | Test        | toolgenerator3@example.com  |
@@ -47,7 +47,7 @@ Feature: Cashier actions in shopping cart.
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the following fields to these values:
-            | s_local_shopping_cart_rounddiscounts | 0 |
+      | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
@@ -56,7 +56,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolute | 4.5 |
+      | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -75,7 +75,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolute | 4.5 |
+      | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -89,7 +89,7 @@ Feature: Cashier actions in shopping cart.
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the following fields to these values:
-            | s_local_shopping_cart_rounddiscounts | 0 |
+      | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
 
     And I visit "/local/shopping_cart/cashier.php"
@@ -99,7 +99,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolute | 4.5 |
+      | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -115,7 +115,7 @@ Feature: Cashier actions in shopping cart.
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the following fields to these values:
-            | s_local_shopping_cart_rounddiscounts | 0 |
+      | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
 
     And I visit "/local/shopping_cart/cashier.php"
@@ -125,7 +125,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
-            | discountabsolute | 2.5 |
+      | discountabsolute | 2.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "7.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -138,7 +138,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "Choose" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
-            | cancelationfee | 2 |
+      | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "5.5" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I press "Refunded"

@@ -31,11 +31,13 @@ use ReflectionClass;
 
 /**
  * Test for taxcategories
+ * @covers \taxcategories
  */
 class taxcategories_test extends TestCase {
 
     /**
      * Test complex raw string is valid: taxcategories::is_valid_raw_string()
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -65,6 +67,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test complex raw string without default category is invalid: taxcategories::is_valid_raw_string()
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -77,6 +80,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test empty raw string is invalid
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -87,6 +91,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single value raw string is valid
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -97,6 +102,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single line raw string is valid
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -107,6 +113,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test multi line raw string is valid
+     * @covers \taxcategories::is_valid_raw_string
      *
      * @return [type]
      */
@@ -117,6 +124,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single line
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -134,6 +142,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test single value empty default category
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -151,6 +160,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test multi line
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -171,6 +181,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for category no country code
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -182,12 +193,13 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(0.10, $taxcategories->tax_for_category("B"));
         $this->assertEquals(0.01, $taxcategories->tax_for_category("C"));
 
-        // unknown category
+        // Unknown category.
         $this->assertEquals(-1, $taxcategories->tax_for_category("X"));
     }
 
     /**
      * Test tax for no category no country code
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -195,12 +207,13 @@ class taxcategories_test extends TestCase {
         $raw = 'A:25 B:10 C:1';
         $taxcategories = taxcategories::from_raw_string("A", $raw);
 
-        // default category is used
+        // Default category is used.
         $this->assertEquals(0.25, $taxcategories->tax_for_category(""));
     }
 
     /**
      * Test tax for no category but country code
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -215,6 +228,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for category and country code
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */
@@ -229,6 +243,7 @@ class taxcategories_test extends TestCase {
 
     /**
      * Test tax for tax_for_category() and country code use defaults taxcategories::from_raw_string()
+     * @covers \taxcategories::from_raw_string
      *
      * @return [type]
      */

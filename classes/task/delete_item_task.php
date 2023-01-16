@@ -63,9 +63,11 @@ class delete_item_task extends \core\task\adhoc_task {
 
         $userid = $this->get_userid();
 
-        // Extra debug info. 
-        mtrace('Prepare to deleted item ' . $taskdata->itemid . ' from ' . $taskdata->componentname . ' in the area ' . $taskdata->area . ' for user ' . $userid );
-        // Safety termination. The $taskdata->area value was missed (probably caused by re-excution of old tasks, created in the pre-area time)
+        // Extra debug info.
+        mtrace('Prepare to delet item ' . $taskdata->itemid . ' from ' . $taskdata->componentname);
+        mtrace('In the area ' . $taskdata->area . ' for user ' . $userid );
+        // Safety termination. Eventually the $taskdata->area value was missed.
+        // Probably caused by re-excution of old tasks, created in the pre-area time.
         if (!isset($taskdata->area) || !isset($taskdata->itemid) || !isset($taskdata->componentname) ) {
             return;
         }
