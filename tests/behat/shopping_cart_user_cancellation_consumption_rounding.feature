@@ -6,7 +6,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname     | email                       |
+      | username | firstname  | lastname    | email                       |
       | user1    | Username1  | Test        | toolgenerator1@example.com  |
       | user2    | Username2  | Test        | toolgenerator2@example.com  |
       | teacher  | Teacher    | Test        | toolgenerator3@example.com  |
@@ -27,7 +27,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I set the field "Credit on cancelation minus already consumed value." to "checked"
     And I set the field "Round discounts" to "checked"
     And I set the following fields to these values:
-            | Cancelation fee | 1 |
+      | Cancelation fee | 1 |
     And I press "Save changes"
     Then I should see "Changes saved"
     And I log out

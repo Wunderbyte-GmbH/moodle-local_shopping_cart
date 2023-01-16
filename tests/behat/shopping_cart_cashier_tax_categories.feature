@@ -31,7 +31,7 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
     And I set the following fields to these values:
       | Tax categories and their tax percentage | A:15 B:10 C:0 |
-      | Default tax category | A |
+      | Default tax category                    | A             |
     And I press "Save changes"
     Then I should see "Changes saved"
     And the field "Tax categories and their tax percentage" matches value "A:15 B:10 C:0"

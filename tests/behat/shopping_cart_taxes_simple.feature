@@ -9,7 +9,7 @@ Feature: Admin tax actions in shopping cart.
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname     | email                       |
+      | username | firstname  | lastname    | email                       |
       | user1    | Username1  | Test        | toolgenerator1@example.com  |
       | user2    | Username2  | Test        | toolgenerator2@example.com  |
       | teacher  | Teacher    | Test        | toolgenerator3@example.com  |
