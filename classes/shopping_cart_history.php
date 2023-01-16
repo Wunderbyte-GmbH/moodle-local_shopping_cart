@@ -223,7 +223,7 @@ class shopping_cart_history {
      * @param string $area
      * @param string $identifier
      * @param string $payment
-     * @param [type] $paymentstatus
+     * @param int $paymentstatus
      * @param int|null $canceluntil
      * @param int|null $serviceperiodstart
      * @param int|null $serviceperiodend

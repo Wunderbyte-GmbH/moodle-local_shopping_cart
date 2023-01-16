@@ -258,12 +258,12 @@ class taxcategories {
     }
 
     /**
-    * Default country index for tax categories per country.
-    */
+     * Default country index for tax categories per country.
+     */
     public const DEFAULT_COUNTRY_INDEX = "default";
     /**
-    * Default tax cqtegory key
-    */
+     * Default tax cqtegory key
+     */
     public const DEFAULT_CATEGORY_KEY = "cat";
 }
 
@@ -271,6 +271,8 @@ class taxcategories {
 // Based on original work from the PHP Laravel framework.
 if (!function_exists('str_contains')) {
     /**
+     * Returns true if substring present within given string AND it is not empty.
+     *
      * @package    local_shopping_cart
      *
      * @param mixed $haystack
