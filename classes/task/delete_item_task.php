@@ -63,12 +63,12 @@ class delete_item_task extends \core\task\adhoc_task {
 
         $userid = $this->get_userid();
 
-        // Extra debug info.
-        mtrace('Prepare to delet item ' . $taskdata->itemid . ' from ' . $taskdata->componentname);
-        mtrace('In the area ' . $taskdata->area . ' for user ' . $userid );
         // Safety termination. Eventually the $taskdata->area value was missed.
         // Probably caused by re-excution of old tasks, created in the pre-area time.
         if (!isset($taskdata->area) || !isset($taskdata->itemid) || !isset($taskdata->componentname) ) {
+
+            mtrace('Execution of shopping_cart::delete_item_from_cart terminated: lack of one or few taskdata parameters');
+
             return;
         }
 
