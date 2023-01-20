@@ -48,7 +48,6 @@ $services = array(
 $functions = array(
         'local_shopping_cart_add_item' => array(
                 'classname' => 'local_shopping_cart\external\add_item_to_cart',
-                'classpath' => '',
                 'description' => 'Add an Item to the shopping cart',
                 'type' => 'write',
                 'capabilities' => '',
@@ -56,7 +55,6 @@ $functions = array(
         ),
         'local_shopping_cart_delete_item' => array(
                 'classname' => 'local_shopping_cart\external\delete_item_from_cart',
-                'classpath' => '',
                 'description' => 'Delete Item from cart',
                 'type' => 'write',
                 'capabilities' => '',
@@ -64,7 +62,6 @@ $functions = array(
         ),
         'local_shopping_cart_delete_all_items_from_cart' => array(
                 'classname' => 'local_shopping_cart\external\delete_all_items_from_cart',
-                'classpath' => '',
                 'description' => 'Delete All Items from cart',
                 'type' => 'write',
                 'capabilities' => '',
@@ -72,7 +69,6 @@ $functions = array(
         ),
         'local_shopping_cart_get_shopping_cart_items' => array(
                 'classname' => 'local_shopping_cart\external\get_shopping_cart_items',
-                'classpath' => '',
                 'description' => 'Get shopping cart items',
                 'type' => 'read',
                 'capabilities' => '',
@@ -80,7 +76,6 @@ $functions = array(
         ),
         'local_shopping_cart_confirm_cash_payment' => array(
                 'classname' => 'local_shopping_cart\external\confirm_cash_payment',
-                'classpath' => '',
                 'description' => 'Confirm cash payment by cashier',
                 'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cashier',
@@ -88,7 +83,6 @@ $functions = array(
         ),
         'local_shopping_cart_cancel_purchase' => array(
                 'classname' => 'local_shopping_cart\external\cancel_purchase',
-                'classpath' => '',
                 'description' => 'Cancel purchase',
                 'type' => 'write',
                 'capabilities' => '',
@@ -96,7 +90,6 @@ $functions = array(
         ),
         'local_shopping_cart_get_price' => array(
                 'classname' => 'local_shopping_cart\external\get_price',
-                'classpath' => '',
                 'description' => 'Get price',
                 'type' => 'read',
                 'capabilities' => '',
@@ -104,7 +97,6 @@ $functions = array(
         ),
         'local_shopping_cart_credit_paid_back' => array(
                 'classname' => 'local_shopping_cart\external\credit_paid_back',
-                'classpath' => '',
                 'description' => 'Register paid back credit',
                 'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cashier',
@@ -112,15 +104,13 @@ $functions = array(
         ),
         'local_shopping_cart_get_history_items' => array(
                 'classname' => 'local_shopping_cart\external\get_history_items',
-                'classpath' => '',
                 'description' => 'Get History items',
                 'type' => 'read',
                 'capabilities' => '',
                 'ajax' => 1
         ),
         'local_shopping_cart_quota_consumed' => array(
-                'classname' => 'local_shopping_cart\external\quota_consumed',
-                'classpath' => '',
+                'classname' => 'local_shopping_cart\external\get_quota_consumed',
                 'description' => 'Return the consumed quota from a given item',
                 'type' => 'read',
                 'capabilities' => '',
@@ -128,7 +118,6 @@ $functions = array(
         ),
         'local_shopping_cart_search_users' => array(
                 'classname' => 'local_shopping_cart\external\search_users',
-                'classpath' => '',
                 'description' => 'Search a list of all users',
                 'type' => 'read',
                 'capabilities' => '',
