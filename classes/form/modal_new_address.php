@@ -26,6 +26,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use core_user;
+use local_shopping_cart\addresses;
 use moodle_url;
 use stdClass;
 
@@ -110,7 +111,9 @@ class modal_new_address extends dynamic_form {
 
         $data = $this->get_data();
 
-        return $data;
+        $result = new stdClass();
+        $result->templatedata = addresses::get_template_render_data();
+        return $result;
     }
 
 
