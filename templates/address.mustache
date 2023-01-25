@@ -31,7 +31,7 @@
     Example context (json):
     {
         "saved_addresses": [
-           {"city":"City", "zip":"1234", "address", "123 Abc Street", "country": "Country"}
+           {"city":"City", "zip":"1234", "address": "123 Abc Street", "country": "Country"}
         ]
     }
 
@@ -39,15 +39,22 @@
 
 <div class="addressselection mb-4">
     {{#required_addresses}}
-        <div class="requiredaddress mb-3">
-            <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
-            {{#saved_addresses}}
-                <div class="savedaddress">
-
-                </div>
-            {{/saved_addresses}}
-            <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
-        </div>
+        <form>
+            <div class="requiredaddress mb-3">
+                <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
+                <fieldset>
+                    {{#saved_addresses}}
+                        <div class="ml-2">
+                            <input type="radio" name="selectedaddress" value="{{id}}" id="{{addresskey}}address{{id}}"/>
+                            <label for="{{addresskey}}address{{id}}" class="savedaddress">
+                                {{> local_shopping_cart/address_singleline }}
+                            </label>
+                        </div>
+                    {{/saved_addresses}}
+                </fieldset>
+                <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+            </div>
+        </form>
     {{/required_addresses}}
 </div>
 
