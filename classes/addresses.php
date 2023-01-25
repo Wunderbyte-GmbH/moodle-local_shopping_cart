@@ -45,12 +45,17 @@ class addresses {
         $sql = "SELECT *
                 FROM {local_shopping_cart_address}
                 WHERE userid=:userid
-                ORDER BY id DESC
-                LIMIT 1";
+                ORDER BY id DESC";
 
         $params = ['userid' => $userid];
-        $savedaddresses = $DB->get_record_sql($sql, $params);
+        $addressesfromdb = $DB->get_records_sql($sql, $params);
 
+        $countries = get_string_manager()->get_list_of_countries();
+        $savedaddresses = [];
+        foreach ($addressesfromdb as $dbaddress) {
+            $dbaddress->country = $countries[$dbaddress->state];
+            $savedaddresses[] = $dbaddress;
+        }
         $data['saved_addresses'] = $savedaddresses;
 
         // insert localized string for required address types
