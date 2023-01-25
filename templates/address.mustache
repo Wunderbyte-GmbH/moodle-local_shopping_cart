@@ -37,25 +37,22 @@
 
 }}
 
-{{#saved_addresses}}
-    <div class="addressselection mb-4">
-        {{#required_addresses}}
-            <div class="requiredaddress mb-3">
-                <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
-                {{#saved_addresses}}
-                    <div class="savedaddress">
+<div class="addressselection mb-4">
+    {{#required_addresses}}
+        <div class="requiredaddress mb-3">
+            <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
+            {{#saved_addresses}}
+                <div class="savedaddress">
 
-                    </div>
-                {{/saved_addresses}}
-                {{^saved_addresses}}
-                    <a href="#newaddress">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
-                {{/saved_addresses}}
-            </div>
-        {{/required_addresses}}
-    </div>
-{{/saved_addresses}}
+                </div>
+            {{/saved_addresses}}
+            {{^saved_addresses}}
+                <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+            {{/saved_addresses}}
+        </div>
+    {{/required_addresses}}
+</div>
 <div class="newaddress col-lg-7 pr-0 pl-0">
-    <a id="newaddress"></a>
     {{#saved_addresses}}
     {{! only show this heading if we have the address selection visible above }}
         <h3>{{#str}} addresses:newaddress, local_shopping_cart {{/str}}</h3>
@@ -98,3 +95,9 @@
     </form>
 
 </div>
+
+{{#js}}
+    require(['local_shopping_cart/address'], function(address) {
+    address.init();
+    });
+{{/js}}
