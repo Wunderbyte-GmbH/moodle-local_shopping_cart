@@ -61,17 +61,27 @@ $string['addresses:shipping'] = 'shipping address';
 $string['addresses:addnew'] = 'Enter new address';
 // new address form
 $string['addresses:newaddress'] = 'Add new address';
+$string['addresses:newaddress:name:label'] = 'Name';
+$string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';
+$string['addresses:newaddress:name:error'] = 'Please enter your name';
 $string['addresses:newaddress:state:label'] = 'Country';
 $string['addresses:newaddress:state:choose'] = 'Choose...';
+$string['addresses:newaddress:state:placeholder'] = 'Select a country';
+$string['addresses:newaddress:state:error'] = 'Please select a country';
 $string['addresses:newaddress:address:label'] = 'Address';
 $string['addresses:newaddress:address:placeholder'] = 'Street and house number / floor (optional) / studio (optional)';
+$string['addresses:newaddress:address:error'] = 'Address is required';
+$string['addresses:newaddress:address2:label'] = 'Additional address details';
 $string['addresses:newaddress:address2:placeholder'] = 'Additional address (optional)';
 $string['addresses:newaddress:city:label'] = 'City';
 $string['addresses:newaddress:city:placeholder'] = 'City';
+$string['addresses:newaddress:city:error'] = 'Please enter your city';
 $string['addresses:newaddress:zip:label'] = 'Zip';
 $string['addresses:newaddress:zip:placeholder'] = '1234';
+$string['addresses:newaddress:zip:error'] = 'Invalid zip code';
 $string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
-$string['addresses:newaddress:submit'] = 'Use this address';
+$string['addresses:newaddress:submit'] = 'Add address';
+$string['addresses:newaddress:saved'] = 'Address created';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
