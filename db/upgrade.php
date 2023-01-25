@@ -374,6 +374,29 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for local_shopping_cart_id.
+    if ($oldversion < 2023012500) {
+
+        // Define table local_shopping_cart_address to be created.
+        $table = new xmldb_table('local_shopping_cart_address');
+
+        // Adding fields to table local_shopping_cart_address.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('state', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('address', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('address2', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('city', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('zip', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('phone', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+
+        // Adding keys to table local_shopping_cart_address.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table local_shopping_cart_address.
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch create table for local_shopping_cart_address.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
