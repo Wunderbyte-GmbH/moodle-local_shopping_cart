@@ -40,7 +40,19 @@ $string['addresses:select'] = 'Select an {$a}';
 $string['addresses:billing'] = 'billing address';
 $string['addresses:shipping'] = 'shipping address';
 $string['addresses:addnew'] = 'Enter new address';
+// new address form
 $string['addresses:newaddress'] = 'Add new address';
+$string['addresses:newaddress:state:label'] = 'Country';
+$string['addresses:newaddress:state:choose'] = 'Choose...';
+$string['addresses:newaddress:address:label'] = 'Address';
+$string['addresses:newaddress:address:placeholder'] = 'Street and house number / floor (optional) / studio (optional)';
+$string['addresses:newaddress:address2:placeholder'] = 'Additional address (optional)';
+$string['addresses:newaddress:city:label'] = 'City';
+$string['addresses:newaddress:city:placeholder'] = 'City';
+$string['addresses:newaddress:zip:label'] = 'Zip';
+$string['addresses:newaddress:zip:placeholder'] = '1234';
+$string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
+$string['addresses:newaddress:submit'] = 'Use this address';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
