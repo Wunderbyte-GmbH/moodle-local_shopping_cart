@@ -48,7 +48,19 @@ $string['addresses:select'] = 'Wähle eine {$a}';
 $string['addresses:billing'] = 'Rechnungsadresse';
 $string['addresses:shipping'] = 'Lieferadresse';
 $string['addresses:addnew'] = 'Neue Adresse eingeben';
+// new address form
 $string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
+$string['addresses:newaddress:state:label'] = 'Land';
+$string['addresses:newaddress:state:choose'] = 'Wählen...';
+$string['addresses:newaddress:address:label'] = 'Adresse';
+$string['addresses:newaddress:address:placeholder'] = 'Straße und Hausnummer / Stiege (optional) / Türnummer (optional)';
+$string['addresses:newaddress:address2:placeholder'] = 'Addresszusatz (optional)';
+$string['addresses:newaddress:city:label'] = 'Stadt';
+$string['addresses:newaddress:city:placeholder'] = 'Stadt';
+$string['addresses:newaddress:zip:label'] = 'PLZ';
+$string['addresses:newaddress:zip:placeholder'] = '1234';
+$string['addresses:newaddress:checkasdefault'] = 'Als meine standard Adresse setzen';
+$string['addresses:newaddress:submit'] = 'Diese Adresse verwenden';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
