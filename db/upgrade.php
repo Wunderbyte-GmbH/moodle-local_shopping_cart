@@ -359,6 +359,59 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022121500, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2023012500) {
+
+        // Define table local_shopping_cart_address to be created.
+        $table = new xmldb_table('local_shopping_cart_address');
+
+        // Adding fields to table local_shopping_cart_address.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('state', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('address', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('address2', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('city', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
+        $table->add_field('zip', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('phone', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+
+        // Adding keys to table local_shopping_cart_address.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table local_shopping_cart_address.
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch create table for local_shopping_cart_address.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define address fields to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('address_billing', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'area');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('address_shipping', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'area');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field address_* to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('address_billing', XMLDB_TYPE_TEXT, null, null, null, null, null, 'area');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('address_shipping', XMLDB_TYPE_TEXT, null, null, null, null, null, 'address_billing');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2023012500, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
