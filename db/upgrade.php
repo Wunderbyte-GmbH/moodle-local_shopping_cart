@@ -359,7 +359,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022121500, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2023012500) {
+    if ($oldversion < 2023012501) {
 
         // Define table local_shopping_cart_address to be created.
         $table = new xmldb_table('local_shopping_cart_address');
@@ -367,7 +367,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Adding fields to table local_shopping_cart_address.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('state', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('address', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
         $table->add_field('address2', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
@@ -407,9 +407,9 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2023012500, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2023012501, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.

@@ -25,17 +25,33 @@
 
 namespace local_shopping_cart;
 
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 class addresses {
+    /**
+     * @return array all required template data to render the templates/address.mustace template
+     */
     public static function get_template_render_data(): array {
-        global $USER;
+        global $USER, $DB;
+        $userid = $USER->id;
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $data["usermail"] = $USER->email;
         $data["username"] = $USER->firstname . $USER->lastname;
-        $data["userid"] = $USER->id;
+        $data["userid"] = $userid;
 
-        $data['saved_addresses'] = [];
+        // get saved addresses for current user
+        $sql = "SELECT *
+                FROM {local_shopping_cart_address}
+                WHERE userid=:userid
+                ORDER BY id DESC
+                LIMIT 1";
+
+        $params = ['userid' => $userid];
+        $savedaddresses = $DB->get_record_sql($sql, $params);
+
+        $data['saved_addresses'] = $savedaddresses;
 
         // insert localized string for required address types
         $requiredaddresseslocalized = [];
@@ -47,5 +63,17 @@ class addresses {
         }
         $data['required_addresses'] = $requiredaddresseslocalized;
         return $data;
+    }
+
+    /**
+     * @param stdClass $address the already validated address data from the form
+     * @return int the id of the newly created address
+     */
+    public static function add_address_for_user(stdClass $address): int {
+        global $DB, $USER;
+
+        $address->userid = $USER->id;
+
+        return $DB->insert_record('local_shopping_cart_address', $address, true);
     }
 }
