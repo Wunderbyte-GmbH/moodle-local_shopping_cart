@@ -23,8 +23,10 @@ import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
 
 import {get_string as getString} from 'core/str';
+import Templates from "../../../../lib/amd/src/templates";
 
 const SELECTORS = {
+    ADDRESSRENDERCONTAINER: '#addressestemplatespace',
     NEWADDRESSBUTTON: '.shopping-cart-new-address',
 };
 
@@ -74,9 +76,26 @@ export function newAddressModal(button) {
         getString('addresses:newaddress:saved', 'local_shopping_cart').then(str => {
             showNotification(str, 'info');
         });
+
+        redrawRenderedAddresses(response.templatedata);
     });
 
     // Show the form.
     modalForm.show();
+
+}
+
+/**
+ * Re-Renders the address list with the newly returned data (most possible containing new saved addresses)
+ * @param {Array} data data from addresses::get_template_render_data needed for rendering the address.mustache template
+ */
+function redrawRenderedAddresses(data) {
+    Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
+
+        Templates.replaceNodeContents(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
+    }).catch((e) => {
+        // eslint-disable-next-line no-console
+        console.log(e);
+    });
 
 }

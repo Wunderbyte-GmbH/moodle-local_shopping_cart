@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
@@ -52,26 +53,11 @@ $PAGE->set_pagelayout('base');
 
 // Output the header.
 echo $OUTPUT->header();
-$userid = $USER->id;
-$data = shopping_cart::local_shopping_cart_get_cache_data($userid);
-$data["usermail"] = $USER->email;
-$data["username"] = $USER->firstname . $USER->lastname;
-$data["userid"] = $USER->id;
-
-$data['saved_addresses'] = [];
-
-// insert localized string for required address types
-$requiredaddresseslocalized = [];
-foreach (explode(',', $addressesrequired) as $addresstype) {
-    $requiredaddresseslocalized[] = [
-            "addresskey" => $addresstype,
-            "requiredaddress" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
-    ];
-}
-$data['required_addresses'] = $requiredaddresseslocalized;
-
-//var_dump($data);
+$data = addresses::get_template_render_data();
+echo '<div id="addressestemplatespace">';
 
 echo $OUTPUT->render_from_template('local_shopping_cart/address', $data);
+
+echo '</div>';
 // Now output the footer.
 echo $OUTPUT->footer();
