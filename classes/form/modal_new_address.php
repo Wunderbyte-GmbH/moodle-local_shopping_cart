@@ -111,8 +111,11 @@ class modal_new_address extends dynamic_form {
 
         $data = $this->get_data();
 
+        $newaddressid = addresses::add_address_for_user($data);
+
         $result = new stdClass();
         $result->templatedata = addresses::get_template_render_data();
+        $result->newaddressid = $newaddressid;
         return $result;
     }
 
@@ -130,8 +133,11 @@ class modal_new_address extends dynamic_form {
         $data = new stdClass();
         global $USER;
         $data->name = fullname($USER);
+        $data->state = $USER->country;
         $data->address = $USER->address;
+        $data->address2 = $USER->address2;
         $data->city = $USER->city;
+        $data->zip = "";
         $data->phone = $USER->phone1;
         $this->set_data($data);
     }

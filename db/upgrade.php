@@ -382,7 +382,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Adding fields to table local_shopping_cart_address.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('state', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('address', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
         $table->add_field('address2', XMLDB_TYPE_CHAR, '1000', null, null, null, null);
@@ -447,12 +447,14 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         // Define field usecredit to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('address_billing', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'area');
         $field = new xmldb_field('usecredit', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'discount');
 
         // Conditionally launch add field usecredit.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        $field = new xmldb_field('address_shipping', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'area');
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2023101100, 'local', 'shopping_cart');
