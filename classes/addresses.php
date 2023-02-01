@@ -60,7 +60,7 @@ class addresses {
         $data['saved_addresses'] = $savedaddresses;
 
         $requiredaddresseslocalized = self::get_required_address_data();
-        $data['required_addresses'] = $requiredaddresseslocalized;
+        $data['required_addresses'] = array_values($requiredaddresseslocalized);
         $data['required_addresses_keys'] = array_reduce($requiredaddresseslocalized, function($keys, $addressdata) {
             $keys[] = $addressdata['addresskey'];
             return $keys;
