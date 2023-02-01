@@ -40,6 +40,9 @@ $string['addresses:select'] = 'Select an {$a}';
 $string['addresses:billing'] = 'billing address';
 $string['addresses:shipping'] = 'shipping address';
 $string['addresses:addnew'] = 'Enter new address';
+$string['addresses:confirm:single'] = 'Choose selected address';
+$string['addresses:confirm:multiple'] = 'Choose selected addresses';
+
 // new address form
 $string['addresses:newaddress'] = 'Add new address';
 $string['addresses:newaddress:name:label'] = 'Name';

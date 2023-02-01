@@ -60,13 +60,16 @@ class addresses {
 
         // insert localized string for required address types
         $requiredaddresseslocalized = [];
-        foreach (explode(',', $addressesrequired) as $addresstype) {
+        $requiredaddresskeys = explode(',', $addressesrequired);
+        foreach ($requiredaddresskeys as $addresstype) {
             $requiredaddresseslocalized[] = [
                     "addresskey" => $addresstype,
                     "requiredaddress" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
             ];
         }
         $data['required_addresses'] = $requiredaddresseslocalized;
+        $data['required_addresses_keys'] = $requiredaddresskeys;
+        $data['required_addresses_multiple'] = count($requiredaddresseslocalized) > 1;
         return $data;
     }
 
