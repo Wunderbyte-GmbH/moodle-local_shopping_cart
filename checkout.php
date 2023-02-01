@@ -151,3 +151,21 @@ if (empty($jsononly)) {
     // Now output the footer.
     echo $OUTPUT->footer();
 }
+
+$data['successurl'] = $sp->get_success_url('shopping_cart', (int) $scdata['identifier'])->out(false);
+
+$data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+// Address handling
+$addressesrequiredsetting = get_config('local_shopping_cart', 'addresses_required');
+$hasallrequiredaddresses = true;
+foreach (explode(',', $addressesrequiredsetting) as $addresstype) {
+    $address = $data["address_" . $addresstype];
+    if (!$address || empty(trim($address))) { // no address has been specified for the current cart
+        $hasallrequiredaddresses = false;
+    }
+}
+$data['address_selection_required'] = $addressesrequiredsetting && !$hasallrequiredaddresses;
+echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+// Now output the footer.
+echo $OUTPUT->footer();

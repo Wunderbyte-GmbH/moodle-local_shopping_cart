@@ -39,27 +39,49 @@
 
 <div class="addressselection mb-4">
     {{#required_addresses}}
-        <form>
-            <div class="requiredaddress mb-3">
-                <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
-                <fieldset>
-                    {{#saved_addresses}}
-                        <div class="ml-2">
-                            <input type="radio" name="selectedaddress" value="{{id}}" id="{{addresskey}}address{{id}}"/>
-                            <label for="{{addresskey}}address{{id}}" class="savedaddress">
-                                {{> local_shopping_cart/address_singleline }}
-                            </label>
-                        </div>
-                    {{/saved_addresses}}
-                </fieldset>
-                <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
-            </div>
-        </form>
+        <div class="requiredaddress mb-3">
+            <h4>{{#str}} addresses:select, local_shopping_cart, {{requiredaddress}} {{/str}}</h4>
+            <fieldset>
+                {{#saved_addresses}}
+                    <div class="ml-2">
+                        <input type="radio" name="selectedaddress_{{addresskey}}" value="{{id}}" id="{{addresskey}}address{{id}}"/>
+                        <label for="{{addresskey}}address{{id}}" class="savedaddress">
+                            {{> local_shopping_cart/address_singleline }}
+                        </label>
+                    </div>
+                {{/saved_addresses}}
+            </fieldset>
+            <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+        </div>
     {{/required_addresses}}
+</div>
+
+<div class="pull-right mt-3">
+    <button
+            class="btn btn-primary mr-3"
+            type="submit"
+            name="submit">
+        {{#required_addresses_multiple}}
+            {{#str}} addresses:confirm:multiple, local_shopping_cart {{/str}}
+        {{/required_addresses_multiple}}
+        {{^required_addresses_multiple}}
+            {{#str}} addresses:confirm:single, local_shopping_cart {{/str}}
+        {{/required_addresses_multiple}}
+    </button>
 </div>
 
 {{#js}}
     require(['local_shopping_cart/address'], function(address) {
     address.init();
     });
+
 {{/js}}
+
+{{#show_error}}
+    {{#js}}
+        require(['local_shopping_cart/notifications'], function(notification) {
+        notification.showNotification('{{show_error}}','warning');
+        });
+
+    {{/js}}
+{{/show_error}}
