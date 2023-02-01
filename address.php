@@ -24,17 +24,14 @@
  */
 
 use local_shopping_cart\addresses;
-use local_shopping_cart\output\shoppingcart_history_list;
-use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
-$addressesrequired = get_config('local_shopping_cart', 'addresses_required');
+$addressesrequired = addresses::get_required_address_keys();
 if (empty($addressesrequired)) {
     redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php', '', 0);
     return;
@@ -70,7 +67,7 @@ if (isset($_POST['submit'])) {
     }
 
     if (!$alladdressesset) {
-        $data['show_error'] = "errormsg";
+        $data['show_error'] = get_string('addresses:selectionrequired', 'local_shopping_cart');
     } else {
         $userid = $USER->id;
         shopping_cart::local_shopping_cart_save_address_in_cache($userid, $selectedaddressdbids);

@@ -57,20 +57,20 @@
     {{/isguestuser}}
     {{^isguestuser}}
         <button
-            class="btn btn-primary pull-right mr-3"
-            type="button"
-            id="gateways-modal-trigger-33"
-            data-action="core_payment/triggerPayment"
-            data-component="local_shopping_cart"
-            data-paymentarea="{{area}}"
-            data-identifier="{{identifier}}"
-            data-itemid="{{identifier}}"
-            data-userid="{{userid}}"
-            data-cost="{{price}} {{currency}}"
-            data-price="{{price}}"
-            data-currency="{{currency}}"
-            data-successurl="{{successurl}}"
-            data-description="my shopping cart checkout"
+                class="btn btn-primary pull-right mr-3"
+                type="button"
+                id="gateways-modal-trigger-33"
+                data-action="core_payment/triggerPayment"
+                data-component="local_shopping_cart"
+                data-paymentarea="{{area}}"
+                data-identifier="{{identifier}}"
+                data-itemid="{{identifier}}"
+                data-userid="{{userid}}"
+                data-cost="{{price}} {{currency}}"
+                data-price="{{price}}"
+                data-currency="{{currency}}"
+                data-successurl="{{successurl}}"
+                data-description="my shopping cart checkout"
         >
             {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
         </button>
@@ -78,6 +78,6 @@
 </div>
 {{#js}}
     require(['core_payment/gateways_modal'], function(modal) {
-        modal.init();
+    modal.init();
     });
 {{/js}}
