@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
@@ -112,15 +113,25 @@ $data['successurl'] = $sp->get_success_url('shopping_cart', (int) $scdata['ident
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
 // Address handling
-$addressesrequiredsetting = get_config('local_shopping_cart', 'addresses_required');
+$requiredaddresskeys = addresses::get_required_address_keys();
+$requriedaddresses = addresses::get_required_address_data();
 $hasallrequiredaddresses = true;
-foreach (explode(',', $addressesrequiredsetting) as $addresstype) {
-    $address = $data["address_" . $addresstype];
-    if (!$address || empty(trim($address))) { // no address has been specified for the current cart
+$selectedaddresses = [];
+foreach ($requiredaddresskeys as $addresstype) {
+    $addressid = $data["address_" . $addresstype];
+    if (!$addressid || empty(trim($addressid)) || !is_numeric($addressid)) { // no address has been specified for the current cart
         $hasallrequiredaddresses = false;
+    } else {
+        $address = addresses::get_address_for_user($userid, $addressid);
+        $selectedaddresses[$addresstype] = $address;
+        $selectedaddresses[$addresstype]->label = $requriedaddresses[$addresstype]['addresslabel'];
     }
 }
-$data['address_selection_required'] = $addressesrequiredsetting && !$hasallrequiredaddresses;
+if ($hasallrequiredaddresses) {
+    $data['selected_addresses'] = $selectedaddresses;
+}
+$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
+
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

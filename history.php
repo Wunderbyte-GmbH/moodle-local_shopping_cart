@@ -23,8 +23,8 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\addresses;
 use local_shopping_cart\shopping_cart;
-use core_user_external;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
@@ -60,7 +60,7 @@ if (isset($success)) {
     }
 }
 $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
-$data['addresses_required'] = get_config('local_shopping_cart', 'addresses_required');
+$data['addresses_required'] = addresses::get_required_address_keys();
 
 $test = get_users(true, '', '', array(), '', '', '', '', $recordsperpage = 21);
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
