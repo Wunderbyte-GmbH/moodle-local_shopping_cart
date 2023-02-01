@@ -50,6 +50,7 @@ $string['addresses:shipping'] = 'Lieferadresse';
 $string['addresses:addnew'] = 'Neue Adresse eingeben';
 $string['addresses:confirm:single'] = 'Ausgewählte Adresse verwenden';
 $string['addresses:confirm:multiple'] = 'Ausgewählte Adressen verwenden';
+$string['addresses:selectionrequired'] = 'Bitte wähle eine Adresse um fortzufahren';
 // new address form
 $string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
 $string['addresses:newaddress:name:label'] = 'Name';

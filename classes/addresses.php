@@ -30,13 +30,14 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die();
 
 class addresses {
+    private const DATABASE_TABLE = 'local_shopping_cart_address';
+
     /**
      * @return array all required template data to render the templates/address.mustace template
      */
     public static function get_template_render_data(): array {
         global $USER, $DB;
         $userid = $USER->id;
-        $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $data["usermail"] = $USER->email;
         $data["username"] = $USER->firstname . $USER->lastname;
         $data["userid"] = $userid;
@@ -58,19 +59,36 @@ class addresses {
         }
         $data['saved_addresses'] = $savedaddresses;
 
-        // insert localized string for required address types
-        $requiredaddresseslocalized = [];
-        $requiredaddresskeys = explode(',', $addressesrequired);
-        foreach ($requiredaddresskeys as $addresstype) {
-            $requiredaddresseslocalized[] = [
-                    "addresskey" => $addresstype,
-                    "requiredaddress" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
-            ];
-        }
+        $requiredaddresseslocalized = self::get_required_address_data();
         $data['required_addresses'] = $requiredaddresseslocalized;
-        $data['required_addresses_keys'] = $requiredaddresskeys;
+        $data['required_addresses_keys'] = array_reduce($requiredaddresseslocalized, function($keys, $addressdata) {
+            $keys[] = $addressdata['addresskey'];
+            return $keys;
+        }, []);
         $data['required_addresses_multiple'] = count($requiredaddresseslocalized) > 1;
         return $data;
+    }
+
+    /**
+     * @return array list of all required addresses with a key and localized string
+     */
+    public static function get_required_address_data(): array {
+        $requiredaddresseslocalized = [];
+        $requiredaddresskeys = self::get_required_address_keys();
+        // insert localized string for required address types
+        foreach ($requiredaddresskeys as $addresstype) {
+            $requiredaddresseslocalized[$addresstype] = [
+                    "addresskey" => $addresstype,
+                    "addresslabel" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
+            ];
+        }
+        return $requiredaddresseslocalized;
+    }
+
+    public static function get_required_address_keys(): array {
+        $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
+        $requiredaddresskeys = explode(',', $addressesrequired);
+        return $requiredaddresskeys;
     }
 
     /**
@@ -82,6 +100,18 @@ class addresses {
 
         $address->userid = $USER->id;
 
-        return $DB->insert_record('local_shopping_cart_address', $address, true);
+        return $DB->insert_record(self::DATABASE_TABLE, $address, true);
     }
+
+    /**
+     * @param int $userid id of the user
+     * @param int $addressid id of the address
+     * @return stdClass|false the address or false if no matching address was found
+     */
+    public static function get_address_for_user(int $userid, int $addressid): stdClass {
+        global $DB;
+
+        return $DB->get_record_select(self::DATABASE_TABLE, 'userid=? AND id=?', array($userid, $addressid));
+    }
+
 }

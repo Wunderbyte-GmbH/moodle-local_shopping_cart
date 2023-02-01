@@ -618,7 +618,7 @@ class shopping_cart {
             $data['remainingcredit'] = $data['credit'];
 
             // address handling
-            $addressesrequired = explode(',', get_config('local_shopping_cart', 'addresses_required'));
+            $addressesrequired = addresses::get_required_address_keys();
             foreach ($addressesrequired as $addresskey) {
                 if (isset($cachedrawdata["address_" . $addresskey])) {
                     $data["address_" . $addresskey] = $cachedrawdata["address_" . $addresskey];

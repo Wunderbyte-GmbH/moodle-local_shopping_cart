@@ -61,6 +61,7 @@ $string['addresses:shipping'] = 'shipping address';
 $string['addresses:addnew'] = 'Enter new address';
 $string['addresses:confirm:single'] = 'Choose selected address';
 $string['addresses:confirm:multiple'] = 'Choose selected addresses';
+$string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
 
 // new address form
 $string['addresses:newaddress'] = 'Add new address';
