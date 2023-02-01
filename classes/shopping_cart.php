@@ -153,6 +153,19 @@ class shopping_cart {
         return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
     }
 
+    public static function local_shopping_cart_save_address_in_cache(int $userid, array $selectedaddressesdbids) {
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
+        if ($cachedrawdata) {
+            foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
+                $cachedrawdata["address_" . $addreskey] = intval($addressdbid);
+            }
+            $cache->set($cachekey, $cachedrawdata);
+        }
+    }
+
     /**
      * This is to unload all the items from the cart.
      *
@@ -372,6 +385,14 @@ class shopping_cart {
             $data['currency'] = $cachedrawdata['currency'] ?? null;
             $data['credit'] = $cachedrawdata['credit'] ?? null;
             $data['remainingcredit'] = $data['credit'];
+
+            // address handling
+            $addressesrequired = explode(',', get_config('local_shopping_cart', 'addresses_required'));
+            foreach ($addressesrequired as $addresskey) {
+                if (isset($cachedrawdata["address_" . $addresskey])) {
+                    $data["address_" . $addresskey] = $cachedrawdata["address_" . $addresskey];
+                }
+            }
 
             if ($count > 0) {
                 // We need the userid in every item.

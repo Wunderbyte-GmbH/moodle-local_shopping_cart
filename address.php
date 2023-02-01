@@ -36,7 +36,7 @@ require_login();
 
 $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
 if (empty($addressesrequired)) {
-    redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php');
+    redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php', '', 0);
     return;
 }
 
@@ -49,15 +49,43 @@ $PAGE->set_title(get_string('addresses:pagetitle', 'local_shopping_cart'));
 $PAGE->set_heading(get_string('addresses:heading', 'local_shopping_cart'));
 
 // Set the page layout.
-$PAGE->set_pagelayout('base');
+$PAGE->set_pagelayout('standard');
+
+$data = addresses::get_template_render_data();
+
+// handle form submit
+if (isset($_POST['submit'])) {
+    require_sesskey();
+    var_dump($_POST);
+    $selectedaddressdbids = [];
+    // are all required addresses present
+    $alladdressesset = true;
+    foreach ($data['required_addresses_keys'] as $addreskey) {
+        $addressdbid = $_POST['selectedaddress_' . $addreskey];
+        if (isset($addressdbid) && !empty(trim($addressdbid)) && is_numeric($addressdbid)) {
+            $selectedaddressdbids[$addreskey] = $addressdbid;
+        } else {
+            $alladdressesset = false;
+        }
+    }
+
+    if (!$alladdressesset) {
+        $data['show_error'] = "errormsg";
+    } else {
+        $userid = $USER->id;
+        shopping_cart::local_shopping_cart_save_address_in_cache($userid, $selectedaddressdbids);
+        redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php', '', 0);
+    }
+}
 
 // Output the header.
 echo $OUTPUT->header();
-$data = addresses::get_template_render_data();
-echo '<div id="addressestemplatespace">';
+
+echo '<div id="addressestemplatespace">
+<form method="post"><input type="hidden" name="sesskey" value="' . sesskey() . '">';
 
 echo $OUTPUT->render_from_template('local_shopping_cart/address', $data);
 
-echo '</div>';
+echo '</form></div>';
 // Now output the footer.
 echo $OUTPUT->footer();
