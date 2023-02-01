@@ -115,20 +115,28 @@ $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 // Address handling
 $requiredaddresskeys = addresses::get_required_address_keys();
 $requriedaddresses = addresses::get_required_address_data();
+$countries = get_string_manager()->get_list_of_countries();
 $hasallrequiredaddresses = true;
 $selectedaddresses = [];
 foreach ($requiredaddresskeys as $addresstype) {
     $addressid = $data["address_" . $addresstype];
-    if (!$addressid || empty(trim($addressid)) || !is_numeric($addressid)) { // no address has been specified for the current cart
-        $hasallrequiredaddresses = false;
-    } else {
+    if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
         $address = addresses::get_address_for_user($userid, $addressid);
-        $selectedaddresses[$addresstype] = $address;
-        $selectedaddresses[$addresstype]->label = $requriedaddresses[$addresstype]['addresslabel'];
+        if ($address !== false) {
+            $address->label = ucfirst($requriedaddresses[$addresstype]['addresslabel']);
+            $address->country = $countries[$address->state];
+            $selectedaddresses[] = get_object_vars($address);
+        } else {
+            // There was an error loading the address from db.
+            $hasallrequiredaddresses = false;
+        }
+    } else {
+        $hasallrequiredaddresses = false;
     }
 }
 if ($hasallrequiredaddresses) {
     $data['selected_addresses'] = $selectedaddresses;
+    $data['show_selected_addresses'] = true;
 }
 $data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 
