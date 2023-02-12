@@ -154,7 +154,7 @@ class shopping_cart {
     }
 
     /**
-     * This is to return all parent entities from the database
+     * This is to unload all the items from the cart.
      *
      * @param string $component
      * @param string $area
@@ -188,7 +188,12 @@ class shopping_cart {
 
         if ($unload) {
             // This treats the related component side.
-            self::unload_cartitem($component, $area, $itemid, $userid);
+
+            // This function can return an array of items to unload as well.
+            $response = self::unload_cartitem($component, $area, $itemid, $userid);
+            foreach ($response['itemstounload'] as $cartitem) {
+                self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid, true);
+            }
         }
 
         return true;
@@ -258,9 +263,9 @@ class shopping_cart {
      * @param string $area Name of the area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
-     * @return bool
+     * @return array
      */
-    public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): bool {
+    public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): array {
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'unload_cartitem', [$area, $itemid, $userid]);

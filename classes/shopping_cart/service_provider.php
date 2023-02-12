@@ -87,10 +87,13 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
-     * @return bool
+     * @return array
      */
-    public static function unload_cartitem(string $area, int $itemid, int $userid = 0): bool {
-        return true;
+    public static function unload_cartitem(string $area, int $itemid, int $userid = 0): array {
+        return [
+            'success' => 1,
+            'itemstounload' => [],
+        ];
     }
 
     /**
