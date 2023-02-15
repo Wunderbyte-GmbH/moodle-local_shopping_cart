@@ -195,13 +195,13 @@
                             {{> local_shopping_cart/address_singleline }}
                         </div>
                     {{/selected_addresses}}
-                    <a href="{{wwwroot}}/local/shopping_cart/address.php">{{#str}} addresses:addnew, local_shopping_cart {{/str}}</a>
+                    <a href="{{wwwroot}}/local/shopping_cart/address.php">{{#str}} addresses:change, local_shopping_cart {{/str}}</a>
                 </div>
             {{/show_selected_addresses}}
 
             <div>
                 {{^address_selection_required}}
-                    {{> local_shopping_cart/payment_region }}
+                    {{> local_shopping_cart/checkout_payment_region }}
                 {{/address_selection_required}}
                 {{#address_selection_required}}
                     <div class="pull-right mt-3">

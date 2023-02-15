@@ -90,7 +90,14 @@
                         </li>
                     {{/historyitems}}
                 </ul>
-                <br>
+            <div class="selectedaddresses mt-4">
+                {{#selected_addresses}}
+                    <div class="selectedaddress">
+                        {{> local_shopping_cart/address_singleline }}
+                    </div>
+                {{/selected_addresses}}
+            </div>
+            <br/>
             <a href="../../my" class="btn btn-info">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
         </div>
     </div>
