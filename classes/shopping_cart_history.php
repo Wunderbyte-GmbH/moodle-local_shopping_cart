@@ -475,7 +475,7 @@ class shopping_cart_history {
             $cachedrawdata["items"] = [];
         }
 
-        // Address handling:
+        // Address handling.
         $selectedaddressids = [];
         foreach ($cachedrawdata as $key => $value) {
             if (strpos($key, 'address_') === 0) {
@@ -500,7 +500,7 @@ class shopping_cart_history {
             $data['items'][] = array_merge($itemdata, $selectedaddressids); // Save address info in item.
         }
 
-        // As the identifier will always stay the same, we pass it here for easy acces.
+        // As the identifier will always stay the same, we pass it here for easy access.
         $data['identifier'] = $identifier;
         if (!empty($items)) {
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);

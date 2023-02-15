@@ -14,26 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Entities Class to handle addresses for the current user
- *
- * @package local_shopping_cart
- * @author Maurice Wohlkönig
- * @copyright 2021 Wunderbyte GmbH
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 namespace local_shopping_cart;
 
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Helper Class to handle addresses for the current user
+ *
+ * @package local_shopping_cart
+ * @copyright 2021 Wunderbyte GmbH
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class addresses {
+    /**
+     * Database table name for all addresses.
+     */
     private const DATABASE_TABLE = 'local_shopping_cart_address';
 
     /**
-     * @return array all required template data to render the templates/address.mustace template
+     * Generates the data for rendering the templates/address.mustache template.
+     *
+     * @return array all required template data
      */
     public static function get_template_render_data(): array {
         global $USER, $DB;
@@ -42,9 +44,9 @@ class addresses {
         $data["username"] = $USER->firstname . $USER->lastname;
         $data["userid"] = $userid;
 
-        // get saved addresses for current user
+        // Get saved addresses for current user.
         $sql = "SELECT *
-                FROM {local_shopping_cart_address}
+                FROM " . self::DATABASE_TABLE . "
                 WHERE userid=:userid
                 ORDER BY id DESC";
 
@@ -70,12 +72,14 @@ class addresses {
     }
 
     /**
+     * Generates complete required-address data as specified by the plugin config.
+     *
      * @return array list of all required addresses with a key and localized string
      */
     public static function get_required_address_data(): array {
         $requiredaddresseslocalized = [];
         $requiredaddresskeys = self::get_required_address_keys();
-        // insert localized string for required address types
+        // Insert localized string for required address types.
         foreach ($requiredaddresskeys as $addresstype) {
             $requiredaddresseslocalized[$addresstype] = [
                     "addresskey" => $addresstype,
@@ -85,6 +89,11 @@ class addresses {
         return $requiredaddresseslocalized;
     }
 
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
     public static function get_required_address_keys(): array {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $requiredaddresskeys = explode(',', $addressesrequired);
@@ -92,6 +101,8 @@ class addresses {
     }
 
     /**
+     * Saves a new Address in the database for the current $USER.
+     *
      * @param stdClass $address the already validated address data from the form
      * @return int the id of the newly created address
      */
@@ -104,6 +115,8 @@ class addresses {
     }
 
     /**
+     * Returns a single address for the given $userid.
+     *
      * @param int $userid id of the user
      * @param int $addressid id of the address
      * @return stdClass|false the address or false if no matching address was found
@@ -115,6 +128,8 @@ class addresses {
     }
 
     /**
+     * Returns a single address for the given user as a string representation
+     *
      * @param int $userid id of the user
      * @param int $addressid id of the address
      * @return string|null the address in a single line string, or false if no matching address was found

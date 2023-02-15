@@ -32,7 +32,7 @@ $string['addtocart'] = 'Add to cart';
 
 $string['mycart'] = 'My Cart';
 
-// Address handling
+// Address handling.
 $string['addresses:button'] = 'Continue to address';
 $string['addresses:pagetitle'] = 'Address';
 $string['addresses:heading'] = 'Address';
@@ -45,7 +45,7 @@ $string['addresses:confirm:single'] = 'Choose selected address';
 $string['addresses:confirm:multiple'] = 'Choose selected addresses';
 $string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
 
-// new address form
+// New address form.
 $string['addresses:newaddress'] = 'Add new address';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';
