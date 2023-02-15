@@ -190,11 +190,11 @@ class shopping_cart_history {
         if (isset($data->items)) {
             foreach ($data->items as $item) {
 
-                $data = (object)$item;
-                $data->timecreated = $now;
-                $record = $DB->insert_record('local_shopping_cart_history', $data);
+                $itemdata = (object) $item;
+                $itemdata->timecreated = $now;
+                $record = $DB->insert_record('local_shopping_cart_history', $itemdata);
                 // We also need to insert the record into the ledger table.
-                shopping_cart::add_record_to_ledger_table($data);
+                shopping_cart::add_record_to_ledger_table($itemdata);
             }
         } else {
             $data->timecreated = $now;
@@ -454,7 +454,7 @@ class shopping_cart_history {
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
-        $dataarr = [];
+        $data = [];
 
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
         if ($taxesenabled) {
@@ -474,34 +474,45 @@ class shopping_cart_history {
         if (!isset($cachedrawdata["items"])) {
             $cachedrawdata["items"] = [];
         }
-        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories);
-        foreach ($items as $item) {
-            $data = $item;
-            $currency = $item['currency'];
-            $data['expirationtime'] = $cachedrawdata["expirationdate"];
-            $data['identifier'] = $identifier; // The identifier of the cart session.
-            $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
-            $data['userid'] = $userid; // The user for which the item was bought.
-            $data['payment'] = PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
-            $data['paymentstatus'] = PAYMENT_PENDING;
-            $data['discount'] = $item['discount'] ?? null;
-            $dataarr['items'][] = $data;
+
+        // Address handling:
+        $selectedaddressids = [];
+        foreach ($cachedrawdata as $key => $value) {
+            if (strpos($key, 'address_') === 0) {
+                $data[$key] = $value;
+                $selectedaddressids[$key] = $value;
+            }
+        }
+        $taxcountrycode = $cachedrawdata["taxcountrycode"];
+        $data['taxcountrycode'] = $taxcountrycode;
+
+        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories, $taxcountrycode);
+        foreach ($items as $itemdata) {
+            $currency = $itemdata['currency'];
+            $itemdata['expirationtime'] = $cachedrawdata["expirationdate"];
+            $itemdata['identifier'] = $identifier; // The identifier of the cart session.
+            $itemdata['usermodified'] = $userfromid; // The user who actually effected the transaction.
+            $itemdata['userid'] = $userid; // The user for which the item was bought.
+            $itemdata['payment'] = PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
+            $itemdata['paymentstatus'] = PAYMENT_PENDING;
+            $itemdata['taxcountrycode'] = $taxcountrycode;
+            $itemdata['discount'] = $itemdata['discount'] ?? null;
+            $data['items'][] = array_merge($itemdata, $selectedaddressids); // Save address info in item.
         }
 
         // As the identifier will always stay the same, we pass it here for easy acces.
-        $dataarr['identifier'] = $identifier;
+        $data['identifier'] = $identifier;
         if (!empty($items)) {
-            $dataarr['price'] = shopping_cart::calculate_total_price($dataarr["items"]);
+            $data['price'] = shopping_cart::calculate_total_price($data["items"]);
             if ($taxesenabled) {
-                $dataarr['price_net'] = shopping_cart::calculate_total_price($dataarr["items"], true);
+                $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
             }
         } else {
-            $dataarr['price'] = 0.0;
+            $data['price'] = 0.0;
         }
-        $dataarr['currency'] = $currency;
-        return $dataarr;
+        $data['currency'] = $currency;
+        return $data;
     }
-
 
     /**
      * On loading the checkout.php, the shopping cart is stored in the schistory cache.
@@ -509,25 +520,24 @@ class shopping_cart_history {
      * To identify the items in the cart, we have to store them with an identifier.
      * To avoid cluttering the table with useless data, we store it temporarily in this cache.
      *
-     * @param array $dataarray
+     * @param array $data
      * @return bool|null
      */
-    public function store_in_schistory_cache(array $dataarray) {
+    public function store_in_schistory_cache(array $data) {
 
-        if (!isset($dataarray['identifier'])) {
+        if (!isset($data['identifier'])) {
             return null;
         }
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $identifier = $dataarray['identifier'];
-        $cache->set($identifier, $dataarray);
+        $identifier = $data['identifier'];
+        $cache->set($identifier, $data);
 
         return true;
     }
 
     /**
      * Get data from schistory cache.
-     * If the flag is set, we also trigger writing to tb and set the approbiate cache flag to do it only once.
      * @param string $identifier
      * @return mixed|false
      */

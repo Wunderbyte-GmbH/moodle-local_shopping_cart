@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/shopping_cart/db" VERSION="20230125" COMMENT="XMLDB file for Moodle local/shopping_cart"
+<XMLDB PATH="local/shopping_cart/db" VERSION="20230215" COMMENT="XMLDB file for Moodle local/shopping_cart"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -14,6 +14,7 @@
         <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3" COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
         <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4" COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
         <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+        <FIELD NAME="taxcountrycode" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="country code of the country used for tax calculation."/>
         <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Applied discount."/>
         <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
         <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
@@ -70,6 +71,7 @@
         <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3" COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
         <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4" COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
         <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+        <FIELD NAME="taxcountrycode" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="country code of the country used for tax calculation."/>
         <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
         <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
         <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
