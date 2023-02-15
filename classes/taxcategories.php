@@ -237,7 +237,7 @@ class taxcategories {
             if (is_numeric($trimmedrawline)) { // This might be a single value row.
                 return array(self::DEFAULT_COUNTRY_INDEX => array(self::DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100));
             }
-            // Tines with no data are invalid.
+            // Lines with no data are invalid.
             return null;
         }
         if (!str_contains($linevalues[0], ':')) { // Assume first value is country code.

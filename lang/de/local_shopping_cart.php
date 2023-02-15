@@ -31,7 +31,7 @@ $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['addtocart'] = 'In den Warenkorb';
 $string['mycart'] = 'Mein Warenkorb';
 
-// Address handling
+// Address handling.
 $string['addresses:button'] = 'Weiter zur Adresseingabe';
 $string['addresses:pagetitle'] = 'Adresse';
 $string['addresses:heading'] = 'Adresse';
@@ -43,7 +43,7 @@ $string['addresses:change'] = 'Adresse ändern';
 $string['addresses:confirm:single'] = 'Ausgewählte Adresse verwenden';
 $string['addresses:confirm:multiple'] = 'Ausgewählte Adressen verwenden';
 $string['addresses:selectionrequired'] = 'Bitte wähle eine Adresse um fortzufahren';
-// new address form
+// New address form.
 $string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Vollständiger Name (Vor- und Nachname)';

@@ -226,7 +226,7 @@ class cartitem {
     }
 
     /**
-     *  Returns imageurl
+     * Returns imageurl.
      *
      * @return string|null
      */

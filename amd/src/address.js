@@ -75,6 +75,10 @@ export function newAddressModal(button) {
         console.log('newAddressModal response: ', response);
         getString('addresses:newaddress:saved', 'local_shopping_cart').then(str => {
             showNotification(str, 'info');
+            return null;
+        }).catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e);
         });
 
         redrawRenderedAddresses(response.templatedata);
@@ -91,11 +95,10 @@ export function newAddressModal(button) {
  */
 function redrawRenderedAddresses(data) {
     Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
-
         Templates.replaceNodeContents(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
+        return null;
     }).catch((e) => {
         // eslint-disable-next-line no-console
         console.log(e);
     });
-
 }

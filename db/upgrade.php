@@ -359,7 +359,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022121500, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2023012501) {
+    if ($oldversion < 2023022000) {
 
         // Define table local_shopping_cart_address to be created.
         $table = new xmldb_table('local_shopping_cart_address');
@@ -408,12 +408,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2023012501, 'local', 'shopping_cart');
-    }
-
-    if ($oldversion < 2023021500) {
-
         // Define field taxcountrycode to be added to local_shopping_cart_history.
         $tablehistory = new xmldb_table('local_shopping_cart_history');
         $tableledger = new xmldb_table('local_shopping_cart_ledger');
@@ -428,7 +422,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2023021500, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2023022000, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
