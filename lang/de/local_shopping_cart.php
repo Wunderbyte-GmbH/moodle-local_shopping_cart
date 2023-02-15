@@ -39,6 +39,7 @@ $string['addresses:select'] = 'Wähle eine {$a}';
 $string['addresses:billing'] = 'Rechnungsadresse';
 $string['addresses:shipping'] = 'Lieferadresse';
 $string['addresses:addnew'] = 'Neue Adresse eingeben';
+$string['addresses:change'] = 'Adresse ändern';
 $string['addresses:confirm:single'] = 'Ausgewählte Adresse verwenden';
 $string['addresses:confirm:multiple'] = 'Ausgewählte Adressen verwenden';
 $string['addresses:selectionrequired'] = 'Bitte wähle eine Adresse um fortzufahren';

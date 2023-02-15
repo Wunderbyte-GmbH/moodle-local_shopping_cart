@@ -40,6 +40,7 @@ $string['addresses:select'] = 'Select an {$a}';
 $string['addresses:billing'] = 'billing address';
 $string['addresses:shipping'] = 'shipping address';
 $string['addresses:addnew'] = 'Enter new address';
+$string['addresses:change'] = 'Change Address';
 $string['addresses:confirm:single'] = 'Choose selected address';
 $string['addresses:confirm:multiple'] = 'Choose selected addresses';
 $string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
