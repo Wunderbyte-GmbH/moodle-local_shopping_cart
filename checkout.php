@@ -112,7 +112,7 @@ $data['successurl'] = $sp->get_success_url('shopping_cart', (int) $scdata['ident
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
-// Address handling
+// Address handling.
 $requiredaddresskeys = addresses::get_required_address_keys();
 $requriedaddresses = addresses::get_required_address_data();
 $countries = get_string_manager()->get_list_of_countries();
