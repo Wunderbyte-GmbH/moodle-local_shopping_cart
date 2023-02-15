@@ -351,9 +351,21 @@ class shopping_cart {
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
+            $taxcountrycode = null; // Most probable tax country
+            $billingaddressid = null; // Most probable billing address
             foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
                 $cachedrawdata["address_" . $addreskey] = intval($addressdbid);
             }
+            if (isset($cachedrawdata["address_billing"])) { // Override guessed billing address id if there is a dedicated billing address set.
+                $billingaddressid = $cachedrawdata["address_billing"];
+            }
+
+            if ($billingaddressid != null) {
+                $billingaddress = addresses::get_address_for_user($userid, $billingaddressid);
+                $taxcountrycode = $billingaddress->state;
+            }
+            $cachedrawdata["taxcountrycode"] = $taxcountrycode;
+
             $cache->set($cachekey, $cachedrawdata);
         }
     }
@@ -617,22 +629,29 @@ class shopping_cart {
             $data['credit'] = $cachedrawdata['credit'] ?? null;
             $data['remainingcredit'] = $data['credit'];
 
-            // address handling
+            // Address handling.
             $addressesrequired = addresses::get_required_address_keys();
             foreach ($addressesrequired as $addresskey) {
                 if (isset($cachedrawdata["address_" . $addresskey])) {
                     $data["address_" . $addresskey] = $cachedrawdata["address_" . $addresskey];
                 }
             }
+            $data['taxcountrycode'] = $cachedrawdata["taxcountrycode"];
 
             if ($count > 0) {
-                // We need the userid in every item.
-                $items = array_map(function($item) use ($USER, $userid) {
+                // Update all items and inject userid and address data.
+                $items = array_map(function($item) use ($addressesrequired, $data, $USER, $userid) {
                     $item['userid'] = $userid != $USER->id ? -1 : 0;
+                    $item['taxcountrycode'] = $data['taxcountrycode'];
+                    foreach ($addressesrequired as $addresskey) {
+                        if (isset($data["address_" . $addresskey])) {
+                            $item["address_" . $addresskey] = $data["address_" . $addresskey];
+                        }
+                    }
                     return $item;
                 }, $cachedrawdata['items']);
 
-                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
+                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories, $data['taxcountrycode']);
 
                 $data['price'] = self::calculate_total_price($data["items"]);
                 if ($taxesenabled) {
