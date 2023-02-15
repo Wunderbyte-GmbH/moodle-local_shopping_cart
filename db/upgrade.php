@@ -489,6 +489,9 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Define field address_* to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('address_billing', XMLDB_TYPE_TEXT, null, null, null, null, null, 'area');
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2024032000, 'local', 'shopping_cart');
     }
@@ -550,6 +553,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        $field = new xmldb_field('address_shipping', XMLDB_TYPE_TEXT, null, null, null, null, null, 'address_billing');
 
         $field = new xmldb_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null, 'installments');
 
@@ -586,7 +590,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2023021500, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2023022000, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.

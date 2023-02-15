@@ -25,16 +25,15 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 use context;
 use context_system;
 use core_form\dynamic_form;
-use core_user;
 use local_shopping_cart\addresses;
 use moodle_url;
 use stdClass;
 
 /**
- * Dynamic cahout form.
+ * Dynamic new address form
+ *
  * @copyright Wunderbyte GmbH <info@wunderbyte.at>
  * @package local_shopping_cart
- * @author Georg Maißer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_new_address extends dynamic_form {
@@ -45,48 +44,80 @@ class modal_new_address extends dynamic_form {
      */
     public function definition() {
         $mform = $this->_form;
-        global $USER, $CFG;
-        $userid = $USER->id;
 
-        // name
-
+        // Name.
         $attributes = array("placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart'));
-        $mform->addElement('text', 'name', get_string('addresses:newaddress:name:label', 'local_shopping_cart'), $attributes, $this->_ajaxformdata["name"]);
+        $mform->addElement(
+                'text',
+                'name',
+                get_string('addresses:newaddress:name:label', 'local_shopping_cart'),
+                $attributes,
+                $this->_ajaxformdata["name"]
+        );
 
-        // country
+        // Country.
         $choices = array("" => "") + get_string_manager()->get_list_of_countries();
         $options = array(
                 'multiple' => false,
                 'placeholder' => get_string('addresses:newaddress:state:placeholder', 'local_shopping_cart'),
                 'noselectionstring' => get_string('addresses:newaddress:state:choose', 'local_shopping_cart'),
         );
-        $mform->addElement('autocomplete', 'state', get_string('addresses:newaddress:state:label', 'local_shopping_cart'), $choices, $options);
+        $mform->addElement(
+                'autocomplete',
+                'state',
+                get_string('addresses:newaddress:state:label', 'local_shopping_cart'),
+                $choices,
+                $options
+        );
         $mform->setAdvanced('state', true);
 
-        // address line 1
+        // Address line 1.
         $options = array(
                 'placeholder' => get_string('addresses:newaddress:address:placeholder', 'local_shopping_cart'),
         );
-        $mform->addElement('text', 'address', get_string('addresses:newaddress:address:label', 'local_shopping_cart'), $options, $this->_ajaxformdata["address"]);
+        $mform->addElement(
+                'text',
+                'address',
+                get_string('addresses:newaddress:address:label', 'local_shopping_cart'),
+                $options,
+                $this->_ajaxformdata["address"]
+        );
 
-        // address line 2
+        // Address line 2.
         $options = array(
                 'placeholder' => get_string('addresses:newaddress:address2:placeholder', 'local_shopping_cart'),
         );
-        $mform->addElement('text', 'address2', get_string('addresses:newaddress:address2:label', 'local_shopping_cart'), $options, $this->_ajaxformdata["address2"]);
+        $mform->addElement(
+                'text',
+                'address2',
+                get_string('addresses:newaddress:address2:label', 'local_shopping_cart'),
+                $options,
+                $this->_ajaxformdata["address2"]
+        );
 
-        // city
+        // City.
         $options = array(
                 'placeholder' => get_string('addresses:newaddress:city:placeholder', 'local_shopping_cart'),
         );
-        $mform->addElement('text', 'city', get_string('addresses:newaddress:city:label', 'local_shopping_cart'), $options, $this->_ajaxformdata["city"]);
+        $mform->addElement(
+                'text',
+                'city',
+                get_string('addresses:newaddress:city:label', 'local_shopping_cart'),
+                $options,
+                $this->_ajaxformdata["city"]
+        );
 
-        // zip
+        // Zip.
         $options = array(
                 'placeholder' => get_string('addresses:newaddress:zip:placeholder', 'local_shopping_cart'),
         );
-        $mform->addElement('text', 'zip', get_string('addresses:newaddress:zip:label', 'local_shopping_cart'), $options, $this->_ajaxformdata["city"]);
-
+        $mform->addElement(
+                'text',
+                'zip',
+                get_string('addresses:newaddress:zip:label', 'local_shopping_cart'),
+                $options,
+                $this->_ajaxformdata["zip"]
+        );
 
     }
 
@@ -177,17 +208,14 @@ class modal_new_address extends dynamic_form {
      * @return array
      */
     public function validation($data, $files) {
-
         $errors = array();
-
         $requiredfields = array("name", "state", "address", "city", "zip");
 
-        foreach($requiredfields as $requiredfield) {
+        foreach ($requiredfields as $requiredfield) {
             if (empty(trim($data[$requiredfield]))) {
                 $errors[$requiredfield] = get_string("addresses:newaddress:$requiredfield:error", 'local_shopping_cart');
             }
         }
-
 
         return $errors;
     }

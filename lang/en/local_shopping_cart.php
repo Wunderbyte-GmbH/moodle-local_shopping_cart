@@ -51,7 +51,7 @@ $string['testing:title'] = 'Shopping cart demo';
 $string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
 $string['testing:item'] = 'Test item';
 
-// Address handling
+// Address handling.
 $string['addresses:button'] = 'Continue to address';
 $string['addresses:pagetitle'] = 'Address';
 $string['addresses:heading'] = 'Address';
@@ -64,7 +64,7 @@ $string['addresses:confirm:single'] = 'Choose selected address';
 $string['addresses:confirm:multiple'] = 'Choose selected addresses';
 $string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
 
-// new address form
+// New address form.
 $string['addresses:newaddress'] = 'Add new address';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';

@@ -241,7 +241,7 @@ class taxcategories {
                     ],
                 ];
             }
-            // Tines with no data are invalid.
+            // Lines with no data are invalid.
             return null;
         }
         if (!str_contains($linevalues[0], ':')) { // Assume first value is country code.

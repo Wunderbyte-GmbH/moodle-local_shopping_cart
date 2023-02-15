@@ -18,7 +18,6 @@
  * Address selection page.
  *
  * @package         local_shopping_cart
- * @author          Maurice Whlk
  * @copyright       2021 Wunderbyte GmbH
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
@@ -50,12 +49,11 @@ $PAGE->set_pagelayout('standard');
 
 $data = addresses::get_template_render_data();
 
-// handle form submit
+// Handle form submit, when user selected new address(es).
 if (isset($_POST['submit'])) {
     require_sesskey();
-    var_dump($_POST);
     $selectedaddressdbids = [];
-    // are all required addresses present
+    // Are all required addresses present?
     $alladdressesset = true;
     foreach ($data['required_addresses_keys'] as $addreskey) {
         $addressdbid = $_POST['selectedaddress_' . $addreskey];

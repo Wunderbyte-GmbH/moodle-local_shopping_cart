@@ -345,18 +345,25 @@ class shopping_cart {
         return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
     }
 
+    /**
+     * Saves the selected addres ids ($selectedaddressesdbids) in the shopping cart cache.
+     *
+     * @param int $userid
+     * @param array $selectedaddressesdbids the addresses the user selected for this shopping cart
+     */
     public static function local_shopping_cart_save_address_in_cache(int $userid, array $selectedaddressesdbids) {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
-            $taxcountrycode = null; // Most probable tax country
-            $billingaddressid = null; // Most probable billing address
+            $taxcountrycode = null; // Most probable tax country.
+            $billingaddressid = null; // Most probable billing address.
             foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
                 $cachedrawdata["address_" . $addreskey] = intval($addressdbid);
             }
-            if (isset($cachedrawdata["address_billing"])) { // Override guessed billing address id if there is a dedicated billing address set.
+            if (isset($cachedrawdata["address_billing"])) {
+                // Override guessed billing address id if there is a dedicated billing address set.
                 $billingaddressid = $cachedrawdata["address_billing"];
             }
 

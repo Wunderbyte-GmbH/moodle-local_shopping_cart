@@ -147,7 +147,7 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
-    // Setting to enable address processing during checkout
+    // Setting to enable address processing during checkout.
     $settings->add(
             new admin_setting_configmulticheckbox($componentname . '/addresses_required',
                     get_string('addresses_required:title', 'local_shopping_cart'),
