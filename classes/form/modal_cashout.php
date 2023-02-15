@@ -30,7 +30,8 @@ use moodle_url;
 use stdClass;
 
 /**
- * Dynamic cahout form.
+ * Dynamic cashout form.
+ *
  * @copyright Wunderbyte GmbH <info@wunderbyte.at>
  * @package local_shopping_cart
  * @author Georg Maißer

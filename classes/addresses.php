@@ -108,10 +108,24 @@ class addresses {
      * @param int $addressid id of the address
      * @return stdClass|false the address or false if no matching address was found
      */
-    public static function get_address_for_user(int $userid, int $addressid): stdClass {
+    public static function get_address_for_user(int $userid, int $addressid): ?stdClass {
         global $DB;
 
         return $DB->get_record_select(self::DATABASE_TABLE, 'userid=? AND id=?', array($userid, $addressid));
     }
 
+    /**
+     * @param int $userid id of the user
+     * @param int $addressid id of the address
+     * @return string|null the address in a single line string, or false if no matching address was found
+     */
+    public static function get_address_string_for_user(int $userid, int $addressid): ?string {
+        $address = self::get_address_for_user($userid, $addressid);
+        if ($address) {
+            $countries = get_string_manager()->get_list_of_countries();
+            return $address->address . trim(" " . $address->address2) . ", " . $address->zip . " " . $address->city . ", " .
+                    $countries[$address->state];
+        }
+        return null;
+    }
 }

@@ -412,6 +412,25 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023012501, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2023021500) {
+
+        // Define field taxcountrycode to be added to local_shopping_cart_history.
+        $tablehistory = new xmldb_table('local_shopping_cart_history');
+        $tableledger = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('taxcountrycode', XMLDB_TYPE_CHAR, '5', null, null, null, null, 'taxcategory');
+
+        // Conditionally add field taxcountrycode.
+        if (!$dbman->field_exists($tablehistory, $field)) {
+            $dbman->add_field($tablehistory, $field);
+        }
+        if (!$dbman->field_exists($tableledger, $field)) {
+            $dbman->add_field($tableledger, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2023021500, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
