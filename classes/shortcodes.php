@@ -40,7 +40,7 @@ class shortcodes {
 
     /**
      * Prints out list of previous history items in a card..
-     * Argumtents can be 'userid'.
+     * Arguments can be 'userid'.
      *
      * @param string $shortcode
      * @param array $args
