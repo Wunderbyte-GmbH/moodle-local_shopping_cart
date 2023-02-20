@@ -1,3 +1,23 @@
+## Version 0.3.8 (2023022000)
+**Improvements:**
+* First steps to support subbookings (in combination with Booking plugin).
+* Behat tests and improved code style.
+* Get rid of unnecessary functions.
+* Added "nojs" (no JavaScript) functionality to template.
+* Add unload item by click on disabled item.
+* Use standard moodle autocomplete to search users.
+* Layout: Add margin to cashout card.
+* Add possibility to unload simultaneously connected cart items via service_provider.
+
+**Bugfixes:**
+* Avoid an error when user was not logged in.
+* Fix error: when shortcode is used to call this function when not logged in.
+* Several small fixes.
+* Fix legacy problem of non area adhoc tasks.
+* Fix js for shopping cart.
+* Fix error which sometimes interrupted ad-hock task/delete_item_task.php.
+* Fix name in services.php get_quota_consumed.
+
 ## Version 0.3.7 (2023011200)
 **Improvements:**
 * Lots of bugfixes.
@@ -20,6 +40,7 @@
 ## Version 0.3.4 (2022112900)
 **New features:**
 * Added tax support.
+
 ## Version 0.3.3 (2022112300)
 **Improvements:**
 * Small design improvements and linting.
