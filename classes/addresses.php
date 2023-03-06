@@ -46,7 +46,7 @@ class addresses {
 
         // Get saved addresses for current user.
         $sql = "SELECT *
-                FROM " . self::DATABASE_TABLE . "
+                FROM {" . self::DATABASE_TABLE . "}
                 WHERE userid=:userid
                 ORDER BY id DESC";
 
