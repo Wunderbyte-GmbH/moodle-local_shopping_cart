@@ -163,18 +163,19 @@ export const buttoninit = (itemid, component, area) => {
         // Add click eventlistern to oneself.
         addtocartbutton.addEventListener('click', event => {
 
-        // If we find the disabled class, the click event is aborted.
-        if (addtocartbutton.classList.contains('disabled')) {
-            event.preventDefault();
-            event.stopPropagation();
-            deleteItem(itemid, component, area);
-        } else {
-            event.preventDefault();
-            event.stopPropagation();
-            addItem(itemid, component, area);
-        }
             if (addtocartbutton.dataset.blocked == 'true') {
                 return;
+            }
+
+            // If we find the disabled class, the click event is aborted.
+            if (addtocartbutton.classList.contains('disabled')) {
+                event.preventDefault();
+                event.stopPropagation();
+                // deleteItem(itemid, component, area);
+            } else {
+                event.preventDefault();
+                event.stopPropagation();
+                addItem(itemid, component, area);
             }
         });
     });
