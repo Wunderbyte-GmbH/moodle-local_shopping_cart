@@ -173,6 +173,9 @@ export const buttoninit = (itemid, component, area) => {
             event.stopPropagation();
             addItem(itemid, component, area);
         }
+            if (addtocartbutton.dataset.blocked == 'true') {
+                return;
+            }
         });
     });
 
