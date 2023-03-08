@@ -55,7 +55,7 @@ class credit_paid_back extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
+            'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
         ));
     }
 
