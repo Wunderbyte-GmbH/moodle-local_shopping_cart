@@ -96,7 +96,7 @@ class addresses {
      */
     public static function get_required_address_keys(): array {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
-        $requiredaddresskeys = explode(',', $addressesrequired);
+        $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
         return $requiredaddresskeys;
     }
 
