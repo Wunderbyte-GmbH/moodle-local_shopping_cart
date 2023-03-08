@@ -76,11 +76,10 @@ if (isset($_POST['submit'])) {
 // Output the header.
 echo $OUTPUT->header();
 
-echo '<div id="addressestemplatespace">
-<form method="post"><input type="hidden" name="sesskey" value="' . sesskey() . '">';
+echo '<form method="post"><input type="hidden" name="sesskey" value="' . sesskey() . '"><div id="addressestemplatespace">';
 
 echo $OUTPUT->render_from_template('local_shopping_cart/address', $data);
 
-echo '</form></div>';
+echo '</div></form>';
 // Now output the footer.
 echo $OUTPUT->footer();

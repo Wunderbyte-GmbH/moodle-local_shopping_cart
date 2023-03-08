@@ -116,10 +116,14 @@ $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 $requiredaddresskeys = addresses::get_required_address_keys();
 $requriedaddresses = addresses::get_required_address_data();
 $countries = get_string_manager()->get_list_of_countries();
-$hasallrequiredaddresses = true;
+$hasallrequiredaddresses = !empty($requiredaddresskeys);
 $selectedaddresses = [];
 foreach ($requiredaddresskeys as $addresstype) {
-    $addressid = $data["address_" . $addresstype];
+    if (isset($data["address_" . $addresstype])) {
+        $addressid = $data["address_" . $addresstype];
+    } else {
+        $addressid = "";
+    }
     if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
         $address = addresses::get_address_for_user($userid, $addressid);
         if ($address !== false) {
