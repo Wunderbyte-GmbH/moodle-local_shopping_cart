@@ -55,12 +55,12 @@ class get_quota_consumed extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
-            'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
-            'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            'historyid'  => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
-            )
+                        'component' => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
+                        'area' => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
+                        'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
+                        'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
+                        'historyid' => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
+                )
         );
     }
 

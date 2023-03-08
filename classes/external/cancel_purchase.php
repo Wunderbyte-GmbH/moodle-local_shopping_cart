@@ -55,13 +55,13 @@ class cancel_purchase extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'componentname'  => new external_value(PARAM_RAW, 'componentname', VALUE_REQUIRED),
-            'area'  => new external_value(PARAM_RAW, 'area', VALUE_REQUIRED),
-            'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
-            'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
-            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED)
-            )
+                        'componentname' => new external_value(PARAM_RAW, 'componentname', VALUE_REQUIRED),
+                        'area' => new external_value(PARAM_RAW, 'area', VALUE_REQUIRED),
+                        'itemid' => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
+                        'userid' => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
+                        'historyid' => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
+                        'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED)
+                )
         );
     }
 
