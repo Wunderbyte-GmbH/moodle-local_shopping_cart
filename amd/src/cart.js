@@ -173,8 +173,8 @@ export const buttoninit = (itemid, component, area) => {
                 event.stopPropagation();
                 // deleteItem(itemid, component, area);
             } else {
-                event.preventDefault();
-                event.stopPropagation();
+                // event.preventDefault();
+                // event.stopPropagation();
                 addItem(itemid, component, area);
             }
         });
