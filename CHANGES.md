@@ -1,3 +1,9 @@
+## Version 0.3.9 (2023031300)
+**Improvements:**
+* Don't react on blocked item clicks.
+* Disabled cart items can't be clicked to unload item anymore.
+* No propagation stop on click on cart item.
+
 ## Version 0.3.8 (2023022000)
 **Improvements:**
 * First steps to support subbookings (in combination with Booking plugin).
