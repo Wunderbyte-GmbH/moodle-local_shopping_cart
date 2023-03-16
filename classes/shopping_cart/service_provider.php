@@ -36,6 +36,25 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return array
      */
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
+
+        if ($area == 'bookingfee') {
+            $cartitem = new cartitem($itemid,
+            get_string('bookingfee', 'local_shopping_cart'),
+            get_config('local_shopping_cart', 'bookingfee'),
+            'EUR',
+            'local_shopping_cart',
+            'bookingfee',
+            'item description',
+            '', // Add a fee image here.
+            time(),
+            0,
+            0,
+            'A',
+            );
+
+            return ['cartitem' => $cartitem];
+        }
+
         $now = time();
         $canceluntil = strtotime('+14 days', $now);
         $serviceperiodestart = $now;
@@ -131,6 +150,10 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return float
      */
     public static function quota_consumed(string $area, int $itemid, int $userid = 0): float {
+
+        if ($area == 'bookingfee') {
+            return 0;
+        }
 
         // In this test situation, we return a value for each item to be able to test all cases.
         switch ($itemid) {

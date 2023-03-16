@@ -97,6 +97,15 @@ class shopping_cart {
             $success = false;
         }
 
+        // If we have nothing in our cart and we are not about...
+        // ... to add the booking fee...
+        // ... we add the booking fee.
+        if (count($cachedrawdata['items']) === 0
+            && $area != 'bookingfee') {
+            shopping_cart_bookingfee::add_fee_to_cart($userid);
+            $cachedrawdata = $cache->get($cachekey);
+        }
+
         // Todo: Admin setting could allow for more than one item. Right now, only one.
         // Therefore: if the item is already in the cart, we just return false.
         if ($success && isset($cachedrawdata['items'][$cacheitemkey])) {
@@ -195,6 +204,22 @@ class shopping_cart {
                 self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid, true);
             }
         }
+
+        if (count($cachedrawdata['items']) === 1) {
+
+            $item = reset($cachedrawdata['items']);
+
+            if ($item['area'] == 'bookingfee'
+                && $item['componentname'] == 'local_shopping_cart') {
+                    self::delete_item_from_cart(
+                        $item['componentname'],
+                        $item['area'],
+                        $item['itemid'],
+                        $userid,
+                    );
+                }
+        }
+
 
         return true;
     }
