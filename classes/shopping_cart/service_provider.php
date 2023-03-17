@@ -38,19 +38,22 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
 
         if ($area == 'bookingfee') {
+
+            $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
+
             $cartitem = new cartitem($itemid,
             get_string('bookingfee', 'local_shopping_cart'),
             get_config('local_shopping_cart', 'bookingfee'),
             'EUR',
             'local_shopping_cart',
             'bookingfee',
-            'item description',
-            '', // Add a fee image here.
+            '',  // No item description for booking fee.
+            $imageurl->out(), // Fee image.
             time(),
             0,
             0,
             'A',
-            1,
+            1, // Booking fee cannot be deleted.
             );
 
             return ['cartitem' => $cartitem];

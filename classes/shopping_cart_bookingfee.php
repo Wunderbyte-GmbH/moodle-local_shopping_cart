@@ -29,13 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
 
+define('BOOKINGFEE_ANY', 0);
 define('BOOKINGFEE_EACHPURCHASE', 1);
 define('BOOKINGFEE_ONLYONCE', 2);
-
-use context_system;
-use local_shopping_cart\task\delete_item_task;
-use moodle_exception;
-use stdClass;
 
 /**
  * Class shopping_cart
@@ -66,19 +62,18 @@ class shopping_cart_bookingfee {
         $config = get_config('local_shopping_cart');
 
         // Do we need to add a fee at all?
-        if ($config->bookingfee < 0.1) {
+        if ($config->bookingfee <= 0) {
             return false;
         }
 
         // Which kind of fee?
-        if ($config->bookingfeeonlyonce < 1) {
-            $itemid = BOOKINGFEE_EACHPURCHASE;
-        } else {
-            // TODO: Verify if the user has already ever paid the fee.
-
+        if ($config->bookingfeeonlyonce) {
+            // Verify if the user has already ever paid the fee.
             if (self::user_has_paid_fee($userid)) {
                 return false;
             }
+            $itemid = BOOKINGFEE_ONLYONCE;
+        } else {
             $itemid = BOOKINGFEE_EACHPURCHASE;
         }
 
@@ -90,16 +85,33 @@ class shopping_cart_bookingfee {
     /**
      * User has already paid the fee.
      *
-     * @param integer $userid
+     * @param int $userid
+     * @param int $bookingfeetype
      * @return bool
      */
-    private static function user_has_paid_fee(int $userid) {
+    private static function user_has_paid_fee(int $userid, int $bookingfeetype = BOOKINGFEE_ANY) {
 
-        $records = shopping_cart_history::return_items_from_history(
-            BOOKINGFEE_ONLYONCE,
-            'local_shopping_cart',
-            'bookingfee',
-            $userid);
+        if ($bookingfeetype === BOOKINGFEE_ANY) {
+            // Any booking fee type. So look for all of them and merge.
+            $records1 = shopping_cart_history::return_items_from_history(
+                BOOKINGFEE_ONLYONCE,
+                'local_shopping_cart',
+                'bookingfee',
+                $userid);
+            $records2 = shopping_cart_history::return_items_from_history(
+                BOOKINGFEE_EACHPURCHASE,
+                'local_shopping_cart',
+                'bookingfee',
+                $userid);
+            $records = array_merge($records1, $records2);
+        } else {
+            // Specific booking fee type.
+            $records = shopping_cart_history::return_items_from_history(
+                $bookingfeetype,
+                'local_shopping_cart',
+                'bookingfee',
+                $userid);
+        }
 
         if (count($records) > 0) {
             return true;

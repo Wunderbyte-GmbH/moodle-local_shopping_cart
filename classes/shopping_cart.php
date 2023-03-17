@@ -212,15 +212,14 @@ class shopping_cart {
 
             if ($item['area'] == 'bookingfee'
                 && $item['componentname'] == 'local_shopping_cart') {
-                    self::delete_item_from_cart(
-                        $item['componentname'],
-                        $item['area'],
-                        $item['itemid'],
-                        $userid,
-                    );
-                }
+                self::delete_item_from_cart(
+                    $item['componentname'],
+                    $item['area'],
+                    $item['itemid'],
+                    $userid,
+                );
+            }
         }
-
 
         return true;
     }
