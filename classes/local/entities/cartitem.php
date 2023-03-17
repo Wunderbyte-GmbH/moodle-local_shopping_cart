@@ -117,6 +117,13 @@ class cartitem {
     private $serviceperiodend;
 
     /**
+     * Nodelete is 1 when item can't be deleted by user.
+     *
+     * @var ?int
+     */
+    private $nodelete;
+
+    /**
      * Constructor for creating a cartitem.
      *
      * @param int $itemid id of cartitem
@@ -131,6 +138,7 @@ class cartitem {
      * @param int|null $serviceperiodstart start of service period
      * @param int|null $serviceperiodend end of service period
      * @param string|null $taxcategory the tax category of this item
+     * @param int $nodelete if item can't bedeleted from cart by user.
      */
     public function __construct(int $itemid,
             string $itemname,
@@ -143,7 +151,8 @@ class cartitem {
             ?int $canceluntil = null,
             ?int $serviceperiodstart = null,
             ?int $serviceperiodend = null,
-            ?string $taxcategory = null) {
+            ?string $taxcategory = null,
+            int $nodelete = 0) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -156,6 +165,7 @@ class cartitem {
         $this->serviceperiodstart = $serviceperiodstart;
         $this->serviceperiodend = $serviceperiodend;
         $this->taxcategory = $taxcategory;
+        $this->nodelete = $nodelete;
     }
 
     /**
@@ -177,6 +187,7 @@ class cartitem {
         $item['serviceperiodstart'] = $this->serviceperiodstart;
         $item['serviceperiodend'] = $this->serviceperiodend;
         $item['taxcategory'] = $this->taxcategory;
+        $item['nodelete'] = $this->nodelete;
         return $item;
     }
 

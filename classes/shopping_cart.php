@@ -205,6 +205,7 @@ class shopping_cart {
             }
         }
 
+        // If there is only one item left and it'sthe booking fee, we delete it.
         if (count($cachedrawdata['items']) === 1) {
 
             $item = reset($cachedrawdata['items']);

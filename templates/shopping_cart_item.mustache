@@ -67,9 +67,11 @@
                                                 data-itemid="{{itemid}}"
                                                 data-action="discount" data-userid="{{userid}}"></i></span>
     {{/iscashier}}
+    {{^nodelete}}
     <span class="item-button pull-right"><i class="fa fa-trash-o pl-2" aria-hidden="true" data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
                                             data-area="{{area}}"
                                             data-action="delete" data-userid="{{userid}}"></i></span>
+    {{/nodelete}}
     <div class="pull-right">
         {{> local_shopping_cart/item_price }}
     </div>

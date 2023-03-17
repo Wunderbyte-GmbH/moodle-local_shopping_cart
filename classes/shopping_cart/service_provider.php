@@ -50,6 +50,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             0,
             0,
             'A',
+            1,
             );
 
             return ['cartitem' => $cartitem];
