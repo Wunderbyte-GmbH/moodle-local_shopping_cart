@@ -38,6 +38,10 @@ $string['maxitems:description'] = 'Set the maximum number of items for the user 
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
 $string['cancelationfee'] = 'Cancelation fee';
+$string['bookingfee'] = 'Booking fee';
+$string['bookingfee_desc'] = 'Booking fee for every checkout.';
+$string['bookingfeeonlyonce'] = 'Charge booking fee only once';
+$string['bookingfeeonlyonce_desc'] = 'Every user pays the booking fee only once, no matter how many checkouts she makes.';
 $string['credittopayback'] = 'Amount to pay back';
 $string['cancelationfee:description'] = 'Automatically deducted fee for cancelation by user.
                                         -1 means that cancelation by user is not possible.';

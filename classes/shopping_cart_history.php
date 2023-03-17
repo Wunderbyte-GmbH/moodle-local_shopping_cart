@@ -562,7 +562,7 @@ class shopping_cart_history {
     }
 
     /**
-     * Return an item for shopping card history table.
+     * Return an item for shopping card history table via the historyid.
      *
      * @param int $historyid
      * @param int $itemid
@@ -575,5 +575,27 @@ class shopping_cart_history {
 
         return $DB->get_record('local_shopping_cart_history',
             ['id' => $historyid, 'itemid' => $itemid, 'area' => $area, 'userid' => $userid]);
+    }
+
+    /**
+     * Returns items from shopping card history table.
+     * We might have bought the same item multiple times (because of cancelation).
+     *
+     * @param integer $itemid
+     * @param string $component
+     * @param string $area
+     * @param integer $userid
+     * @return array
+     */
+    public static function return_items_from_history(
+            int $itemid,
+            string $component,
+            string $area,
+            int $userid) {
+
+        global $DB;
+
+        return $DB->get_records('local_shopping_cart_history',
+            ['itemid' => $itemid, 'componentname' => $component, 'area' => $area, 'userid' => $userid]);
     }
 }

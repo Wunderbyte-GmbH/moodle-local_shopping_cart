@@ -32,6 +32,7 @@ use external_function_parameters;
 use external_value;
 use external_single_structure;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_bookingfee;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -99,6 +100,12 @@ class delete_item_from_cart extends external_api {
             }
         } else {
             $userid = $params['userid'];
+        }
+
+        // We can't delete the fee item via webservice.
+        if (shopping_cart_bookingfee::is_fee($params['component'], $params['area'])
+            && !has_capability('local/shopping_cart:cashier', $context)) {
+            return false;
         }
 
         // This treats the cache side.

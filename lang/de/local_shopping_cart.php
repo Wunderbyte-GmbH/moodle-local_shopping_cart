@@ -37,6 +37,10 @@ $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb f�
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
 $string['cancelationfee'] = 'Stornierungsgebühr';
+$string['bookingfee'] = 'Buchungsgebühr';
+$string['bookingfee_desc'] = 'Für jeden Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
+$string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
+$string['bookingfeeonlyonce_desc'] = 'Die Buchungsgebühr wird nur einmal für jede NutuzerIn eingehoben. Sobald wie einmal bezahlt wurde, sind alle weiteren Buchungen ohne Buchungsgebühr.';
 $string['credittopayback'] = 'Zurückerstatteter Betrag';
 $string['cancelationfee:description'] = 'Automatisch vom Guthaben abgezogene Gebühr bei einer Stornierung durch die/den KäuferIn.
                                         -1 bedeutet, dass Stornierung durch Userin nicht möglich ist.';

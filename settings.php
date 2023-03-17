@@ -114,6 +114,21 @@ if ($hassiteconfig) {
             )
     );
 
+    $settings->add(
+        new admin_setting_configtext(
+                $componentname . '/bookingfee',
+                get_string('bookingfee', $componentname),
+                get_string('bookingfee_desc', $componentname),
+                0,
+                PARAM_FLOAT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/bookingfeeonlyonce',
+                get_string('bookingfeeonlyonce', 'local_shopping_cart'),
+                get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1));
+
     // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/calculateconsumation',
