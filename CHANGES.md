@@ -1,3 +1,7 @@
+## Version 0.4.0 (2023032000)
+**New features:**
+* New feature: Booking fee can be activated either for each purchase process or only once per user.
+
 ## Version 0.3.9 (2023031300)
 **Improvements:**
 * Don't react on blocked item clicks.
