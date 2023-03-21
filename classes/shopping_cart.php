@@ -1012,7 +1012,15 @@ class shopping_cart {
         global $USER;
         $countrycode = null; // TODO get countrycode from user info.
 
+        $context = context_system::instance();
+
         foreach ($items as $key => $item) {
+
+            // As a cachier, I always want to be able to delete the booking fee.
+            if ($items[$key]['nodelete'] === 1 &&
+                has_capability('local/shopping_cart:cashier', $context)) {
+                $items[$key]['nodelete'] = 0;
+            }
 
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);

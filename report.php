@@ -60,7 +60,6 @@ $cashreporttable->is_downloading($download, $fileandsheetname, $fileandsheetname
 $tablebaseurl = $baseurl;
 $tablebaseurl->remove_params('page');
 $cashreporttable->define_baseurl($tablebaseurl);
-$cashreporttable->defaultdownloadformat = 'pdf';
 
 // Header.
 $cashreporttable->define_headers([

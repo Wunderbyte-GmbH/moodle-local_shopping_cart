@@ -134,8 +134,8 @@
         <span class="expirationdate" data-expirationdate = '{{expirationdate}}'>[{{expirationdate}}]</span>
     {{/headertext}}
     {{$content}}
-    <h4 class="p-2">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
-    <div class="shopping-cart-items-container">
+    <h4 class="p-2 shopping-cart-items-title text-dark">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
+    <div class="shopping-cart-items-container text-dark">
         {{> local_shopping_cart/shopping_cart_items }}
     </div>
     {{> local_shopping_cart/checkout_button }}
