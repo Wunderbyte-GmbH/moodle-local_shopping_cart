@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Warenkorb';
+$string['modulename'] = 'Warenkorb';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 
 $string['addtocart'] = 'In den Warenkorb';
