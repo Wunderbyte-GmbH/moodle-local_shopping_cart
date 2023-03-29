@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Shopping Cart';
+$string['modulename'] = 'Shopping Cart';
 $string['sendpaymentbutton'] = 'Checkout';
 
 $string['addtocart'] = 'Add to cart';
