@@ -171,10 +171,10 @@ export const buttoninit = (itemid, component, area) => {
             if (addtocartbutton.classList.contains('disabled')) {
                 event.preventDefault();
                 event.stopPropagation();
-                // deleteItem(itemid, component, area);
+                // DeleteItem(itemid, component, area);
             } else {
-                // event.preventDefault();
-                // event.stopPropagation();
+                // Event.preventDefault();
+                // Event.stopPropagation();
                 addItem(itemid, component, area);
             }
         });
