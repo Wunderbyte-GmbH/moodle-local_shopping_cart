@@ -37,14 +37,15 @@ export const init = () => {
 
     const button = document.querySelector(SELECTORS.CASHOUTBUTTON);
 
-    button.addEventListener('click', e => {
+    if (button) {
+        button.addEventListener('click', e => {
 
-        // eslint-disable-next-line no-console
-        console.log(e.target);
+            // eslint-disable-next-line no-console
+            console.log(e.target);
 
-        cashoutModal(button);
-    });
-
+            cashoutModal(button);
+        });
+    }
 };
 
 /**
