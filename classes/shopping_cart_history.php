@@ -332,6 +332,9 @@ class shopping_cart_history {
         try {
             $DB->update_record('local_shopping_cart_history', $record);
 
+            // We also need to insert the record into the ledger table.
+            shopping_cart::add_record_to_ledger_table($record);
+
             // There might have been a credit value set manually by the cashier.
             // The credit can be the whole price, or it can be just a fraction.
             // If there is no price or the credit is higher than the price, we use the price.
@@ -398,10 +401,13 @@ class shopping_cart_history {
         // All the items of one transaction should have the same status.
         // If it's still pending, we set all items to error.
         foreach ($records as $record) {
-            // If we haven't fond a record where it's not pending, we check this one.
+            // If we haven't found a record where it's not pending, we check this one.
             if ($record->paymentstatus == PAYMENT_PENDING) {
                 $record->paymentstatus = PAYMENT_ABORTED;
                 $DB->update_record('local_shopping_cart_history', $record);
+
+                // We also need to insert the record into the ledger table.
+                shopping_cart::add_record_to_ledger_table($record);
             }
         }
 
