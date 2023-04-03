@@ -138,7 +138,8 @@ class shopping_cart_history {
             $gatewayspart = '';
         }
 
-        $sql = "SELECT sch.*, p.gateway$selectorderidpart
+        $sql = "SELECT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
+                " AS uniqueid,  sch.*, p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
                 ON p.itemid = sch.identifier
