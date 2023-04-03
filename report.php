@@ -146,7 +146,8 @@ if (!empty($colselects)) {
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
-$fields = "scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
+$fields = $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.orderid,'')") .
+        " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         p.gateway$selectorderidpart";
