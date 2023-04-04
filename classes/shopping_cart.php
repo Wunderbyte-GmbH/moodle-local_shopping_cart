@@ -546,6 +546,9 @@ class shopping_cart {
 
         $identifier = 0;
 
+        // We use this flag to keep track if we have already used the credits or not.
+        $creditsalreadyused = false;
+
         // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
             // Retrieve items from cache.
@@ -594,6 +597,7 @@ class shopping_cart {
             // Now we need to store the new credit balance.
             if ($data['deductible'] > 0) {
                 shopping_cart_credits::use_credit($userid, $data);
+                $creditsalreadyused = true;
             }
         }
 
@@ -681,7 +685,8 @@ class shopping_cart {
         }
 
         // In our ledger, the credits table, we add an entry and make sure we actually deduce any credit we might have.
-        if (isset($data['usecredit'])
+        // Only do this, if credits have not been used yet.
+        if (!$creditsalreadyused && isset($data['usecredit'])
                 && $data['usecredit'] === true) {
             shopping_cart_credits::use_credit($userid, $data);
         } else {
