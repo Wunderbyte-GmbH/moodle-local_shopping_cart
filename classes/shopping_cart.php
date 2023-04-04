@@ -986,14 +986,14 @@ class shopping_cart {
                 }
                 break;
             case PAYMENT_CANCELED:
+            case PAYMENT_ABORTED:
+            case PAYMENT_PENDING:
                 $record->price = null;
                 $record->discount = null;
                 if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
                     $success = false;
                 }
                 break;
-            case PAYMENT_ABORTED:
-            case PAYMENT_PENDING:
             default:
                 $success = false;
                 break;
