@@ -194,13 +194,26 @@ class modal_cancel_addcredit extends dynamic_form {
     /**
      * Validate data.
      *
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
      * @return void
      */
     public function validation($data, $files) {
 
         $errors = array();
+
+        if (isset($data["credittopayback"]) && $data["credittopayback"] < 0) {
+            $errors["credittopayback"] = get_string('error:negativevaluenotallowed', 'local_shopping_cart');
+        }
+
+        if (isset($data["cancelationfee"]) && $data["cancelationfee"] < 0) {
+            $errors["cancelationfee"] = get_string('error:negativevaluenotallowed', 'local_shopping_cart');
+        }
+
+        if (isset($data["credittopayback"]) && isset($data["cancelationfee"])
+            && $data["cancelationfee"] > $data["credittopayback"]) {
+            $errors["cancelationfee"] = get_string('error:cancelationfeetoohigh', 'local_shopping_cart');
+        }
 
         return $errors;
     }

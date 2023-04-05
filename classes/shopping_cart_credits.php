@@ -46,9 +46,47 @@ class shopping_cart_credits {
      */
     public static function get_balance(int $userid): array {
 
-        $userrecord = self::extract_from_transactions($userid);
+        global $CFG, $DB;
 
-        return [round($userrecord->credits, 2), $userrecord->currency];
+        // Just in case, we do not find it in credits table.
+        $currency = shopping_cart::get_latest_currency_from_history();
+
+        $currencies = self::credits_get_used_currencies($userid);
+        if (empty($currencies)) {
+            // This means, we have no entries in credits table yet.
+            return [0, $currency];
+        } else if (count($currencies) > 1) {
+            throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
+        }
+
+        // Get the latest balance.
+        if (!$balancerecord = $DB->get_record_sql("SELECT balance, currency
+            FROM {local_shopping_cart_credits}
+            WHERE userid = :userid
+            ORDER BY id DESC
+            LIMIT 1", ['userid' => $userid])) {
+
+            $balance = 0;
+        } else {
+            $balance = $balancerecord->balance;
+            $currency = $balancerecord->currency;
+        }
+
+        if ($CFG->debug == DEBUG_DEVELOPER) {
+            // Only in developer mode, we check if balance matches with total sum of credits.
+            if (!$sumofcredits = $DB->get_field_sql("SELECT SUM(credits) sumofcredits
+                FROM {local_shopping_cart_credits}
+                WHERE userid =:userid", ['userid' => $userid])) {
+
+                $sumofcredits = 0;
+            }
+            if (round($sumofcredits, 2) != round($balance, 2)) {
+                throw new moodle_exception('Sum of credits in table local_shopping_cart_credits does not match with latest balance! ' .
+                    'There might be duplicate entries or corrupted records in the credits table for userid ' . $userid);
+            }
+        }
+
+        return [round($balance, 2), $currency];
     }
 
     /**
@@ -130,38 +168,6 @@ class shopping_cart_credits {
     }
 
     /**
-     * Return sum of credits and sum of balance from DB for one single user.
-     *
-     * @param int $userid
-     * @return stdClass
-     */
-    public static function extract_from_transactions(int $userid): stdClass {
-
-        global $DB;
-
-        $sql = "SELECT SUM(credits) credits, currency
-                FROM {local_shopping_cart_credits}
-                WHERE userid =:userid
-                GROUP BY (currency)";
-
-        $params = ['userid' => $userid];
-
-        $records = $DB->get_records_sql($sql, $params);
-
-        if (count($records) > 1) {
-            throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
-        } else if (count($records) === 0) {
-            $record = new stdClass();
-            $record->credits = 0;
-            $record->currency = '';
-
-            $records = [$record];
-        }
-
-        return reset($records);
-    }
-
-    /**
      * Adds the given credit to the current users balance.
      * This is somewhat expensive, as we always run checks on the consistency of the ledger.
      * Returns the total balance of the user.
@@ -175,10 +181,7 @@ class shopping_cart_credits {
 
         global $DB, $USER;
 
-        // We want to have some kind of control over our balance, to avoid manipulation.
-        // Therefore, we always get the current balance first.
-        // TODO: Include the currency in the check.
-        list($balance, $newcurrency) = self::check_balance($userid);
+        list($balance, $newcurrency) = self::get_balance($userid);
 
         $now = time();
 
@@ -195,10 +198,6 @@ class shopping_cart_credits {
         $DB->insert_record('local_shopping_cart_credits', $data);
 
         list($newbalance, $currency) = self::get_balance($userid);
-
-        if ($newbalance != ($balance + $credit)) {
-            throw new moodle_exception('balancedoesnotmatch', 'local_shopping_cart');
-        }
 
         if ($newbalance > 0) {
             // We add the right cache.
@@ -251,44 +250,6 @@ class shopping_cart_credits {
             $cachedrawdata['currency'] = $data->currency;
             $cache->set($cachekey, $cachedrawdata);
         }
-    }
-
-    /**
-     * Check balance is a way to make sure we don't have an error in our balance calculation.
-     * Returns the current balance and currency, if everything works fine, else throws an error.
-     *
-     * @param int $userid
-     * @return array
-     */
-    private static function check_balance(int $userid): array {
-
-        global $DB;
-
-        // Get the last entry with the balance.
-        $sql = "SELECT *
-                FROM {local_shopping_cart_credits}
-                WHERE userid=:userid
-                ORDER BY id DESC
-                LIMIT 1";
-
-        $params = ['userid' => $userid];
-
-        // We get the last entry for the user.
-        $record = $DB->get_record_sql($sql, $params);
-        // We retrieve the count of all existing recortds.
-        list($balance, $currency) = self::get_balance($userid);
-
-        if (!$record || !(isset($record->balance))) {
-            if ($balance == null) {
-                return [0, $currency];
-            } else if ($balance > 0) {
-                throw new moodle_exception('balancedoesnotmatch', 'local_shopping_cart');
-            }
-        } else if ($balance != $record->balance) {
-            throw new moodle_exception('balancedoesnotmatch', 'local_shopping_cart');
-        }
-
-        return [round($balance, 2), $currency];
     }
 
     /**
@@ -381,5 +342,29 @@ class shopping_cart_credits {
             }
         }
         return $usecredit;
+    }
+
+    /**
+     * Helper function to check if only one currency is used.
+     * Currently, we have no multicurrency support yet.
+     * So this should always return an empty array or ['EUR'].
+     *
+     * @param int $userid
+     * @return array an array of strings with currencies
+     */
+    public static function credits_get_used_currencies(int $userid) {
+        global $DB;
+
+        $sql = "SELECT DISTINCT currency
+            FROM {local_shopping_cart_credits}
+            WHERE userid = :userid";
+        $params = ['userid' => $userid];
+
+        $records = $DB->get_records_sql($sql, $params);
+        $currencies = [];
+        foreach ($records as $record) {
+            $currencies[] = $record->currency;
+        }
+        return $currencies;
     }
 }

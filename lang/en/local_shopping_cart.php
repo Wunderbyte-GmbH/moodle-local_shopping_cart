@@ -87,6 +87,8 @@ $string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:cachiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
+$string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
+$string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
 $string['selectuserfirst'] = 'Select user first';
 
 // Cart.

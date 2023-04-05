@@ -546,6 +546,9 @@ class shopping_cart {
 
         $identifier = 0;
 
+        // We use this flag to keep track if we have already used the credits or not.
+        $creditsalreadyused = false;
+
         // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
             // Retrieve items from cache.
@@ -594,6 +597,7 @@ class shopping_cart {
             // Now we need to store the new credit balance.
             if ($data['deductible'] > 0) {
                 shopping_cart_credits::use_credit($userid, $data);
+                $creditsalreadyused = true;
             }
         }
 
@@ -681,7 +685,8 @@ class shopping_cart {
         }
 
         // In our ledger, the credits table, we add an entry and make sure we actually deduce any credit we might have.
-        if (isset($data['usecredit'])
+        // Only do this, if credits have not been used yet.
+        if (!$creditsalreadyused && isset($data['usecredit'])
                 && $data['usecredit'] === true) {
             shopping_cart_credits::use_credit($userid, $data);
         } else {
@@ -986,14 +991,14 @@ class shopping_cart {
                 }
                 break;
             case PAYMENT_CANCELED:
+            case PAYMENT_ABORTED:
+            case PAYMENT_PENDING:
                 $record->price = null;
                 $record->discount = null;
                 if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
                     $success = false;
                 }
                 break;
-            case PAYMENT_ABORTED:
-            case PAYMENT_PENDING:
             default:
                 $success = false;
                 break;
@@ -1162,5 +1167,21 @@ class shopping_cart {
             'warnings' => count($list) > 100 ? get_string('toomanyuserstoshow', 'core', '> 100') : '',
             'list' => count($list) > 100 ? [] : $list,
         ];
+    }
+
+    /**
+     * Helper function to get the latest used currency from history.
+     * @return string the currency string, e.g. "EUR"
+     */
+    public static function get_latest_currency_from_history() {
+        global $DB;
+
+        if ($currency = $DB->get_field_sql("SELECT currency
+            FROM {local_shopping_cart_history}
+            ORDER BY id DESC
+            LIMIT 1")) {
+            return $currency;
+        }
+        return "";
     }
 }
