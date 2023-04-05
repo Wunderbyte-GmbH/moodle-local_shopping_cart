@@ -125,6 +125,12 @@ class modal_cancel_all_addcredit extends dynamic_form {
         foreach ($bookedusers as $buser) {
 
             $credit = $buser->price - $cancelationfee;
+
+            // Negative credits are not allowed.
+            if ($credit < 0.0) {
+                $credit = 0.0;
+            }
+
             shopping_cart::cancel_purchase($buser->itemid, $data->area, $buser->userid, $componentname,
                 $buser->id, $credit, $cancelationfee);
 

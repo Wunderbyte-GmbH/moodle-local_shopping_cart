@@ -90,6 +90,8 @@ $string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['error:cachiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
+$string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.';
+$string['error:cancelationfeetoohigh'] = 'Stornogebühr darf nicht größer sein als der zurückerstattete Betrag!';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
 
 // Cart.

@@ -1168,4 +1168,20 @@ class shopping_cart {
             'list' => count($list) > 100 ? [] : $list,
         ];
     }
+
+    /**
+     * Helper function to get the latest used currency from history.
+     * @return string the currency string, e.g. "EUR"
+     */
+    public static function get_latest_currency_from_history() {
+        global $DB;
+
+        if ($currency = $DB->get_field_sql("SELECT currency
+            FROM {local_shopping_cart_history}
+            ORDER BY id DESC
+            LIMIT 1")) {
+            return $currency;
+        }
+        return "";
+    }
 }
