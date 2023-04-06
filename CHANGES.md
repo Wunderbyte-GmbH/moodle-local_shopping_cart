@@ -1,3 +1,18 @@
+## Version 0.4.2 (2023040600)
+**Bugfixes:**
+* Bugfix: ID was not unique in SQL because there can be multiple orderids for the same item.
+* Bugfix: Only add event listener to cashout button if button is present.
+* Bugfix: Add missing inserts to ledger table when shopping cart history gets updated.
+* Bugfix: Add uniqueid to SQL in report.php so that we get no duplicates.
+* Bugfix: Correctly update ledger table (prices only if successful).
+* Bugfix: Fix a bug were credits were deduced twice which caused errors with balance checks.
+
+**Improvements:**
+* Improvement: Add missing modulename string.
+* Improvement: Add class to cash report button.
+* Improvement: Improved the way we retrieve balance and added validations.
+* Improvement: Added area to log message of delete_item_task.
+
 ## Version 0.4.1 (2023032100)
 **Bugfixes:**
 * Bugfix: In shopping cart popover we always want black text even if navbar text color is set to white.
