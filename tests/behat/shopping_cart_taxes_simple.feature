@@ -22,6 +22,26 @@ Feature: Admin tax actions in shopping cart.
       | user1    | C1     | student        |
       | user2    | C1     | student        |
       | teacher  | C1     | editingteacher |
+    And the following "core_payment > payment accounts" exist:
+      | name           |
+      | Account1       |
+    When I log in as "admin"
+    And I navigate to "Payments > Payment accounts" in site administration
+    Then I click on "PayPal" "link" in the "Account1" "table_row"
+    And I set the field "Brand name" to "Test paypal"
+    And I set the following fields to these values:
+      | Brand name  | Test paypal |
+      | Client ID   | Test        |
+      | Secret      | Test        |
+      | Environment | Sandbox     |
+      | Enable      | 1           |
+    And I press "Save changes"
+    And I should see "PayPal" in the "Account1" "table_row"
+    And I should not see "Not available" in the "Account1" "table_row"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I set the field "Payment account" to "Account1"
+    And I press "Save changes"
+    And I log out
 
   @javascript
   Scenario: Enable tax processing without categories

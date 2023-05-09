@@ -20,11 +20,32 @@ Feature: Test purchase process in shopping cart.
       | user1    | C1     | student        |
       | user2    | C1     | student        |
       | teacher  | C1     | editingteacher |
+    And the following "core_payment > payment accounts" exist:
+      | name           |
+      | Account1       |
+    When I log in as "admin"
+    And I navigate to "Payments > Payment accounts" in site administration
+    Then I click on "PayPal" "link" in the "Account1" "table_row"
+    And I set the field "Brand name" to "Test paypal"
+    And I set the following fields to these values:
+      | Brand name  | Test paypal |
+      | Client ID   | Test        |
+      | Secret      | Test        |
+      | Environment | Sandbox     |
+      | Enable      | 1           |
+    And I press "Save changes"
+    And I should see "PayPal" in the "Account1" "table_row"
+    And I should not see "Not available" in the "Account1" "table_row"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I set the field "Payment account" to "Account1"
+    And I press "Save changes"
+    And I log out
 
   @javascript
   Scenario: Add an item to the shopping cart
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait "3" seconds
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
