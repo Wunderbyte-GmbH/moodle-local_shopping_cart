@@ -81,8 +81,7 @@ class shopping_cart_credits {
                 $sumofcredits = 0;
             }
             if (round($sumofcredits, 2) != round($balance, 2)) {
-                throw new moodle_exception('Sum of credits in table local_shopping_cart_credits does not match with latest balance! ' .
-                    'There might be duplicate entries or corrupted records in the credits table for userid ' . $userid);
+                throw new moodle_exception(get_string('creditnotmatchbalance', 'local_shopping_cart', strval($userid)));
             }
         }
 

@@ -110,6 +110,8 @@ $string['cartisfull'] = 'Your shopping cart is full.';
 $string['cartisempty'] = 'Your shopping cart is empty.';
 $string['yourcart'] = 'Your shopping cart';
 $string['addedtocart'] = '{$a} was added to your cart.';
+$string['creditnotmatchbalance'] = 'Sum of credits in table local_shopping_cart_credits does not match with latest balance! 
+                                    There might be duplicate entries or corrupted records in the credits table for userid {$a}';
 
 // Cashier.
 $string['paymentonline'] = 'online';
