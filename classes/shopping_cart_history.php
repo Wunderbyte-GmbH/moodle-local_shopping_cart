@@ -639,10 +639,10 @@ class shopping_cart_history {
      * Returns items from shopping card history table.
      * We might have bought the same item multiple times (because of cancelation).
      *
-     * @param integer $itemid
+     * @param int $itemid
      * @param string $component
      * @param string $area
-     * @param integer $userid
+     * @param int $userid
      * @return array
      */
     public static function return_items_from_history(
