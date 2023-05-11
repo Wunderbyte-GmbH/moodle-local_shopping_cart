@@ -143,10 +143,10 @@
 {{/ core/popover_region }}
 
 {{#js}}
-    require(['core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function(controller, Ajax, cart) {
+    require(['core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function(Сontroller, Ajax, cart) {
     cart.init({{expirationdate}}, {{maxitems}});
     let sccontainer = document.querySelector('#nav-shopping_cart-popover-container');
-    let sccontroller = new controller(sccontainer);
+    let sccontroller = new Сontroller(sccontainer);
     sccontroller.registerListNavigationEventListeners();
     });
 {{/js}}
