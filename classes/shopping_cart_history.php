@@ -26,6 +26,7 @@ namespace local_shopping_cart;
 
 use Exception;
 use moodle_exception;
+use moodle_url;
 use stdClass;
 
 /**
@@ -103,6 +104,14 @@ class shopping_cart_history {
 
         if (!empty($accountid)) {
             $account = new \core_payment\account($accountid);
+        } else {
+            // If we have no payment accounts then print static text instead.
+            $urlobject = new stdClass;
+            $urlobject->link = (new moodle_url('/payment/accounts.php'))->out(false);
+            $errmsg = get_string('nopaymentaccounts', 'local_shopping_cart');
+            $errmsg .= ' '.get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject);
+            echo $errmsg;
+            exit();
         }
 
         // Create selects for each payment gateway.
