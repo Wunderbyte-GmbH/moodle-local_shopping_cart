@@ -82,7 +82,7 @@
                     <ul class="nav m-0" id="cashiertabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}"
-                                    id="user-tab" data-toggle="" role="tab" aria-controls="home"
+                                    id="user-tab" data-toggle="" role="tab" aria-controls="user-tab"
                                aria-selected="true" href="{{wwwroot}}/local/shopping_cart/cashier.php">
                             </a>
                         </li>
@@ -131,21 +131,21 @@
                                 </div>
                             </div>
                             <div>
-                                <a class="btn btn-danger d-block my-4 mx-2" id="cashpayment-btn" data-toggle="tab" href="{{wwwroot}}/local/shopping_cart/cashier.php"
-                                   onclick="location.reload()" role="button" aria-controls="cashpayment"><i class="fa fa-times" aria-hidden="true"> </i> {{#str}}
-                                    cancel, core {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" data-paymenttype="3" data-toggle="tab" href="#success" role="button"
-                                   aria-controls="cashpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    paidwithcash, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" data-paymenttype="5" data-toggle="tab" href="#success" role="button"
-                                   aria-controls="creditcardpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    paidwithcreditcard, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="button"
-                                   aria-controls="debitcardpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    paidwithdebitcard, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_flexcashpayment buy-btn" data-paymenttype="4" data-toggle="tab" href="#success" role="button"
-                                   aria-controls="btn_flexcashpayment"><i class="fa fa-check-square-o" aria-hidden="true"> </i> {{#str}}
-                                    flexcashpayment, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-danger d-block my-4 mx-2" id="cancel-btn" data-toggle="tab" href="{{wwwroot}}/local/shopping_cart/cashier.php"
+                                   onclick="location.reload()" role="button" aria-controls="cancel-btn"><i class="fa fa-times" aria-hidden="true"> </i> 
+                                   {{#str}} cancel, core {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" id="cashpayment-btn" data-paymenttype="3" data-toggle="tab" href="#success" 
+                                   role="button" aria-controls="cashpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i> 
+                                   {{#str}} paidwithcash, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" id="creditcardpayment-btn" data-paymenttype="5" data-toggle="tab" href="#success" 
+                                   role="button" aria-controls="creditcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i> 
+                                   {{#str}} paidwithcreditcard, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success" 
+                                   role="button" aria-controls="debitcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i> 
+                                   {{#str}} paidwithdebitcard, local_shopping_cart {{/str}}</a>
+                                <a class="btn btn-success d-block my-4 mx-2 btn_flexcashpayment buy-btn" id="flexcashpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success" 
+                                   role="button" aria-controls="flexcashpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i> 
+                                   {{#str}} flexcashpayment, local_shopping_cart {{/str}}</a>
                             </div>
                         </div>
                         {{! 4. Tab to show success }}
