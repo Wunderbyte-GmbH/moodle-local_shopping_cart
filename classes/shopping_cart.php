@@ -722,11 +722,19 @@ class shopping_cart {
      * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
+     * @param float $applytocomponent
      *
      * @return array
      */
-    public static function cancel_purchase(int $itemid, string $area, int $userid, string $componentname,
-            int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
+    public static function cancel_purchase(
+        int $itemid,
+        string $area,
+        int $userid,
+        string $componentname,
+        int $historyid = null,
+        float $customcredit = 0.0,
+        float $cancelationfee = 0.0,
+        int $applytocomponent = 1): array {
 
         global $USER;
 
@@ -751,12 +759,15 @@ class shopping_cart {
             ];
         }
 
-        if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
-            return [
-                    'success' => 0,
-                    'error' => get_string('canceldidntwork', 'local_shopping_cart'),
-                    'credit' => 0
-            ];
+        // Sometimes, we don't want a callback to the compoonent.
+        if ($applytocomponent == 1) {
+            if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
+                return [
+                        'success' => 0,
+                        'error' => get_string('canceldidntwork', 'local_shopping_cart'),
+                        'credit' => 0
+                ];
+            }
         }
 
         // The credit field can only be transmitted by authorized user.
