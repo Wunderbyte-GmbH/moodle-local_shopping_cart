@@ -146,6 +146,8 @@ $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
 $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['cancelsuccess'] = 'Successfully canceled';
+$string['applytocomponent'] = 'Cancel without callback to plugin';
+$string['applytocomponent_desc'] = 'With this setting unchecked, you can cancel eg a double booking without unenroling a buyer from the bought course.';
 
 $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';
@@ -287,6 +289,13 @@ $string['item_bought'] = 'Item bought';
 $string['item_added'] = 'Item added';
 $string['item_expired'] = 'Item expired';
 $string['item_deleted'] = 'Item deleted';
+$string['item_canceled'] = 'Item canceled';
+$string['useraddeditem'] = 'User with the userid {$a->userid} added item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+$string['userdeleteditem'] = 'User with the userid {$a->userid} deleted item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+$string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+$string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
+$string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';

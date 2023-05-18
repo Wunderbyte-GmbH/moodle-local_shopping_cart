@@ -149,6 +149,8 @@ $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
+$string['applytocomponent'] = 'Stornierung an Artikel Plugin melden';
+$string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt, kann das Häkchen entfernt werden um hier zu stornieren, ohne dass die Käuferin aus z.B. dem Kurs ausgeschrieben wird.';
 
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
@@ -280,6 +282,12 @@ $string['item_bought'] = 'Artikel gekauft';
 $string['item_added'] = 'Artikel hinzugefügt';
 $string['item_expired'] = 'Zeit für Artikel im Warenkorb abgelaufen';
 $string['item_deleted'] = 'Artikel gelöscht';
+$string['item_canceled'] = 'Artikel storniert';
+$string['useraddeditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} hinzugefügt';
+$string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gelöscht';
+$string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
+$string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
+$string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} storniert';
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Item added event.
+ * Message deleted event.
  *
  * @package    local_shopping_cart
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
@@ -24,8 +24,10 @@
 
 namespace local_shopping_cart\event;
 
+use core\event\base;
+
 /**
- * Message deleted event class.
+ * Item canceled class
  *
  * @property-read array $other {
  *      Extra information about event.
@@ -37,7 +39,7 @@ namespace local_shopping_cart\event;
  * @copyright  2021 Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class item_added extends \core\event\base {
+class item_canceled extends \core\event\base {
 
     /**
      * Init method.
@@ -53,7 +55,7 @@ class item_added extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('item_added', 'local_shopping_cart');
+        return get_string('item_canceled', 'local_shopping_cart');
     }
 
     /**
@@ -66,7 +68,7 @@ class item_added extends \core\event\base {
         $this->data['itemid'] = $this->data['other']['itemid'];
         $this->data['component'] = $this->data['other']['component'];
 
-        $str = get_string('useraddeditem', 'local_shopping_cart', $this->data);
+        $str = get_string('itemcanceled', 'local_shopping_cart', $this->data);
         return $str;
     }
 

@@ -30,6 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../lib.php');
 
 use context_system;
+use local_shopping_cart\event\item_added;
+use local_shopping_cart\event\item_bought;
+use local_shopping_cart\event\item_canceled;
+use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use stdClass;
@@ -134,6 +138,20 @@ class shopping_cart {
 
                 // Add or reschedule all delete_item_tasks for all the items in the cart.
                 self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
+
+                $context = context_system::instance();
+                // Trigger item deleted event.
+                $event = item_added::create([
+                    'context' => $context,
+                    'userid' => $USER->id,
+                    'relateduserid' => $userid,
+                    'other' => [
+                        'itemid' => $itemid,
+                        'component' => $component,
+                    ],
+                ]);
+
+                $event->trigger();
             } else {
                 $success = false;
                 $itemdata = [];
@@ -203,6 +221,23 @@ class shopping_cart {
             foreach ($response['itemstounload'] as $cartitem) {
                 self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid, true);
             }
+        }
+
+        if (isset($response) && isset($response['success']) && $response['success'] == 1) {
+
+            $context = context_system::instance();
+            // Trigger item deleted event.
+            $event = item_deleted::create([
+                'context' => $context,
+                'userid' => $USER->id,
+                'relateduserid' => $userid,
+                'other' => [
+                    'itemid' => $itemid,
+                    'component' => $component,
+                ],
+            ]);
+
+            $event->trigger();
         }
 
         // If there is only one item left and it'sthe booking fee, we delete it.
@@ -306,6 +341,23 @@ class shopping_cart {
      * @return local\entities\cartitem
      */
     public static function successful_checkout(string $component, string $area, int $itemid, int $userid): bool {
+
+        global $USER;
+
+        $context = context_system::instance();
+        // Trigger item deleted event.
+        $event = item_bought::create([
+            'context' => $context,
+            'userid' => $USER->id,
+            'relateduserid' => $userid,
+            'other' => [
+                'itemid' => $itemid,
+                'component' => $component,
+            ],
+        ]);
+
+        $event->trigger();
+
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'successful_checkout', [$area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
@@ -824,6 +876,20 @@ class shopping_cart {
             $record->credits = $customcredit;
             $record->fee = $cancelationfee;
             self::add_record_to_ledger_table($record);
+
+            $context = context_system::instance();
+                // Trigger item deleted event.
+                $event = item_canceled::create([
+                    'context' => $context,
+                    'userid' => $USER->id,
+                    'relateduserid' => $userid,
+                    'other' => [
+                        'itemid' => $itemid,
+                        'component' => $componentname,
+                    ],
+                ]);
+
+                $event->trigger();
         }
 
         return [

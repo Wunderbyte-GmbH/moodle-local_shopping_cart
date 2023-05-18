@@ -40,36 +40,10 @@ namespace local_shopping_cart\event;
 class item_bought extends \core\event\base {
 
     /**
-     * Create event using ids.
-     *
-     * @param int $userid the user who the we are deleting the message for.
-     * @param int $userdeleting the user who deleted it (it's possible that an admin may delete a message on someones behalf)
-     * @param int $messageid the id of the message that was deleted.
-     * @param int $muaid The id in the message_user_actions table.
-     * @return item_bought
-     */
-    public static function create_from_ids(int $userid, int $userdeleting, int $messageid, int $muaid) : item_bought {
-        // We set the userid to the user who deleted the message, nothing to do
-        // with whether or not they sent or received the message.
-        $event = self::create(array(
-            'objectid' => $muaid,
-            'userid' => $userdeleting,
-            'context' => \context_system::instance(),
-            'relateduserid' => $userid,
-            'other' => array(
-                'messageid' => $messageid,
-            )
-        ));
-
-        return $event;
-    }
-
-    /**
      * Init method.
      */
     protected function init() {
-        $this->data['objecttable'] = 'message_user_actions';
-        $this->data['crud'] = 'c';
+        $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
@@ -88,7 +62,11 @@ class item_bought extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        $str = "bla";
+
+        $this->data['itemid'] = $this->data['other']['itemid'];
+        $this->data['component'] = $this->data['other']['component'];
+
+        $str = get_string('userboughtitem', 'local_shopping_cart', $this->data);
         return $str;
     }
 
@@ -103,10 +81,6 @@ class item_bought extends \core\event\base {
 
         if (!isset($this->relateduserid)) {
             throw new \coding_exception('The \'relateduserid\' must be set.');
-        }
-
-        if (!isset($this->other['messageid'])) {
-            throw new \coding_exception('The \'messageid\' value must be set in other.');
         }
     }
 }
