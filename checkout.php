@@ -86,11 +86,14 @@ if (isset($success)) {
     }
 } else {
 
-    // Here we are before checkout.
-
     $historylist = new shoppingcart_history_list($userid);
     $historylist->insert_list($data);
 
+    // Here we are before checkout.
+    $expirationtimestamp = shopping_cart::get_expirationdate();
+
+    // Add or reschedule all delete_item_tasks for all the items in the cart.
+    shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
 }
 
 $history = new shopping_cart_history();

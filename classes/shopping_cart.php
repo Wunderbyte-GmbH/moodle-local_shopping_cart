@@ -528,7 +528,7 @@ class shopping_cart {
      * @param int $userid
      * @return void
      */
-    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
+    public static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
