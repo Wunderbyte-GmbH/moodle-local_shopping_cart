@@ -138,11 +138,11 @@ class shopping_cart_history {
             $gatewayspart = '';
         }
 
-        $sql = "SELECT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
+        $sql = "SELECT DISTINCT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
                 " AS uniqueid,  sch.*, p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
-                ON p.itemid = sch.identifier
+                ON p.itemid = sch.identifier AND p.userid=sch.userid
                 $gatewayspart
                 WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
                 ORDER BY sch.timemodified DESC";
