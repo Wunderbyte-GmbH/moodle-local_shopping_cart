@@ -62,26 +62,4 @@ class local_shopping_cart_observer {
 
         return 'registered_payment_error';
     }
-
-    /**
-     * Triggered via add_item event.
-     *
-     * @param \local_shopping_cart\event\item_added $event
-     */
-    public static function item_added(\local_shopping_cart\event\item_added $event): string {
-        $b = $event;
-        $a = "item added";
-        return $a;
-    }
-
-    /**
-     * Triggered via item_deleted event.
-     *
-     * @param \local_shopping_cart\event\item_deleted $event
-     */
-    public static function item_deleted(\local_shopping_cart\event\item_deleted $event): string {
-        $b = $event;
-        $a = "item deleted";
-        return $a;
-    }
 }

@@ -27,22 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
     array(
-        'eventname' => '\local_shopping_cart\event\item_added',
-        'callback' => 'local_shopping_cart_observer::item_added',
-    ),
-    array(
-        'eventname' => '\local_shopping_cart\event\item_deleted',
-        'callback' => 'local_shopping_cart_observer::item_deleted',
-    ),
-    array(
-        'eventname' => '\local_shopping_cart\event\item_expired',
-        'callback' => 'local_shopping_cart_observer::item_expired',
-    ),
-    array(
-        'eventname' => '\local_shopping_cart\event\item_bought',
-        'callback' => 'local_shopping_cart_observer::item_bought',
-    ),
-    array(
         'eventname' => '*',
         'callback' => 'local_shopping_cart_observer::payment_error',
     ),
