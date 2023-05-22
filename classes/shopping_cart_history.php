@@ -581,12 +581,14 @@ class shopping_cart_history {
     /**
      * create_unique_cart_identifier
      * By definition, this has to be int.
+     * We have a ten digit timestamp plus the userid and we want it to be unique.
      *
      * @param int $userid
-     * @return string
+     * @return sring
      */
     public static function create_unique_cart_identifier(int $userid): string {
-        return time();
+
+        return "$userid" . "0" . time();
     }
 
     /**
