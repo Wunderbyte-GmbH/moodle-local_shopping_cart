@@ -581,14 +581,33 @@ class shopping_cart_history {
     /**
      * create_unique_cart_identifier
      * By definition, this has to be int.
-     * We have a ten digit timestamp plus the userid and we want it to be unique.
+     * To be really sure of uniqueness, we use a a dedicated table.
+     * Also, we throw error if the identifier is too big.
      *
      * @param int $userid
-     * @return sring
+     * @return int
      */
-    public static function create_unique_cart_identifier(int $userid): string {
+    public static function create_unique_cart_identifier(int $userid): int {
 
-        return "$userid" . "0" . time();
+        global $DB;
+
+        $uid = $DB->insert_record('local_shopping_cart_id', [
+            'userid' => $userid,
+            'timecreated' => time()
+        ]);
+
+        $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
+
+        // The base value defines the number of digits.
+        $uid = $basevalue + $uid;
+
+
+        // We need to keep it below 7 digits.
+        if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {
+            throw new moodle_exception('uidistoobig', 'local_shopping_cart');
+        }
+
+        return $uid;
     }
 
     /**
