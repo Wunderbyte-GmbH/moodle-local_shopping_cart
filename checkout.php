@@ -57,8 +57,6 @@ $PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
 // Set the page layout.
 $PAGE->set_pagelayout('base');
 
-// Output the header.
-echo $OUTPUT->header();
 $userid = $USER->id;
 $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
 $data["mail"] = $USER->email;
@@ -85,6 +83,8 @@ if (isset($success)) {
         $data['failed'] = 1;
     }
 } else {
+
+    shopping_cart::check_for_ongoing_payment($userid);
 
     $historylist = new shoppingcart_history_list($userid);
     $historylist->insert_list($data);
@@ -113,6 +113,9 @@ if (empty($data['currency'])) {
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+// Output the header.
+echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

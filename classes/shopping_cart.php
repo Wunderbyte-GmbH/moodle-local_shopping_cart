@@ -647,7 +647,7 @@ class shopping_cart {
             shopping_cart_credits::prepare_checkout($data, $userid);
 
             // Now we need to store the new credit balance.
-            if ($data['deductible'] > 0) {
+            if (!empty($data['deductible'])) {
                 shopping_cart_credits::use_credit($userid, $data);
                 $creditsalreadyused = true;
             }
@@ -1260,5 +1260,91 @@ class shopping_cart {
             return $currency;
         }
         return "";
+    }
+
+    /**
+     * Check for ongoing payment.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function check_for_ongoing_payment(int $userid) {
+
+        global $DB;
+
+        $now = time();
+
+        $params['paymentstatus'] = PAYMENT_PENDING;
+        $params['userid'] = $userid;
+
+        $dbman = $DB->get_manager();
+
+        // We need the accounts to run through all the gateways.
+        $accounts = \core_payment\helper::get_payment_accounts_to_manage(context_system::instance());
+        foreach ($accounts as $account) {
+            $gateways = [];
+            $canmanage = has_capability('moodle/payment:manageaccounts', $account->get_context());
+            foreach ($account->get_gateways() as $gateway) {
+
+                if (empty($gateway->get('enabled'))) {
+                    continue;
+                }
+
+                $name = $gateway->get('gateway');
+
+                // First we check if there is an openorders table. If not, we have no business here.
+                $table = "paygw_" . $name . "_openorders";
+                if (!$dbman->table_exists($table)) {
+                    continue;
+                }
+
+                $sql = "SELECT DISTINCT sch.identifier, sch.userid, COALESCE(oo.tid, '') as tid
+                        FROM {local_shopping_cart_history} sch
+                        JOIN {" . $table . "} oo
+                        ON oo.itemid = sch.identifier AND oo.userid=sch.userid
+                        WHERE sch.paymentstatus=:paymentstatus
+                        AND sch.userid=:userid
+                        GROUP BY sch.identifier, sch.userid, tid";
+
+                $records = $DB->get_records_sql($sql, $params);
+
+                // If we don't have any entries, we just continue;
+                if (count($records) == 0) {
+                    continue;
+                }
+
+                $transactioncomplete = 'paygw_' .$name . '\external\transaction_complete';
+                if (class_exists($transactioncomplete)) {
+
+                    // Now, we run through all pending payments we found above.
+                    foreach ($records as $record) {
+                        $response = $transactioncomplete::execute(
+                            'local_shopping_cart',
+                            '', // This area is not important in this case.
+                            $record->identifier, // In this case, this is the itemid.
+                            $record->tid, // This is the order id.
+                            ''); // We don't need a ressource path here.
+
+                        // Whenever we find a pending payment and we could complete it, we redirect to the success url.
+                        if (isset($response['success']) && $response['success']) {
+                            if (!empty($response['url'])) {
+                                redirect($response['url']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+            - run through installed gateways
+            - check if _openorders table exists for any of them.
+            - check if any identfier record is present and return the tid
+            - contact the paymentprovider to check status of the current tid.
+            - Depending on the returned status, => complete payment.
+        */
+
+
+
     }
 }
