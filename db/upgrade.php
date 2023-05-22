@@ -359,6 +359,28 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022121500, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2023052200) {
+
+        // Define table local_shopping_cart_id to be created.
+        $table = new xmldb_table('local_shopping_cart_id');
+
+        // Adding fields to table local_shopping_cart_id.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Adding keys to table local_shopping_cart_id.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for local_shopping_cart_id.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2023052200, 'local', 'shopping_cart');
+    }
+
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
