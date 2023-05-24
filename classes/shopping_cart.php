@@ -72,11 +72,14 @@ class shopping_cart {
 
         global $USER;
 
+        $buyforuser = false;
+
         // If there is no user specified, we determine it automatically.
         if ($userid < 0) {
             $context = context_system::instance();
             if (has_capability('local/shopping_cart:cashier', $context)) {
                 $userid = self::return_buy_for_userid();
+                $buyforuser = true;
             }
         } else {
             // As we are not on cashier anymore, we delete buy for user.
@@ -106,7 +109,9 @@ class shopping_cart {
         // ... we add the booking fee.
         if (count($cachedrawdata['items']) === 0
             && $area != 'bookingfee') {
-            shopping_cart_bookingfee::add_fee_to_cart($userid);
+
+            // If we buy for user, we need to use -1 as userid.
+            shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid);
             $cachedrawdata = $cache->get($cachekey);
         }
 
