@@ -1,3 +1,16 @@
+## Version 0.4.6 (2023052400)
+**Bugfixes:**
+* Bugfix: Avoid duplicated entries in cash report.
+
+## Version 0.4.5 (2023052400)
+**Bugfixes:**
+* Bugfix: Where cashier lost userid in combination with booking fee
+
+## Version 0.4.3 (2023052200)
+**Improvements:**
+* Improvement: Add cancel without callback on component
+* Improvement: Add unique identifier table for better configurability of cart identifier
+
 ## Version 0.4.2 (2023040600)
 **Bugfixes:**
 * Bugfix: ID was not unique in SQL because there can be multiple orderids for the same item.
