@@ -30,6 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../lib.php');
 
 use context_system;
+use local_shopping_cart\event\item_added;
+use local_shopping_cart\event\item_bought;
+use local_shopping_cart\event\item_canceled;
+use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use stdClass;
@@ -68,11 +72,14 @@ class shopping_cart {
 
         global $USER;
 
+        $buyforuser = false;
+
         // If there is no user specified, we determine it automatically.
         if ($userid < 0) {
             $context = context_system::instance();
             if (has_capability('local/shopping_cart:cashier', $context)) {
                 $userid = self::return_buy_for_userid();
+                $buyforuser = true;
             }
         } else {
             // As we are not on cashier anymore, we delete buy for user.
@@ -102,7 +109,9 @@ class shopping_cart {
         // ... we add the booking fee.
         if (count($cachedrawdata['items']) === 0
             && $area != 'bookingfee') {
-            shopping_cart_bookingfee::add_fee_to_cart($userid);
+
+            // If we buy for user, we need to use -1 as userid.
+            shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid);
             $cachedrawdata = $cache->get($cachekey);
         }
 
@@ -134,6 +143,20 @@ class shopping_cart {
 
                 // Add or reschedule all delete_item_tasks for all the items in the cart.
                 self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
+
+                $context = context_system::instance();
+                // Trigger item deleted event.
+                $event = item_added::create([
+                    'context' => $context,
+                    'userid' => $USER->id,
+                    'relateduserid' => $userid,
+                    'other' => [
+                        'itemid' => $itemid,
+                        'component' => $component,
+                    ],
+                ]);
+
+                $event->trigger();
             } else {
                 $success = false;
                 $itemdata = [];
@@ -205,8 +228,25 @@ class shopping_cart {
             }
         }
 
+        if (isset($response) && isset($response['success']) && $response['success'] == 1) {
+
+            $context = context_system::instance();
+            // Trigger item deleted event.
+            $event = item_deleted::create([
+                'context' => $context,
+                'userid' => $USER->id,
+                'relateduserid' => $userid,
+                'other' => [
+                    'itemid' => $itemid,
+                    'component' => $component,
+                ],
+            ]);
+
+            $event->trigger();
+        }
+
         // If there is only one item left and it'sthe booking fee, we delete it.
-        if (count($cachedrawdata['items']) === 1) {
+        if (isset($cachedrawdata['items']) && count($cachedrawdata['items']) === 1) {
 
             $item = reset($cachedrawdata['items']);
 
@@ -306,6 +346,23 @@ class shopping_cart {
      * @return local\entities\cartitem
      */
     public static function successful_checkout(string $component, string $area, int $itemid, int $userid): bool {
+
+        global $USER;
+
+        $context = context_system::instance();
+        // Trigger item deleted event.
+        $event = item_bought::create([
+            'context' => $context,
+            'userid' => $USER->id,
+            'relateduserid' => $userid,
+            'other' => [
+                'itemid' => $itemid,
+                'component' => $component,
+            ],
+        ]);
+
+        $event->trigger();
+
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'successful_checkout', [$area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
@@ -476,7 +533,7 @@ class shopping_cart {
      * @param int $userid
      * @return void
      */
-    private static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
+    public static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
@@ -595,7 +652,7 @@ class shopping_cart {
             shopping_cart_credits::prepare_checkout($data, $userid);
 
             // Now we need to store the new credit balance.
-            if ($data['deductible'] > 0) {
+            if (!empty($data['deductible'])) {
                 shopping_cart_credits::use_credit($userid, $data);
                 $creditsalreadyused = true;
             }
@@ -722,11 +779,19 @@ class shopping_cart {
      * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
+     * @param float $applytocomponent
      *
      * @return array
      */
-    public static function cancel_purchase(int $itemid, string $area, int $userid, string $componentname,
-            int $historyid = null, float $customcredit = 0.0, float $cancelationfee = 0.0): array {
+    public static function cancel_purchase(
+        int $itemid,
+        string $area,
+        int $userid,
+        string $componentname,
+        int $historyid = null,
+        float $customcredit = 0.0,
+        float $cancelationfee = 0.0,
+        int $applytocomponent = 1): array {
 
         global $USER;
 
@@ -751,12 +816,15 @@ class shopping_cart {
             ];
         }
 
-        if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
-            return [
-                    'success' => 0,
-                    'error' => get_string('canceldidntwork', 'local_shopping_cart'),
-                    'credit' => 0
-            ];
+        // Sometimes, we don't want a callback to the compoonent.
+        if ($applytocomponent == 1) {
+            if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
+                return [
+                        'success' => 0,
+                        'error' => get_string('canceldidntwork', 'local_shopping_cart'),
+                        'credit' => 0
+                ];
+            }
         }
 
         // The credit field can only be transmitted by authorized user.
@@ -813,6 +881,20 @@ class shopping_cart {
             $record->credits = $customcredit;
             $record->fee = $cancelationfee;
             self::add_record_to_ledger_table($record);
+
+            $context = context_system::instance();
+                // Trigger item deleted event.
+                $event = item_canceled::create([
+                    'context' => $context,
+                    'userid' => $USER->id,
+                    'relateduserid' => $userid,
+                    'other' => [
+                        'itemid' => $itemid,
+                        'component' => $componentname,
+                    ],
+                ]);
+
+                $event->trigger();
         }
 
         return [
@@ -1183,5 +1265,91 @@ class shopping_cart {
             return $currency;
         }
         return "";
+    }
+
+    /**
+     * Check for ongoing payment.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function check_for_ongoing_payment(int $userid) {
+
+        global $DB;
+
+        $now = time();
+
+        $params['paymentstatus'] = PAYMENT_PENDING;
+        $params['userid'] = $userid;
+
+        $dbman = $DB->get_manager();
+
+        // We need the accounts to run through all the gateways.
+        $accounts = \core_payment\helper::get_payment_accounts_to_manage(context_system::instance());
+        foreach ($accounts as $account) {
+            $gateways = [];
+            $canmanage = has_capability('moodle/payment:manageaccounts', $account->get_context());
+            foreach ($account->get_gateways() as $gateway) {
+
+                if (empty($gateway->get('enabled'))) {
+                    continue;
+                }
+
+                $name = $gateway->get('gateway');
+
+                // First we check if there is an openorders table. If not, we have no business here.
+                $table = "paygw_" . $name . "_openorders";
+                if (!$dbman->table_exists($table)) {
+                    continue;
+                }
+
+                $sql = "SELECT DISTINCT sch.identifier, sch.userid, COALESCE(oo.tid, '') as tid
+                        FROM {local_shopping_cart_history} sch
+                        JOIN {" . $table . "} oo
+                        ON oo.itemid = sch.identifier AND oo.userid=sch.userid
+                        WHERE sch.paymentstatus=:paymentstatus
+                        AND sch.userid=:userid
+                        GROUP BY sch.identifier, sch.userid, tid";
+
+                $records = $DB->get_records_sql($sql, $params);
+
+                // If we don't have any entries, we just continue;
+                if (count($records) == 0) {
+                    continue;
+                }
+
+                $transactioncomplete = 'paygw_' .$name . '\external\transaction_complete';
+                if (class_exists($transactioncomplete)) {
+
+                    // Now, we run through all pending payments we found above.
+                    foreach ($records as $record) {
+                        $response = $transactioncomplete::execute(
+                            'local_shopping_cart',
+                            '', // This area is not important in this case.
+                            $record->identifier, // In this case, this is the itemid.
+                            $record->tid, // This is the order id.
+                            ''); // We don't need a ressource path here.
+
+                        // Whenever we find a pending payment and we could complete it, we redirect to the success url.
+                        if (isset($response['success']) && $response['success']) {
+                            if (!empty($response['url'])) {
+                                redirect($response['url']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+            - run through installed gateways
+            - check if _openorders table exists for any of them.
+            - check if any identfier record is present and return the tid
+            - contact the paymentprovider to check status of the current tid.
+            - Depending on the returned status, => complete payment.
+        */
+
+
+
     }
 }

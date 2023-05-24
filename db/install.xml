@@ -105,5 +105,14 @@
                 <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in JOIN"/>
             </INDEXES>
         </TABLE>
+        <TABLE NAME="local_shopping_cart_id" COMMENT="This table just serves a unique id.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="unix timestamp"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
     </TABLES>
 </XMLDB>

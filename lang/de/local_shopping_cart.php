@@ -40,6 +40,8 @@ $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maxima
 $string['cancelationfee'] = 'Stornierungsgebühr';
 $string['bookingfee'] = 'Buchungsgebühr';
 $string['bookingfee_desc'] = 'Für jeden Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
+$string['uniqueidentifier'] = 'Eindeutige Buchungsid';
+$string['uniqueidentifier_desc'] = 'Jede Buchung benötigt eine eindeutige id. Diese startet üblicherweise bei 1, kann aber auch höher gesetzt werden. Wenn sie z.b. auf 10000000 gesetzt wird, hat der erste Kauf die ID 10000001. Wenn das Feld gesetzt wird, wird ein Error geworfen, sobald die Anzahl der Stellen überschritten wird. Wird der Wert auf 1 gesetzt, sind nur neun Buchungen möglich.';
 $string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
 $string['bookingfeeonlyonce_desc'] = 'Die Buchungsgebühr wird nur einmal für jede NutuzerIn eingehoben. Sobald wie einmal bezahlt wurde, sind alle weiteren Buchungen ohne Buchungsgebühr.';
 $string['credittopayback'] = 'Zurückerstatteter Betrag';
@@ -149,6 +151,8 @@ $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
+$string['applytocomponent'] = 'Stornierung an Artikel Plugin melden';
+$string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt, kann das Häkchen entfernt werden um hier zu stornieren, ohne dass die Käuferin aus z.B. dem Kurs ausgeschrieben wird.';
 
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
@@ -280,6 +284,12 @@ $string['item_bought'] = 'Artikel gekauft';
 $string['item_added'] = 'Artikel hinzugefügt';
 $string['item_expired'] = 'Zeit für Artikel im Warenkorb abgelaufen';
 $string['item_deleted'] = 'Artikel gelöscht';
+$string['item_canceled'] = 'Artikel storniert';
+$string['useraddeditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} hinzugefügt';
+$string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gelöscht';
+$string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
+$string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
+$string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} storniert';
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';

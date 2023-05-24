@@ -138,11 +138,11 @@ class shopping_cart_history {
             $gatewayspart = '';
         }
 
-        $sql = "SELECT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
+        $sql = "SELECT DISTINCT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
                 " AS uniqueid,  sch.*, p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
-                ON p.itemid = sch.identifier
+                ON p.itemid = sch.identifier AND p.userid=sch.userid
                 $gatewayspart
                 WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
                 ORDER BY sch.timemodified DESC";
@@ -581,12 +581,33 @@ class shopping_cart_history {
     /**
      * create_unique_cart_identifier
      * By definition, this has to be int.
+     * To be really sure of uniqueness, we use a a dedicated table.
+     * Also, we throw error if the identifier is too big.
      *
      * @param int $userid
-     * @return string
+     * @return int
      */
-    public static function create_unique_cart_identifier(int $userid): string {
-        return time();
+    public static function create_unique_cart_identifier(int $userid): int {
+
+        global $DB;
+
+        $uid = $DB->insert_record('local_shopping_cart_id', [
+            'userid' => $userid,
+            'timecreated' => time()
+        ]);
+
+        $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
+
+        // The base value defines the number of digits.
+        $uid = $basevalue + $uid;
+
+
+        // We need to keep it below 7 digits.
+        if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {
+            throw new moodle_exception('uidistoobig', 'local_shopping_cart');
+        }
+
+        return $uid;
     }
 
     /**

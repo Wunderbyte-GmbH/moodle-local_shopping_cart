@@ -57,8 +57,6 @@ $PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
 // Set the page layout.
 $PAGE->set_pagelayout('base');
 
-// Output the header.
-echo $OUTPUT->header();
 $userid = $USER->id;
 $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
 $data["mail"] = $USER->email;
@@ -86,11 +84,16 @@ if (isset($success)) {
     }
 } else {
 
-    // Here we are before checkout.
+    shopping_cart::check_for_ongoing_payment($userid);
 
     $historylist = new shoppingcart_history_list($userid);
     $historylist->insert_list($data);
 
+    // Here we are before checkout.
+    $expirationtimestamp = shopping_cart::get_expirationdate();
+
+    // Add or reschedule all delete_item_tasks for all the items in the cart.
+    shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
 }
 
 $history = new shopping_cart_history();
@@ -110,6 +113,9 @@ if (empty($data['currency'])) {
 $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+// Output the header.
+echo $OUTPUT->header();
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

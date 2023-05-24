@@ -141,6 +141,15 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
+        $settings->add(
+        new admin_setting_configtext(
+                $componentname . '/uniqueidentifier',
+                get_string('uniqueidentifier', $componentname),
+                get_string('uniqueidentifier_desc', $componentname),
+                0,
+                PARAM_INT
+        )
+        );
     $settings->add(
             new admin_setting_confightmleditor(
                     $componentname . '/additonalcashiersection',
