@@ -652,7 +652,8 @@ class shopping_cart {
             shopping_cart_credits::prepare_checkout($data, $userid);
 
             // Now we need to store the new credit balance.
-            if (!empty($data['deductible'])) {
+            if (!empty($data['deductible']) &&
+                ($data['credit'] != $data['remainingcredit'])) {
                 shopping_cart_credits::use_credit($userid, $data);
                 $creditsalreadyused = true;
             }
