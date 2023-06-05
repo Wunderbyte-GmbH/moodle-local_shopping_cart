@@ -341,8 +341,7 @@ class shopping_cart_history {
         try {
             $DB->update_record('local_shopping_cart_history', $record);
 
-            // We also need to insert the record into the ledger table.
-            shopping_cart::add_record_to_ledger_table($record);
+            // NOTE: Ledger entry will be inserted in shopping_cart::cancel_purchase function!
 
             // There might have been a credit value set manually by the cashier.
             // The credit can be the whole price, or it can be just a fraction.
@@ -415,18 +414,6 @@ class shopping_cart_history {
                 $record->paymentstatus = PAYMENT_ABORTED;
                 $record->timemodified = time();
                 $DB->update_record('local_shopping_cart_history', $record);
-
-                // In this case, we ALSO want to UPDATE the ledger table.
-                $ledgerrecord = $DB->get_record('local_shopping_cart_ledger', [
-                    'userid' => $record->userid,
-                    'itemid' => $record->itemid,
-                    'componentname' => $record->componentname,
-                    'identifier' => $record->identifier,
-                    'area' => $record->area,
-                ]);
-                $ledgerrecord->paymentstatus = PAYMENT_ABORTED;
-                $ledgerrecord->timemodified = $record->timemodified; // Same as in schistory.
-                $DB->update_record('local_shopping_cart_ledger', $ledgerrecord);
             }
         }
 
@@ -455,19 +442,11 @@ class shopping_cart_history {
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;
             } else {
-                // In this case, we ALSO want to UPDATE the ledger table.
-                $ledgerrecord = $DB->get_record('local_shopping_cart_ledger', [
-                    'userid' => $record->userid,
-                    'itemid' => $record->itemid,
-                    'componentname' => $record->componentname,
-                    'identifier' => $record->identifier,
-                    'area' => $record->area,
-                ]);
-                $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
-                $ledgerrecord->timemodified = $record->timemodified; // Same as in schistory.
-                $ledgerrecord->price = $record->price; // Get it from schistory.
-                $ledgerrecord->discount = $record->discount; // Get it from schistory.
-                $DB->update_record('local_shopping_cart_ledger', $ledgerrecord);
+                // Only on payment success, we add a new record to the ledger table!
+                unset($record->id);
+
+                // We always use this function to add a new record to the ledger table!
+                shopping_cart::add_record_to_ledger_table($record);
             }
         }
 
@@ -609,7 +588,6 @@ class shopping_cart_history {
 
         // The base value defines the number of digits.
         $uid = $basevalue + $uid;
-
 
         // We need to keep it below 7 digits.
         if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {

@@ -1062,31 +1062,26 @@ class shopping_cart {
      * Helper function to add entries to local_shopping_cart_ledger table.
      *
      * @param stdClass $record the record to add to the ledger table
-     * @return bool true if successful, else false
      */
     public static function add_record_to_ledger_table(stdClass $record) {
         global $DB;
         $success = true;
         switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
-                if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
-                    $success = false;
-                }
+                $DB->insert_record('local_shopping_cart_ledger', $record);
                 break;
             case PAYMENT_CANCELED:
-            case PAYMENT_ABORTED:
-            case PAYMENT_PENDING:
                 $record->price = null;
                 $record->discount = null;
-                if (!$DB->insert_record('local_shopping_cart_ledger', $record)) {
-                    $success = false;
-                }
+                $DB->insert_record('local_shopping_cart_ledger', $record);
                 break;
+            // Aborted or pending payments will never be added to ledger.
+            // We use the <gateway>_openorders tables to track open orders.
+            case PAYMENT_ABORTED:
+            case PAYMENT_PENDING:
             default:
-                $success = false;
                 break;
         }
-        return $success;
     }
 
     /**
@@ -1314,7 +1309,7 @@ class shopping_cart {
 
                 $records = $DB->get_records_sql($sql, $params);
 
-                // If we don't have any entries, we just continue;
+                // If we don't have any entries, we just continue.
                 if (count($records) == 0) {
                     continue;
                 }
@@ -1349,8 +1344,5 @@ class shopping_cart {
             - contact the paymentprovider to check status of the current tid.
             - Depending on the returned status, => complete payment.
         */
-
-
-
     }
 }
