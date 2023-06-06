@@ -673,6 +673,35 @@ class shopping_cart {
         $success = true;
         $error = [];
 
+        // When we use credits, we have to log this in the ledger so cash report will have the correct sums!
+        if ($data["usecredit"] && isset($data["credit"]) && $data["credit"] > 0) {
+
+            // If we have no identifier, we look for it in items.
+            if (empty($identifier)) {
+                foreach ($data["items"] as $item) {
+                    if (!empty($item->identifier)) {
+                        $identifier = $item->identifier;
+                        break;
+                    }
+                }
+            }
+
+            $ledgerrecord = new stdClass;
+            $ledgerrecord->userid = $userid;
+            $ledgerrecord->itemid = 0;
+            $ledgerrecord->price = (float) (-1.0) * $data["credit"];
+            $ledgerrecord->credits = (float) (-1.0) * $data["credit"];
+            $ledgerrecord->currency = $data["currency"];
+            $ledgerrecord->componentname = 'local_shopping_cart';
+            $ledgerrecord->identifier = $identifier;
+            $ledgerrecord->payment = $paymenttype;
+            $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+            $ledgerrecord->usermodified = $USER->id;
+            $ledgerrecord->timemodified = time();
+            $ledgerrecord->timecreated = time();
+            self::add_record_to_ledger_table($ledgerrecord);
+        }
+
         // Run through all items still in the cart and confirm payment.
         foreach ($data['items'] as $item) {
 
