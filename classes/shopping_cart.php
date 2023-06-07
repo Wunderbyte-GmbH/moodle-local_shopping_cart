@@ -1333,8 +1333,9 @@ class shopping_cart {
                         FROM {local_shopping_cart_history} sch
                         JOIN {" . $table . "} oo
                         ON oo.itemid = sch.identifier AND oo.userid=sch.userid
-                        WHERE sch.paymentstatus=:paymentstatus
+                        WHERE sch.paymentstatus IN (0,1)
                         AND sch.userid=:userid
+                        AND oo.status = 0
                         GROUP BY sch.identifier, sch.userid, tid";
 
                 $records = $DB->get_records_sql($sql, $params);
