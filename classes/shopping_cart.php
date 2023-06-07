@@ -644,7 +644,7 @@ class shopping_cart {
             }
 
             // Now the user either has enough credit to pay for herself, or she is a cashier.
-            $identifier = time();
+            $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
 
         } else {
 
