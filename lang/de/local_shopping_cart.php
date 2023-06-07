@@ -35,6 +35,8 @@ $string['mycart'] = 'Mein Warenkorb';
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
+$string['globalcurrency'] = 'Währung';
+$string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
 $string['cancelationfee'] = 'Stornierungsgebühr';

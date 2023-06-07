@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../lib.php');
 
 use context_system;
+use lang_string;
 use local_shopping_cart\event\item_added;
 use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
@@ -1373,5 +1374,31 @@ class shopping_cart {
             - contact the paymentprovider to check status of the current tid.
             - Depending on the returned status, => complete payment.
         */
+    }
+
+    /**
+     * Returns the list of currencies that the payment subsystem supports and therefore we can work with.
+     *
+     * @return array[currencycode => currencyname]
+     */
+    public static function get_possible_currencies(): array {
+        // Fix bug with Moodle versions older than 3.11.
+        $currencies = [];
+        if (class_exists('core_payment\helper')) {
+            $codes = \core_payment\helper::get_supported_currencies();
+
+            foreach ($codes as $c) {
+                $currencies[$c] = new lang_string($c, 'core_currencies');
+            }
+
+            uasort($currencies, function($a, $b) {
+                return strcmp($a, $b);
+            });
+        } else {
+            $currencies['EUR'] = 'Euro';
+            $currencies['USD'] = 'US Dollar';
+        }
+
+        return $currencies;
     }
 }

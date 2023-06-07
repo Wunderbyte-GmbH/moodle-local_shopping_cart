@@ -36,6 +36,8 @@ $string['mycart'] = 'My Cart';
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
+$string['globalcurrency'] = 'Currency';
+$string['globalcurrencydesc'] = 'Choose the currency for prices.';
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
 $string['cancelationfee'] = 'Cancelation fee';

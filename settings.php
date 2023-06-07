@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\admin_setting_taxcategories;
+use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -71,6 +72,23 @@ if ($hassiteconfig) {
                 )
         );
     }
+
+    // Currency dropdown.
+    $currenciesobjects = shopping_cart::get_possible_currencies();
+
+    $currencies = ['EUR' => 'Euro (EUR)'];
+
+    foreach ($currenciesobjects as $currenciesobject) {
+        $currencyidentifier = $currenciesobject->get_identifier();
+        $currencies[$currencyidentifier] = $currenciesobject->out(current_language()) . ' (' . $currencyidentifier . ')';
+    }
+
+    $settings->add(
+        new admin_setting_configselect(
+                $componentname . '/globalcurrency',
+                get_string('globalcurrency', $componentname),
+                get_string('globalcurrencydesc', $componentname),
+                'EUR', $currencies));
 
     // Max items in cart.
     $settings->add(
