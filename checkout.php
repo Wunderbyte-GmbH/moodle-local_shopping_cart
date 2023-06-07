@@ -94,25 +94,25 @@ if (isset($success)) {
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
+
+    $history = new shopping_cart_history();
+    $scdata = $history->prepare_data_from_cache($userid);
+
+    $history->store_in_schistory_cache($scdata);
+
+    $sp = new service_provider();
+
+    $data['identifier'] = $scdata['identifier'];
+    $data['wwwroot'] = $CFG->wwwroot;
+
+    if (empty($data['currency'])) {
+        $data['currency'] = $scdata['currency'] ?? '';
+    }
+
+    $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
+
+    $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 }
-
-$history = new shopping_cart_history();
-$scdata = $history->prepare_data_from_cache($userid);
-
-$history->store_in_schistory_cache($scdata);
-
-$sp = new service_provider();
-
-$data['identifier'] = $scdata['identifier'];
-$data['wwwroot'] = $CFG->wwwroot;
-
-if (empty($data['currency'])) {
-    $data['currency'] = $scdata['currency'] ?? '';
-}
-
-$data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
-
-$data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
 // Output the header.
 echo $OUTPUT->header();
