@@ -1,3 +1,16 @@
+## Version 0.4.7 (2023060900)
+**Improvements:**
+* Improvement: Correctly store partly used credits in cash report (ledger table).
+* Improvement: Show cash report above history on cashier page.
+* Improvement: Introduce new global currency config setting.
+
+**Bugfixes:**
+* Bugfix: Do not write into credits table when credits are not used.
+* Bugfix: Ledger table may never be updated, prevent duplicates.
+* Bugfix: Commented out "flexcashpayment" as it was not implemented anyways.
+* Bugfix: Fix sql to check for open orders.
+* Bugfix: Avoid wasting identifiers in success routine of checkout.php.
+
 ## Version 0.4.6 (2023052400)
 **Bugfixes:**
 * Bugfix: Avoid duplicated entries in cash report.
