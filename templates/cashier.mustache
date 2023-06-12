@@ -143,11 +143,11 @@
                                 <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success"
                                    role="button" aria-controls="debitcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithdebitcard, local_shopping_cart {{/str}}</a>
-                                <!-- Do we really need this?? If yes, we have to use a new payment method (data-paymenttype) for this! -->
-                                <!-- <a class="btn btn-success d-block my-4 mx-2 btn_flexcashpayment buy-btn" id="flexcashpayment-btn" data-paymenttype="4"
-                                    data-toggle="tab" href="#success"
-                                   role="button" aria-controls="flexcashpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
-                                   {{#str}} flexcashpayment, local_shopping_cart {{/str}}</a> -->
+                                {{#allowmanualbooking}}
+                                    <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualbooking buy-btn" id="cashiermanualbooking-btn" data-paymenttype="6" data-toggle="tab" href="#success"
+                                        role="button" aria-controls="cashiermanualbooking-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
+                                        {{#str}} cashiermanualbooking, local_shopping_cart {{/str}}</a>
+                                {{/allowmanualbooking}}
                             </div>
                         </div>
                         {{! 4. Tab to show success }}

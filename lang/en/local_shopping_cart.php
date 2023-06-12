@@ -146,7 +146,7 @@ $string['cashoutreason_desc'] = 'Possible reasons are change monex, bank deposit
 $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
-$string['flexcashpayment'] = 'Book Cash amount';
+$string['cashiermanualbooking'] = 'Book and enrol manually';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';

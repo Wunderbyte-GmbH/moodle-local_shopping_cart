@@ -73,6 +73,11 @@ $data['wwwroot'] = $CFG->wwwroot;
 $selectuserform = new dynamic_select_users();
 $data['selectuserform'] = $selectuserform->render();
 
+// We only allow manual booking, if the user has the capability to do this.
+if (has_capability('local/shopping_cart:cashiermanualbooking', $context)) {
+    $data['allowmanualbooking'] = true;
+}
+
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

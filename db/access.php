@@ -34,6 +34,14 @@ $capabilities = [
                         'manager' => CAP_ALLOW
                 ],
         ],
+        'local/shopping_cart:cashiermanualbooking' => [
+                'riskbitmask' => RISK_PERSONAL,
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
         'local/shopping_cart:history' => [
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'read',

@@ -147,7 +147,7 @@ $string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.
 $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
-$string['flexcashpayment'] = 'Buche Barbetrag';
+$string['cashiermanualbooking'] = 'Manuell einbuchen';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
