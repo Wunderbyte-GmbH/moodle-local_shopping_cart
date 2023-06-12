@@ -365,13 +365,12 @@ class shopping_cart_history {
      * This function won't return data if the payment is already aborted.
      *
      * @param int $identifier
-     * @param int $userid
      * @return array
      */
-    public static function return_data_via_identifier(int $identifier, int $userid):array {
+    public static function return_data_via_identifier(int $identifier):array {
 
         global $DB;
-        if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier, 'userid' => $userid])) {
+        if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
 
             // If there is an error registered, we return null.
             foreach ($data as $record) {

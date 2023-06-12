@@ -61,7 +61,7 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
         }
     }
 
-    $items = local_shopping_cart\shopping_cart_history::return_data_via_identifier($id, $userid);
+    $items = local_shopping_cart\shopping_cart_history::return_data_via_identifier($id);
     $timecreated = $items[array_key_first($items)]->timecreated;
     $date = date("Y-m-d", $timecreated);
     $userid = $items[array_key_first($items)]->userid;

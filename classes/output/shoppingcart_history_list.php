@@ -100,7 +100,7 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // If we provide an identifier, we only get the items from history with this identifier, else, we get all for this user.
         if ($identifier != 0) {
-            $items = shopping_cart_history::return_data_via_identifier($identifier, $userid);
+            $items = shopping_cart_history::return_data_via_identifier($identifier);
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
         }
