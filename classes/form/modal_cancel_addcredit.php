@@ -99,7 +99,8 @@ class modal_cancel_addcredit extends dynamic_form {
         $mform->addElement('float', 'credittopayback', get_string('credittopayback', 'local_shopping_cart'));
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
 
-        $mform->addElement('advcheckbox', 'applytocomponent', get_string('applytocomponent', 'local_shopping_cart'), get_string('applytocomponent_desc', 'local_shopping_cart'));
+        $mform->addElement('advcheckbox', 'applytocomponent', get_string('applytocomponent', 'local_shopping_cart'),
+            get_string('applytocomponent_desc', 'local_shopping_cart'));
 
         $mform->setDefault('cancelationfee', $cancelationfee);
         $mform->setDefault('credittopayback', $remainingvalue);

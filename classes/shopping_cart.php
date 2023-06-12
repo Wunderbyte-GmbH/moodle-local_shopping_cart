@@ -810,7 +810,7 @@ class shopping_cart {
      * @param int|null $historyid
      * @param float $customcredit
      * @param float $cancelationfee
-     * @param float $applytocomponent
+     * @param int $applytocomponent
      *
      * @return array
      */
