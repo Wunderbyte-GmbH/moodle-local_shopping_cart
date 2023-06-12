@@ -52,7 +52,7 @@ export const init = (cancelationFee = null) => {
 
                     if (button.dataset.canceled == false) {
 
-                        // We find out if we are on the cachiers page. Only there, we set the cachiers modal.
+                        // We find out if we are on the cashiers page. Only there, we set the cashiers modal.
 
                         if (window.location.href.includes('cashier.php')) {
                             confirmCancelAndSetCreditModal(button);

@@ -91,7 +91,7 @@ export const confirmPayment = (userid, paymenttype) => {
 
                 } else {
 
-                    // This is the cachier view.
+                    // This is the cashier view.
 
                     // Set link to right receipt.
                     addPrintIdentifier(data.identifier, userid);
