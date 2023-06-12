@@ -69,7 +69,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I log out
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
-    And I wait "1" seconds
+    And I wait until the page is ready
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the "ul.cashier-history-items" "css_element"
     And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"

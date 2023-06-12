@@ -65,7 +65,7 @@ Feature: Cashier actions in shopping cart with consumption enabled.
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
-    And I wait "1" seconds
+    And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Choose" "button"
