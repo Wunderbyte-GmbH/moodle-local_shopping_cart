@@ -58,7 +58,12 @@ class local_shopping_cart_observer {
 
         $itemid = $data['other']['itemid'];
 
-        shopping_cart_history::error_occured_for_identifier($itemid, $data['userid']);
+        // Bugfix: If we call this function, pending items are set to aborted which leads to
+        // missing items in deliver_order function of service_provider.php.
+        // So we comment this out for now. However, we might need a better fix...
+
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* shopping_cart_history::error_occured_for_identifier($itemid, $data['userid']); */
 
         return 'registered_payment_error';
     }
