@@ -1129,7 +1129,7 @@ class shopping_cart {
 
         foreach ($items as $key => $item) {
 
-            // As a cachier, I always want to be able to delete the booking fee.
+            // As a cashier, I always want to be able to delete the booking fee.
             if ($items[$key]['nodelete'] === 1 &&
                 has_capability('local/shopping_cart:cashier', $context)) {
                 $items[$key]['nodelete'] = 0;

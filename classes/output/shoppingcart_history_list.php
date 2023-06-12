@@ -104,10 +104,10 @@ class shoppingcart_history_list implements renderable, templatable {
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
         }
-        $iscachier = false;
+        $iscashier = false;
         $context = context_system::instance();
         if (has_capability('local/shopping_cart:cashier', $context)) {
-            $iscachier = true;
+            $iscashier = true;
             $this->canpayback = true;
         }
 
@@ -130,7 +130,7 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 $item->canceluntilstring = date('Y-m-d', $item->canceluntil);
 
-                if (!$iscachier) {
+                if (!$iscashier) {
                     if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->area ?: "", $item->userid)) {
                         $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
                                 $item->canceluntilstring);

@@ -161,6 +161,6 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
     $PAGE->set_heading(get_string('error'));
 
     echo $OUTPUT->header();
-    echo get_string('error:cachiercapabilitymissing', 'local_shopping_cart');
+    echo get_string('error:cashiercapabilitymissing', 'local_shopping_cart');
     echo $OUTPUT->footer();
 }
