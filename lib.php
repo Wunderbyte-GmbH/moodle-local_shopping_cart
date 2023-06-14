@@ -42,6 +42,7 @@ define('PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using c
 define('PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at cashier's office using a debit card.
 define('PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
 define('PAYMENT_METHOD_CREDITS_PAID_BACK', 6); // Credits removed and paid back to user.
+define('PAYMENT_METHOD_CASHIER_MANUAL', 7); // If someone paid, but there was an error, the cashier can re-book someone manually.
 
 /**
  * Adds module specific settings to the settings block

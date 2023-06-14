@@ -74,7 +74,7 @@ $selectuserform = new dynamic_select_users();
 $data['selectuserform'] = $selectuserform->render();
 
 // We only allow manual booking, if the user has the capability to do this.
-if (has_capability('local/shopping_cart:cashiermanualbooking', $context)) {
+if (has_capability('local/shopping_cart:cashiermanualrebook', $context)) {
     $data['allowmanualbooking'] = true;
 }
 

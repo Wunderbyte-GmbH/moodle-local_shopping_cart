@@ -740,6 +740,7 @@ class shopping_cart {
                             case PAYMENT_METHOD_CASHIER_CASH:
                             case PAYMENT_METHOD_CASHIER_CREDITCARD:
                             case PAYMENT_METHOD_CASHIER_DEBITCARD:
+                            case PAYMENT_METHOD_CASHIER_MANUAL:
                                 $paymentmethod = $paymenttype;
                                 break;
                         }

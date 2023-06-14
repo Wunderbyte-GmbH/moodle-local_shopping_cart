@@ -260,6 +260,9 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
             case PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
                 break;
+            case PAYMENT_METHOD_CASHIER_MANUAL:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
+                break;
         }
         $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
     }
@@ -305,6 +308,9 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
                 break;
             case PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
+                break;
+            case PAYMENT_METHOD_CASHIER_MANUAL:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
                 break;
         }
         $dailysumsdata['dailysumscurrentcashier'][] = (array)$dailysumrecord;

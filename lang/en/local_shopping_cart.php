@@ -93,7 +93,10 @@ $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
 $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
+$string['error:nofieldchosen'] = 'You have to choose a field.';
+$string['error:mustnotbeempty'] = 'Must not be empty.';
 $string['selectuserfirst'] = 'Select user first';
+
 
 // Cart.
 $string['total'] = 'Total:';
@@ -121,6 +124,7 @@ $string['paymentcashier'] = 'at cashier\'s office';
 $string['paymentcashier:cash'] = 'with cash at cashier\'s office';
 $string['paymentcashier:creditcard'] = 'with credit card at cashier\'s office';
 $string['paymentcashier:debitcard'] = 'with debit card at cashier\'s office';
+$string['paymentcashier:manual'] = 'with error - manually rebooked';
 $string['paymentcredits'] = 'with credits';
 $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
@@ -146,7 +150,7 @@ $string['cashoutreason_desc'] = 'Possible reasons are change monex, bank deposit
 $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
-$string['cashiermanualbooking'] = 'Book and enrol manually';
+$string['cashiermanualrebook'] = 'Book manually (error with online payment)';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
@@ -253,6 +257,7 @@ $string['paymentmethodcreditspaidback'] = 'Credits paid back';
 $string['paymentmethodcashier:cash'] = 'Cashier (Cash)';
 $string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
 $string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';
+$string['paymentmethodcashier:manual'] = 'Manually rebooked';
 
 // Payment status.
 $string['paymentpending'] = 'Pending';
@@ -302,6 +307,10 @@ $string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->
 $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
 $string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 
-
 // Caches.
 $string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';
+
+// Cashier manual rebook.
+$string['orderid_rebook_desc'] = 'Enter the OrderID of the payment transaction you want to rebook.';
+$string['cashier_manualrebook'] = 'Manual rebooking';
+$string['cashier_manualrebook_desc'] = 'Someone made a manual rebooking of a payment transaction.';

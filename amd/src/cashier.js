@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable no-console */
+
 /*
  * @package    local_shopping_cart
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
@@ -32,27 +34,27 @@ import {
         from 'core/str';
 
 export const init = (userid = 0) => {
-    // eslint-disable-next-line no-console
+
     console.log('run init', userid);
 
     document.getElementById('checkout-tab').classList.remove('success');
 
     const buybuttons = document.querySelectorAll('.buy-btn');
-        // eslint-disable-next-line no-console
-        if (buybuttons) {
-            buybuttons.forEach(buybutton => {
-                buybutton.addEventListener('click', (e) => confirmPayment(userid, e.target.dataset.paymenttype));
-            });
-        }
+
+    if (buybuttons) {
+        buybuttons.forEach(buybutton => {
+            buybutton.addEventListener('click', (e) => confirmPayment(userid, e.target.dataset.paymenttype));
+        });
+    }
 
     const checkoutbutton = document.querySelector('#checkout-btn');
-    // eslint-disable-next-line no-console
+
     console.log(checkoutbutton);
     if (checkoutbutton) {
         checkoutbutton.addEventListener('click', function() {
 
             document.getElementById('checkout-tab').classList.add('success');
-            // eslint-disable-next-line no-console
+
             console.log('click');
         });
     }
@@ -67,7 +69,12 @@ export const confirmPayment = (userid, paymenttype) => {
         },
         done: function(data) {
             if (data.status === 1) {
-                // eslint-disable-next-line no-console
+
+                // Only for paymenttype 7 (which is manual rebooking) we open the OrderID modal.
+                if (paymenttype == "7") {
+                    rebookOrderidModal(data.identifier, userid);
+                }
+
                 console.log('payment confirmed', data);
 
                 // The function can be called via cashier, or because a user pays via credits.
@@ -99,13 +106,9 @@ export const confirmPayment = (userid, paymenttype) => {
                     document.getElementById('success-tab').classList.add('success');
 
                     displayPaymentMessage('paymentsuccessful');
-
-
                 }
 
             } else {
-
-                // eslint-disable-next-line no-console
                 console.log('payment denied');
                 displayPaymentMessage('paymentdenied', false);
                 document.getElementById('success-tab').classList.add('error');
@@ -115,7 +118,6 @@ export const confirmPayment = (userid, paymenttype) => {
 
             displayPaymentMessage('paymentdenied', false);
 
-            // eslint-disable-next-line no-console
             console.log(ex);
         },
     }]);
@@ -213,4 +215,40 @@ function displayPaymentMessage(message, success = true) {
             console.log(e);
         });
     }
+}
+
+/**
+ * Modal to enter OrderID for manual rebookings.
+ * @param {int} identifier
+ * @param {int} userid
+ */
+export function rebookOrderidModal(identifier, userid) {
+
+    console.log('rebookOrderidModal');
+
+    const modalForm = new ModalForm({
+
+        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+        formClass: "local_shopping_cart\\form\\modal_cashier_manual_rebook",
+        // Add as many arguments as you need, they will be passed to the form:
+        args: {
+            'identifier': identifier,
+            'userid': userid
+        },
+        // Pass any configuration settings to the modal dialogue, for example, the title:
+        modalConfig: {title: getString('orderid_rebook_desc', 'local_shopping_cart')},
+        // DOM element that should get the focus after the modal dialogue is closed:
+        // returnFocus: button
+    });
+    // Listen to events if you want to execute something on form submit.
+    // Event detail will contain everything the process() function returned:
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+        const response = e.detail;
+        // eslint-disable-next-line no-console
+        console.log('rebookOrderidModal response: ', response);
+    });
+
+    // Show the form.
+    modalForm.show();
+
 }

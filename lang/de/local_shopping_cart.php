@@ -96,6 +96,8 @@ $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
 $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.';
 $string['error:cancelationfeetoohigh'] = 'Stornogebühr darf nicht größer sein als der zurückerstattete Betrag!';
+$string['error:nofieldchosen'] = 'Sie müssen ein Feld auswählen.';
+$string['error:mustnotbeempty'] = 'Darf nicht leer sein.';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
 
 // Cart.
@@ -122,6 +124,7 @@ $string['paymentcashier'] = 'an der Kassa';
 $string['paymentcashier:cash'] = 'in bar an der Kassa';
 $string['paymentcashier:creditcard'] = 'mit Kreditkarte an der Kassa';
 $string['paymentcashier:debitcard'] = 'mit Bankomatkarte an der Kassa';
+$string['paymentcashier:manual'] = 'mit Fehler - manuell nachgebucht';
 $string['paymentcredits'] = 'mit Guthaben';
 $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
@@ -147,7 +150,7 @@ $string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.
 $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
-$string['cashiermanualbooking'] = 'Manuell einbuchen';
+$string['cashiermanualrebook'] = 'Manuell nachbuchen (bei fehlerhafter Online-Zahlung)';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
@@ -245,6 +248,7 @@ $string['paymentmethodcreditspaidback'] = 'Guthabenrückzahlung';
 $string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
 $string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
 $string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';
+$string['paymentmethodcashier:manual'] = 'Manuell nachgebucht';
 
 // Payment status.
 $string['paymentpending'] = 'Keine Rückmeldung';
@@ -295,3 +299,8 @@ $string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->it
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';
+
+// Cashier manual rebook.
+$string['orderid_rebook_desc'] = 'Geben Sie die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
+$string['cashier_manualrebook'] = 'Manuelle Nachbuchung';
+$string['cashier_manualrebook_desc'] = 'Manuelle Nachbuchung einer Zahlungstransaktion wurde durchgeführt.';

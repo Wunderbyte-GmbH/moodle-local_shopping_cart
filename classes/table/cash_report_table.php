@@ -138,6 +138,9 @@ class cash_report_table extends table_sql {
             case PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $paymentstring = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
                 break;
+            case PAYMENT_METHOD_CASHIER_MANUAL:
+                $paymentstring = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
+                break;
         }
 
         return $paymentstring;
