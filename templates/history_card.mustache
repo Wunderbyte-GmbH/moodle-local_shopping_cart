@@ -58,7 +58,7 @@
 </div>
 
 {{#js}}
-    require(['local_shopping_cart/shistory'], function(shistory) {
-      shistory.init({{cancelationfee}});
+    require(['local_shopping_cart/shistory'], function(fn) {
+      fn.init({{cancelationfee}});
     });
 {{/js}}

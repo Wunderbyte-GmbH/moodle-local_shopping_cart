@@ -33,7 +33,7 @@ namespace local_shopping_cart\event;
  * @author     Bernhard Fischer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cashier_manualrebook extends \core\event\base {
+class payment_rebooked extends \core\event\base {
 
     /**
      * Init method.
@@ -58,7 +58,6 @@ class cashier_manualrebook extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return get_string('cashier_manualrebook_desc', 'local_shopping_cart') .
-            " | OrderID: " . $this->data['other']['orderid'];;
+        return get_string('cashier_manualrebook_desc', 'local_shopping_cart');
     }
 }

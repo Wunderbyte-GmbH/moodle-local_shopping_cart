@@ -55,7 +55,7 @@
 </div>
 
 {{#js}}
-    require(['local_shopping_cart/cart'], function(cart) {
-        cart.buttoninit("{{itemid}}", "{{componentname}}", "{{area}}");
+    require(['local_shopping_cart/cart'], function(fn) {
+        fn.buttoninit("{{itemid}}", "{{componentname}}", "{{area}}");
     });
 {{/js}}

@@ -25,8 +25,7 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 use context;
 use context_system;
 use core_form\dynamic_form;
-use local_shopping_cart\event\cashier_manualrebook;
-use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\event\payment_rebooked;
 use moodle_url;
 use stdClass;
 
@@ -53,6 +52,7 @@ class modal_cashier_manual_rebook extends dynamic_form {
         $mform->addElement('hidden', 'userid', $this->_ajaxformdata['userid']);
 
         // Payment gateway.
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         /*$sql = "SELECT DISTINCT gateway
             FROM {payment_gateways}
             WHERE enabled = 1";
@@ -69,9 +69,9 @@ class modal_cashier_manual_rebook extends dynamic_form {
             get_string('institution', 'mod_booking'), $institutionstrings, $options);
         $mform->addHelpButton('institution', 'institution', 'mod_booking');*/
 
-        $mform->addElement('text', 'orderid',
-            get_string('orderid', 'local_shopping_cart'),
-            get_string('orderid_rebook_desc', 'local_shopping_cart')
+        $mform->addElement('text', 'annotation',
+            get_string('annotation', 'local_shopping_cart'),
+            get_string('annotation_rebook_desc', 'local_shopping_cart')
         );
     }
 
@@ -98,35 +98,19 @@ class modal_cashier_manual_rebook extends dynamic_form {
 
         $data = $this->get_data();
 
-        // TODO: continue here.
-
-        // Trigger item deleted event.
-        /*$event = cashier_manualrebook::create([
+        // Trigger manual rebook event, so we can react on it within other plugins.
+        $event = payment_rebooked::create([
             'context' => context_system::instance(),
-            'userid' => $USER->id,
-            'relateduserid' => $userid,
+            'userid' => $USER->id, // The cashier.
+            'relateduserid' => $data->userid, // The user for whom the rebooking was done.
             'other' => [
-                'itemid' => $taskdata->itemid,
-                'component' => $taskdata->componentname,
+                'userid' => $data->userid, // The user for whom the rebooking was done.
+                'identifier' => $data->identifier,
+                'annotation' => $data->annotation,
+                'usermodified' => $USER->id, // The cashier.
             ],
         ]);
-
-        $event->trigger();*/
-
-        // TODO: confirm payment etc.
-
-        /*shopping_cart_history::create_entry_in_history(
-            0, // Userid is 0, it doesn't concern a user.
-            0, // Itemid is 0, it doesn't concern an item.
-            $data->cashoutreason,
-            $data->cashoutamount,
-            0,
-            'EUR', // TODO: fix the currency issue.
-            'local_shopping_cart',
-            'cashout',
-            0,
-            PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS);*/
+        $event->trigger();
 
         return $data;
     }
@@ -185,13 +169,9 @@ class modal_cashier_manual_rebook extends dynamic_form {
 
         $errors = array();
 
-        if (empty($data['orderid'])) {
-            $errors['orderid'] = get_string('error:mustnotbeempty', 'local_shopping_cart');
+        if (empty($data['annotation'])) {
+            $errors['annotation'] = get_string('error:mustnotbeempty', 'local_shopping_cart');
         }
-
-        /* if (empty($data['cashoutreason'])) {
-            $errors['cashoutreason'] = get_string('cashoutreasonnecessary', 'local_shopping_cart');
-        }*/
 
         return $errors;
     }

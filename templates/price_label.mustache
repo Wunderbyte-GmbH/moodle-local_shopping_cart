@@ -90,7 +90,7 @@
 </div>
 
 {{#js}}
-    require(['local_shopping_cart/cart'], function(cart) {
-    cart.initPriceLabel({{userid}});
+    require(['local_shopping_cart/cart'], function(fn) {
+        fn.initPriceLabel({{userid}});
     });
 {{/js}}

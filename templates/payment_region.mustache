@@ -77,7 +77,7 @@
     {{/isguestuser}}
 </div>
 {{#js}}
-    require(['core_payment/gateways_modal'], function(modal) {
-        modal.init();
+    require(['core_payment/gateways_modal'], function(fn) {
+        fn.init();
     });
 {{/js}}

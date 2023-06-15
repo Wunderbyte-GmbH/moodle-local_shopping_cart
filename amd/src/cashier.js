@@ -25,13 +25,8 @@ import Ajax from 'core/ajax';
 import Url from 'core/url';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
-
 import {reinit} from 'local_shopping_cart/cart';
-
-import {
-    get_string as getString
-        }
-        from 'core/str';
+import {get_string as getString} from 'core/str';
 
 export const init = (userid = 0) => {
 
@@ -61,6 +56,7 @@ export const init = (userid = 0) => {
 };
 
 export const confirmPayment = (userid, paymenttype) => {
+
     Ajax.call([{
         methodname: "local_shopping_cart_confirm_cash_payment",
         args: {
@@ -72,7 +68,7 @@ export const confirmPayment = (userid, paymenttype) => {
 
                 // Only for paymenttype 7 (which is manual rebooking) we open the OrderID modal.
                 if (paymenttype == "7") {
-                    rebookOrderidModal(data.identifier, userid);
+                    rebookOrderidModal(userid, data.identifier);
                 }
 
                 console.log('payment confirmed', data);
@@ -97,8 +93,6 @@ export const confirmPayment = (userid, paymenttype) => {
                     location.href = newurl;
 
                 } else {
-
-                    // This is the cashier view.
 
                     // Set link to right receipt.
                     addPrintIdentifier(data.identifier, userid);
@@ -219,12 +213,10 @@ function displayPaymentMessage(message, success = true) {
 
 /**
  * Modal to enter OrderID for manual rebookings.
- * @param {int} identifier
  * @param {int} userid
+ * @param {int} identifier
  */
-export function rebookOrderidModal(identifier, userid) {
-
-    console.log('rebookOrderidModal');
+export function rebookOrderidModal(userid, identifier) {
 
     const modalForm = new ModalForm({
 
@@ -232,21 +224,23 @@ export function rebookOrderidModal(identifier, userid) {
         formClass: "local_shopping_cart\\form\\modal_cashier_manual_rebook",
         // Add as many arguments as you need, they will be passed to the form:
         args: {
+            'userid': userid,
             'identifier': identifier,
-            'userid': userid
         },
         // Pass any configuration settings to the modal dialogue, for example, the title:
-        modalConfig: {title: getString('orderid_rebook_desc', 'local_shopping_cart')},
+        modalConfig: {title: getString('annotation_rebook_desc', 'local_shopping_cart')},
         // DOM element that should get the focus after the modal dialogue is closed:
         // returnFocus: button
     });
+
+    // We do not need this here. process_dynamic_submission() is enough.
     // Listen to events if you want to execute something on form submit.
     // Event detail will contain everything the process() function returned:
-    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+    /* modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
         // eslint-disable-next-line no-console
         console.log('rebookOrderidModal response: ', response);
-    });
+    }); */
 
     // Show the form.
     modalForm.show();

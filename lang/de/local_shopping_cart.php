@@ -81,6 +81,7 @@ $string['calculateconsumation_desc'] = 'Bei Stornierung wird das Guthaben nach d
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
+$string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -93,6 +94,7 @@ $string['cachedef_schistory'] = 'Shopping cart history cache';
 // Errors.
 $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
+$string['error:capabilitymissing'] = 'FEHLER: Ihnen fehlt eine erforderliche Berechtigung.';
 $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
 $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.';
 $string['error:cancelationfeetoohigh'] = 'Stornogebühr darf nicht größer sein als der zurückerstattete Betrag!';
@@ -301,6 +303,7 @@ $string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->it
 $string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';
 
 // Cashier manual rebook.
-$string['orderid_rebook_desc'] = 'Geben Sie die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
+$string['annotation'] = 'Anmerkung';
+$string['annotation_rebook_desc'] = 'Geben Sie eine Anmerkung oder die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
 $string['cashier_manualrebook'] = 'Manuelle Nachbuchung';
 $string['cashier_manualrebook_desc'] = 'Manuelle Nachbuchung einer Zahlungstransaktion wurde durchgeführt.';

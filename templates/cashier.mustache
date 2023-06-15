@@ -268,10 +268,10 @@
 </div>
 
 {{#js}}
-    require(['local_shopping_cart/cashier'], function(cashier) {
-        cashier.init({{userid}});
+    require(['local_shopping_cart/cashier'], function(fn) {
+        fn.init({{userid}});
     });
-    require(['local_shopping_cart/cashout'], function(cashout) {
-        cashout.init();
+    require(['local_shopping_cart/cashout'], function(fn) {
+        fn.init();
     });
 {{/js}}

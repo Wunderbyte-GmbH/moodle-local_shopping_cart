@@ -78,6 +78,7 @@ $string['calculateconsumation_desc'] = 'On cancelation, the credit is calculated
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cashier'] = 'Is a cashier';
+$string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -90,6 +91,7 @@ $string['cachedef_schistory'] = 'Shopping cart history cache';
 // Errors.
 $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
+$string['error:capabilitymissing'] = 'ERROR: You do not have a necessary capability.';
 $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
 $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
@@ -311,6 +313,7 @@ $string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->
 $string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';
 
 // Cashier manual rebook.
-$string['orderid_rebook_desc'] = 'Enter the OrderID of the payment transaction you want to rebook.';
+$string['annotation'] = 'Annotation';
+$string['annotation_rebook_desc'] = 'Enter an annotation or the OrderID of the payment transaction you want to rebook.';
 $string['cashier_manualrebook'] = 'Manual rebooking';
 $string['cashier_manualrebook_desc'] = 'Someone made a manual rebooking of a payment transaction.';
