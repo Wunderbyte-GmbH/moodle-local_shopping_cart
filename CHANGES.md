@@ -1,3 +1,16 @@
+## Version 0.4.8 (2023061603)
+**New features:**
+* New feature: New feature to allow manual rebooking for cashier (with annotation or order id).
+
+**Improvements:**
+* Improvement: Fix cashier typos.
+* Improvement: New behat tests and fixes for Github actions.
+* Improvement: Mustache - fix JSON according to code changes.
+* Improvement: GitHub - add 3 templates to ignore list
+
+**Bugfixes:**
+* Bugfix: Remove call of function error_occured_for_identifier as it leads to missing items in deliver_order function of service_provider.php.
+
 ## Version 0.4.7 (2023060900)
 **Improvements:**
 * Improvement: Correctly store partly used credits in cash report (ledger table).
