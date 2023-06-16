@@ -152,7 +152,7 @@ $string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.
 $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
-$string['cashiermanualrebook'] = 'Manuell nachbuchen (bei fehlerhafter Online-Zahlung)';
+$string['cashiermanualrebook'] = 'Manuell nachbuchen mit Anmerkung oder OrderID';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';

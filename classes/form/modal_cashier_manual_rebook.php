@@ -106,7 +106,7 @@ class modal_cashier_manual_rebook extends dynamic_form {
             'other' => [
                 'userid' => $data->userid, // The user for whom the rebooking was done.
                 'identifier' => $data->identifier,
-                'annotation' => $data->annotation,
+                'annotation' => $data->annotation, // The annotation. Might also contain an OrderID.
                 'usermodified' => $USER->id, // The cashier.
             ],
         ]);

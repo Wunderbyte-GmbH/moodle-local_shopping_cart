@@ -81,6 +81,7 @@ $cashreporttable->define_headers([
     get_string('paymentstatus', 'local_shopping_cart'),
     get_string('gateway', 'local_shopping_cart'),
     get_string('orderid', 'local_shopping_cart'),
+    get_string('annotation', 'local_shopping_cart'),
     get_string('usermodified', 'local_shopping_cart')
 ]);
 
@@ -104,6 +105,7 @@ $cashreporttable->define_columns([
     'paymentstatus',
     'gateway',
     'orderid',
+    'annotation',
     'usermodified'
 ]);
 
@@ -150,6 +152,7 @@ $fields = "DISTINCT " . $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.orderid
         " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
+        scl.annotation,
         p.gateway$selectorderidpart";
 $from = "{local_shopping_cart_ledger} scl
         LEFT JOIN {user} u

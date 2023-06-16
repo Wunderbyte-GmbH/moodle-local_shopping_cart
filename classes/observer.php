@@ -22,12 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_shopping_cart\shopping_cart_history;
+namespace local_shopping_cart;
+
+use local_shopping_cart\event\payment_rebooked;
 
 /**
  * Event observer for local_shopping_cart.
  */
-class local_shopping_cart_observer {
+class observer {
 
     /**
      * Triggered via payment_error event from any payment provider
@@ -66,5 +68,29 @@ class local_shopping_cart_observer {
         /* shopping_cart_history::error_occured_for_identifier($itemid, $data['userid']); */
 
         return 'registered_payment_error';
+    }
+
+    /**
+     * Observer for the payment_rebooked event.
+     */
+    public static function payment_rebooked(payment_rebooked $event) {
+        global $DB;
+
+        $identifier = $event->other['identifier'];
+        $userid = $event->other['userid'];
+        $annotation = $event->other['annotation'];
+
+        // In any case, we store the annotation into the ledger table.
+        if ($ledgerrecords = $DB->get_records('local_shopping_cart_ledger', [
+            'payment' => PAYMENT_METHOD_CASHIER_MANUAL,
+            'identifier' => $identifier,
+            'userid' => $userid,
+        ])) {
+            foreach ($ledgerrecords as $ledgerrecord) {
+                $ledgerrecord->annotation = $annotation ?? null;
+                // Usually, ledger should never be updated. But here we have to.
+                $DB->update_record('local_shopping_cart_ledger', $ledgerrecord);
+            }
+        }
     }
 }

@@ -27,7 +27,11 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
     array(
-        'eventname' => '*',
-        'callback' => 'local_shopping_cart_observer::payment_error',
+        'eventname' => '\local_shopping_cart\event\payment_error',
+        'callback' => '\local_shopping_cart\observer::payment_error',
+    ),
+    array(
+        'eventname' => '\local_shopping_cart\event\payment_rebooked',
+        'callback' => '\local_shopping_cart\observer::payment_rebooked',
     ),
 );

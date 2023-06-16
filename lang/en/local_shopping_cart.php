@@ -152,7 +152,7 @@ $string['cashoutreason_desc'] = 'Possible reasons are change monex, bank deposit
 $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
-$string['cashiermanualrebook'] = 'Book manually (error with online payment)';
+$string['cashiermanualrebook'] = 'Rebook manually with annotation or OrderID';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
