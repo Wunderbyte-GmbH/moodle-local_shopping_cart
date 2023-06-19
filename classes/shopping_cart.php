@@ -1099,7 +1099,27 @@ class shopping_cart {
         $success = true;
         switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
-                $DB->insert_record('local_shopping_cart_ledger', $record);
+                // We add a check to make sure we prevent duplicates!
+                if (!$DB->get_record('local_shopping_cart_ledger', [
+                    'userid' => $record->userid, // Not nullable.
+                    'itemid' => $record->itemid, // Not nullable.
+                    'itemname' => $record->itemname ?? null,
+                    'price' => $record->price ?? null,
+                    'discount' => $record->discount ?? null,
+                    'credits' => $record->credits ?? null,
+                    'fee' => $record->fee ?? null,
+                    'currency' => $record->currency ?? null,
+                    'componentname' => $record->componentname ?? null,
+                    'identifier' => $record->identifier ?? null,
+                    'payment' => $record->payment ?? null,
+                    'paymentstatus' => $record->paymentstatus, // Not nullable.
+                    'accountid' => $record->accountid ?? null,
+                    'usermodified' => $record->usermodified, // Not nullable.
+                    'area' => $record->area ?? null,
+                ])) {
+                    // We only insert if entry does not exist yet.
+                    $DB->insert_record('local_shopping_cart_ledger', $record);
+                }
                 break;
             case PAYMENT_CANCELED:
                 $record->price = null;
