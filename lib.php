@@ -83,6 +83,13 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
 
     $output = '';
     $cache = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+
+    // If we have the capability, we show a link to cashier's desk.
+    if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
+        $cache['showcashier'] = true;
+        $cache['cashierurl'] = new moodle_url('/local/shopping_cart/cashier.php');
+    }
+
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $cache);
     return $output;
 }

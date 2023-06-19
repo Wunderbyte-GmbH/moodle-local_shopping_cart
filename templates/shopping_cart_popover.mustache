@@ -142,6 +142,14 @@
     {{/content}}
 {{/ core/popover_region }}
 
+{{#showcashier}}
+    <div class="nav-area-cashier">
+        <a id="nav-link-cashier" class="nav-link position-relative icon-no-margin" href="{{{cashierurl}}}" role="button">
+            <i class="icon fa fa-money fa-2x fa-fw" title="Cashier" role="img" aria-label="Go to cashiers desk"></i>
+        </a>
+    </div>
+{{/showcashier}}
+
 {{#js}}
     require(['core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function(Сontroller, Ajax, cart) {
         cart.init({{expirationdate}}, {{maxitems}});
