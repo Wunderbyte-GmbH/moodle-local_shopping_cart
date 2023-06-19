@@ -153,6 +153,11 @@ $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
 $string['cashiermanualrebook'] = 'Rebook manually with annotation or OrderID';
+$string['manualrebookingisallowed'] = 'Allow manual rebooking at cashier\'s desk';
+$string['manualrebookingisallowed_desc'] = 'With this setting activated, the cashier can manually
+ rebook payments that were already paid online but are missing in the cash report.
+ (<span class="text-danger">Be careful: Only activate this feature if you are sure that you really need it.
+ Incorrect use might compromise your database integrity!</span>)';
 
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';

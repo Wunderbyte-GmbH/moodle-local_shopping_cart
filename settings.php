@@ -159,7 +159,13 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
-        $settings->add(
+    // Setting to activate manual rebooking for cashier.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/manualrebookingisallowed',
+                get_string('manualrebookingisallowed', 'local_shopping_cart'),
+                get_string('manualrebookingisallowed_desc', 'local_shopping_cart'), 0));
+
+    $settings->add(
         new admin_setting_configtext(
                 $componentname . '/uniqueidentifier',
                 get_string('uniqueidentifier', $componentname),
@@ -167,7 +173,8 @@ if ($hassiteconfig) {
                 0,
                 PARAM_INT
         )
-        );
+    );
+
     $settings->add(
             new admin_setting_confightmleditor(
                     $componentname . '/additonalcashiersection',

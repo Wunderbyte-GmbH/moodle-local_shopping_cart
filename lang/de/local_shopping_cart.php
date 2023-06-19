@@ -153,6 +153,11 @@ $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
 $string['cashiermanualrebook'] = 'Manuell nachbuchen mit Anmerkung oder OrderID';
+$string['manualrebookingisallowed'] = 'Manuelles Nachbuchen an der Kassa erlauben';
+$string['manualrebookingisallowed_desc'] = 'Mit dieser Einstellung kann die Kassierin Zahlungen nachbuchen,
+ die bereits online bezahlt wurden, die aber im Kassajournal fehlen. (<span class="text-danger">Achtung:
+ Aktivieren Sie dieses Feature nur, wenn Sie sicher sind, dass Sie es wirklich benötigen. Falsche Handhabung kann
+ zu fehlerhaften Einträgen in der Datenbank führen!</span>)';
 
 $string['cancelpurchase'] = 'Stornieren';
 $string['canceled'] = 'Storniert';
