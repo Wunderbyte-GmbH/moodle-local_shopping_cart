@@ -44,7 +44,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             $cartitem = new cartitem($itemid,
             get_string('bookingfee', 'local_shopping_cart'),
             get_config('local_shopping_cart', 'bookingfee'),
-            'EUR',
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',
             'bookingfee',
             '',  // No item description for booking fee.
@@ -89,7 +89,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         $cartitem = new cartitem($itemid,
             'my test item ' . $itemid,
             $price,
-            'EUR',
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',
             $area,
             'item description',

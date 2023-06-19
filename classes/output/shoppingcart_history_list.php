@@ -93,6 +93,9 @@ class shoppingcart_history_list implements renderable, templatable {
      */
     public function __construct(int $userid, int $identifier = 0) {
 
+        // Get currency from config.
+        $this->currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
+
         // This might be called from users that are not logged in. we ignore it.
         if (empty($userid)) {
             return;

@@ -86,7 +86,7 @@ class modal_cashout extends dynamic_form {
             $data->cashoutreason,
             $data->cashoutamount,
             0,
-            'EUR', // TODO: fix the currency issue.
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',
             'cashout',
             0,

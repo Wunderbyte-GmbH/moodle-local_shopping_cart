@@ -67,7 +67,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
             $cachedeleted = true;
         }
 
-        $currency = "EUR";
+        $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
         if ($cachedeleted) {
             if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
                 throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
