@@ -38,19 +38,29 @@ use local_shopping_cart\shopping_cart;
  */
 class behat_shopping_cart extends behat_base {
 
-    /**
+    /*
      * Put item in my cart.
      * This ads a dummy item to the cache. After reloading the page, the item will be visible.
      * @Given /^I put "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
      * @param string $itemname
      * @return void
      */
-    public function i_put_item_in_my_cart(string $itemname) {
+    // Notice: We commented this out as this is an unfinished behat test.
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+    /* public function i_put_item_in_my_cart(string $itemname) {
 
         $data = $item->as_array();
-        $item = new cartitem(1, $itemname, 10, 'EUR', 'mod_quiz', 'main', 'item description');
+        $item = new cartitem(
+            1,
+            $itemname,
+            10,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'mod_quiz',
+            'main',
+            'item description'
+        );
 
         $shoppingcart = new shopping_cart();
         $shoppingcart->add_item_to_cart('local_shopping_cart', 1, 0); // TODO: Fix this with the correct params!
-    }
+    } */
 }

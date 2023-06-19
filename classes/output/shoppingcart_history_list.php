@@ -28,9 +28,6 @@ namespace local_shopping_cart\output;
 use context_system;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
-use local_shopping_cart\taxcategories;
-use mod_booking\booking_option;
-use moodle_url;
 use renderable;
 use renderer_base;
 use stdClass;
@@ -44,36 +41,34 @@ use templatable;
 class shoppingcart_history_list implements renderable, templatable {
 
     /**
-     * historyitems is the array used for output.
+     * Historyitems is the array used for output.
      *
      * @var array
      */
     private $historyitems = [];
 
     /**
-     * historyitems is the array used for output.
+     * Cancelation fee..
      *
      * @var float
      */
     private $cancelationfee = 0;
 
     /**
-     * historyitems is the array used for output.
+     * Credit.
      *
      * @var float
      */
     private $credit = 0;
 
     /**
-     * historyitems is the array used for output.
-     *
+     * Currency.
      * @var string
      */
     private $currency = 'EUR';
 
     /**
-     * historyitems is the array used for output.
-     *
+     * Bool canpayback.
      * @var bool
      */
     private $canpayback = false;
