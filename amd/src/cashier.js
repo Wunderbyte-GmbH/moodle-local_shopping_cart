@@ -36,10 +36,16 @@ export const init = (userid = 0) => {
 
     const buybuttons = document.querySelectorAll('.buy-btn');
 
+    const manualrebookbtn = document.querySelector('#cashiermanualrebook-btn');
+
     if (buybuttons) {
         buybuttons.forEach(buybutton => {
-            buybutton.addEventListener('click', (e) => confirmPayment(userid, e.target.dataset.paymenttype));
+            buybutton.addEventListener('click', (e) => confirmPayment(userid, e.target.dataset.paymenttype, ''));
         });
+    }
+
+    if (manualrebookbtn) {
+        manualrebookbtn.addEventListener('click', (e) => rebookOrderidModal(userid, e.target.dataset.paymenttype));
     }
 
     const checkoutbutton = document.querySelector('#checkout-btn');
@@ -55,21 +61,17 @@ export const init = (userid = 0) => {
     }
 };
 
-export const confirmPayment = (userid, paymenttype) => {
+export const confirmPayment = (userid, paymenttype, annotation = '') => {
 
     Ajax.call([{
         methodname: "local_shopping_cart_confirm_cash_payment",
         args: {
             'userid': userid,
-            'paymenttype': paymenttype
+            'paymenttype': paymenttype,
+            'annotation': annotation
         },
         done: function(data) {
             if (data.status === 1) {
-
-                // Only for paymenttype 7 (which is manual rebooking) we open the OrderID modal.
-                if (paymenttype == "7") {
-                    rebookOrderidModal(userid, data.identifier);
-                }
 
                 console.log('payment confirmed', data);
 
@@ -233,14 +235,15 @@ export function rebookOrderidModal(userid, identifier) {
         // returnFocus: button
     });
 
-    // We do not need this here. process_dynamic_submission() is enough.
     // Listen to events if you want to execute something on form submit.
     // Event detail will contain everything the process() function returned:
-    /* modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
         // eslint-disable-next-line no-console
         console.log('rebookOrderidModal response: ', response);
-    }); */
+
+        confirmPayment(userid, 7, response.annotation);
+    });
 
     // Show the form.
     modalForm.show();

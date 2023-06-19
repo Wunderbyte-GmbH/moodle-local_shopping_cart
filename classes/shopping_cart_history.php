@@ -240,6 +240,7 @@ class shopping_cart_history {
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
+     * @param string|null $annotation
      * @return void
      */
     public static function create_entry_in_history(
@@ -259,7 +260,8 @@ class shopping_cart_history {
             int $serviceperiodend = 0,
             float $tax = null,
             float $taxpercentage = null,
-            string $taxcategory = null
+            string $taxcategory = null,
+            string $annotation = null
             ) {
 
         global $USER;
@@ -285,6 +287,7 @@ class shopping_cart_history {
         $data->tax = round($tax, 2);
         $data->taxpercentage = round($taxpercentage, 2);
         $data->taxcategory = $taxcategory;
+        $data->annotation = $annotation;
 
         return self::write_to_db($data);
     }

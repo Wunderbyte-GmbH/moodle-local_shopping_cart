@@ -98,20 +98,6 @@ class modal_cashier_manual_rebook extends dynamic_form {
 
         $data = $this->get_data();
 
-        // Trigger manual rebook event, so we can react on it within other plugins.
-        $event = payment_rebooked::create([
-            'context' => context_system::instance(),
-            'userid' => $USER->id, // The cashier.
-            'relateduserid' => $data->userid, // The user for whom the rebooking was done.
-            'other' => [
-                'userid' => $data->userid, // The user for whom the rebooking was done.
-                'identifier' => $data->identifier,
-                'annotation' => $data->annotation, // The annotation. Might also contain an OrderID.
-                'usermodified' => $USER->id, // The cashier.
-            ],
-        ]);
-        $event->trigger();
-
         return $data;
     }
 

@@ -56,7 +56,8 @@ class confirm_cash_payment extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            'paymenttype' => new external_value(PARAM_INT, 'paymenttype', VALUE_DEFAULT, '')
+            'paymenttype' => new external_value(PARAM_INT, 'paymenttype', VALUE_DEFAULT, ''),
+            'annotation' => new external_value(PARAM_RAW, 'annotation', VALUE_DEFAULT, '')
         ));
     }
 
@@ -64,20 +65,22 @@ class confirm_cash_payment extends external_api {
      * Excecute this webservice.
      * @param int $userid
      * @param string $paymenttype
+     * @param string $annotation
      * @return array
      */
-    public static function execute(int $userid, string $paymenttype): array {
+    public static function execute(int $userid, string $paymenttype, string $annotation = ''): array {
         require_login();
         $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
-            'paymenttype' => $paymenttype
+            'paymenttype' => $paymenttype,
+            'annotation' => $annotation,
         ]);
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
-        return shopping_cart::confirm_payment($params['userid'], $params['paymenttype']);
+        return shopping_cart::confirm_payment($params['userid'], $params['paymenttype'], null, $params['annotation']);
     }
 
     /**

@@ -35,6 +35,7 @@ use local_shopping_cart\event\item_added;
 use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
 use local_shopping_cart\event\item_deleted;
+use local_shopping_cart\event\payment_rebooked;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use stdClass;
@@ -597,9 +598,10 @@ class shopping_cart {
      * @param int $userid
      * @param int $paymenttype
      * @param array $datafromhistory
+     * @param string $annotation - empty on default
      * @return array
      */
-    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null) {
+    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null, $annotation = '') {
         global $USER;
 
         $identifier = 0;
@@ -767,6 +769,7 @@ class shopping_cart {
                             $item['tax'] ?? null,
                             $item['taxpercentage'] ?? null,
                             $item['taxcategory'] ?? null,
+                            $annotation ?? '',
                     );
                 }
 
@@ -783,6 +786,22 @@ class shopping_cart {
         }
 
         if ($success) {
+
+            if ($paymenttype == PAYMENT_METHOD_CASHIER_MANUAL) {
+                // Trigger manual rebook event, so we can react on it within other plugins.
+                $event = payment_rebooked::create([
+                    'context' => context_system::instance(),
+                    'userid' => $USER->id, // The cashier.
+                    'relateduserid' => $userid, // The user for whom the rebooking was done.
+                    'other' => [
+                        'userid' => $userid, // The user for whom the rebooking was done.
+                        'identifier' => $identifier,
+                        'annotation' => $annotation, // The annotation. Might also contain an OrderID.
+                        'usermodified' => $USER->id, // The cashier.
+                    ],
+                ]);
+                $event->trigger();
+            }
 
             return [
                     'status' => 1,
