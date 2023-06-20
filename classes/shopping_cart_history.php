@@ -284,8 +284,8 @@ class shopping_cart_history {
         $data->timemodified = $now;
         $data->timecreated = $now;
         $data->canceluntil = $canceluntil;
-        $data->tax = round($tax, 2);
-        $data->taxpercentage = round($taxpercentage, 2);
+        $data->tax = empty($tax) ? null : round($tax, 2);
+        $data->taxpercentage = empty($taxpercentage) ? null : round($taxpercentage, 2);
         $data->taxcategory = $taxcategory;
         $data->annotation = $annotation;
 
