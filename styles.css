@@ -336,6 +336,10 @@ div.cashier-list-price-container div.shopping-cart-cashier-items-container img.s
     width: 100px;
 }
 
+div.shopping-cart-cashier-items-container ul.shopping-cart-items img.sc-cart-item-image {
+    width: 100px;
+}
+
 #shopping_cart-cashiers-cart div.shopping-cart-cashier-items-container div.item-description {
     display: none;
 }
