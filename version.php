@@ -29,3 +29,6 @@ $plugin->release = '0.4.8';
 $plugin->version = 2023062000;
 $plugin->requires = 2020051700;
 $plugin->maturity = MATURITY_ALPHA;
+$plugin->dependencies = [
+    'local_wunderbyte_table' => 2023061600,
+];
