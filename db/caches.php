@@ -42,6 +42,13 @@ $definitions = array(
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1
-    )
+    ),
+    'cachedcashreport' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 1,
+        'invalidationevents' => ['setbackcachedcashreport']
+    ),
 );
 

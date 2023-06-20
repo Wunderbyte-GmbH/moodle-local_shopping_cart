@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
 
+use cache_helper;
 use context_system;
 use lang_string;
 use local_shopping_cart\event\item_added;
@@ -1138,12 +1139,14 @@ class shopping_cart {
                 ])) {
                     // We only insert if entry does not exist yet.
                     $DB->insert_record('local_shopping_cart_ledger', $record);
+                    cache_helper::purge_by_event('setbackcachedcashreport');
                 }
                 break;
             case PAYMENT_CANCELED:
                 $record->price = null;
                 $record->discount = null;
                 $DB->insert_record('local_shopping_cart_ledger', $record);
+                cache_helper::purge_by_event('setbackcachedcashreport');
                 break;
             // Aborted or pending payments will never be added to ledger.
             // We use the <gateway>_openorders tables to track open orders.

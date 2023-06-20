@@ -23,13 +23,13 @@ require_once(__DIR__ . '/../../lib.php');
 require_once($CFG->libdir.'/tablelib.php');
 
 use dml_exception;
-use table_sql;
+use local_wunderbyte_table\wunderbyte_table;
 
 /**
  * Report table to show the cash report.
  * @package local_shopping_cart
  */
-class cash_report_table extends table_sql {
+class cash_report_table extends wunderbyte_table {
 
     /**
      * Constructor

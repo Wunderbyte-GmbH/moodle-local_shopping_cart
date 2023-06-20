@@ -39,8 +39,8 @@ require_login(0, false);
 $context = context_system::instance();
 $PAGE->set_context($context);
 
-$baseurl = new moodle_url('/local/shopping_cart/report.php');
-$PAGE->set_url($baseurl);
+$pagebaseurl = new moodle_url('/local/shopping_cart/report.php');
+$PAGE->set_url($pagebaseurl);
 
 if (!has_capability('local/shopping_cart:cashier', $context)) {
     echo $OUTPUT->header();
@@ -53,16 +53,16 @@ if (!has_capability('local/shopping_cart:cashier', $context)) {
 // File name and sheet name.
 $fileandsheetname = "cash_report";
 
-$cashreporttable = new cash_report_table('cash_report_table');
+$table = new cash_report_table('cash_report_table');
 
-$cashreporttable->is_downloading($download, $fileandsheetname, $fileandsheetname);
+$table->is_downloading($download, $fileandsheetname, $fileandsheetname);
 
-$tablebaseurl = $baseurl;
-$tablebaseurl->remove_params('page');
-$cashreporttable->define_baseurl($tablebaseurl);
+$downloadbaseurl = new moodle_url('/local/shopping_cart/download_cash_report.php');
+$downloadbaseurl->remove_params('page');
+$table->define_baseurl($downloadbaseurl);
 
-// Header.
-$cashreporttable->define_headers([
+// Headers.
+$table->define_headers([
     get_string('id', 'local_shopping_cart'),
     get_string('identifier', 'local_shopping_cart'),
     get_string('timecreated', 'local_shopping_cart'),
@@ -86,7 +86,7 @@ $cashreporttable->define_headers([
 ]);
 
 // Columns.
-$cashreporttable->define_columns([
+$table->define_columns([
     'id',
     'identifier',
     'timecreated',
@@ -108,6 +108,10 @@ $cashreporttable->define_columns([
     'annotation',
     'usermodified'
 ]);
+
+// Table cache.
+$table->define_cache('local_shopping_cart', 'cachedcashreport');
+$table->showdownloadbutton = true;
 
 // Get payment account from settings.
 $accountid = get_config('local_shopping_cart', 'accountid');
@@ -148,70 +152,119 @@ if (!empty($colselects)) {
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
-$fields = "DISTINCT " . $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.orderid,'')") .
+$fields = "s1.*";
+$from = "(SELECT DISTINCT " . $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.orderid,'')") .
         " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
-        p.gateway$selectorderidpart";
-$from = "{local_shopping_cart_ledger} scl
+        p.gateway$selectorderidpart
+        FROM {local_shopping_cart_ledger} scl
         LEFT JOIN {user} u
         ON u.id = scl.userid
         LEFT JOIN {user} um
         ON um.id = scl.usermodified
         LEFT JOIN {payments} p
         ON p.itemid = scl.identifier
-        $gatewayspart";
+        $gatewayspart ) s1";
 $where = "1 = 1";
 $params = [];
 
 // Now build the table.
-$cashreporttable->set_sql($fields, $from, $where, $params);
+$table->set_sql($fields, $from, $where, $params);
 
-// Table is shown normally.
-if (!$cashreporttable->is_downloading()) {
+$table->sortable(true, 'id', SORT_DESC);
 
-    // Table will be shown normally.
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
+// Filters.
+$filtercolumns = [];
+$filtercolumns['payment'] = [
+    'localizedname' => get_string('payment', 'local_shopping_cart'),
+    PAYMENT_METHOD_ONLINE => get_string('paymentmethodonline', 'local_shopping_cart'),
+    PAYMENT_METHOD_CASHIER => get_string('paymentmethodcashier', 'local_shopping_cart'),
+    PAYMENT_METHOD_CREDITS => get_string('paymentmethodcredits', 'local_shopping_cart'),
+    PAYMENT_METHOD_CREDITS_PAID_BACK => get_string('paymentmethodcreditspaidback', 'local_shopping_cart'),
+    PAYMENT_METHOD_CASHIER_CASH => get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
+    PAYMENT_METHOD_CASHIER_CREDITCARD => get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
+    PAYMENT_METHOD_CASHIER_DEBITCARD => get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
+    PAYMENT_METHOD_CASHIER_MANUAL => get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
+];
+$filtercolumns['paymentstatus'] = [
+    'localizedname' => get_string('paymentstatus', 'local_shopping_cart'),
+    PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
+    PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
+    PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
+    PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
+];
+$table->define_filtercolumns($filtercolumns);
 
-    // Initialize the Moodle form for filtering the table.
-    $mform = new daily_sums_date_selector_form();
+// Sortable columns.
+$table->define_sortablecolumns([
+    'id',
+    'identifier',
+    'timecreated',
+    'timemodified',
+    'price',
+    'discount',
+    'credits',
+    'fee',
+    'currency',
+    'lastname',
+    'firstname',
+    'email',
+    'itemid',
+    'itemname',
+    'payment',
+    'paymentstatus',
+    'gateway',
+    'orderid',
+    'annotation',
+    'usermodified',
+]);
 
-    ob_start();
-    $mform->display();
-    $selectorformoutput = ob_get_contents();
-    ob_end_clean();
+// Full text search columns.
+$table->define_fulltextsearchcolumns([
+    'identifier',
+    'lastname',
+    'firstname',
+    'email',
+    'itemname',
+    'orderid',
+    'annotation',
+]);
 
-    // Form processing and displaying is done here.
-    if ($fromform = $mform->get_data()) {
-        $dailysumsdate = $fromform->dailysumsdate;
-        $date = date('Y-m-d', $dailysumsdate);
-        generate_and_output_daily_sums($date, $selectorformoutput);
-    } else {
-        // Show daily sums.
-        generate_and_output_daily_sums($date, $selectorformoutput);
-    }
+// Table will be shown normally.
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
 
-    // Dismissible alert containing the description of the report.
-    echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .
-        get_string('cashreport_desc', 'local_shopping_cart') .
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    </div>';
+// Initialize the Moodle form for filtering the table.
+$mform = new daily_sums_date_selector_form();
 
-    $cashreporttable->out(50, false);
+ob_start();
+$mform->display();
+$selectorformoutput = ob_get_contents();
+ob_end_clean();
 
-    echo $OUTPUT->footer();
-
+// Form processing and displaying is done here.
+if ($fromform = $mform->get_data()) {
+    $dailysumsdate = $fromform->dailysumsdate;
+    $date = date('Y-m-d', $dailysumsdate);
+    generate_and_output_daily_sums($date, $selectorformoutput);
 } else {
-    // The table is being downloaded.
-    $cashreporttable->setup();
-    $cashreporttable->query_db(TABLE_SHOW_ALL_PAGE_SIZE);
-    $cashreporttable->build_table();
-    $cashreporttable->finish_output();
+    // Show daily sums.
+    generate_and_output_daily_sums($date, $selectorformoutput);
 }
+
+// Dismissible alert containing the description of the report.
+echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .
+    get_string('cashreport_desc', 'local_shopping_cart') .
+    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>';
+
+$table->out(50, false);
+
+echo $OUTPUT->footer();
 
 /**
  * Internal helper function to create daily sums.
