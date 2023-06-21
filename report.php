@@ -228,6 +228,7 @@ $table->define_fulltextsearchcolumns([
     'firstname',
     'email',
     'itemname',
+    'gateway',
     'orderid',
     'annotation',
 ]);
