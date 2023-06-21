@@ -509,12 +509,12 @@ class shopping_cart_history {
         // As the identifier will always stay the same, we pass it here for easy acces.
         $dataarr['identifier'] = $identifier;
         if (!empty($items)) {
-            $dataarr['price'] = shopping_cart::calculate_total_price($dataarr["items"]);
+            $dataarr['price'] = number_format(shopping_cart::calculate_total_price($dataarr["items"]), 2, '.', '');
             if ($taxesenabled) {
-                $dataarr['price_net'] = shopping_cart::calculate_total_price($dataarr["items"], true);
+                $dataarr['price_net'] = number_format(shopping_cart::calculate_total_price($dataarr["items"], true), 2, '.', '');
             }
         } else {
-            $dataarr['price'] = 0.0;
+            $dataarr['price'] = 0.00;
         }
         $dataarr['currency'] = $currency;
         return $dataarr;

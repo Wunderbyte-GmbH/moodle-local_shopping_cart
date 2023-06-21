@@ -134,6 +134,8 @@ class shopping_cart {
             if (isset($cartitemarray['cartitem'])) {
                 // Get the itemdata as array.
                 $itemdata = $cartitemarray['cartitem']->as_array();
+                // Force 2 decimal digits always visible.
+                $itemdata['price'] = number_format($itemdata['price'], 2, '.', '');
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -467,9 +469,9 @@ class shopping_cart {
 
                 $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
 
-                $data['price'] = self::calculate_total_price($data["items"]);
+                $data['price'] = number_format(self::calculate_total_price($data["items"]), 2, '.', '');
                 if ($taxesenabled) {
-                    $data['price_net'] = self::calculate_total_price($data["items"], true);
+                    $data['price_net'] = number_format(self::calculate_total_price($data["items"], true), 2, '.', '');
                 }
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
@@ -1185,9 +1187,10 @@ class shopping_cart {
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
                     $netprice = $items[$key]['price']; // Price is now considered a net price.
                     $grossprice = round($netprice * (1 + $taxpercent), 2);
-                    $items[$key]['price_net'] = $netprice;
+                    $items[$key]['price_net'] = number_format($netprice, 2, '.', ''); // Force 2 decimal digits always visible.
+                    $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price. 
                     // Add tax to price (= gross price).
-                    $items[$key]['price_gross'] = $grossprice;
+                    $items[$key]['price_gross'] = number_format($grossprice, 2, '.', ''); // Force 2 decimal digits always visible.
                     // And net tax info.
                     $items[$key]['tax'] = $grossprice - $netprice;
                 }
