@@ -494,6 +494,13 @@ class shopping_cart {
             $cache->set($cachekey, $data);
         }
 
+        // Make sure, we always have two decimals.
+        $data['price'] = number_format(round((float) $data['price'] ?? 0, 2), 2, '.', '');
+        $data['credit'] = number_format(round((float) $data['credit'] ?? 0, 2), 2, '.', '');
+        $data['initialtotal'] = number_format(round((float) $data['initialtotal'] ?? 0, 2), 2, '.', '');
+        $data['deductible'] = number_format(round((float) $data['deductible'] ?? 0, 2), 2, '.', '');
+        $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'] ?? 0, 2), 2, '.', '');
+
         return $data;
     }
 
