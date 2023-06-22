@@ -1188,7 +1188,7 @@ class shopping_cart {
                     $netprice = $items[$key]['price']; // Price is now considered a net price.
                     $grossprice = round($netprice * (1 + $taxpercent), 2);
                     $items[$key]['price_net'] = number_format($netprice, 2, '.', ''); // Force 2 decimal digits always visible.
-                    $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price. 
+                    $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
                     // Add tax to price (= gross price).
                     $items[$key]['price_gross'] = number_format($grossprice, 2, '.', ''); // Force 2 decimal digits always visible.
                     // And net tax info.

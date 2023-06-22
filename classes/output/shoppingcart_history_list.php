@@ -232,11 +232,14 @@ class shoppingcart_history_list implements renderable, templatable {
      */
     public function return_list() {
 
-        // Preocess all items to force prices to 2 decimal digits always visible
+        // Preprocess all items to force prices to 2 decimal digits always visible.
         foreach ($this->historyitems as $key => $item) {
-            $this->historyitems[$key]['price'] = number_format(round((float) $item['price'],2), 2, '.', '');
-            $this->historyitems[$key]['price_gross'] = number_format(round((float) $item['price_gross'],2), 2, '.', '');
-            $this->historyitems[$key]['price_net'] = number_format(round((float) $item['price_net'],2), 2, '.', '');
+            $this->historyitems[$key]['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
+
+            if ($this->taxesenabled) {
+                $this->historyitems[$key]['price_gross'] = number_format(round((float) $item['price_gross'] ?? 0, 2), 2, '.', '');
+                $this->historyitems[$key]['price_net'] = number_format(round((float) $item['price_net'] ?? 0, 2), 2, '.', '');
+            }
         }
 
         $returnarray = ['historyitems' => $this->historyitems];
@@ -264,7 +267,7 @@ class shoppingcart_history_list implements renderable, templatable {
         if ($this->taxesenabled) {
             $returnarray['taxesenabled'] = true;
         }
-        
+
         return $returnarray;
     }
 
