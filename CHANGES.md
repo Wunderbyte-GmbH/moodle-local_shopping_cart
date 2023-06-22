@@ -1,3 +1,20 @@
+## Version 0.4.9 (2023062200)
+**Improvements:**
+* Improvement: New money icon to directly access cashier's desk from navigation.
+* Improvement: New config setting to activate manual rebooking at cashier's desk.
+* Improvement: Add a check to prevent duplicates in ledger (cash report) table.
+* Improvement: Switch cash report to wunderbyte table.
+* Improvement: Add local_wunderbyte_table as dependency to the moodle-plugin-ci.yml.
+* Improvement: Add gateway to fulltextsearch.
+* Improvement: Force 2 decimal digits always visible in prices.
+
+**Bugfixes:**
+* Bugfix: Use new globalcurrency config setting instead of hardcoded 'EUR'.
+* Bugfix: Correct way of manual rebooking.
+* Bugfix: Add dependency for wunderbyte table.
+* Bugfix: Fixes for PHP 8.1 compatibility.
+* Bugfix: CSS - fix image size on cashier.php for cache payment confirmation.
+
 ## Version 0.4.8 (2023061603)
 **New features:**
 * New feature: New feature to allow manual rebooking for cashier (with annotation or order id).
