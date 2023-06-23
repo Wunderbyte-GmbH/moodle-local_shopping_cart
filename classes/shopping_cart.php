@@ -134,8 +134,7 @@ class shopping_cart {
             if (isset($cartitemarray['cartitem'])) {
                 // Get the itemdata as array.
                 $itemdata = $cartitemarray['cartitem']->as_array();
-                // Force 2 decimal digits always visible.
-                $itemdata['price'] = number_format($itemdata['price'], 2, '.', '');
+                $itemdata['price'] = $itemdata['price'];
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;
@@ -469,9 +468,9 @@ class shopping_cart {
 
                 $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
 
-                $data['price'] = number_format(self::calculate_total_price($data["items"]), 2, '.', '');
+                $data['price'] = self::calculate_total_price($data["items"]);
                 if ($taxesenabled) {
-                    $data['price_net'] = number_format(self::calculate_total_price($data["items"], true), 2, '.', '');
+                    $data['price_net'] = self::calculate_total_price($data["items"], true);
                 }
                 $data['discount'] = array_sum(array_column($data['items'], 'discount'));
                 $data['expirationdate'] = $cachedrawdata['expirationdate'];
@@ -493,13 +492,6 @@ class shopping_cart {
             // If not, we save the cache right away.
             $cache->set($cachekey, $data);
         }
-
-        // Make sure, we always have two decimals.
-        $data['price'] = number_format(round((float) $data['price'] ?? 0, 2), 2, '.', '');
-        $data['credit'] = number_format(round((float) $data['credit'] ?? 0, 2), 2, '.', '');
-        $data['initialtotal'] = number_format(round((float) $data['initialtotal'] ?? 0, 2), 2, '.', '');
-        $data['deductible'] = number_format(round((float) $data['deductible'] ?? 0, 2), 2, '.', '');
-        $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'] ?? 0, 2), 2, '.', '');
 
         return $data;
     }
@@ -1194,10 +1186,10 @@ class shopping_cart {
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
                     $netprice = $items[$key]['price']; // Price is now considered a net price.
                     $grossprice = round($netprice * (1 + $taxpercent), 2);
-                    $items[$key]['price_net'] = number_format($netprice, 2, '.', ''); // Force 2 decimal digits always visible.
+                    $items[$key]['price_net'] = $netprice;
                     $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
                     // Add tax to price (= gross price).
-                    $items[$key]['price_gross'] = number_format($grossprice, 2, '.', ''); // Force 2 decimal digits always visible.
+                    $items[$key]['price_gross'] = $grossprice;
                     // And net tax info.
                     $items[$key]['tax'] = $grossprice - $netprice;
                 }
@@ -1454,5 +1446,47 @@ class shopping_cart {
         }
 
         return $currencies;
+    }
+
+    /**
+     * Helper function to convert all prices in provided array
+     * into strings with 2 fixed decimals.
+     * @param &$data reference to the data array
+     */
+    public static function convert_prices_to_number_format(array &$data) {
+        // Render all prices to 2 fixed decimals.
+        if (!empty($data['price'])) {
+            $data['price'] = number_format(round((float) $data['price'], 2), 2, '.', '');
+        }
+        if (!empty($data['initialtotal'])) {
+            $data['initialtotal'] = number_format(round((float) $data['initialtotal'], 2), 2, '.', '');
+        }
+        if (!empty($data['initialtotal_net'])) {
+            $data['initialtotal_net'] = number_format(round((float) $data['initialtotal_net'], 2), 2, '.', '');
+        }
+        if (!empty($data['discount'])) {
+            $data['discount'] = number_format(round((float) $data['discount'], 2), 2, '.', '');
+        }
+        if (!empty($data['deductible'])) {
+            $data['deductible'] = number_format(round((float) $data['deductible'], 2), 2, '.', '');
+        }
+        if (!empty($data['credit'])) {
+            $data['credit'] = number_format(round((float) $data['credit'], 2), 2, '.', '');
+        }
+        if (!empty($data['remainingcredit'])) {
+            $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'], 2), 2, '.', '');
+        }
+        if (!empty($data['price_net'])) {
+            $data['price_net'] = number_format(round((float) $data['price_net'], 2), 2, '.', '');
+        }
+        if (!empty($data['price_gross'])) {
+            $data['price_gross'] = number_format(round((float) $data['price_gross'], 2), 2, '.', '');
+        }
+        // Also convert prices for each item.
+        if (!empty($data['items'])) {
+            foreach ($data['items'] as &$item) {
+                $item['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
+            }
+        }
     }
 }

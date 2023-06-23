@@ -85,7 +85,7 @@ class shopping_cart_credits {
             }
         }
 
-        return [number_format(round($balance, 2), 2, '.', ''), $currency];
+        return [round($balance, 2), $currency];
     }
 
     /**

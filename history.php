@@ -62,6 +62,10 @@ if (isset($success)) {
 $data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
 
 $test = get_users(true, '', '', array(), '', '', '', '', $recordsperpage = 21);
+
+// Convert numbers to strings with 2 fixed decimals right before rendering.
+shopping_cart::convert_prices_to_number_format($data);
+
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.
 echo $OUTPUT->footer();

@@ -135,7 +135,7 @@ function cancelPurchase(itemid, area, userid, componentname, historyid, currency
 
                     data.itemid = itemid;
                     data.componentname = componentname;
-                    data.price = price;
+                    data.price = Number(price).toFixed(2); // Creates a string with two decimals.
 
                     Templates.renderForPromise('local_shopping_cart/addtocartdb', data).then(({html}) => {
 
@@ -223,7 +223,7 @@ function showCredit(credit, currency, userid) {
 
         let data = {
             'currency': currency,
-            'credit': credit,
+            'credit': Number(credit).toFixed(2), // Creates a string with two decimals.
             'userid': userid
         };
 

@@ -219,7 +219,10 @@ export const reinit = (userid = 0) => {
 
             let promises = [];
 
-            // We render for promice for all the containers.
+            // Before rendering, we convert all prices to strings with 2 fixed decimals.
+            convertPricesToNumberFormat(data);
+
+            // We render for promise for all the containers.
             promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
                 containers.forEach(container => {
                 // We know we will always find the Navbar, so we can do this right away.
@@ -406,6 +409,9 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             data.userid = userid;
 
             const labelareas = document.querySelectorAll(SELECTORS.PRICELABELAREA);
+
+            // Before rendering, we convert all prices to strings with 2 fixed decimals.
+            convertPricesToNumberFormat(data);
 
             Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html, js}) => {
 
@@ -698,4 +704,57 @@ function transformUserIdForCashier(userid = null) {
     }
 
     return userid;
+}
+
+/**
+ * Helper function to convert prices to number format before rendering.
+ * @param {Object} data the data containing the price values
+ */
+function convertPricesToNumberFormat(data) {
+    // Render all prices to 2 fixed decimals.
+    if (data.price) {
+        data.price = Number(data.price).toFixed(2);
+    }
+    if (data.initialtotal) {
+        data.initialtotal = Number(data.initialtotal).toFixed(2);
+    }
+    if (data.initialtotal_net) {
+        // eslint-disable-next-line camelcase
+        data.initialtotal_net = Number(data.initialtotal_net).toFixed(2);
+    }
+    if (data.discount) {
+        data.discount = Number(data.discount).toFixed(2);
+    }
+    if (data.deductible) {
+        data.deductible = Number(data.deductible).toFixed(2);
+    }
+    if (data.credit) {
+        data.credit = Number(data.credit).toFixed(2);
+    }
+    if (data.remainingcredit) {
+        data.remainingcredit = Number(data.remainingcredit).toFixed(2);
+    }
+    if (data.price_net) {
+        // eslint-disable-next-line camelcase
+        data.price_net = Number(data.price_net).toFixed(2);
+    }
+    if (data.price_gross) {
+        // eslint-disable-next-line camelcase
+        data.price_gross = Number(data.price_gross).toFixed(2);
+    }
+    if (data.items) {
+        for (var i = 0; i < data.items.length; i++) {
+            if (data.items[i].price) {
+                data.items[i].price = Number(data.items[i].price).toFixed(2);
+            }
+            if (data.items[i].price_gross) {
+                // eslint-disable-next-line camelcase
+                data.items[i].price_gross = Number(data.items[i].price_gross).toFixed(2);
+            }
+            if (data.items[i].price_net) {
+                // eslint-disable-next-line camelcase
+                data.items[i].price_net = Number(data.items[i].price_net).toFixed(2);
+            }
+        }
+    }
 }
