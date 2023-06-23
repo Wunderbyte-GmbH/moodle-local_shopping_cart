@@ -44,30 +44,11 @@ class modal_cashier_manual_rebook extends dynamic_form {
      * @see moodleform::definition()
      */
     public function definition() {
-        global $DB;
 
         $mform = $this->_form;
 
         $mform->addElement('hidden', 'identifier', $this->_ajaxformdata['identifier']);
         $mform->addElement('hidden', 'userid', $this->_ajaxformdata['userid']);
-
-        // Payment gateway.
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-        /*$sql = "SELECT DISTINCT gateway
-            FROM {payment_gateways}
-            WHERE enabled = 1";
-        $gateways = $DB->get_fieldset_sql($sql);
-        $gatewayforautocomplete = array();
-        foreach ($gateways as $gateway) {
-            $gatewayforautocomplete[$gateway] = $gateway;
-        }
-        $options = array(
-                'tags' => false,
-                'multiple' => false
-        );
-        $mform->addElement('autocomplete', 'gateway',
-            get_string('institution', 'mod_booking'), $institutionstrings, $options);
-        $mform->addHelpButton('institution', 'institution', 'mod_booking');*/
 
         $mform->addElement('text', 'annotation',
             get_string('annotation', 'local_shopping_cart'),
