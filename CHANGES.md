@@ -1,3 +1,7 @@
+## Version 0.5.0 (2023062300)
+**Bugfixes:**
+* Bugfix: Introduce new functions to convert prices to strings with 2 decimals right before rendering.
+
 ## Version 0.4.9 (2023062200)
 **Improvements:**
 * Improvement: New money icon to directly access cashier's desk from navigation.
