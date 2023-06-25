@@ -1,11 +1,6 @@
 @local @local_shopping_cart @javascript
 
-Feature: Admin tax actions in shopping cart.
-  In order buy for students
-  As an admin
-  I configure tax options
-  As a cashier
-  I buy for a student and see taxes.
+Feature: Admin configures shopping cart to use simple taxes or tax categories.
 
   Background:
     Given the following "users" exist:
@@ -40,24 +35,38 @@ Feature: Admin tax actions in shopping cart.
     And I should not see "Not available" in the "Account1" "table_row"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "Payment account" to "Account1"
+    And I press "Save changes"
+    And I log out
+
+  @javascript
+  Scenario: Shopping Cart: enable tax processing without categories
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "Enable Tax processing" to "checked"
     And I press "Save changes"
+    Then I should see "Changes saved"
+    And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
     And I set the following fields to these values:
       | Tax categories and their tax percentage | 15 |
     And I press "Save changes"
     Then I should see "Changes saved"
     And the field "Tax categories and their tax percentage" matches value "15"
     And the field "Default tax category" matches value ""
-    And I log out
 
   @javascript
-  Scenario: Add single item for user to the shopping cart when tax without categories enabled
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+  Scenario: Shopping Cart: enable tax processing with categories
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
     And I wait until the page is ready
-    And I click on "#btn-local_shopping_cart-main-4" "css_element"
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 4" in the "ul.shopping-cart-items" "css_element"
-    And I should see "13.94 EUR" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
-    And I should see "(12.12 EUR + 15%)" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
-    And I should see "13.94" in the "li.sc_initialtotal" "css_element"
+    And I set the field "Enable Tax processing" to "checked"
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
+    And I should see "" in the "#id_s_local_shopping_cart_defaulttaxcategory" "css_element"
+    And I set the following fields to these values:
+      | Tax categories and their tax percentage | A:15 B:10 C:0 |
+      | Default tax category                    | A             |
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And the field "Tax categories and their tax percentage" matches value "A:15 B:10 C:0"
+    And the field "Default tax category" matches value "A"

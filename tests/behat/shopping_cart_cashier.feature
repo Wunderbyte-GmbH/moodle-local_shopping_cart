@@ -45,10 +45,12 @@ Feature: Cashier actions in shopping cart.
   Scenario: Add an item for user to the shopping cart
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
     ## And I click on "Select a user..." "field"
     ## And I type "Username1"
     ## And I click on "ul.form-autocomplete-suggestions li" "css_element"
@@ -59,17 +61,20 @@ Feature: Cashier actions in shopping cart.
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
 
   @javascript
-  Scenario: Cashier adds discount
+  Scenario: Cashier adds discount with rounding
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
+    And I wait until the page is ready
     And I set the following fields to these values:
       | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
     And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Choose" "button"
@@ -79,16 +84,18 @@ Feature: Cashier actions in shopping cart.
       | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
 
   @javascript
   Scenario: Cashier adds discount without rounding
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Choose" "button"
@@ -98,12 +105,13 @@ Feature: Cashier actions in shopping cart.
       | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "5.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
 
   @javascript
   Scenario: Cashier buys discounted item
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
@@ -111,8 +119,8 @@ Feature: Cashier actions in shopping cart.
     And I set the following fields to these values:
       | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
-
     And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Choose" "button"
@@ -122,7 +130,7 @@ Feature: Cashier actions in shopping cart.
       | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "5.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
 
@@ -130,16 +138,18 @@ Feature: Cashier actions in shopping cart.
   Scenario: Cashier buys item and gives refund
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Choose" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "10 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "10.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
@@ -155,16 +165,18 @@ Feature: Cashier actions in shopping cart.
     And I press "Refunded"
     And I click on "button[data-action=\"save\"]" "css_element"
     Then I should see "Credit paid back" in the ".notifications" "css_element"
-    Then I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
 
   @javascript
   Scenario: Cashier buys discounted item and gives refund
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
+    And I wait until the page is ready
     And I set the following fields to these values:
       | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
@@ -178,7 +190,7 @@ Feature: Cashier actions in shopping cart.
       | discountabsolute | 2.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "7.5 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    Then I should see "7.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
@@ -190,8 +202,8 @@ Feature: Cashier actions in shopping cart.
     And I set the following fields to these values:
       | cancelationfee | 2 |
     And I press "Save changes"
-    Then I should see "5.5" in the "ul.cashier-history-items span.credit_total" "css_element"
+    Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I press "Refunded"
     And I click on "button[data-action=\"save\"]" "css_element"
     Then I should see "Credit paid back" in the ".notifications" "css_element"
-    Then I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
