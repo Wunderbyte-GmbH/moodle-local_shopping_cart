@@ -1451,7 +1451,8 @@ class shopping_cart {
     /**
      * Helper function to convert all prices in provided array
      * into strings with 2 fixed decimals.
-     * @param &$data reference to the data array
+     *
+     * @param array $data reference to the data array.
      */
     public static function convert_prices_to_number_format(array &$data) {
         // Render all prices to 2 fixed decimals.
@@ -1486,6 +1487,12 @@ class shopping_cart {
         if (!empty($data['items'])) {
             foreach ($data['items'] as &$item) {
                 $item['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
+                if (!empty($item['price_net'])) {
+                    $item['price_net'] = number_format(round((float) $item['price_net'], 2), 2, '.', '');
+                }
+                if (!empty($item['price_gross'])) {
+                    $item['price_gross'] = number_format(round((float) $item['price_gross'], 2), 2, '.', '');
+                }
             }
         }
     }

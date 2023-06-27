@@ -96,6 +96,13 @@ const SELECTORS = {
         });
     });
 
+    // Re-init cart on page reload or navigation to another page - required for 2-digit price precision visibility.
+    document.addEventListener("readystatechange", () => {
+        if (document.readyState !== 'loading') {
+            reinit();
+        }
+    });
+
     if (visbilityevent == false) {
         document.addEventListener("visibilitychange", function() {
             visbilityevent = true;
@@ -106,7 +113,6 @@ const SELECTORS = {
     }
 
     // Initially, we need to add the zeroPriceListener once.
-
     const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
     if (paymentbutton) {
         const data = {
