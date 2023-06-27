@@ -45,7 +45,7 @@ $string['bookingfee_desc'] = 'Für jeden Buchung wird eine Gebühr eingehoben, u
 $string['uniqueidentifier'] = 'Eindeutige Buchungsid';
 $string['uniqueidentifier_desc'] = 'Jede Buchung benötigt eine eindeutige id. Diese startet üblicherweise bei 1, kann aber auch höher gesetzt werden. Wenn sie z.b. auf 10000000 gesetzt wird, hat der erste Kauf die ID 10000001. Wenn das Feld gesetzt wird, wird ein Error geworfen, sobald die Anzahl der Stellen überschritten wird. Wird der Wert auf 1 gesetzt, sind nur neun Buchungen möglich.';
 $string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
-$string['bookingfeeonlyonce_desc'] = 'Die Buchungsgebühr wird nur einmal für jede NutuzerIn eingehoben. Sobald wie einmal bezahlt wurde, sind alle weiteren Buchungen ohne Buchungsgebühr.';
+$string['bookingfeeonlyonce_desc'] = 'Die Buchungsgebühr wird nur einmal für jede Nutzer:in eingehoben. Sobald einmal bezahlt wurde, sind alle weiteren Buchungen ohne Buchungsgebühr.';
 $string['credittopayback'] = 'Zurückerstatteter Betrag';
 $string['cancelationfee:description'] = 'Automatisch vom Guthaben abgezogene Gebühr bei einer Stornierung durch die/den KäuferIn.
                                         -1 bedeutet, dass Stornierung durch Userin nicht möglich ist.';
