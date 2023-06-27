@@ -134,7 +134,7 @@ $string['paymentconfirmed'] = 'Payment confirmed';
 $string['restart'] = 'Next customer';
 $string['print'] = 'Print';
 $string['previouspurchases'] = 'Previous purchases';
-$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout';
+$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout ❯❯';
 $string['nouserselected'] = 'No user selected';
 $string['selectuser'] = 'Select a user...';
 $string['user'] = 'User...';

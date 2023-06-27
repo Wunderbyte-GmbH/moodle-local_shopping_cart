@@ -53,7 +53,7 @@ class dynamic_select_users extends dynamic_form {
         ];
 
         $mform->addElement('autocomplete', 'userid', get_string('selectuser', 'local_shopping_cart'), [], $options);
-        $mform->addElement('submit', 'submitbutton', get_string('choose'));
+        $mform->addElement('submit', 'submitbutton', get_string('continue') . ' ❯❯');
 
     }
 
