@@ -70,7 +70,7 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     And I wait "2" seconds
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-section ul.shopping-cart-items" "css_element"
@@ -90,7 +90,7 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "11.50 EUR" in the "ul.cashier-history-items" "css_element"
     ## And I should see "10.00 EUR + 15%" in the "ul.cashier-history-items div.item-price" "css_element"

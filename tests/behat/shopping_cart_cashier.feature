@@ -57,7 +57,7 @@ Feature: Cashier actions in shopping cart.
     ## And I press "Choose"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
 
   @javascript
@@ -77,7 +77,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -98,7 +98,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -123,7 +123,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -146,7 +146,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "10.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
@@ -156,7 +156,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |
@@ -183,7 +183,7 @@ Feature: Cashier actions in shopping cart.
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
     And I set the following fields to these values:
@@ -197,7 +197,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |

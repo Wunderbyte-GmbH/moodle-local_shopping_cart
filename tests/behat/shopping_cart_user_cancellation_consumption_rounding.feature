@@ -61,7 +61,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     And I wait "2" seconds
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"

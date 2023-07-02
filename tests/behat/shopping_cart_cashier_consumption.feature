@@ -59,7 +59,7 @@ Feature: Cashier actions in shopping cart with consumption enabled.
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     And I wait "2" seconds
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
@@ -68,7 +68,7 @@ Feature: Cashier actions in shopping cart with consumption enabled.
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
-    And I click on "Choose" "button"
+    And I click on "Continue" "button"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the "ul.cashier-history-items" "css_element"
     And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"
