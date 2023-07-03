@@ -1361,8 +1361,10 @@ class shopping_cart {
         // We need the accounts to run through all the gateways.
         $accounts = \core_payment\helper::get_payment_accounts_to_manage(context_system::instance());
         foreach ($accounts as $account) {
-            $gateways = [];
+
+            // Note: We currently never use this.
             $canmanage = has_capability('moodle/payment:manageaccounts', $account->get_context());
+
             foreach ($account->get_gateways() as $gateway) {
 
                 if (empty($gateway->get('enabled'))) {
