@@ -679,7 +679,7 @@ class shopping_cart {
         $error = [];
 
         // When we use credits, we have to log this in the ledger so cash report will have the correct sums!
-        if ($data["usecredit"] && isset($data["credit"]) && $data["credit"] > 0) {
+        if (isset($data["usecredit"]) && $data["usecredit"] && isset($data["credit"]) && $data["credit"] > 0) {
 
             // If we have no identifier, we look for it in items.
             if (empty($identifier)) {
