@@ -130,7 +130,7 @@ class shopping_cart_history {
                             // Generate a select for each table.
                             // Only do this, if an orderid exists.
                             $colselects[] =
-                               "SELECT $gwname.paymentid, $gwname.$key orderid
+                               "SELECT $gwname.id, $gwname.paymentid, $gwname.$key orderid
                                 FROM {paygw_$gwname} $gwname";
                         }
                     }
@@ -138,16 +138,19 @@ class shopping_cart_history {
             }
         }
 
-        $selectorderidpart = "";
         if (!empty($colselects)) {
+            $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
+                "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
             $selectorderidpart = ", pgw.orderid";
             $colselectsstring = implode(' UNION ', $colselects);
             $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
         } else {
+            $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
             $gatewayspart = '';
+            $selectorderidpart = "";
         }
 
-        $sql = "SELECT DISTINCT " . $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'')") .
+        $sql = "SELECT DISTINCT " . $uniqueidpart .
                 " AS uniqueid,  sch.*, p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p

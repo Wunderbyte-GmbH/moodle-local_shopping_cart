@@ -50,69 +50,6 @@ if (!has_capability('local/shopping_cart:cashier', $context)) {
     die();
 }
 
-// File name and sheet name.
-$fileandsheetname = "cash_report";
-
-$table = new cash_report_table('cash_report_table');
-
-$table->is_downloading($download, $fileandsheetname, $fileandsheetname);
-
-$downloadbaseurl = new moodle_url('/local/shopping_cart/download_cash_report.php');
-$downloadbaseurl->remove_params('page');
-$table->define_baseurl($downloadbaseurl);
-
-// Headers.
-$table->define_headers([
-    get_string('id', 'local_shopping_cart'),
-    get_string('identifier', 'local_shopping_cart'),
-    get_string('timecreated', 'local_shopping_cart'),
-    get_string('timemodified', 'local_shopping_cart'),
-    get_string('paid', 'local_shopping_cart'),
-    get_string('discount', 'local_shopping_cart'),
-    get_string('credit', 'local_shopping_cart'),
-    get_string('cancelationfee', 'local_shopping_cart'),
-    get_string('currency', 'local_shopping_cart'),
-    get_string('lastname', 'local_shopping_cart'),
-    get_string('firstname', 'local_shopping_cart'),
-    get_string('email', 'local_shopping_cart'),
-    get_string('itemid', 'local_shopping_cart'),
-    get_string('itemname', 'local_shopping_cart'),
-    get_string('payment', 'local_shopping_cart'),
-    get_string('paymentstatus', 'local_shopping_cart'),
-    get_string('gateway', 'local_shopping_cart'),
-    get_string('orderid', 'local_shopping_cart'),
-    get_string('annotation', 'local_shopping_cart'),
-    get_string('usermodified', 'local_shopping_cart')
-]);
-
-// Columns.
-$table->define_columns([
-    'id',
-    'identifier',
-    'timecreated',
-    'timemodified',
-    'price',
-    'discount',
-    'credits',
-    'fee',
-    'currency',
-    'lastname',
-    'firstname',
-    'email',
-    'itemid',
-    'itemname',
-    'payment',
-    'paymentstatus',
-    'gateway',
-    'orderid',
-    'annotation',
-    'usermodified'
-]);
-
-// Table cache.
-$table->define_cache('local_shopping_cart', 'cachedcashreport');
-$table->showdownloadbutton = true;
-
 // Get payment account from settings.
 $accountid = get_config('local_shopping_cart', 'accountid');
 $account = null;
@@ -135,7 +72,7 @@ if (!empty($account)) {
             foreach ($cols as $key => $value) {
                 if (strpos($key, 'orderid') !== false) {
                     $colselects[] =
-                        "SELECT $gwname.paymentid, $gwname.$key orderid
+                        "SELECT $gwname.id, $gwname.paymentid, $gwname.$key orderid
                         FROM {paygw_$gwname} $gwname";
                 }
             }
@@ -143,17 +80,25 @@ if (!empty($account)) {
     }
 }
 
-$selectorderidpart = "";
 if (!empty($colselects)) {
+    $gatewaysupported = true;
+    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
+        "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
     $selectorderidpart = ", pgw.orderid";
     $colselectsstring = implode(' UNION ', $colselects);
     $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
+} else {
+    // Gateway missing or not supported.
+    $gatewaysupported = false;
+    $gatewayspart = "";
+    $selectorderidpart = "";
+    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
 }
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
 $fields = "s1.*";
-$from = "(SELECT DISTINCT " . $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.orderid,'')") .
+$from = "(SELECT DISTINCT " . $uniqueidpart .
         " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
@@ -169,6 +114,84 @@ $from = "(SELECT DISTINCT " . $DB->sql_concat("scl.id", "' - '", "COALESCE(pgw.o
         $gatewayspart ) s1";
 $where = "1 = 1";
 $params = [];
+
+// Setup the table.
+// File name and sheet name.
+$fileandsheetname = "cash_report";
+
+$table = new cash_report_table('cash_report_table');
+
+$table->is_downloading($download, $fileandsheetname, $fileandsheetname);
+
+$downloadbaseurl = new moodle_url('/local/shopping_cart/download_cash_report.php');
+$downloadbaseurl->remove_params('page');
+$table->define_baseurl($downloadbaseurl);
+
+// Headers.
+$headers = [
+    get_string('id', 'local_shopping_cart'),
+    get_string('identifier', 'local_shopping_cart'),
+    get_string('timecreated', 'local_shopping_cart'),
+    get_string('timemodified', 'local_shopping_cart'),
+    get_string('paid', 'local_shopping_cart'),
+    get_string('discount', 'local_shopping_cart'),
+    get_string('credit', 'local_shopping_cart'),
+    get_string('cancelationfee', 'local_shopping_cart'),
+    get_string('currency', 'local_shopping_cart'),
+    get_string('lastname', 'local_shopping_cart'),
+    get_string('firstname', 'local_shopping_cart'),
+    get_string('email', 'local_shopping_cart'),
+    get_string('itemid', 'local_shopping_cart'),
+    get_string('itemname', 'local_shopping_cart'),
+    get_string('payment', 'local_shopping_cart'),
+    get_string('paymentstatus', 'local_shopping_cart'),
+    get_string('gateway', 'local_shopping_cart'),
+    get_string('orderid', 'local_shopping_cart'),
+    get_string('annotation', 'local_shopping_cart'),
+    get_string('usermodified', 'local_shopping_cart')
+];
+// Columns.
+$columns = [
+    'id',
+    'identifier',
+    'timecreated',
+    'timemodified',
+    'price',
+    'discount',
+    'credits',
+    'fee',
+    'currency',
+    'lastname',
+    'firstname',
+    'email',
+    'itemid',
+    'itemname',
+    'payment',
+    'paymentstatus',
+    'gateway',
+    'orderid',
+    'annotation',
+    'usermodified'
+];
+
+if (!$gatewaysupported) {
+    // We remove orderid if no gateway is set or if gateway is not supported.
+    if (($oid = array_search(get_string('orderid', 'local_shopping_cart'), $headers)) !== false) {
+        unset($headers[$oid]);
+        $headers = array_values($headers); // Re-index so we do not mess order.
+    }
+    if (($oid = array_search('orderid', $columns)) !== false) {
+        unset($columns[$oid]);
+        $columns = array_values($columns); // Re-index so we do not mess order.
+    }
+}
+
+$table->define_headers($headers);
+$table->define_columns($columns);
+
+// Table cache.
+$table->define_cache('local_shopping_cart', 'cachedcashreport');
+$table->showdownloadbutton = true;
 
 // Now build the table.
 $table->set_sql($fields, $from, $where, $params);
@@ -198,7 +221,7 @@ $filtercolumns['paymentstatus'] = [
 $table->define_filtercolumns($filtercolumns);
 
 // Sortable columns.
-$table->define_sortablecolumns([
+$sortablecols = [
     'id',
     'identifier',
     'timecreated',
@@ -219,10 +242,10 @@ $table->define_sortablecolumns([
     'orderid',
     'annotation',
     'usermodified',
-]);
+];
 
-// Full text search columns.
-$table->define_fulltextsearchcolumns([
+// Columns used for fulltext search.
+$fulltextsearchcols = [
     'identifier',
     'lastname',
     'firstname',
@@ -231,7 +254,22 @@ $table->define_fulltextsearchcolumns([
     'gateway',
     'orderid',
     'annotation',
-]);
+];
+
+if (!$gatewaysupported) {
+    // We remove orderid if no gateway is set or if gateway is not supported.
+    if (($oid = array_search('orderid', $sortablecols)) !== false) {
+        unset($sortablecols[$oid]);
+        $sortablecols = array_values($sortablecols); // Re-index so we do not mess order.
+    }
+    if (($oid = array_search('orderid', $fulltextsearchcols)) !== false) {
+        unset($fulltextsearchcols[$oid]);
+        $fulltextsearchcols = array_values($fulltextsearchcols); // Re-index so we do not mess order.
+    }
+}
+// Now we can define the columns.
+$table->define_sortablecolumns($sortablecols);
+$table->define_fulltextsearchcolumns($fulltextsearchcols);
 
 // Table will be shown normally.
 echo $OUTPUT->header();
@@ -262,6 +300,16 @@ echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert
     <span aria-hidden="true">&times;</span>
     </button>
 </div>';
+
+// Dismissible alert showing a warning if payment gateway is missing or not supported.
+if (!$gatewaysupported) {
+    echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">' .
+        get_string('error:gatewaymissingornotsupported', 'local_shopping_cart') .
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>';
+}
 
 $table->out(50, false);
 

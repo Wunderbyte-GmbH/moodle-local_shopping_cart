@@ -96,6 +96,8 @@ $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['error:capabilitymissing'] = 'FEHLER: Ihnen fehlt eine erforderliche Berechtigung.';
 $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
+$string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need
+ to set up a payment gateway.';
 $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.';
 $string['error:cancelationfeetoohigh'] = 'Stornogebühr darf nicht größer sein als der zurückerstattete Betrag!';
 $string['error:nofieldchosen'] = 'Sie müssen ein Feld auswählen.';

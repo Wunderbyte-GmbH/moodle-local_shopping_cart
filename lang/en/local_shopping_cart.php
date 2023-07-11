@@ -93,6 +93,8 @@ $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:capabilitymissing'] = 'ERROR: You do not have a necessary capability.';
 $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
+$string['error:gatewaymissingornotsupported'] = 'Sie haben entweder noch kein Zahlungs-Gateway eingerichtet
+ oder das eingerichtete Zahlungsgateway wird nicht unterstützt.';
 $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
 $string['error:nofieldchosen'] = 'You have to choose a field.';
