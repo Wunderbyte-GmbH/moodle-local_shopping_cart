@@ -1,6 +1,23 @@
+## Version 0.5.1 (2023071200)
+
+**Improvements:**
+* Improvement: Improvement: Add ID to cashier's user selector and some layout improvements.
+
+**Bugfixes:**
+* Bugfix: 2-digit price format lost on page reload / checkout navigation.
+* Bugfix: Prevent selection of deleted users by cashier.
+
+**Tests:**
+* Behat: Adjusting shopping_cart test (a) settings separated for better optimization; (b) to use 2-digits prices.
+* Behat: fix: replace "Choose" with "Continue".
+* Adjust github workflow to Moodle 401 (402) versions only.
+
 ## Version 0.5.0 (2023062300)
 **Bugfixes:**
 * Bugfix: Introduce new functions to convert prices to strings with 2 decimals right before rendering.
+* Bugfix: Missing isset check for credits.
+* Bugfix: Fix errors when payment gateway is missing or not supported and show a warning message if so.
+* Bugfix: Mixed DE/EN strings.
 
 ## Version 0.4.9 (2023062200)
 **Improvements:**

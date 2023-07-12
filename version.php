@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_shopping_cart';
-$plugin->release = '0.5.0';
-$plugin->version = 2023062300;
+$plugin->release = '0.5.1';
+$plugin->version = 2023071200;
 $plugin->requires = 2020051700;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = [
-    'local_wunderbyte_table' => 2023061600,
+    'local_wunderbyte_table' => 2023070500,
 ];
