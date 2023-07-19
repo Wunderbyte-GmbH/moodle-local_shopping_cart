@@ -31,7 +31,7 @@
 
     Example context (json):
     {
-       "count":0,
+       "count":1,
        "maxitems":"10",
        "items":[
            {
@@ -124,7 +124,7 @@
     {{$togglecontent}}
         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
         <div id="itemcount" class="count-container {{^count}}hidden{{/count}}" data-region="count-container"
-        aria-label="{{count}}">{{count}}</div>
+        aria-label="Count: {{count}}">{{count}}</div>
     {{/togglecontent}}
 
     {{$containerlabel}}{{/containerlabel}}
