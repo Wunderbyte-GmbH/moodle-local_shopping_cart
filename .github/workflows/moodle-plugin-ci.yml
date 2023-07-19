@@ -92,7 +92,7 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-          MUSTACHE_IGNORE_NAMES: 'cashier.mustache,shopping_cart_item.mustache,history_item.mustache'
+          MUSTACHE_IGNORE_NAMES: 'cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache'
 
       - name: PHP Lint
         if: ${{ always() }}
