@@ -93,7 +93,7 @@ class shopping_cart_history {
      */
     public static function get_history_list_for_user(int $userid): array {
 
-        global $DB;
+        global $CFG, $DB;
 
         // We need this in case we load via webservice to resolve the constants.
         require_once(__DIR__ . '/../lib.php');
@@ -139,19 +139,31 @@ class shopping_cart_history {
         }
 
         if (!empty($colselects)) {
-            $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
-                "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
+            // Sql_cast_to_char is available since Moodle 4.1.
+            if ($CFG->version >= 2022112800) {
+                $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
+                    "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
+                $uniqueidpart .= " AS uniqueid, ";
+            } else {
+                $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(pgw.orderid,'') AS uniqueid, ");
+            }
             $selectorderidpart = ", pgw.orderid";
             $colselectsstring = implode(' UNION ', $colselects);
             $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
         } else {
-            $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
+            // Sql_cast_to_char is available since Moodle 4.1.
+            if ($CFG->version >= 2022112800) {
+                $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
+                $uniqueidpart .= " AS uniqueid, ";
+            } else {
+                $uniqueidpart = '';
+            }
             $gatewayspart = '';
             $selectorderidpart = "";
         }
 
-        $sql = "SELECT DISTINCT " . $uniqueidpart .
-                " AS uniqueid,  sch.*, p.gateway$selectorderidpart
+        $sql = "SELECT DISTINCT
+                $uniqueidpart sch.*, p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
                 ON p.itemid = sch.identifier AND p.userid=sch.userid
