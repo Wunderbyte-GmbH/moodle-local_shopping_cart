@@ -1400,12 +1400,23 @@ class shopping_cart {
 
                     // Now, we run through all pending payments we found above.
                     foreach ($records as $record) {
-                        $response = $transactioncomplete::execute(
-                            'local_shopping_cart',
-                            '', // This area is not important in this case.
-                            $record->identifier, // In this case, this is the itemid.
-                            $record->tid, // This is the order id.
-                            ''); // We don't need a ressource path here.
+
+                        // We need to differentiate between gateways here as they have different params.
+                        switch ($name) {
+                            case 'mpay24':
+
+                                // TODO: @ChrisBadusch - Do we need to call transactioncomplete::execute for mpay24 here??
+
+                                break;
+                            default:
+                                $response = $transactioncomplete::execute(
+                                    'local_shopping_cart',
+                                    '', // This area is not important in this case.
+                                    $record->identifier, // In this case, this is the itemid.
+                                    $record->tid, // This is the order id.
+                                    ''); // We don't need a ressource path here.
+                                break;
+                        }
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
                         if (isset($response['success']) && $response['success']) {
