@@ -1409,6 +1409,8 @@ class shopping_cart {
 
                                 break;
                             default:
+                                // This currently works with payunity.
+                                // TODO: Check if we can do this for other gateways like paypal, stripe...
                                 $response = $transactioncomplete::execute(
                                     'local_shopping_cart',
                                     '', // This area is not important in this case.
