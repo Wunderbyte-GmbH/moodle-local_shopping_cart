@@ -15,10 +15,19 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace local_shopping_cart\external;
+
+use core_user;
 use external_api;
 use external_function_parameters;
 use external_value;
+use external_description;
+use external_single_structure;
+use external_multiple_structure;
 use local_shopping_cart\shopping_cart;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/lib/externallib.php');
 
 /**
  * Provides the local_shopping_cart_search_entities external function.
@@ -63,18 +72,18 @@ class search_users extends external_api {
      *
      * @return external_description
      */
-    public static function execute_returns(): \external_description {
+    public static function execute_returns(): external_description {
 
-        return new \external_single_structure([
-            'list' => new \external_multiple_structure(
-                new \external_single_structure([
-                    'id' => new \external_value(\core_user::get_property_type('id'), 'ID of the user'),
-                    'firstname' => new \external_value(PARAM_TEXT, 'Firstname of the user'),
-                    'lastname' => new \external_value(PARAM_TEXT, 'Lastname of the user', VALUE_OPTIONAL),
-                    'email' => new \external_value(PARAM_TEXT, 'Email of the user', VALUE_OPTIONAL),
+        return new external_single_structure([
+            'list' => new external_multiple_structure(
+                new external_single_structure([
+                    'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
+                    'firstname' => new external_value(PARAM_TEXT, 'Firstname of the user'),
+                    'lastname' => new external_value(PARAM_TEXT, 'Lastname of the user', VALUE_OPTIONAL),
+                    'email' => new external_value(PARAM_TEXT, 'Email of the user', VALUE_OPTIONAL),
                 ])
             ),
-            'warnings' => new \external_value(PARAM_TEXT, 'Warnings'),
+            'warnings' => new external_value(PARAM_TEXT, 'Warnings'),
         ]);
     }
 }
