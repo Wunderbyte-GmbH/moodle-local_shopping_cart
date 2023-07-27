@@ -32,6 +32,7 @@ require_once(__DIR__ . '/../lib.php');
 use cache_helper;
 use context_system;
 use lang_string;
+use DateTime;
 use local_shopping_cart\event\item_added;
 use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
@@ -1379,14 +1380,18 @@ class shopping_cart {
                     continue;
                 }
 
-                $sql = "SELECT DISTINCT sch.identifier, sch.userid, COALESCE(oo.tid, '') as tid
+                $sql = "SELECT DISTINCT sch.identifier, sch.userid, oo.timecreated, COALESCE(oo.tid, '') as tid
                         FROM {local_shopping_cart_history} sch
                         JOIN {" . $table . "} oo
                         ON oo.itemid = sch.identifier AND oo.userid=sch.userid
                         WHERE sch.paymentstatus IN (0,1)
                         AND sch.userid=:userid
                         AND oo.status = 0
-                        GROUP BY sch.identifier, sch.userid, tid";
+                        GROUP BY sch.identifier, sch.userid, oo.timecreated, tid";
+
+                // Filtern records
+                $now = time();
+                $past = strtotime('-48 hours', $now);
 
                 $records = $DB->get_records_sql($sql, $params);
 
@@ -1401,23 +1406,19 @@ class shopping_cart {
                     // Now, we run through all pending payments we found above.
                     foreach ($records as $record) {
 
+                        if ($record->timecreated <= $past) {
+                            continue;
+                        }
+
+                        // TODO: NO switch case ! Make params optional ! TRY catch complete call
+                        // TODO: test all providers again
                         // We need to differentiate between gateways here as they have different params.
-                        switch ($name) {
-                            case 'mpay24':
-
-                                // TODO: @ChrisBadusch - Do we need to call transactioncomplete::execute for mpay24 here??
-
-                                break;
-                            default:
-                                // This currently works with payunity.
-                                // TODO: Check if we can do this for other gateways like paypal, stripe...
-                                $response = $transactioncomplete::execute(
-                                    'local_shopping_cart',
-                                    '', // This area is not important in this case.
-                                    $record->identifier, // In this case, this is the itemid.
-                                    $record->tid, // This is the order id.
-                                    ''); // We don't need a ressource path here.
-                                break;
+                        try {
+                            $response = $transactioncomplete::execute('local_shopping_cart', '',
+                            $record->identifier, $record->tid, '', '',
+                            true, '', $userid);
+                        } catch (\Throwable $e) {
+                            return;
                         }
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
