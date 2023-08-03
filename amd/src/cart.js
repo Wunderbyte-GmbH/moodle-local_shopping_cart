@@ -58,6 +58,7 @@ const SELECTORS = {
     PRICELABELAREA: '.sc_price_label',
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
+    ACCEPTTERMS: '#accepttermsnandconditions',
 };
 /**
  *
@@ -120,6 +121,11 @@ const SELECTORS = {
             currency: paymentbutton.dataset.currency,
         };
         addZeroPriceListener(data);
+    }
+
+    const accepttermsbutton = document.querySelector(SELECTORS.ACCEPTTERMS);
+    if (accepttermsbutton && paymentbutton) {
+        addAcceptTermsListener(accepttermsbutton, paymentbutton);
     }
 };
 
@@ -458,6 +464,10 @@ function addZeroPriceListener(data) {
 
     if (paymentbutton) {
 
+        if (paymentbutton.classList.contains('disabled')) {
+            return;
+        }
+
         const price = data.price;
         const currency = data.currency;
 
@@ -763,4 +773,37 @@ function convertPricesToNumberFormat(data) {
             }
         }
     }
+}
+
+/**
+ * Add Accept terms listener to set the right class to payment region button.
+ * @param {element} accepttermsbutton
+ * @param {element} paymentbutton
+ */
+function addAcceptTermsListener(accepttermsbutton, paymentbutton) {
+
+    // We need to add the Listener on the payment button which will actually prevent any action on disabled.
+
+    // eslint-disable-next-line no-console
+    console.log('paymentbutton', paymentbutton);
+
+    paymentbutton.addEventListener('click', event => {
+
+        // eslint-disable-next-line no-console
+        console.log('test');
+
+        if (paymentbutton.classList.contains('disabled')) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
+
+    accepttermsbutton.addEventListener('change', event => {
+
+        if (event.currentTarget.checked) {
+            paymentbutton.classList.remove('disabled');
+        } else {
+            paymentbutton.classList.add('disabled');
+        }
+    });
 }

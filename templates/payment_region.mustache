@@ -44,6 +44,7 @@
         "description": "Enrolment in course Introduction to algorithms",
         "successurl": "https://moodlesite/course/view.php?id=2",
         "isguestuser": false
+        "termsandconditions": "Accept these terms and conditions",
     }
 
 }}
@@ -57,7 +58,7 @@
     {{/isguestuser}}
     {{^isguestuser}}
         <button
-            class="btn btn-primary pull-right mr-3"
+            class="btn btn-primary pull-right mr-3 {{#termsandconditions}} disabled {{/termsandconditions}}"
             type="button"
             id="gateways-modal-trigger-33"
             data-action="core_payment/triggerPayment"

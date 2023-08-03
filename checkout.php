@@ -84,6 +84,7 @@ if (isset($success)) {
     }
 } else {
 
+    // Makes sure no open purchase stays active.
     shopping_cart::check_for_ongoing_payment($userid);
 
     $historylist = new shoppingcart_history_list($userid);
@@ -112,6 +113,12 @@ if (isset($success)) {
     $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
 
     $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+    // Show the terms.
+    if (!empty(get_config('local_shopping_cart', 'accepttermsandconditions'))) {
+        $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+    }
+
 }
 
 // Output the header.

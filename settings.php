@@ -25,6 +25,7 @@
 
 use local_shopping_cart\admin_setting_taxcategories;
 use local_shopping_cart\shopping_cart;
+use PgSql\Lob;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -186,11 +187,27 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+        new admin_setting_confightmleditor(
+                $componentname . '/additonalcashiersection',
+                get_string('additonalcashiersection', $componentname),
+                get_string('additonalcashiersection:description', $componentname),
+                '..',
+                PARAM_RAW
+        )
+    );
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/accepttermsandconditions',
+                get_string('accepttermsandconditions', 'local_shopping_cart'),
+                get_string('accepttermsandconditions:description', 'local_shopping_cart'), 0));
+
+    $settings->add(
             new admin_setting_configtextarea(
-                    $componentname . '/receipthtml',
-                    get_string('receipthtml', $componentname),
-                    get_string('receipthtml:description', $componentname),
-                    '..',
+                    $componentname . '/termsandconditions',
+                    get_string('termsandconditions', $componentname),
+                    get_string('termsandconditions:description', $componentname),
+                    null,
                     PARAM_RAW
             )
     );
