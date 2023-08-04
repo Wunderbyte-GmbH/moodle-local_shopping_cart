@@ -58,7 +58,7 @@
     {{/isguestuser}}
     {{^isguestuser}}
         <button
-            class="btn btn-primary pull-right mr-3 {{#termsandconditions}} disabled {{/termsandconditions}}"
+            class="btn btn-primary pull-right mr-3"
             type="button"
             id="gateways-modal-trigger-33"
             data-action="core_payment/triggerPayment"
@@ -72,6 +72,7 @@
             data-currency="{{currency}}"
             data-successurl="{{successurl}}"
             data-description="my shopping cart checkout"
+            disabled
         >
             {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
         </button>

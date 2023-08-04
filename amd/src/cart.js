@@ -782,28 +782,13 @@ function convertPricesToNumberFormat(data) {
  */
 function addAcceptTermsListener(accepttermsbutton, paymentbutton) {
 
-    // We need to add the Listener on the payment button which will actually prevent any action on disabled.
-
-    // eslint-disable-next-line no-console
-    console.log('paymentbutton', paymentbutton);
-
-    paymentbutton.addEventListener('click', event => {
-
-        // eslint-disable-next-line no-console
-        console.log('test');
-
-        if (paymentbutton.classList.contains('disabled')) {
-            event.stopPropagation();
-            event.preventDefault();
-        }
-    });
-
     accepttermsbutton.addEventListener('change', event => {
-
         if (event.currentTarget.checked) {
-            paymentbutton.classList.remove('disabled');
+            paymentbutton.disabled = false;
+            //paymentbutton.classList.remove('disabled');
         } else {
-            paymentbutton.classList.add('disabled');
+            paymentbutton.disabled = true;
+            //paymentbutton.classList.add('disabled');
         }
     });
 }
