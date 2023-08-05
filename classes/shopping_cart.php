@@ -1389,7 +1389,7 @@ class shopping_cart {
                         AND oo.status = 0
                         GROUP BY sch.identifier, sch.userid, oo.timecreated, tid";
 
-                // Filtern records
+                // Filtern records.
                 $now = time();
                 $past = strtotime('-48 hours', $now);
 

@@ -284,8 +284,7 @@ $string['receipthtml:description'] = 'You can use the following placeholders:
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
 
-// Terms and conditions
-
+// Terms and conditions.
 $string['confirmterms'] = "I accept";
 $string['accepttermsandconditions'] = "Require accpetance of terms and conditions";
 $string['accepttermsandconditions:description'] = "Without accepting termsn and conditions, buying is not possible.";

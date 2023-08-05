@@ -785,10 +785,8 @@ function addAcceptTermsListener(accepttermsbutton, paymentbutton) {
     accepttermsbutton.addEventListener('change', event => {
         if (event.currentTarget.checked) {
             paymentbutton.disabled = false;
-            //paymentbutton.classList.remove('disabled');
         } else {
             paymentbutton.disabled = true;
-            //paymentbutton.classList.add('disabled');
         }
     });
 }
