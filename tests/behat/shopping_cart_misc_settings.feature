@@ -1,6 +1,6 @@
 @local @local_shopping_cart @javascript
 
-Feature: Admin configures shopping cart to use various settings.
+Feature: As admin I configure shopping cart to use various settings. As teacher or student I ensure those settings working properly
 
   Background:
     Given the following "users" exist:
@@ -20,17 +20,10 @@ Feature: Admin configures shopping cart to use various settings.
     And the following "core_payment > payment accounts" exist:
       | name           |
       | Account1       |
-    When I log in as "admin"
-    And I navigate to "Payments > Payment accounts" in site administration
-    Then I click on "PayPal" "link" in the "Account1" "table_row"
-    And I set the following fields to these values:
-      | Brand name  | Test paypal |
-      | Client ID   | Test        |
-      | Secret      | Test        |
-      | Environment | Sandbox     |
-      | Enable      | 1           |
-    And I press "Save changes"
-    And I should see "PayPal" in the "Account1" "table_row"
+    And the following "local_shopping_cart > payment gateways" exist:
+      | account  | gateway | enabled | config                                                                                |
+      | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
+    And I log in as "admin"
     And I set the following administration settings values:
       | Payment account | Account1 |
     And I log out
@@ -39,8 +32,8 @@ Feature: Admin configures shopping cart to use various settings.
   Scenario: Shopping Cart settings: enable terms and conditions
     Given I log in as "admin"
     And I set the following administration settings values:
-      | Require accpetance of terms and conditions | 1                              |
-      | Terms & Conditions                         | Are you agree with conditions? |
+      | accepttermsandconditions | 1                              |
+      | Terms & Conditions       | Are you agree with conditions? |
     And I log out
     When I log in as "user1"
     And I wait until the page is ready

@@ -1,11 +1,9 @@
 @local @local_shopping_cart @javascript
 
-Feature: Admin tax actions in shopping cart.
-  In order buy for students
-  As an admin
-  I configure tax options
-  As a cashier
-  I buy for a student and see taxes.
+Feature: Admin tax actions with simple taxin shopping cart.
+  In order buy as student
+  As an admin I configure simple tax options
+  As a user I select cart item and see price with tax
 
   Background:
     Given the following "users" exist:
@@ -25,33 +23,19 @@ Feature: Admin tax actions in shopping cart.
     And the following "core_payment > payment accounts" exist:
       | name           |
       | Account1       |
-    When I log in as "admin"
-    And I navigate to "Payments > Payment accounts" in site administration
-    Then I click on "PayPal" "link" in the "Account1" "table_row"
-    And I set the field "Brand name" to "Test paypal"
-    And I set the following fields to these values:
-      | Brand name  | Test paypal |
-      | Client ID   | Test        |
-      | Secret      | Test        |
-      | Environment | Sandbox     |
-      | Enable      | 1           |
-    And I press "Save changes"
-    And I should see "PayPal" in the "Account1" "table_row"
-    And I should not see "Not available" in the "Account1" "table_row"
-    And I visit "/admin/category.php?category=local_shopping_cart"
-    And I set the field "Payment account" to "Account1"
-    And I set the field "Enable Tax processing" to "checked"
-    And I press "Save changes"
-    And I set the following fields to these values:
-      | Tax categories and their tax percentage | 15 |
-    And I press "Save changes"
-    Then I should see "Changes saved"
-    And the field "Tax categories and their tax percentage" matches value "15"
-    And the field "Default tax category" matches value ""
+    And the following "local_shopping_cart > payment gateways" exist:
+      | account  | gateway | enabled | config                                                                                |
+      | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
+    And I log in as "admin"
+    And I set the following administration settings values:
+      | Payment account                         | Account1 |
+      | Enable Tax processing                   | 1        |
+      | Default tax category                    |          |
+      | Tax categories and their tax percentage | 15       |
     And I log out
 
   @javascript
-  Scenario: Add single item for user to the shopping cart when tax without categories enabled
+  Scenario: Add single item to the shopping cart as user when tax without categories enabled
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
