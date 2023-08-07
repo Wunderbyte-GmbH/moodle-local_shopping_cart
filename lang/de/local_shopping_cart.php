@@ -276,10 +276,11 @@ $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Ka
 
 // Terms and conditions.
 $string['confirmterms'] = "Ich akzeptiere";
-$string['accepttermsandconditions'] = "Verlange Akzeptanz der AGBs";
+$string['accepttermsandconditions'] = "Bestätigung der AGBs verlangen";
 $string['accepttermsandconditions:description'] = "Ohne Häkchen bei den AGBs ist buchen nicht möglich.";
 $string['termsandconditions'] = "AGBs";
-$string['termsandconditions:description'] = "Sie können hier z.B. ein PDF verlinken. Für Übersetzungen verwenden Sie die Moodle Sprachen Filter.";
+$string['termsandconditions:description'] = "Sie können hier z.B. ein PDF verlinken. Für Übersetzungen verwenden Sie die
+ <a href='https://docs.moodle.org/402/de/Multi-language_content_filter' target='_blank'>Moodle Sprachfilter</a>.";
 
 // Shortcodes.
 $string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
