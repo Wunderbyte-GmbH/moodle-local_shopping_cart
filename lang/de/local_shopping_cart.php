@@ -275,7 +275,7 @@ $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
 
 // Terms and conditions.
-$string['confirmterms'] = "Ich akzeptiere";
+$string['confirmterms'] = "AGBs akzeptieren";
 $string['accepttermsandconditions'] = "Bestätigung der AGBs verlangen";
 $string['accepttermsandconditions:description'] = "Ohne Häkchen bei den AGBs ist buchen nicht möglich.";
 $string['termsandconditions'] = "AGBs";

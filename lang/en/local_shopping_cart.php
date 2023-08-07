@@ -285,7 +285,7 @@ $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
 
 // Terms and conditions.
-$string['confirmterms'] = "I accept";
+$string['confirmterms'] = "I accept the terms and conditions";
 $string['accepttermsandconditions'] = "Require acceptance of terms and conditions";
 $string['accepttermsandconditions:description'] = "Without accepting terms and conditions, buying is not possible.";
 $string['termsandconditions'] = "Terms & Conditions";
