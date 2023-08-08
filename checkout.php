@@ -115,7 +115,7 @@ if (isset($success)) {
     $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
     // Show the terms.
-    if (!empty(get_config('local_shopping_cart', 'accepttermsandconditions'))) {
+    if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
         $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
     }
 
