@@ -82,8 +82,14 @@ if (!empty($account)) {
 
 if (!empty($colselects)) {
     $gatewaysupported = true;
-    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
-        "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
+    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" .
+        // Sql_cast_to_char is available since Moodle 4.1.
+        $CFG->version >= 2022112800 ? $DB->sql_cast_to_char("p.id") : "CAST(p.id AS VARCHAR)" .
+        ",'X')",
+        "' - '", "COALESCE(" .
+        // Sql_cast_to_char is available since Moodle 4.1.
+        $CFG->version >= 2022112800 ? $DB->sql_cast_to_char("pgw.id") : "CAST(pgw.id AS VARCHAR)" .
+        ",'X')");
     $selectorderidpart = ", pgw.orderid";
     $colselectsstring = implode(' UNION ', $colselects);
     $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
@@ -92,7 +98,10 @@ if (!empty($colselects)) {
     $gatewaysupported = false;
     $gatewayspart = "";
     $selectorderidpart = "";
-    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
+    $uniqueidpart = $DB->sql_concat("scl.id", "' - '", "COALESCE(" .
+        // Sql_cast_to_char is available since Moodle 4.1.
+        $CFG->version >= 2022112800 ? $DB->sql_cast_to_char("p.id") : "CAST(p.id AS VARCHAR)" .
+        ",'X')");
 }
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
