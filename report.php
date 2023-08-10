@@ -84,11 +84,11 @@ if (!empty($colselects)) {
     $gatewaysupported = true;
     $uniqueidpart = $DB->sql_concat("scl.id", "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version >= 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
+        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
             "COALESCE(CAST(p.id AS VARCHAR),'X')",
         "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version >= 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
+        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
             "COALESCE(CAST(pgw.id AS VARCHAR),'X')");
     $selectorderidpart = ", pgw.orderid";
     $colselectsstring = implode(' UNION ', $colselects);
@@ -100,7 +100,7 @@ if (!empty($colselects)) {
     $selectorderidpart = "";
     $uniqueidpart = $DB->sql_concat("scl.id", "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version >= 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
+        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
             "COALESCE(CAST(p.id AS VARCHAR),'X')");
 }
 

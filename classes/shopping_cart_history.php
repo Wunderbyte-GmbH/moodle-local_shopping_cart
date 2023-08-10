@@ -140,7 +140,7 @@ class shopping_cart_history {
 
         if (!empty($colselects)) {
             // Sql_cast_to_char is available since Moodle 4.1.
-            if ($CFG->version >= 2022112800) {
+            if ($CFG->version > 2022112800) {
                 $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')",
                     "' - '", "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')");
                 $uniqueidpart .= " AS uniqueid, ";
@@ -152,7 +152,7 @@ class shopping_cart_history {
             $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
         } else {
             // Sql_cast_to_char is available since Moodle 4.1.
-            if ($CFG->version >= 2022112800) {
+            if ($CFG->version > 2022112800) {
                 $uniqueidpart = $DB->sql_concat("sch.id", "' - '", "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')");
                 $uniqueidpart .= " AS uniqueid, ";
             } else {
