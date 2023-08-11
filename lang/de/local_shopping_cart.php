@@ -90,6 +90,7 @@ $string['foo'] = 'foo';
 $string['cachedef_cashier'] = 'Kassier Cache';
 $string['cachedef_cacheshopping'] = 'Shopping Cache';
 $string['cachedef_schistory'] = 'Shopping cart history cache';
+$string['cachedef_cachedcashreport'] = 'Kassajournal-Cache';
 
 // Errors.
 $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
