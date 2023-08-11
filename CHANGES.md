@@ -1,5 +1,21 @@
-## Version 0.5.1 (2023071200)
+## Version 0.5.2 (2023081100)
+**New features:**
+* New feature: Shopping cart now fully supports Mpay24 payment gateway.
 
+**Bugfixes:**
+* Bugfix: Bugfix: sql_cast_to_char is only supported from Moodle 4.1 onwards.
+* Bugfix: Fix grunting js files.
+* Bugfix: Bugfix: Fix broken cash report SQL.
+* Bugfix: sql_cast_to_char is not supported for the first version of Moodle 4.1 so use ">" instead of ">=".
+* Bugfix: Missing cache definitions.
+
+**Tests and code quality:**
+* Code quality: Lots of tiny improvements for GitHub actions.
+* Code quality: Added small adjustments for Moodle 4.2 compatibility.
+* Tests: New classes have been added in order to create payment gateway instances directly in DB for tests.
+* Tests: Refactoring of all behat tests to use new generator class which creates payment gateway instance in DB.
+
+## Version 0.5.1 (2023071200)
 **Improvements:**
 * Improvement: Improvement: Add ID to cashier's user selector and some layout improvements.
 

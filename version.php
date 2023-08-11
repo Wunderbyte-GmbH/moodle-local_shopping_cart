@@ -18,17 +18,17 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     local_shopping_cart
- * @copyright   2021 Wunderbyte GmbH<info@wunderbyte.at>
+ * @copyright   2023 Wunderbyte GmbH<info@wunderbyte.at>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_shopping_cart';
-$plugin->release = '0.5.1';
-$plugin->version = 2023071200;
-$plugin->requires = 2020051700;
+$plugin->release = '0.5.2';
+$plugin->version = 2023081100;
+$plugin->requires = 2022041900; // Requires this Moodle version. Current: Moodle 4.0.0.
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = [
-    'local_wunderbyte_table' => 2023070500,
+    'local_wunderbyte_table' => 2023081100,
 ];
