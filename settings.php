@@ -220,6 +220,15 @@ if ($hassiteconfig) {
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
 
+    // Cash report settings.
+    $cashreportsettings = new admin_settingpage('local_shopping_cart_cashreport_settings',
+        get_string('cashreportsettings', 'local_shopping_cart'));
+    $cashreportsettings->add(
+            new admin_setting_configcheckbox($componentname . '/cashreportshowcustomorderid',
+                    get_string('cashreport:showcustomorderid', 'local_shopping_cart'),
+                    get_string('cashreport:showcustomorderid_desc', 'local_shopping_cart'), 0));
+    $ADMIN->add($componentname, $cashreportsettings);
+
     // Setting to enable taxes processing.
     $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', get_string('taxsettings', 'local_shopping_cart'));
     $taxsettings->add(
@@ -230,22 +239,22 @@ if ($hassiteconfig) {
     $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
     if ($taxprocessingenabled) {
         $taxcategoriesexample = '
-  <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-    ' . get_string('taxcategories_examples_button', $componentname) . '
-  </a>
-<div class="collapse mb-5" id="collapseExample">
-  <div class="card card-body">
-    Multi country multi tax categories:
-    <pre class="mb-1 p-1">default A:0 B:0 C:0
-At A:20 B:10 C:0
-De A:19 B:10 C:0</pre><hr/>
-    Multi tax categories, no countries:
-    <pre class="mb-1 p-1">A:30 B:0</pre><hr/>
-    Just one default tax:
-    <pre class="mb-1 p-1">20</pre>
-  </div>
-</div>
-';
+                <a data-toggle="collapse" href="#collapseExample" role="button"
+                        aria-expanded="false" aria-controls="collapseExample">
+                ' . get_string('taxcategories_examples_button', $componentname) . '
+                </a>
+                <div class="collapse mb-5" id="collapseExample">
+                <div class="card card-body">
+                Multi country multi tax categories:
+                <pre class="mb-1 p-1">default A:0 B:0 C:0
+                At A:20 B:10 C:0
+                De A:19 B:10 C:0</pre><hr/>
+                Multi tax categories, no countries:
+                <pre class="mb-1 p-1">A:30 B:0</pre><hr/>
+                Just one default tax:
+                <pre class="mb-1 p-1">20</pre>
+                </div>
+                </div>';
         $taxsettings->add(
                 new admin_setting_taxcategories(
                         $componentname . '/taxcategories',

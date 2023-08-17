@@ -30,6 +30,8 @@ require_once(__DIR__ . '/../../config.php');
 
 global $DB;
 
+$dbman = $DB->get_manager();
+
 $date = optional_param('date', date('Y-m-d'), PARAM_TEXT); // Default: today.
 $download = optional_param('download', '', PARAM_ALPHA);
 
@@ -59,12 +61,19 @@ if (!empty($accountid)) {
 
 // Create selects for each payment gateway.
 $colselects = [];
+$openorderselects = [];
 // Create an array of table names for the payment gateways.
 if (!empty($account)) {
     foreach ($account->get_gateways() as $gateway) {
         $gwname = $gateway->get('gateway');
         if ($gateway->get('enabled')) {
             $tablename = "paygw_" . $gwname;
+
+            // If there are open orders tables we create selects for them.
+            $openorderstable = "paygw_" . $gwname . "_openorders";
+            if ($dbman->table_exists($openorderstable)) {
+                $openorderselects[] = "SELECT itemid, tid FROM {paygw_" . $gwname . "_openorders}";
+            }
 
             $cols = $DB->get_columns($tablename);
             // Generate a select for each table.
@@ -78,6 +87,16 @@ if (!empty($account)) {
             }
         }
     }
+}
+
+// If we have open orders tables select statements, we can now UNION them.
+if (!empty($openorderselects)) {
+    $customorderid = "oo.tid AS customorderid, ";
+    $openorderselectsstring = implode(' UNION ', $openorderselects);
+    $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid";
+} else {
+    $customorderid = "'' AS customorderid, ";
+    // If we do not have any open orders tables, we still keep the custom order id column for consistency.
 }
 
 if (!empty($colselects)) {
@@ -104,16 +123,20 @@ if (!empty($colselects)) {
             "COALESCE(CAST(p.id AS VARCHAR),'X')");
 }
 
+// Some clients do not need the default order id but the custom order id from the openorders table.
+
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
 $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
         " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
+        $customorderid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
         p.gateway$selectorderidpart
         FROM {local_shopping_cart_ledger} scl
+        $customorderidpart
         LEFT JOIN {user} u
         ON u.id = scl.userid
         LEFT JOIN {user} um
@@ -178,10 +201,16 @@ $columns = [
     'payment',
     'paymentstatus',
     'gateway',
-    'orderid',
-    'annotation',
-    'usermodified'
 ];
+if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
+    // Only show custom order id if config setting is turned on.
+    $columns[] = 'customorderid';
+} else {
+    // Default.
+    $columns[] = 'orderid';
+}
+$columns[] = 'annotation';
+$columns[] = 'usermodified';
 
 if (!$gatewaysupported) {
     // We remove orderid if no gateway is set or if gateway is not supported.

@@ -72,7 +72,9 @@ $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 $string['calculateconsumation'] = 'Credit on cancelation minus already consumed value.';
 $string['calculateconsumation_desc'] = 'On cancelation, the credit is calculated depending on the already consumed share of a bought article.';
-
+$string['cashreportsettings'] = 'Cash report settings';
+$string['cashreport:showcustomorderid'] = 'Show custom OrderID instead of normal OrderID';
+$string['cashreport:showcustomorderid_desc'] = 'Be careful: Only activate this setting if your payment gateway supports custom order ids.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';

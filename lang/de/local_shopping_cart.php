@@ -74,8 +74,9 @@ $string['defaulttaxcategory_desc'] =
         'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';
 $string['calculateconsumation'] = 'Gutschrift bei Stornierung abzüglich konsumierter Menge.';
 $string['calculateconsumation_desc'] = 'Bei Stornierung wird das Guthaben nach der bereits konsumierten Menge des gekauften Guts berechnet.';
-
-
+$string['cashreportsettings'] = 'Kassajournal-Einstellungen';
+$string['cashreport:showcustomorderid'] = 'Benutzerdefinierte OrderID anstatt der normalen OrderID anzeigen';
+$string['cashreport:showcustomorderid_desc'] = 'Achtung: Nur aktivieren, wenn ihr Zahlungsgateway-Plugin benutzerdefinierte OrderIDs unterstützt.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
