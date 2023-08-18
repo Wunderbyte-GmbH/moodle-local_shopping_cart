@@ -53,24 +53,30 @@ class shopping_cart_bookingfee {
      * Add fee to cart.
      *
      *
-     * @param int $userid
+     * @param int $userid the id of the user who books (-1 if cashier books for another user)
+     * @param int $buyforuserid the id of the user to buy for (for cashier only)
      *
      * @return bool
      */
-    public static function add_fee_to_cart(int $userid): bool {
-
-        $config = get_config('local_shopping_cart');
+    public static function add_fee_to_cart(int $userid, int $buyforuserid = 0): bool {
 
         // Do we need to add a fee at all?
-        if ($config->bookingfee <= 0) {
+        if (get_config('local_shopping_cart', 'bookingfee') <= 0) {
             return false;
         }
 
         // Which kind of fee?
-        if ($config->bookingfeeonlyonce) {
+        if (get_config('local_shopping_cart', 'bookingfeeonlyonce')) {
             // Verify if the user has already ever paid the fee.
-            if (self::user_has_paid_fee($userid)) {
-                return false;
+            if ($userid >= 0) {
+                if (self::user_has_paid_fee($userid)) {
+                    return false;
+                }
+            } else if ($userid < 0 && !empty($buyforuserid)) {
+                // Cashier books for other user.
+                if (self::user_has_paid_fee($buyforuserid)) {
+                    return false;
+                }
             }
             $itemid = BOOKINGFEE_ONLYONCE;
         } else {
