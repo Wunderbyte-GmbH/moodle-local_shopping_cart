@@ -413,7 +413,7 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
     // Now get data for current cashier.
     // SQL to get daily sums.
     $dailysumssqlcurrent = "SELECT payment, sum(price) dailysum
-        FROM {local_shopping_cart_history}
+        FROM {local_shopping_cart_ledger}
         WHERE timecreated BETWEEN :startofday AND :endofday
         AND paymentstatus = :paymentsuccess
         AND usermodified = :userid

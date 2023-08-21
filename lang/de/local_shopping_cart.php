@@ -231,7 +231,7 @@ $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="ale
 $string['showdailysums'] = '&sum; Tageseinnahmen anzeigen...';
 $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';
-$string['titledailysums:current'] = 'Aktuelle*r Kassier*in';
+$string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
 
 // Report headers.
 $string['timecreated'] = 'Erstellt';
