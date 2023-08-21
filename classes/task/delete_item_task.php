@@ -73,19 +73,6 @@ class delete_item_task extends \core\task\adhoc_task {
 
         $context = context_system::instance();
 
-        // Trigger item deleted event.
-        $event = item_deleted::create([
-            'context' => $context,
-            'userid' => $USER->id,
-            'relateduserid' => $userid,
-            'other' => [
-                'itemid' => $taskdata->itemid,
-                'component' => $taskdata->componentname,
-            ],
-        ]);
-
-        $event->trigger();
-
         shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->area, $taskdata->itemid, $userid);
 
         mtrace('Deleted item ' . $taskdata->itemid . ' in area "' . $taskdata->area .
