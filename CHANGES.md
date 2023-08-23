@@ -1,3 +1,14 @@
+## Version 0.5.3 (2023082300)
+**New features:**
+* New feature: Introduce a new setting to show custom orderid instead of gateway orderid.
+
+**Improvements:**
+* Improvement: Remove unnecessary event call of item_deleted at the wrong place.
+
+**Bugfixes:**
+* Bugfix: Fix bookingfee check if cashier books for other user.
+* Bugfix: Daily sums need to sum up prices from local_shopping_cart_ledger (not local_shopping_cart_history).
+
 ## Version 0.5.2 (2023081100)
 **New features:**
 * New feature: Shopping cart now fully supports Mpay24 payment gateway.
