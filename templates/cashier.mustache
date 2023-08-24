@@ -180,11 +180,11 @@
                                 <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success"
                                    role="button" aria-controls="debitcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithdebitcard, local_shopping_cart {{/str}}</a>
-                                {{#allowmanualbooking}}
+                                {{#allowmanualrebooking}}
                                     <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualrebook" id="cashiermanualrebook-btn" data-paymenttype="7" data-toggle="tab" href="#success"
                                         role="button" aria-controls="cashiermanualrebook-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                         {{#str}} cashiermanualrebook, local_shopping_cart {{/str}}</a>
-                                {{/allowmanualbooking}}
+                                {{/allowmanualrebooking}}
                             </div>
                         </div>
                         {{! 4. Tab to show success }}

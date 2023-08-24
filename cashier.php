@@ -76,7 +76,7 @@ $data['selectuserform'] = $selectuserform->render();
 // We only allow manual booking, if the user has the capability to do this.
 if (has_capability('local/shopping_cart:cashiermanualrebook', $context)
     && get_config('local_shopping_cart', 'manualrebookingisallowed')) {
-    $data['allowmanualbooking'] = true;
+    $data['allowmanualrebooking'] = true;
 }
 
 // Convert numbers to strings with 2 fixed decimals right before rendering.
