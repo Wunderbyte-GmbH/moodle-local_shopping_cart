@@ -72,7 +72,8 @@ if (!empty($account)) {
             // If there are open orders tables we create selects for them.
             $openorderstable = "paygw_" . $gwname . "_openorders";
             if ($dbman->table_exists($openorderstable)) {
-                $openorderselects[] = "SELECT itemid, tid FROM {paygw_" . $gwname . "_openorders}";
+                $openorderselects[] = "SELECT itemid, '" . $gwname .
+                    "' AS gateway, tid FROM {paygw_" . $gwname . "_openorders}";
             }
 
             $cols = $DB->get_columns($tablename);
@@ -93,7 +94,7 @@ if (!empty($account)) {
 if (!empty($openorderselects)) {
     $customorderid = "oo.tid AS customorderid, ";
     $openorderselectsstring = implode(' UNION ', $openorderselects);
-    $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid";
+    $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid AND oo.gateway = p.gateway";
 } else {
     $customorderid = "'' AS customorderid, ";
     // If we do not have any open orders tables, we still keep the custom order id column for consistency.
@@ -136,13 +137,13 @@ $from = "(SELECT DISTINCT " . $uniqueidpart .
         scl.annotation,
         p.gateway$selectorderidpart
         FROM {local_shopping_cart_ledger} scl
+        LEFT JOIN {payments} p
+        ON p.itemid = scl.identifier
         $customorderidpart
         LEFT JOIN {user} u
         ON u.id = scl.userid
         LEFT JOIN {user} um
         ON um.id = scl.usermodified
-        LEFT JOIN {payments} p
-        ON p.itemid = scl.identifier
         $gatewayspart ) s1";
 $where = "1 = 1";
 $params = [];
