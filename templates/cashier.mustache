@@ -231,6 +231,11 @@
                         <div class="btn btn-secondary shopping-cart-cashout-button">
                             <i class="fa fa-money" aria-hidden="true"></i> {{#str}} cashout, local_shopping_cart {{/str}}
                         </div>
+                        {{#allowcashtransfer}}
+                        <div class="btn btn-secondary shopping-cart-cashtransfer-button">
+                            <i class="fa fa-exchange" aria-hidden="true"></i> {{#str}} cashtransfer, local_shopping_cart {{/str}}
+                        </div>
+                        {{/allowcashtransfer}}
                     </div>
                 </div>
             </div>

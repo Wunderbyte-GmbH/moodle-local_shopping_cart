@@ -28,7 +28,6 @@ use html_writer;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use mod_booking\booking_option;
-use mod_booking\singleton_service;
 use moodle_url;
 use stdClass;
 

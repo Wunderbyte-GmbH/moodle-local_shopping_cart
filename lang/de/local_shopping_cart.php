@@ -27,10 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Warenkorb';
 $string['modulename'] = 'Warenkorb';
-$string['sendpaymentbutton'] = 'Zur Bezahlung';
 
+// General strings.
 $string['addtocart'] = 'In den Warenkorb';
 $string['mycart'] = 'Mein Warenkorb';
+$string['sendpaymentbutton'] = 'Zur Bezahlung';
+$string['cash'] = 'Bargeld';
+$string['choose...'] = 'Auswählen...';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
@@ -87,6 +90,7 @@ $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
+$string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine andere Kassa umbuchen';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -151,11 +155,25 @@ $string['choose'] = 'Auswählen';
 
 $string['cashout'] = 'Barzahlungen';
 $string['cashoutamount'] = 'Barzahlungsbetrag';
-$string['noamountgiven'] = 'Es können keine Nullbuchungen durchgeführt werden';
+$string['cashoutnoamountgiven'] = 'Es können keine Nullbuchungen durchgeführt werden';
 $string['cashoutamount_desc'] = 'Negative Beträge sind Entnahmen, positive Beträge Einzahlungen.';
 $string['cashoutreason'] = 'Grund für die Bartransaktion';
 $string['cashoutreasonnecessary'] = 'Sie müssen einen Grund eingeben.';
 $string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.';
+$string['cashoutsuccess'] = 'Barzahlung erfolgreich';
+
+$string['cashtransfer'] = 'Bargeldumbuchung';
+$string['cashtransferamount'] = 'Umbuchungsbetrag';
+$string['cashtransfernopositiveamount'] = 'Kein positiver Wert!';
+$string['cashtransferamount_help'] = 'Geben Sie einen positiven Wert ein (nicht 0) der beim ersten Kassier abgezogen und beim zweiten Kassier aufaddiert wird.';
+$string['cashtransferreason'] = 'Grund für die Bargeldumbuchung';
+$string['cashtransferreasonnecessary'] = 'Sie müssen einen Grund für die Bargeldumbuchung angeben!';
+$string['cashtransferreason_help'] = 'Geben Sie einen Grund für die Bargeldumbuchung an.';
+$string['cashtransfercashierfrom'] = 'Von Kassa';
+$string['cashtransfercashierfrom_help'] = 'Kassier:in, von deren Kassa das Geld entnommen wird';
+$string['cashtransfercashierto'] = 'An Kassa';
+$string['cashtransfercashierto_help'] = 'Kassier:in, in deren Kassa das Geld hinzugefügt wird';
+$string['cashtransfersuccess'] = 'Bargeldumbuchung erfolgreich';
 
 $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';

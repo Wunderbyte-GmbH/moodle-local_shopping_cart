@@ -30,31 +30,54 @@ use moodle_url;
 use stdClass;
 
 /**
- * Dynamic cahout form.
- * @copyright Wunderbyte GmbH <info@wunderbyte.at>
- * @package local_shopping_cart
- * @author Georg Maißer
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Dynamic cash transfer form.
+ * @copyright   Wunderbyte GmbH <info@wunderbyte.at>
+ * @package     local_shopping_cart
+ * @author      Bernhard Fischer
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class modal_cashout extends dynamic_form {
+class modal_cashtransfer extends dynamic_form {
 
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
      */
     public function definition() {
+        global $OUTPUT;
+
         $mform = $this->_form;
 
-        $mform->addElement('float',
-            'cashoutamount',
-            get_string('cashoutamount', 'local_shopping_cart'),
-            get_string('cashoutamount_desc', 'local_shopping_cart'));
-        $mform->setDefault('cashoutamount', 0.00);
+        $cashiertemplates[0] = '';
+        $listofcashiers = get_users_by_capability(context_system::instance(), 'local/shopping_cart:cashier');
+        foreach ($listofcashiers as $cashier) {
+            $cashiertemplates[$cashier->id] = $OUTPUT->render_from_template(
+                'local_shopping_cart/form-user-selector-suggestion', $cashier);
+        }
 
-        $mform->addElement('text',
-            'cashoutreason',
-            get_string('cashoutreason', 'local_shopping_cart'),
-            get_string('cashoutreason_desc', 'local_shopping_cart'));
+        // From cashier...
+        $options = [
+            'multiple' => false,
+            'noselectionstring' => get_string('choose...', 'local_shopping_cart'),
+        ];
+        $mform->addElement('autocomplete', 'cashtransfercashierfrom',
+            get_string('cashtransfercashierfrom', 'local_shopping_cart'), $cashiertemplates, $options);
+        $mform->addHelpButton('cashtransfercashierfrom', 'cashtransfercashierfrom', 'local_shopping_cart');
+
+        // ...to cashier.
+        $mform->addElement('autocomplete', 'cashtransfercashierto',
+            get_string('cashtransfercashierto', 'local_shopping_cart'), $cashiertemplates, $options);
+        $mform->addHelpButton('cashtransfercashierto', 'cashtransfercashierto', 'local_shopping_cart');
+
+        $mform->addElement('float', 'cashtransferamount',
+            get_string('cashtransferamount', 'local_shopping_cart'),
+            get_string('cashtransferamount_desc', 'local_shopping_cart'));
+        $mform->setDefault('cashtransferamount', 0.00);
+        $mform->addHelpButton('cashtransferamount', 'cashtransferamount', 'local_shopping_cart');
+
+        $mform->addElement('text', 'cashtransferreason',
+            get_string('cashtransferreason', 'local_shopping_cart'),
+            get_string('cashtransferreason_desc', 'local_shopping_cart'));
+
     }
 
     /**
@@ -63,7 +86,7 @@ class modal_cashout extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-        require_capability('local/shopping_cart:cashier', $this->get_context_for_dynamic_submission());
+        require_capability('local/shopping_cart:cashtransfer', $this->get_context_for_dynamic_submission());
     }
 
     /**
@@ -83,7 +106,7 @@ class modal_cashout extends dynamic_form {
             0, // Userid is 0, it doesn't concern a user.
             0, // Itemid is 0, it doesn't concern an item.
             get_string('cash', 'local_shopping_cart'),
-            $data->cashoutamount,
+            (-1) * (float)$data->cashtransferamount,
             0,
             get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',
@@ -91,7 +114,24 @@ class modal_cashout extends dynamic_form {
             0,
             PAYMENT_METHOD_CASHIER_CASH,
             PAYMENT_SUCCESS, null, 0, 0, null, null, null,
-            $data->cashoutreason
+            $data->cashtransferreason,
+            $data->cashtransfercashierfrom
+        );
+
+        shopping_cart_history::create_entry_in_history(
+            0, // Userid is 0, it doesn't concern a user.
+            0, // Itemid is 0, it doesn't concern an item.
+            get_string('cash', 'local_shopping_cart'),
+            $data->cashtransferamount,
+            0,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'cash',
+            0,
+            PAYMENT_METHOD_CASHIER_CASH,
+            PAYMENT_SUCCESS, null, 0, 0, null, null, null,
+            $data->cashtransferreason,
+            $data->cashtransfercashierto
         );
 
         return $data;
@@ -151,12 +191,12 @@ class modal_cashout extends dynamic_form {
 
         $errors = array();
 
-        if (empty($data['cashoutamount'])) {
-            $errors['cashoutamount'] = get_string('cashoutnoamountgiven', 'local_shopping_cart');
+        if (empty($data['cashtransferamount']) || $data['cashtransferamount'] <= 0) {
+            $errors['cashtransferamount'] = get_string('cashtransfernopositiveamount', 'local_shopping_cart');
         }
 
-        if (empty($data['cashoutreason'])) {
-            $errors['cashoutreason'] = get_string('cashoutreasonnecessary', 'local_shopping_cart');
+        if (empty($data['cashtransferreason'])) {
+            $errors['cashtransferreason'] = get_string('cashtransferreasonnecessary', 'local_shopping_cart');
         }
 
         return $errors;

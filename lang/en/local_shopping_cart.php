@@ -27,11 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Shopping Cart';
 $string['modulename'] = 'Shopping Cart';
-$string['sendpaymentbutton'] = 'Checkout';
 
+// General strings.
 $string['addtocart'] = 'Add to cart';
-
 $string['mycart'] = 'My Cart';
+$string['sendpaymentbutton'] = 'Checkout';
+$string['cash'] = 'Cash';
+$string['choose...'] = 'Choose...';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
@@ -85,6 +87,7 @@ $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cashier'] = 'Is a cashier';
 $string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';
+$string['shopping_cart:cashtransfer'] = 'Can transfer cash from one cashier to another';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -152,11 +155,25 @@ $string['choose'] = 'Choose';
 
 $string['cashout'] = 'Cash transactions';
 $string['cashoutamount'] = 'Amount of cash transation';
-$string['noamountgiven'] = 'Booking 0 is not possible';
+$string['cashoutnoamountgiven'] = 'Enter a positive (deposit) or negative amount (cashout), but not 0.';
 $string['cashoutamount_desc'] = 'Negative amount is cashout, positive amount is a deposit.';
 $string['cashoutreason'] = 'Reason for the transaction';
 $string['cashoutreasonnecessary'] = 'You need to give a reason';
-$string['cashoutreason_desc'] = 'Possible reasons are change monex, bank deposit etc.';
+$string['cashoutreason_desc'] = 'Possible reasons are change money, bank deposit etc.';
+$string['cashoutsuccess'] = 'Cash transaction successful';
+
+$string['cashtransfer'] = 'Cash transfer';
+$string['cashtransferamount'] = 'Amount of cash transfer';
+$string['cashtransfernopositiveamount'] = 'No positive amount!';
+$string['cashtransferamount_help'] = 'Enter a positive amount. The amount will be removed from the first cashier and added to the second cashier.';
+$string['cashtransferreason'] = 'Reason for the cash transfer';
+$string['cashtransferreasonnecessary'] = 'You need to give a reason why cash was transferred.';
+$string['cashtransferreason_help'] = 'Enter a reason why cash was transferred.';
+$string['cashtransfercashierfrom'] = 'From cashier';
+$string['cashtransfercashierfrom_help'] = 'Cashier from whom the amount is taken';
+$string['cashtransfercashierto'] = 'To cashier';
+$string['cashtransfercashierto_help'] = 'Cashier to whom the amount is given';
+$string['cashtransfersuccess'] = 'Cash transfer successful';
 
 $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';

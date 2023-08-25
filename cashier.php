@@ -79,6 +79,11 @@ if (has_capability('local/shopping_cart:cashiermanualrebook', $context)
     $data['allowmanualrebooking'] = true;
 }
 
+// We only allow cash transfer if the user has the capability to do this.
+if (has_capability('local/shopping_cart:cashtransfer', $context)) {
+    $data['allowcashtransfer'] = true;
+}
+
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
 

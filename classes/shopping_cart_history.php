@@ -256,6 +256,7 @@ class shopping_cart_history {
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
      * @param string|null $annotation
+     * @param int|null $usermodified
      * @return void
      */
     public static function create_entry_in_history(
@@ -276,8 +277,9 @@ class shopping_cart_history {
             float $tax = null,
             float $taxpercentage = null,
             string $taxcategory = null,
-            string $annotation = null
-            ) {
+            string $annotation = null,
+            int $usermodified = null
+    ) {
 
         global $USER;
 
@@ -295,7 +297,7 @@ class shopping_cart_history {
         $data->identifier = $identifier;
         $data->payment = $payment;
         $data->paymentstatus = $paymentstatus;
-        $data->usermodified = $USER->id;
+        $data->usermodified = $usermodified ?? $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
         $data->canceluntil = $canceluntil;

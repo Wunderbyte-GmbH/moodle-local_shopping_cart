@@ -73,7 +73,7 @@
 * Bugfix: Correct way of manual rebooking.
 * Bugfix: Add dependency for wunderbyte table.
 * Bugfix: Fixes for PHP 8.1 compatibility.
-* Bugfix: CSS - fix image size on cashier.php for cache payment confirmation.
+* Bugfix: CSS - fix image size on cashier.php for cash payment confirmation.
 
 ## Version 0.4.8 (2023061603)
 **New features:**
