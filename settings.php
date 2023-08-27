@@ -274,6 +274,14 @@ if ($hassiteconfig) {
                         PARAM_TEXT
                 )
         );
+        $taxsettings->add(
+                new admin_setting_configcheckbox(
+                        $componentname . '/itempriceisnet',
+                        get_string('itempriceisnet', $componentname),
+                        get_string('itempriceisnet_desc', $componentname),
+                        '1'
+                )
+        );
     }
     $ADMIN->add($componentname, $taxsettings);
 }

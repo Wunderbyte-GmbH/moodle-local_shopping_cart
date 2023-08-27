@@ -1186,14 +1186,26 @@ class shopping_cart {
                 if ($taxpercent >= 0) {
                     $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
-                    $netprice = $items[$key]['price']; // Price is now considered a net price.
-                    $grossprice = round($netprice * (1 + $taxpercent), 2);
-                    $items[$key]['price_net'] = $netprice;
-                    $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
-                    // Add tax to price (= gross price).
-                    $items[$key]['price_gross'] = $grossprice;
-                    // And net tax info.
-                    $items[$key]['tax'] = $grossprice - $netprice;
+                    $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
+                    if ($itemisnet) {
+                        $netprice = $items[$key]['price']; // Price is now considered a net price.
+                        $grossprice = round($netprice * (1 + $taxpercent), 2);
+                        $items[$key]['price_net'] = $netprice;
+                        $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    } else {
+                        $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
+                        $grossprice = $items[$key]['price'];
+                        $items[$key]['price_net'] = $netprice;
+                        $items[$key]['price'] = $grossprice; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    }
                 }
             }
         }

@@ -41,12 +41,14 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     Then I should see "Changes saved"
     And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
     And I set the following fields to these values:
-      | Tax categories and their tax percentage | A:15 B:10 C:0 |
-      | Default tax category                    | A             |
+      | Tax categories and their tax percentage      | A:15 B:10 C:0 |
+      | Default tax category                         | A             |
+      | Prices for items are net prices: Add the tax | checked       |
     And I press "Save changes"
     Then I should see "Changes saved"
     And the field "Tax categories and their tax percentage" matches value "A:15 B:10 C:0"
     And the field "Default tax category" matches value "A"
+    And the field "Prices for items are net prices: Add the tax" matches value "checked"
     And I log out
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"

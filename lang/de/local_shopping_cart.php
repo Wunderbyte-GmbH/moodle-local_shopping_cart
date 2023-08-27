@@ -69,6 +69,10 @@ $string['taxcategories'] = 'Steuerkategorien und anwendbare Steuersätze';
 $string['taxcategories_examples_button'] = '(Beispiele)';
 $string['taxcategories_desc'] = 'Steuerkategorien und anwendbare Steuersätze (in %) pro User-Land.';
 $string['taxcategories_invalid'] = 'Der eingegebene Text kann nicht als Steuerkategorien interpretiert werden!';
+$string['itempriceisnet'] = 'Preise für Artikel sind Nettopreise: Addiere die Steuer';
+$string['itempriceisnet_desc'] = 'Wenn die an den Warenkorb übergebenen Preise Nettopreise sind, dann aktivieren Sie diese Checkbox,
+um die Steuern zu den Artikelpreisen hinzuzufügen. Wenn die Artikel die Steuer bereits enthalten und somit Bruttopreise sind,
+deaktivieren Sie diese Checkbox, um die Steuer auf der Grundlage des Bruttowertes des Artikels zu berechnen';
 $string['defaulttaxcategory'] = 'Standard Steuerkategorie';
 $string['defaulttaxcategory_desc'] =
         'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';

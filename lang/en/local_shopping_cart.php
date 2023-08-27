@@ -68,6 +68,11 @@ $string['taxcategories'] = 'Tax categories and their tax percentage';
 $string['taxcategories_examples_button'] = '(Examples)';
 $string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';
 $string['taxcategories_invalid'] = 'The given tax categories can not be parsed!';
+$string['itempriceisnet'] = 'Prices for items are net prices: Add the tax';
+$string['itempriceisnet_desc'] = 'If the prices passed to the shopping cart are net prices, then check this checkbox in order
+to add the taxes on top of the item prices. If the items already include the tax and thus are gross prices uncheck this checkbox
+in order to calculate the tax based on the gross value of the item';
+
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 $string['calculateconsumation'] = 'Credit on cancelation minus already consumed value.';

@@ -30,10 +30,11 @@ Feature: Admin tax actions with tax categories in shopping cart.
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And I log in as "admin"
     And I set the following administration settings values:
-      | Payment account                         | Account1      |
-      | Enable Tax processing                   | 1             |
-      | Tax categories and their tax percentage | A:15 B:10 C:0 |
-      | Default tax category                    | A             |
+      | Payment account                              | Account1      |
+      | Enable Tax processing                        | 1             |
+      | Tax categories and their tax percentage      | A:15 B:10 C:0 |
+      | Default tax category                         | A             |
+      | Prices for items are net prices: Add the tax | checked       |
     And I log out
 
   @javascript

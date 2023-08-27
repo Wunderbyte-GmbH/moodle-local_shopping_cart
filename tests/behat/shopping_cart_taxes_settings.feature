@@ -54,8 +54,9 @@ Feature: Admin configures shopping cart to use simple taxes or tax categories.
     And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
     And I should see "" in the "#id_s_local_shopping_cart_defaulttaxcategory" "css_element"
     And I set the following fields to these values:
-      | Tax categories and their tax percentage | A:15 B:10 C:0 |
-      | Default tax category                    | A             |
+      | Tax categories and their tax percentage      | A:15 B:10 C:0 |
+      | Default tax category                         | A             |
+      | Prices for items are net prices: Add the tax | checked       |
     And I press "Save changes"
     Then I should see "Changes saved"
     And the field "Tax categories and their tax percentage" matches value "A:15 B:10 C:0"

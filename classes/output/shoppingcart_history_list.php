@@ -328,9 +328,14 @@ class shoppingcart_history_list implements renderable, templatable {
      * @return [type]
      */
     private static function add_tax_info(stdClass &$item) {
-        if (isset($item->tax)) {
+        $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
+        if (isset($item->tax) && $itemisnet) {
             $item->price_gross = $item->price + $item->tax;
             $item->price_net = $item->price;
+            $item->taxpercentage_visual = round($item->taxpercentage * 100, 2);
+        } else if (isset($item->tax) && !$itemisnet) {
+            $item->price_gross = $item->price;
+            $item->price_net = $item->price - $item->tax;
             $item->taxpercentage_visual = round($item->taxpercentage * 100, 2);
         } else {
             $item->price_gross = $item->price;

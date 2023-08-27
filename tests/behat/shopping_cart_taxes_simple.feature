@@ -28,10 +28,11 @@ Feature: Admin tax actions with simple taxin shopping cart.
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And I log in as "admin"
     And I set the following administration settings values:
-      | Payment account                         | Account1 |
-      | Enable Tax processing                   | 1        |
-      | Default tax category                    |          |
-      | Tax categories and their tax percentage | 15       |
+      | Payment account                              | Account1 |
+      | Enable Tax processing                        | 1        |
+      | Default tax category                         |          |
+      | Tax categories and their tax percentage      | 15       |
+      | Prices for items are net prices: Add the tax | checked  |
     And I log out
 
   @javascript
