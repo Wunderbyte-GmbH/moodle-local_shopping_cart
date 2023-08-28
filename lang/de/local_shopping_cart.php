@@ -75,7 +75,7 @@ um die Steuern zu den Artikelpreisen hinzuzufügen. Wenn die Artikel die Steuer 
 deaktivieren Sie diese Checkbox, um die Steuer auf der Grundlage des Bruttowertes des Artikels zu berechnen';
 $string['defaulttaxcategory'] = 'Standard Steuerkategorie';
 $string['defaulttaxcategory_desc'] =
-        'Standard Steuerkategorie die verwendet wird wenn das cartitem diese nicht explizit angibt (z.B. "A")';
+        'Standard-Steuerkategorie, die verwendet wird, wenn das Cart-Item diese nicht explizit angibt (z.B. "A")';
 $string['calculateconsumation'] = 'Gutschrift bei Stornierung abzüglich konsumierter Menge.';
 $string['calculateconsumation_desc'] = 'Bei Stornierung wird das Guthaben nach der bereits konsumierten Menge des gekauften Guts berechnet.';
 $string['cashreportsettings'] = 'Kassajournal-Einstellungen';
