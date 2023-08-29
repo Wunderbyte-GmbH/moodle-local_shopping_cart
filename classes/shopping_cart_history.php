@@ -469,7 +469,7 @@ class shopping_cart_history {
 
         // Clean the cache here, after successful checkout.
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->delete($identifier);
+        $cache->delete('schistorycache');
 
         return $success;
     }
@@ -478,11 +478,12 @@ class shopping_cart_history {
      * Function prepare_data_from_cache
      *
      * @param int $userid
+     * @param int $identifier optional identifier
      * @return array
      */
-    public function prepare_data_from_cache(int $userid): array {
+    public function prepare_data_from_cache(int $userid, int $identifier = 0): array {
         global $USER;
-        $identifier = self::create_unique_cart_identifier($userid);
+
         $userfromid = $USER->id;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
@@ -507,6 +508,11 @@ class shopping_cart_history {
         if (!isset($cachedrawdata["items"])) {
             $cachedrawdata["items"] = [];
         }
+
+        if (empty($identifier)) {
+            $identifier = self::create_unique_cart_identifier($userid);
+        }
+
         $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories);
         foreach ($items as $item) {
             $data = $item;
@@ -552,8 +558,7 @@ class shopping_cart_history {
         }
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $identifier = $dataarray['identifier'];
-        $cache->set($identifier, $dataarray);
+        $cache->set('schistorycache', $dataarray);
 
         return true;
     }
@@ -568,16 +573,16 @@ class shopping_cart_history {
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
 
-        $shoppingcart = (object)$cache->get($identifier);
+        $shoppingcart = (object)$cache->get('schistorycache');
 
         if (isset($shoppingcart->identifier) && !isset($shoppingcart->storedinhistory)) {
 
             self::write_to_db($shoppingcart);
 
             $shoppingcart->storedinhistory = true;
-            $cache->set($identifier, $shoppingcart);
+            $cache->set('schistorycache', $shoppingcart);
         } else if (!isset($shoppingcart->identifier)) {
-            throw new moodle_exception('noidentifierstoredincache', 'local_shopping_cart');
+            throw new moodle_exception('noidentifierfound', 'local_shopping_cart');
         }
 
         return $shoppingcart;

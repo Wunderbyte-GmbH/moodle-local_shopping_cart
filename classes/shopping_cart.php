@@ -322,12 +322,19 @@ class shopping_cart {
      * @return array
      */
     public static function load_cartitem(string $component, string $area, int $itemid, int $userid): array {
-        $providerclass = static::get_service_provider_classname($component);
 
         // We need to set back shistory cache in case of loading and unloading item.
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->purge();
+        $result = $cache->get('schistorycache');
 
+        if (!empty($result)) {
+            $identifier = (int) $result['identifier'];
+            $history = new shopping_cart_history();
+            $scdata = $history->prepare_data_from_cache($userid, $identifier ?? 0);
+            $history->store_in_schistory_cache($scdata);
+        }
+
+        $providerclass = static::get_service_provider_classname($component);
         return component_class_callback($providerclass, 'load_cartitem', [$area, $itemid, $userid]);
     }
 
@@ -341,12 +348,19 @@ class shopping_cart {
      * @return array
      */
     public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): array {
-        $providerclass = static::get_service_provider_classname($component);
 
         // We need to set back shistory cache in case of loading and unloading item.
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->purge();
+        $result = $cache->get('schistorycache');
 
+        if (!empty($result)) {
+            $identifier = (int) $result['identifier'];
+            $history = new shopping_cart_history();
+            $scdata = $history->prepare_data_from_cache($userid, $identifier ?? 0);
+            $history->store_in_schistory_cache($scdata);
+        }
+
+        $providerclass = static::get_service_provider_classname($component);
         return component_class_callback($providerclass, 'unload_cartitem', [$area, $itemid, $userid]);
     }
 
