@@ -130,12 +130,13 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 if (!$iscashier) {
                     if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->area ?: "", $item->userid)) {
-                        $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
+                        if (!empty($item->canceluntil)) {
+                            $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
                                 $item->canceluntilstring);
+                        }
                         $item->buttonclass = 'btn-primary';
                     } else {
-                        $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart',
-                                $item->canceluntilstring);
+                        $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart');
                         $item->buttonclass = 'disabled hidden';
                     }
 

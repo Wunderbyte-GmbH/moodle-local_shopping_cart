@@ -1014,7 +1014,9 @@ class shopping_cart {
         $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
 
         // If the cancelationfee is < 0, or the time has expired, the user is not allowed to cancel.
-        if (($cancelationfee < 0) || ($item->canceluntil < time())) {
+        if (($cancelationfee < 0) ||
+            (!empty($item->canceluntil)
+                && ($item->canceluntil < time()))) {
             // Cancelation after time has expired is only allowed for cashiers.
             $context = context_system::instance();
             if (!has_capability('local/shopping_cart:cashier', $context)) {
