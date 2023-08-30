@@ -1,3 +1,15 @@
+## Version 0.5.4 (2023083000)
+**New features:**
+* New feature: Add net/gross settings for item prices.
+
+**Improvements:**
+* Improvement: Better styling for terms and conditions.
+
+**Bugfixes:**
+* Bugfix: When using more than one gateway itemid (identifier) of openorders entry is not unique. So fix that in report SQL.
+* Bugfix: When canceluntil date was missing, users could not book for themselves - also fixed strings.
+* Bugfix: Fix cashing and identifier errors on checkout page.
+
 ## Version 0.5.3 (2023082300)
 **New features:**
 * New feature: Introduce a new setting to show custom orderid instead of gateway orderid.
