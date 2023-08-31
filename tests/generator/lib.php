@@ -82,4 +82,23 @@ class local_shopping_cart_generator extends testing_module_generator {
 
         return $record;
     }
+
+    /**
+     * Function to create a dummy user credit record.
+     *
+     * @param array|stdClass $record
+     * @return stdClass the booking campaign object
+     */
+    public function create_user_credit($record = null) {
+        global $DB, $USER;
+
+        $record = (object) $record;
+        $record->usermodified = $USER->id;
+        $record->timecreated = time();
+        $record->timemodified = time();
+
+        $record->id = $DB->insert_record('local_shopping_cart_credits', $record);
+
+        return $record;
+    }
 }

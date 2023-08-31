@@ -37,6 +37,12 @@ class behat_local_shopping_cart_generator extends behat_generator_base {
                 'required' => ['account', 'gateway', 'enabled', 'config'],
                 'switchids' => ['account' => 'accountid'],
             ],
+            'user credits' => [
+                'singular' => 'user credit',
+                'datagenerator' => 'user_credit',
+                'required' => ['user', 'credits', 'currency', 'balance'],
+                'switchids' => ['user' => 'userid'],
+            ],
         ];
     }
 
