@@ -45,7 +45,7 @@ Feature: Test purchase process in shopping cart.
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I should see "10.00" in the "ul.shopping-cart-items" "css_element"
-    And I wait "11" seconds
+    And I wait "1" seconds
     And I click on ".popover-region-content-container a" "css_element"
     Then I should see "my test item 1" in the "div.checkoutgrid" "css_element"
     And I should see "10.00" in the "div.checkoutgrid" "css_element"
