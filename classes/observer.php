@@ -24,6 +24,8 @@
 
 namespace local_shopping_cart;
 
+use local_shopping_cart\interfaces\invoice;
+
 /**
  * Event observer for local_shopping_cart.
  */
@@ -66,5 +68,29 @@ class observer {
         /* shopping_cart_history::error_occured_for_identifier($itemid, $data['userid']); */
 
         return 'registered_payment_error';
+    }
+
+    /**
+     * Observer triggers the creation of the invoice upon successfull payment and checkout.
+     *
+     * @param \core\event\base $event
+     */
+    public static function checkout_completed(\core\event\base $event): void {
+        $invoiceprovidername = get_config('local_shopping_cart', 'invoicingplatform');
+        $invoiceproviderclass = "local_shopping_cart\\invoice\\" . $invoiceprovidername . "_invoice";
+
+        if ($invoiceprovidername == 'noinvoice') {
+            return;
+        }
+
+        if (class_exists($invoiceproviderclass)) {
+            $rc = new \ReflectionClass($invoiceproviderclass);
+            if (!$rc->implementsInterface(invoice::class)) {
+                throw new \coding_exception("$invoiceprovidername does implement the right interface");
+            }
+        } else {
+            throw new \coding_exception("$invoiceproviderclass was not found by class_exists.");
+        }
+        $invoiceproviderclass::create_invoice_task($event);
     }
 }

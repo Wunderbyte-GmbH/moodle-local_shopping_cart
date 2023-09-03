@@ -378,3 +378,23 @@ $string['annotation'] = 'Anmerkung';
 $string['annotation_rebook_desc'] = 'Geben Sie eine Anmerkung oder die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
 $string['cashier_manualrebook'] = 'Manuelle Nachbuchung';
 $string['cashier_manualrebook_desc'] = 'Manuelle Nachbuchung einer Zahlungstransaktion wurde durchgeführt.';
+
+// Invoicing.
+$string['invoicingplatformheading'] = 'Bitte wählen Sie Ihre Rechnungsplattform';
+$string['invoicingplatformdescription'] = 'Wählen Sie Ihre bevorzugte Rechnungsplattform aus den folgenden Optionen aus.';
+$string['chooseplatform'] = 'Plattform wählen';
+$string['chooseplatformdesc'] = 'Wählen Sie Ihre Rechnungsplattform aus.';
+$string['baseurl'] = 'Basis-URL';
+$string['baseurldesc'] = 'Geben Sie die Basis-URL für Ihre Rechnungsplattform ein.';
+$string['token'] = 'Token';
+$string['tokendesc'] = 'Geben Sie Ihr Authentifizierungstoken ein. Für ERPNExt benützen sie: &lt;api_key&gt;:&lt;api_secret&gt;';
+$string['startinvoicingdate'] = 'Mit dem folgenden Datum beginnen Sie mit der Rechnungsstellung';
+$string['startinvoicingdatedesc'] = 'Geben Sie einen Unix Timestamp für den Zeitpunkt ein, ab dem Sie Rechnungen generieren wollen.
+ Kopieren Sie ihn von dort: https://www.unixtimestamp.com/';
+$string['checkout_completed'] = 'Checkout abgeschlossen';
+$string['checkout_completed_desc'] = 'Der Benutzer mit der ID {$a->userid} hat den Checkout mit identifier {$a->identifier}
+ erfolgreich abgeschlossen';
+$string['choosedefaultcountry'] = 'Standardland auswählen';
+$string['choosedefaultcountrydesc'] = 'Wählen Sie das Standardland für die Rechnungsadresse aus. Dieses wird verwendet,
+ wenn die Kund/innen keine Angaben zur Rechnungsadresse machen.';
+$string['erpnext'] = 'ERPNext';

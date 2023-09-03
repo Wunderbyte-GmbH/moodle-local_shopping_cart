@@ -71,7 +71,7 @@
                 <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
                        COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
                 <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3"
-                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
+                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Price can be net or gross!"/>
                 <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
                        COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
                 <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
@@ -114,6 +114,20 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+        </TABLE>
+        <TABLE NAME="local_shopping_cart_invoices" COMMENT="Table for issued invoices">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Primary key"/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Reference to local_shopping_cart_ledger"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Timestamp when the record was created"/>
+                <FIELD NAME="invoiceid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Invoice ID from the invoicing platform"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="identifier" UNIQUE="true" FIELDS="identifier"/>
+            </INDEXES>
         </TABLE>
     </TABLES>
 </XMLDB>

@@ -18,19 +18,16 @@
  * Adhoc Task to remove expired items from the shopping cart.
  *
  * @package    local_shopping_cart
- * @copyright  2022 Georg Maißer <info@wunderbyte.at>
+ * @copyright  2023 David Bogner <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_shopping_cart\task;
 
 use context_system;
-use local_shopping_cart\event\item_deleted;
+use local_shopping_cart\interfaces\invoice;
+use local_shopping_cart\invoice\erpnext_invoice;
 use local_shopping_cart\shopping_cart;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
 
 /**
  * Adhoc Task to remove expired items from the shopping cart.
@@ -39,10 +36,10 @@ global $CFG;
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class delete_item_task extends \core\task\adhoc_task {
+class create_invoice_task extends \core\task\adhoc_task {
 
     /**
-     * Get name of Module.
+     * Get name of the component.
      *
      * @return \lang_string|string
      * @throws \coding_exception
@@ -60,18 +57,26 @@ class delete_item_task extends \core\task\adhoc_task {
      * @see \core\task\task_base::execute()
      */
     public function execute() {
+        $anyexception = false;
         $taskdata = $this->get_custom_data();
         $userid = $this->get_userid();
-
-        if (!isset($taskdata->area)) {
-            return;
+        $classname = $taskdata->classname;
+        $success = false;
+        try {
+            $invoiceprovider = new $classname();
+            $success = $invoiceprovider->create_invoice($taskdata->identifier);
+        } catch (\Throwable $e) {
+            mtrace_exception($e);
+            $anyexception = $e;
         }
-        $context = context_system::instance();
-
-        shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->area, $taskdata->itemid, $userid);
-
-        mtrace('Deleted item ' . $taskdata->itemid . ' in area "' . $taskdata->area .
-            '" from ' . $taskdata->componentname . ' for user ' . $userid);
-
+        if ($anyexception) {
+            // If there was any error, ensure the task fails.
+            throw $anyexception;
+        }
+        if (!$success) {
+            throw new \moodle_exception('serverconnection', 'local_shopping_cart', '', null,
+                    $invoiceprovider->errormessage);
+        }
+        mtrace('Invoice created for user ' . $userid . ' with identifier ' . $taskdata->identifier);
     }
 }

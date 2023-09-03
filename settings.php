@@ -25,7 +25,6 @@
 
 use local_shopping_cart\admin_setting_taxcategories;
 use local_shopping_cart\shopping_cart;
-use PgSql\Lob;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -304,4 +303,53 @@ if ($hassiteconfig) {
         );
     }
     $ADMIN->add($componentname, $taxsettings);
+    defined('MOODLE_INTERNAL') || die;
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading('local_shopping_cart/invoicingplatformheading',
+            get_string('invoicingplatformheading', 'local_shopping_cart'),
+            get_string('invoicingplatformdescription', 'local_shopping_cart')
+    ));
+
+    // Add used platforms here. Currently we only support ERPNext.
+    // Use lower case array keys. The key is used to create the appropriate class. Example: new erpnext_invoice($data).
+    $options = array('erpnext' => get_string('erpnext', 'local_shopping_cart'),
+            'noinvoice' => get_string('noselection', 'form'));
+    $settings->add(new admin_setting_configselect('local_shopping_cart/invoicingplatform',
+            get_string('chooseplatform', 'local_shopping_cart'),
+            get_string('chooseplatformdesc', 'local_shopping_cart'),
+            'noinvoice', // Default value.
+            $options
+    ));
+
+    // Add a text field for the Base URL.
+    $settings->add(new admin_setting_configtext('local_shopping_cart/baseurl',
+            get_string('baseurl', 'local_shopping_cart'),
+            get_string('baseurldesc', 'local_shopping_cart'),
+            '',
+            PARAM_URL
+    ));
+
+    // Add a text field for the Token.
+    $settings->add(new admin_setting_configtext('local_shopping_cart/token',
+            get_string('token', 'local_shopping_cart'),
+            get_string('tokendesc', 'local_shopping_cart'),
+            '',
+            PARAM_TEXT
+    ));
+
+    $countries = get_string_manager()->get_list_of_countries(true, 'en');
+    $newcountries = [];
+    // English language string should also be the array key. Not the language code.
+    foreach ($countries as $country) {
+        $newcountries[$country] = $country;
+    }
+    // Create the country setting.
+    $settings->add(new admin_setting_configselect(
+            'local_shopping_cart/defaultcountry',
+            get_string('choosedefaultcountry', 'local_shopping_cart'),
+            get_string('choosedefaultcountrydesc', 'local_shopping_cart'),
+            'Austria', // Default value (empty for none selected).
+            $newcountries
+    ));
 }

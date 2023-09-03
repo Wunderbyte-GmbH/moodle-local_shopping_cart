@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Entities Class to display list of entity records.
+ * Shopping cart class to manage the shopping cart.
  *
  * @package local_shopping_cart
  * @author Thomas Winkler
@@ -32,7 +32,7 @@ require_once(__DIR__ . '/../lib.php');
 use cache_helper;
 use context_system;
 use lang_string;
-use DateTime;
+use local_shopping_cart\event\checkout_completed;
 use local_shopping_cart\event\item_added;
 use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
@@ -165,7 +165,6 @@ class shopping_cart {
 
                 $event->trigger();
             } else {
-                $success = false;
                 $itemdata = [];
                 $itemdata['success'] = 0;
                 $itemdata['expirationdate'] = 0;
@@ -231,7 +230,7 @@ class shopping_cart {
             // This function can return an array of items to unload as well.
             $response = self::unload_cartitem($component, $area, $itemid, $userid);
             foreach ($response['itemstounload'] as $cartitem) {
-                self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid, true);
+                self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid);
             }
         }
 
@@ -526,9 +525,9 @@ class shopping_cart {
      * Returns 0|1 fore the saved usecredit state, null if no such state exists.
      *
      * @param int $userid
-     * @return null|int
+     * @return ?int
      */
-    public static function get_saved_usecredit_state(int $userid) {
+    public static function get_saved_usecredit_state(int $userid): ?int {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
         $cachedrawdata = $cache->get($cachekey);
@@ -591,7 +590,7 @@ class shopping_cart {
      * @param int $userid
      * @return int
      */
-    public static function buy_for_user($userid) {
+    public static function buy_for_user(int $userid): int {
         $cache = \cache::make('local_shopping_cart', 'cashier');
 
         if ($userid == 0) {
@@ -629,7 +628,7 @@ class shopping_cart {
      * @param string $annotation - empty on default
      * @return array
      */
-    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null, $annotation = '') {
+    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null, string $annotation = '') {
         global $USER;
 
         $identifier = 0;
@@ -1141,12 +1140,13 @@ class shopping_cart {
 
     /**
      * Helper function to add entries to local_shopping_cart_ledger table.
+     * Do not update entries in the ledges. Only insert records.
      *
      * @param stdClass $record the record to add to the ledger table
      */
     public static function add_record_to_ledger_table(stdClass $record) {
         global $DB;
-        $success = true;
+        $id = null;
         switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
                 // We add a check to make sure we prevent duplicates!
@@ -1168,14 +1168,14 @@ class shopping_cart {
                     'area' => $record->area ?? null,
                 ])) {
                     // We only insert if entry does not exist yet.
-                    $DB->insert_record('local_shopping_cart_ledger', $record);
+                    $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                     cache_helper::purge_by_event('setbackcachedcashreport');
                 }
                 break;
             case PAYMENT_CANCELED:
                 $record->price = null;
                 $record->discount = null;
-                $DB->insert_record('local_shopping_cart_ledger', $record);
+                $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                 cache_helper::purge_by_event('setbackcachedcashreport');
                 break;
             // Aborted or pending payments will never be added to ledger.
@@ -1184,6 +1184,19 @@ class shopping_cart {
             case PAYMENT_PENDING:
             default:
                 break;
+        }
+        // Trigger the checkout_completed event. Can be used by observers.
+        if (!empty($id)) {
+            $context = context_system::instance();
+            $event = checkout_completed::create([
+                    'context' => $context,
+                    'userid' => $record->usermodified,
+                    'relateduserid' => $record->userid,
+                    'other' => [
+                            'identifier' => $record->identifier,
+                    ],
+            ]);
+            $event->trigger();
         }
     }
 
@@ -1195,7 +1208,6 @@ class shopping_cart {
      * @return array
      */
     public static function update_item_price_data(array $items, ?taxcategories $taxcategories): array {
-        global $USER;
         $countrycode = null; // TODO get countrycode from user info.
 
         $context = context_system::instance();
@@ -1311,14 +1323,11 @@ class shopping_cart {
      * @param string $query
      * @return array
      */
-    public static function load_users(string $query) {
-
+    public static function load_users(string $query): array {
         global $DB;
-
+        $params = [];
         $values = explode(' ', $query);
-
         $fullsql = $DB->sql_concat('u.firstname', '\'\'', 'u.lastname', '\'\'', 'u.email');
-
         $sql = "SELECT * FROM (
                     SELECT u.id, u.firstname, u.lastname, u.email, $fullsql AS fulltextstring
                     FROM {user} u
@@ -1342,7 +1351,6 @@ class shopping_cart {
 
         // We don't return more than 100 records, so we don't need to fetch more from db.
         $sql .= " limit 102";
-
         $rs = $DB->get_recordset_sql($sql, $params);
         $count = 0;
         $list = [];
@@ -1371,7 +1379,7 @@ class shopping_cart {
      * Helper function to get the latest used currency from history.
      * @return string the currency string, e.g. "EUR"
      */
-    public static function get_latest_currency_from_history() {
+    public static function get_latest_currency_from_history(): string {
         global $DB;
 
         if ($currency = $DB->get_field_sql("SELECT currency

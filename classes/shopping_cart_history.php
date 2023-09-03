@@ -424,14 +424,14 @@ class shopping_cart_history {
      * @return array
      */
     public static function return_data_via_identifier(int $identifier):array {
-
         global $DB;
         if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
 
             // If there is an error registered, we return null.
             foreach ($data as $record) {
                 $aborted = false;
-                if ($record->paymentstatus == PAYMENT_ABORTED) {
+                // Status PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
+                if ($record->paymentstatus == 1) {
                     $aborted = true;
                 }
             }

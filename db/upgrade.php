@@ -395,6 +395,29 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023061600, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2023090300) { // Replace XXXXXXXXXX with the required version number.
+
+        // Define the table structure.
+        $table = new xmldb_table('local_shopping_cart_invoices');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->add_field('identifier', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_field('invoiceid', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+
+        // Define keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('identifier', XMLDB_INDEX_UNIQUE, array('identifier'));
+
+        // Create the table.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // MOODLE has been upgraded to the required version.
+        upgrade_plugin_savepoint(true, 2023090300, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

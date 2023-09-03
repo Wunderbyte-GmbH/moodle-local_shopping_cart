@@ -387,3 +387,22 @@ $string['annotation'] = 'Annotation';
 $string['annotation_rebook_desc'] = 'Enter an annotation or the OrderID of the payment transaction you want to rebook.';
 $string['cashier_manualrebook'] = 'Manual rebooking';
 $string['cashier_manualrebook_desc'] = 'Someone made a manual rebooking of a payment transaction.';
+
+// Invoicing.
+$string['invoicingplatformheading'] = 'Please choose your invoicing platform';
+$string['invoicingplatformdescription'] = 'Select your preferred invoicing platform from the options below.';
+$string['chooseplatform'] = 'Choose Platform';
+$string['chooseplatformdesc'] = 'Select your invoicing platform.';
+$string['baseurl'] = 'Base URL';
+$string['baseurldesc'] = 'Enter the base URL for your invoicing platform.';
+$string['token'] = 'Token';
+$string['tokendesc'] = 'Enter your authentication token. For ERPNext use &lt;api_key&gt;:&lt;api_secret&gt;';
+$string['startinvoicingdate'] = 'Enter a date from which you want to start generating invoices';
+$string['startinvoicingdatedesc'] = 'In order to prevent invoice creation from invoices in the past
+ enter a UNIX timestamp for starting date to issue invoices. Get it from there: https://www.unixtimestamp.com/';
+$string['checkout_completed'] = 'Checkout Completed';
+$string['checkout_completed_desc'] = 'The user with userid {$a->userid} successfully completed the checkout with identifier {$a->identifier}';
+$string['choosedefaultcountry'] = 'Choose Default Country for Customers';
+$string['choosedefaultcountrydesc'] = 'Select the default country for your customers. If user does not provide invoice data, this
+ country is selected for the invoice.';
+$string['erpnext'] = 'ERPNext';
