@@ -45,7 +45,7 @@ $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
 $string['cancelationfee'] = 'Stornierungsgebühr';
 $string['bookingfee'] = 'Buchungsgebühr';
-$string['bookingfee_desc'] = 'Für jeden Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
+$string['bookingfee_desc'] = 'Für jede Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
 $string['uniqueidentifier'] = 'Eindeutige Buchungsid';
 $string['uniqueidentifier_desc'] = 'Jede Buchung benötigt eine eindeutige id. Diese startet üblicherweise bei 1, kann aber auch höher gesetzt werden. Wenn sie z.b. auf 10000000 gesetzt wird, hat der erste Kauf die ID 10000001. Wenn das Feld gesetzt wird, wird ein Error geworfen, sobald die Anzahl der Stellen überschritten wird. Wird der Wert auf 1 gesetzt, sind nur neun Buchungen möglich.';
 $string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
@@ -80,10 +80,18 @@ deaktivieren Sie diese Checkbox, um die Steuer auf der Grundlage des Bruttowerte
 $string['defaulttaxcategory'] = 'Standard Steuerkategorie';
 $string['defaulttaxcategory_desc'] =
         'Standard-Steuerkategorie, die verwendet wird, wenn das Cart-Item diese nicht explizit angibt (z.B. "A")';
+$string['cancellationsettings'] = 'Stornierungseinstellungen';
 $string['calculateconsumation'] = 'Gutschrift bei Stornierung abzüglich konsumierter Menge.';
 $string['calculateconsumation_desc'] = 'Bei Stornierung wird das Guthaben nach der bereits konsumierten Menge des gekauften Guts berechnet.';
+$string['calculateconsumationfixedpercentage'] = 'FIXEN Prozentsatz verwenden statt konsumierte Menge anhand der bereits vergangenen Zeit zu berechnen';
+$string['calculateconsumationfixedpercentage_desc'] = 'Wenn Sie hier einen Prozentsatz wählen, wird die konsumierte Menge nicht anhand der seit Kursbeginn
+ verstrichenen Zeit berechnet, sondern IMMER mit demselben FIXEN Prozentsatz.';
+$string['nofixedpercentage'] = 'Kein fixer Prozentsatz';
+$string['fixedpercentageafterserviceperiodstart'] = 'Fixen Prozentsatz erst ab dem vom Plugin zur Verfügung gestellten Start der Service-Periode abziehen';
+$string['fixedpercentageafterserviceperiodstart_desc'] = 'Aktivieren Sie diese Einstellungn, wenn der Prozentsatz erst ab einer bestimmten Start-Zeit
+ abgezogen werden soll (muss im entsprechenden Plugin konfiguriert werden, z.B. Kursbeginn oder Semesterbeginn).';
 $string['cashreportsettings'] = 'Kassajournal-Einstellungen';
-$string['cashreport:showcustomorderid'] = 'Benutzerdefinierte OrderID anstatt der normalen OrderID anzeigen';
+$string['cashreport:showcustomorderid'] = 'Benutzerdefinierte OrderID statt der normalen OrderID anzeigen';
 $string['cashreport:showcustomorderid_desc'] = 'Achtung: Nur aktivieren, wenn ihr Zahlungsgateway-Plugin benutzerdefinierte OrderIDs unterstützt.';
 
 // Capabilities.
@@ -196,26 +204,49 @@ $string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
 
-$string['confirmcanceltitle'] = 'Bestätige Stornierung';
+$string['confirmcanceltitle'] = 'Stornierung bestätigen';
 $string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
-                                Der/die Käufer*in bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich der Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
+ Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich der Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
 $string['confirmcancelbodyconsumption'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
-                                Der/die Käufer*in bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich des bereits verbrauchten Anteils von {$a->percentage} und einer Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
-                                $string['confirmcancelbodynocredit'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.<br>
-                                Der/die KäuferIn hat Artikel bereits vollständig konsumiert, der ursprüngliche Preis war {$a->price} {$a->currency}';
-$string['confirmcancelbodyuser'] = 'Möchten Sie wirklich den Kauf stornieren?
-                                    Sie bekommen den Kaufpreis ({$a->price} {$a->currency}) abzüglich einer Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
-$string['confirmcancelbodyuserconsumption'] = 'Möchten Sie wirklich den Kauf stornieren?<br>
-                                    Sie bekommen den nicht verbrauchten Anteil ({$a->percentage} bereits verbraucht) des Kaufpreises ({$a->price} {$a->currency}) minus eine Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})
-                                    <br><br>
-                                    <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
-                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
-                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
-                                    </div>';
-
-$string['confirmcancelallbody'] = 'Möchten Sie wirklich den Kauf für alle aktuellen Käufer*innen stornieren?
-    Folgende Nutzer*innen erhalten den Kaufpreis zurück:
+ Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich des bereits verbrauchten Anteils von {$a->percentage} und einer Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
+$string['confirmcancelbodyuser'] = 'Möchten Sie den Kauf wirklich stornieren?
+        Sie bekommen den Kaufpreis ({$a->price} {$a->currency}) abzüglich einer Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
+$string['confirmcancelbodyuserconsumption'] = '<p><b>Möchten Sie den Kauf wirklich stornieren?</b></p>
+<p>
+Sie erhalten <b>{$a->credit} {$a->currency}</b> als Guthaben.<br>
+<table class="table table-light table-sm">
+<tbody>
+    <tr>
+      <th scope="row">Originalpreis</th>
+      <td align="right"> {$a->price} {$a->currency}</td>
+    </tr>
+    <tr>
+      <th scope="row">Prozentuelle Stornogebühr ({$a->percentage})</th>
+      <td align="right"> - {$a->deducedvalue} {$a->currency}</td>
+    </tr>
+    <tr>
+      <th scope="row">Bearbeitungsgebühr</th>
+      <td align="right"> - {$a->cancelationfee} {$a->currency}</td>
+    </tr>
+    <tr>
+      <th scope="row">Gutschrift</th>
+      <td align="right"> = {$a->credit} {$a->currency}</td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<div class="progress">
+  <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+    aria-valuemin="0" aria-valuemax="100">{$a->percentage}
+  </div>
+</div>';
+$string['confirmcancelbodynocredit'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.<br>
+ Der/die KäuferIn hat Artikel bereits vollständig konsumiert, der ursprüngliche Preis war {$a->price} {$a->currency}';
+$string['confirmcancelbodyusernocredit'] = 'Möchten Sie diesen Kauf wirklich stornieren?<br>
+ Da Sie den Artikel bereits zur Gänze verbraucht haben, erhalten Sie keine Rückerstattung. (Ursprünglicher Preis: {$a->price} {$a->currency})';
+$string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Käufer:innen wirklich stornieren?
+    Folgende Nutzer:innen erhalten den Kaufpreis zurück:
     {$a->userlist}
     Sie können unten die Bearbeitungsgebühr anführen. Diese wird von der rückerstatteten Summe abgezogen.';
 

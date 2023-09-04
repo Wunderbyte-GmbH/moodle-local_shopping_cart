@@ -114,7 +114,7 @@ class shoppingcart_history_list implements renderable, templatable {
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
 
-            self::add_quota_consumed($item, $userid);
+            shopping_cart::add_quota_consumed_to_item($item, $userid);
             self::add_round_config($item);
             if ($this->taxesenabled) {
                 self::add_tax_info($item);
@@ -283,28 +283,6 @@ class shoppingcart_history_list implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
 
         return $this->return_list();
-    }
-
-    /**
-     * Receive quota consumed via callback to component.
-     *
-     * @param stdClass $item
-     * @param int $userid
-     * @return [type]
-     */
-    private static function add_quota_consumed(stdClass &$item, int $userid) {
-
-        if (empty($item->componentname) || empty($item->area)) {
-            return;
-        }
-        // We fetch the consumed quota as well.
-        $providerclass = shopping_cart::get_service_provider_classname($item->componentname);
-        $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
-                [
-                        'area' => $item->area,
-                        'itemid' => $item->itemid,
-                        'userid' => $userid,
-                ]);
     }
 
     /**

@@ -77,8 +77,16 @@ to add the taxes on top of the item prices. If the items already include the tax
 in order to calculate the tax based on the gross value of the item';
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
-$string['calculateconsumation'] = 'Credit on cancelation minus already consumed value.';
+$string['cancellationsettings'] = 'Cancellation settings';
+$string['calculateconsumation'] = 'Credit on cancelation minus already consumed value';
 $string['calculateconsumation_desc'] = 'On cancelation, the credit is calculated depending on the already consumed share of a bought article.';
+$string['calculateconsumationfixedpercentage'] = 'Use a FIXED percentage instead of calculating consumation by already passed time';
+$string['calculateconsumationfixedpercentage_desc'] = 'If you choose a percentage here, the consumation won\'t be calculated with the
+ time that has passed sind start of the booking option. Instead the FIXED percentage will ALWAYS be used.';
+$string['nofixedpercentage'] = 'No fixed percentage';
+$string['fixedpercentageafterserviceperiodstart'] = 'Only apply fixed percentage after service period start';
+$string['fixedpercentageafterserviceperiodstart_desc'] = 'Activate this if you want to apply the fixed percentage only
+ after the service period has started which is provided by the plugin providing the items (e.g. course start or semester start).';
 $string['cashreportsettings'] = 'Cash report settings';
 $string['cashreport:showcustomorderid'] = 'Show custom OrderID instead of normal OrderID';
 $string['cashreport:showcustomorderid_desc'] = 'Be careful: Only activate this setting if your payment gateway supports custom order ids.';
@@ -196,39 +204,61 @@ $string['applytocomponent_desc'] = 'With this setting unchecked, you can cancel 
 $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';
 
-$string['confirmcanceltitle'] = 'Confirm Cancelation';
+$string['confirmcanceltitle'] = 'Confirm cancellation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
  The user who purchased will get his money back of which the cancellation fee will be subtracted.';
- $string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this purchase? It can\'t be undone.
-                                    The user who purchased will get the costs of {$a->price} {$a->currency} minus the already consumed share of {$a->percentage} minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
-                                    <br><br>
-                                    <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
-                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
-                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
-                                    </div>';
+$string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this purchase? It can\'t be undone.
+ The user who purchased will get the costs of {$a->price} {$a->currency} minus the already consumed share of {$a->percentage} minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
+ <br><br>
+ <div class="progress">
+ <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+ style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+ aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+ </div>';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<br>
-                                    You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
-$string['confirmcancelbodyuserconsumption'] = 'Do you really want to cancel this purchase?<br>
-                                    You\'ll get the not consumed share ({$a->percentage} already consumed) of the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
-                                    <br><br>
-                                    <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
-                                    style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
-                                    aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
-                                    </div>';
+ You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
+ $string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cancel this purchase?</b></p>
+ <p>
+ You will receive <b>{$a->credit} {$a->currency}</b> as credit.<br>
+ <table class="table table-light table-sm">
+ <tbody>
+     <tr>
+       <th scope="row">Original price</th>
+       <td align="right"> {$a->price} {$a->currency}</td>
+     </tr>
+     <tr>
+       <th scope="row">Percentage cancellation fee ({$a->percentage})</th>
+       <td align="right"> - {$a->deducedvalue} {$a->currency}</td>
+     </tr>
+     <tr>
+       <th scope="row">Cancellation fee</th>
+       <td align="right"> - {$a->cancelationfee} {$a->currency}</td>
+     </tr>
+     <tr>
+       <th scope="row">Credit</th>
+       <td align="right"> = {$a->credit} {$a->currency}</td>
+     </tr>
+   </tbody>
+ </table>
+ </p>
+ <div class="progress">
+   <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+     style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+     aria-valuemin="0" aria-valuemax="100">{$a->percentage}
+   </div>
+ </div>';
 $string['confirmcancelbodynocredit'] = 'Do you really want to cancel this purchase?<br>
-                                    The user has already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
+ The user has already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
 $string['confirmcancelbodyusernocredit'] = 'Do you really want to cancel this purchase?<br>
-                                    You have already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
+ You have already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
-    The following users will get their money back as credit:
-    {$a->userlist}
-    You can specify the cancelation fee below. It will be deduced from the original purchase price.';
+ The following users will get their money back as credit:
+ {$a->userlist}
+ You can specify the cancelation fee below. It will be deduced from the original purchase price.';
 
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
 $string['confirmpaidbackbody'] =
-        'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
+ 'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidback'] = 'Confirm';
 
 $string['confirmzeropricecheckouttitle'] = 'Pay with your credits';

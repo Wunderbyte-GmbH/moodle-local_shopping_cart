@@ -307,7 +307,8 @@ function confirmCancelModal(button, cancelationFee) {
     // Quota consumed is always on two deciamals.
     const quotaconsumed = parseFloat(button.dataset.quotaconsumed);
 
-    const credit = price - (price * quotaconsumed) - cancelationFee;
+    const deducedvalue = price * quotaconsumed;
+    const credit = price - deducedvalue - cancelationFee;
     const currency = button.dataset.currency;
     // We always round percentages.
     const percentage = Math.round(quotaconsumed * 100);
@@ -316,6 +317,7 @@ function confirmCancelModal(button, cancelationFee) {
         quotaconsumed: quotaconsumed.toFixed(2),
         percentage: percentage + '%',
         currency: currency,
+        deducedvalue: deducedvalue,
     };
 
     const roundvalues = button.dataset.round;
@@ -323,10 +325,12 @@ function confirmCancelModal(button, cancelationFee) {
         params.price = Math.round(price);
         params.credit = Math.round(credit);
         params.cancelationfee = Math.round(cancelationFee);
+        params.deducedvalue = Math.round(deducedvalue);
     } else {
         params.price = price.toFixed(2);
         params.credit = credit.toFixed(2);
         params.cancelationfee = cancelationFee.toFixed(2);
+        params.deducedvalue = deducedvalue.toFixed(2);
     }
 
     let bodystring = 'confirmcancelbodyuser';

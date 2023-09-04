@@ -124,16 +124,6 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
-            new admin_setting_configtext(
-                    $componentname . '/cancelationfee',
-                    get_string('cancelationfee', $componentname),
-                    get_string('cancelationfee:description', $componentname),
-                    -1,
-                    PARAM_FLOAT
-            )
-    );
-
-    $settings->add(
         new admin_setting_configtext(
                 $componentname . '/bookingfee',
                 get_string('bookingfee', $componentname),
@@ -147,12 +137,6 @@ if ($hassiteconfig) {
         new admin_setting_configcheckbox($componentname . '/bookingfeeonlyonce',
                 get_string('bookingfeeonlyonce', 'local_shopping_cart'),
                 get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1));
-
-    // Setting to round percentage discounts to full integers.
-    $settings->add(
-        new admin_setting_configcheckbox($componentname . '/calculateconsumation',
-                get_string('calculateconsumation', 'local_shopping_cart'),
-                get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
@@ -219,6 +203,42 @@ if ($hassiteconfig) {
     $opts = array('accepted_types' => array('.png', '.jpg'), 'maxfiles' => 1);
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
+
+    // Cancellation settings.
+    $cancellationsettings = new admin_settingpage('local_shopping_cart_cancellation_settings',
+        get_string('cancellationsettings', 'local_shopping_cart'));
+
+    $cancellationsettings->add(
+        new admin_setting_configtext(
+                $componentname . '/cancelationfee',
+                get_string('cancelationfee', $componentname),
+                get_string('cancelationfee:description', $componentname),
+                -1,
+                PARAM_FLOAT
+        )
+    );
+
+    $cancellationsettings->add(
+        new admin_setting_configcheckbox($componentname . '/calculateconsumation',
+            get_string('calculateconsumation', 'local_shopping_cart'),
+            get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
+
+    $fixedpercentages[-1] = get_string('nofixedpercentage', 'local_shopping_cart');
+    foreach (range(5, 100, 5) as $number) {
+        $fixedpercentages[$number] = "$number %";
+    }
+
+    $cancellationsettings->add(
+        new admin_setting_configselect($componentname . '/calculateconsumationfixedpercentage',
+            get_string('calculateconsumationfixedpercentage', 'local_shopping_cart'),
+            get_string('calculateconsumationfixedpercentage_desc', 'local_shopping_cart'), -1, $fixedpercentages));
+
+    $cancellationsettings->add(
+        new admin_setting_configcheckbox($componentname . '/fixedpercentageafterserviceperiodstart',
+                get_string('fixedpercentageafterserviceperiodstart', 'local_shopping_cart'),
+                get_string('fixedpercentageafterserviceperiodstart_desc', 'local_shopping_cart'), 1));
+
+    $ADMIN->add($componentname, $cancellationsettings);
 
     // Cash report settings.
     $cashreportsettings = new admin_settingpage('local_shopping_cart_cashreport_settings',

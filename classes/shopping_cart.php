@@ -38,6 +38,7 @@ use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
 use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\event\payment_rebooked;
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use stdClass;
@@ -1276,16 +1277,16 @@ class shopping_cart {
      */
     public static function get_quota_consumed(string $component, string $area, int $itemid, int $userid, int $historyid): array {
 
-        // First we calculate the quota from the item.
-        $providerclass = static::get_service_provider_classname($component);
-        $quota = component_class_callback($providerclass, 'quota_consumed', [$area, $itemid, $userid]);
-
         $item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid);
+
+        self::add_quota_consumed_to_item($item, $userid);
+        $quota = $item->quotaconsumed;
 
         // Now get the historyitem in order to check the initial price and calculate the rest.
         if ($quota >= 0 && $item) {
             $initialprice = (float)$item->price;
-            $remainingvalue = $initialprice - ($initialprice * $quota);
+            $deducedvalue = $initialprice * $quota;
+            $remainingvalue = $initialprice - $deducedvalue;
             $currency = $item->currency;
             $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
             $success = $cancelationfee < 0 ? 0 : 1; // Cancelation not allowed.
@@ -1295,6 +1296,7 @@ class shopping_cart {
             'success' => $success ?? 0,
             'quota' => $quota ?? 0,
             'remainingvalue' => $remainingvalue ?? 0,
+            'deducedvalue' => $deducedvalue ?? 0,
             'initialprice' => $initialprice ?? 0,
             'currency' => $currency ?? '',
             'cancelationfee' => $cancelationfee ?? 0,
@@ -1551,5 +1553,48 @@ class shopping_cart {
                 }
             }
         }
+    }
+
+    /**
+     * Receive quota consumed via callback to component.
+     *
+     * @param stdClass $item
+     * @param int $userid
+     * @return [type]
+     */
+    public static function add_quota_consumed_to_item(stdClass &$item, int $userid) {
+
+        if (empty($item->componentname) || empty($item->area)) {
+            return;
+        }
+
+        // If we have set a fixed percentage in settings, we use this one!
+        if (get_config('local_shopping_cart', 'calculateconsumation')
+            && get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0) {
+
+            // We also check if the setting to only apply fixed percentage within service period is turned on.
+            if (get_config('local_shopping_cart', 'fixedpercentageafterserviceperiodstart')) {
+                if (time() >= $item->serviceperiodstart) {
+                    $item->quotaconsumed = (float) 0.01 * get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
+                    return;
+                } else {
+                    $item->quotaconsumed = 0.0;
+                    return;
+                }
+
+            } else {
+                $item->quotaconsumed = (float) 0.01 * get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
+                return;
+            }
+        }
+
+        // We fetch the consumed quota as well.
+        $providerclass = self::get_service_provider_classname($item->componentname);
+        $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
+                [
+                        'area' => $item->area,
+                        'itemid' => $item->itemid,
+                        'userid' => $userid,
+                ]);
     }
 }
