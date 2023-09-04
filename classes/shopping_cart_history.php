@@ -95,6 +95,8 @@ class shopping_cart_history {
 
         global $CFG, $DB;
 
+        $dbman = $DB->get_manager();
+
         // We need this in case we load via webservice to resolve the constants.
         require_once(__DIR__ . '/../lib.php');
 
@@ -116,6 +118,7 @@ class shopping_cart_history {
 
         // Create selects for each payment gateway.
         $colselects = [];
+        $openorderselects = [];
 
         // Create an array of table names for the payment gateways.
         if (!empty($account)) {
@@ -123,6 +126,13 @@ class shopping_cart_history {
                 $gwname = $gateway->get('gateway');
                 if ($gateway->get('enabled')) {
                     $tablename = "paygw_" . $gwname;
+
+                    // If there are open orders tables we create selects for them.
+                    $openorderstable = "paygw_" . $gwname . "_openorders";
+                    if ($dbman->table_exists($openorderstable)) {
+                        $openorderselects[] = "SELECT itemid, '" . $gwname .
+                            "' AS gateway, tid FROM {paygw_" . $gwname . "_openorders}";
+                    }
 
                     $cols = $DB->get_columns($tablename);
                     foreach ($cols as $key => $value) {
@@ -136,6 +146,17 @@ class shopping_cart_history {
                     }
                 }
             }
+        }
+
+        // If we have open orders tables select statements, we can now UNION them.
+        if (!empty($openorderselects)) {
+            $customorderid = "oo.tid AS customorderid, ";
+            $openorderselectsstring = implode(' UNION ', $openorderselects);
+            $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON sch.identifier = oo.itemid AND oo.gateway = p.gateway";
+        } else {
+            // If we do not have any open orders tables, we still keep an empty custom order id column for consistency.
+            $customorderid = "'' AS customorderid, ";
+            $customorderidpart = '';
         }
 
         if (!empty($colselects)) {
@@ -163,15 +184,28 @@ class shopping_cart_history {
         }
 
         $sql = "SELECT DISTINCT
-                $uniqueidpart sch.*, p.gateway$selectorderidpart
+                $uniqueidpart sch.*, " . $customorderid . "p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
                 ON p.itemid = sch.identifier AND p.userid=sch.userid
+                $customorderidpart
                 $gatewayspart
                 WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
                 ORDER BY sch.timemodified DESC";
 
-        return $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => PAYMENT_SUCCESS]);
+        $records = $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => PAYMENT_SUCCESS]);
+
+        // If the setting to show custom order IDs is turned on...
+        // ... then we replace the order ID with the custom order ID.
+        if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
+            foreach ($records as &$record) {
+                if (!empty($record->customorderid)) {
+                    $record->orderid = $record->customorderid;
+                }
+            }
+        }
+
+        return $records;
     }
 
     /**

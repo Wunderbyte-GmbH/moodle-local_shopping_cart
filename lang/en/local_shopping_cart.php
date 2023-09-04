@@ -30,10 +30,11 @@ $string['modulename'] = 'Shopping Cart';
 
 // General strings.
 $string['addtocart'] = 'Add to cart';
-$string['mycart'] = 'My Cart';
-$string['sendpaymentbutton'] = 'Checkout';
 $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
+$string['mycart'] = 'My Cart';
+$string['sendpaymentbutton'] = 'Checkout';
+$string['showorderid'] = 'Show Order-ID...';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';

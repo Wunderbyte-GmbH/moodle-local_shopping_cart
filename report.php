@@ -96,8 +96,9 @@ if (!empty($openorderselects)) {
     $openorderselectsstring = implode(' UNION ', $openorderselects);
     $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid AND oo.gateway = p.gateway";
 } else {
+    // If we do not have any open orders tables, we still keep an empty custom order id column for consistency.
     $customorderid = "'' AS customorderid, ";
-    // If we do not have any open orders tables, we still keep the custom order id column for consistency.
+    $customorderidpart = '';
 }
 
 if (!empty($colselects)) {

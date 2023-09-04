@@ -73,7 +73,7 @@
         <span><small>Payment gateway: <b>{{gateway}}</b></small></span>
         {{#orderid}}
             <br><a data-toggle="collapse" href="#collapseOrderid{{id}}" role="button" aria-expanded="false" aria-controls="collapseOrderid{{id}}">
-                    <small>Show Order-ID...</small>
+                    <small>{{#str}} showorderid, local_shopping_cart {{/str}}</small>
             </a>
             <div class="collapse" id="collapseOrderid{{id}}">
                 <div class="card card-body mb-3 bg-light">

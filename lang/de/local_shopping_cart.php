@@ -30,10 +30,11 @@ $string['modulename'] = 'Warenkorb';
 
 // General strings.
 $string['addtocart'] = 'In den Warenkorb';
-$string['mycart'] = 'Mein Warenkorb';
-$string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
+$string['mycart'] = 'Mein Warenkorb';
+$string['sendpaymentbutton'] = 'Zur Bezahlung';
+$string['showorderid'] = 'Order-ID anzeigen...';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
