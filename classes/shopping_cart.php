@@ -329,6 +329,7 @@ class shopping_cart {
         $result = $cache->get('schistorycache');
 
         if (!empty($result)) {
+            $result = (array) $result;
             $identifier = (int) $result['identifier'];
             $history = new shopping_cart_history();
             $scdata = $history->prepare_data_from_cache($userid, $identifier ?? 0);
