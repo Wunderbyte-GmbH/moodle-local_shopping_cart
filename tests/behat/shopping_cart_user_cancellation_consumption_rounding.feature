@@ -78,9 +78,9 @@ Feature: User cancellation after cash payment with consumption and discount roun
     Then I should see "2.3" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"0\"]" "css_element"
     And I wait "1" seconds
-    And I should see "20 EUR" in the ".show .modal-content" "css_element"
-    And I should see "- 1 EUR" in the ".show .modal-content" "css_element"
-    And I should see "= 19 EUR" in the ".show .modal-content" "css_element"
+    And I should see "the costs of your purchase (20 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "minus a cancelation fee (1 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "as credit (19 EUR) for your next purchase" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     Then I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
