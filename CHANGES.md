@@ -1,3 +1,15 @@
+## Version 0.5.5 (2023090600)
+**New features:**
+* New feature: Transfer cash from one cashier to another cashier.
+* New feature: New setting to calculate consumation with fixed percentage and setting to apply only after service period start.
+
+**Improvements:**
+* Improvement: If setting 'cashreportshowcustomorderid' is active, then we also show the custom order ID in shopping cart history.
+
+**Bugfixes:**
+* Bugfix: Fix broken behat tests for green Github actions.
+* Bugfix: Schistorycache has to be casted to array.
+
 ## Version 0.5.4 (2023083000)
 **New features:**
 * New feature: Add net/gross settings for item prices.
