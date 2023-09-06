@@ -217,7 +217,7 @@ $string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this pur
  </div>';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<br>
  You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
- $string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cancel this purchase?</b></p>
+$string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cancel this purchase?</b></p>
  <p>
  You will receive <b>{$a->credit} {$a->currency}</b> as credit.<br>
  <table class="table table-light table-sm">
