@@ -395,7 +395,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023061600, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2023090300) { // Replace XXXXXXXXXX with the required version number.
+    if ($oldversion < 2023090601) { // Replace XXXXXXXXXX with the required version number.
 
         // Define the table structure.
         $table = new xmldb_table('local_shopping_cart_invoices');
@@ -415,7 +415,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // MOODLE has been upgraded to the required version.
-        upgrade_plugin_savepoint(true, 2023090300, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2023090601, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
