@@ -34,7 +34,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
   Scenario: User buys three items and cancel purchase when consumption and discount rounding enabled and cancellation fee given
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
-    And I set the field "Credit on cancelation minus already consumed value." to "checked"
+    And I set the field "Credit on cancelation minus already consumed value" to "checked"
     And I set the field "Round discounts" to "checked"
     And I set the following fields to these values:
       | Cancelation fee | 1 |

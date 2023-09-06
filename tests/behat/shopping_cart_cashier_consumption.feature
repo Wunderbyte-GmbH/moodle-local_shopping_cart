@@ -35,7 +35,7 @@ Feature: Cashier actions in shopping cart with consumption enabled.
   Scenario: Cashier buys three items and cancel purchase when consumption enabled
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
-    And I set the field "Credit on cancelation minus already consumed value." to "checked"
+    And I set the field "Credit on cancelation minus already consumed value" to "checked"
     And I press "Save changes"
     Then I should see "Changes saved"
     And I log out
