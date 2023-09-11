@@ -62,16 +62,20 @@ class service_provider implements \core_payment\local\callback\service_provider 
         $cachedeleted = false;
 
         try {
-            $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
+            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier, true);
         } catch (\Exception $e) {
             $cachedeleted = true;
         }
 
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
+
+        // We always check DB here, regardless if we have the cache or not.
+        // This is to make sure that we can't pay without writing identifier to db.
+        if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
+            throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
+        }
+
         if ($cachedeleted) {
-            if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
-                throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
-            }
 
             $price = 0;
             foreach ($records as $record) {

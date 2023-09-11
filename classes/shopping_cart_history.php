@@ -611,15 +611,20 @@ class shopping_cart_history {
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
 
-        $shoppingcart = (object)$cache->get('schistorycache');
+        $shoppingcart = $cache->get('schistorycache');
 
-        if (isset($shoppingcart->identifier) && !isset($shoppingcart->storedinhistory)) {
+        // We must never get the wrong identifier in this process.
+        if (isset($shoppingcart['identifier']) && ($shoppingcart['identifier'] != $identifier)) {
+            throw new moodle_exception('wrongidentifier', 'local_shopping_cart');
+        }
 
-            self::write_to_db($shoppingcart);
+        if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
 
-            $shoppingcart->storedinhistory = true;
+            self::write_to_db((object)$shoppingcart);
+
+            $shoppingcart['storedinhistory'] = true;
             $cache->set('schistorycache', $shoppingcart);
-        } else if (!isset($shoppingcart->identifier)) {
+        } else if (!isset($shoppingcart['identifier'])) {
             throw new moodle_exception('noidentifierfound', 'local_shopping_cart');
         }
 
