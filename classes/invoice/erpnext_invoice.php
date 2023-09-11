@@ -200,7 +200,7 @@ class erpnext_invoice implements invoice {
     public function customer_exists(): bool {
         $url = str_replace(' ', '%20', $this->baseurl . "/api/resource/Customer/{$this->customer}/");
         mtrace($url);
-        $response = $this->client->get(str_replace( ' ', '%20',$url));
+        $response = $this->client->get(str_replace( ' ', '%20', $url));
         if (!$response) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "customer_exists function got this error: " . $this->client->get_errno() . $this->errormessage .
@@ -314,11 +314,11 @@ class erpnext_invoice implements invoice {
      * @return bool true if price is net
      */
     public function is_net_price(float $price, int $taxpercentage, int $taxamount): bool {
-        // Calculate the tax amount based on the provided price
+        // Calculate the tax amount based on the provided price.
         $calculatedtaxamount = ($price * $taxpercentage) / 100;
 
-        // Check if the provided tax amount matches the calculated tax amount
-        $tolerance = 0.01;  // Define a small tolerance for floating-point comparison
+        // Check if the provided tax amount matches the calculated tax amount.
+        $tolerance = 0.01;  // Define a small tolerance for floating-point comparison.
         $isgross = abs($taxamount - $calculatedtaxamount) < $tolerance;
 
         if ($isgross) {
