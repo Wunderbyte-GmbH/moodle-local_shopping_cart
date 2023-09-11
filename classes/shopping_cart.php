@@ -80,7 +80,7 @@ class shopping_cart {
         $buyforuser = false;
 
         // If there is no user specified, we determine it automatically.
-        if ($userid < 0) {
+        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
             $context = context_system::instance();
             if (has_capability('local/shopping_cart:cashier', $context)) {
                 $userid = self::return_buy_for_userid();
