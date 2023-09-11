@@ -920,7 +920,8 @@ class shopping_cart {
         // Only the Cashier can override the credit. If she has done so, we use it.
         // Else, we use the normal credit.
         $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
+        if (!has_capability('local/shopping_cart:cashier', $context)
+            || $userid == $USER->id) { // If the cashier is cancelling her own booking, whe also gets normal credit.
             if (empty($customcredit)) {
                 $customcredit = $credit;
             }
