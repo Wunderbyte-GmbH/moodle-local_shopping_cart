@@ -276,6 +276,8 @@ $string['usecredit'] = 'Use credit:';
 $string['deductible'] = 'Deductible:';
 $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';
+$string['creditsused'] = 'Credits used';
+$string['creditsusedannotation'] = 'Extra row because credits were used';
 
 $string['nopermission'] = "No permission to cancel";
 

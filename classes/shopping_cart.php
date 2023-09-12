@@ -719,8 +719,8 @@ class shopping_cart {
             $ledgerrecord = new stdClass;
             $ledgerrecord->userid = $userid;
             $ledgerrecord->itemid = 0;
-            $ledgerrecord->price = (float) (-1.0) * $data["credit"];
-            $ledgerrecord->credits = (float) (-1.0) * $data["credit"];
+            $ledgerrecord->price = (float) (-1.0) * $data["deductible"];
+            $ledgerrecord->credits = (float) (-1.0) * $data["deductible"];
             $ledgerrecord->currency = $data["currency"];
             $ledgerrecord->componentname = 'local_shopping_cart';
             $ledgerrecord->identifier = $identifier;
@@ -729,6 +729,8 @@ class shopping_cart {
             $ledgerrecord->usermodified = $USER->id;
             $ledgerrecord->timemodified = time();
             $ledgerrecord->timecreated = time();
+            $ledgerrecord->itemname = get_string('creditsused', 'local_shopping_cart');
+            $ledgerrecord->annotation = get_string('creditsusedannotation', 'local_shopping_cart');
             self::add_record_to_ledger_table($ledgerrecord);
         }
 
@@ -759,10 +761,10 @@ class shopping_cart {
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
 
-                    // If this is paid for with credits, we want to have this on record.
-                    // Also, price is then 0, but we want to know the real price.
-                    $paymentmethod = $data['price'] == 0 ? PAYMENT_METHOD_CREDITS : PAYMENT_METHOD_CASHIER;
-
+                    // In cash report we have to sum up cash sums, so we cannot use PAYMENT_METHOD_CREDITS.
+                    // So do not do this anymore but use the actual payment method.
+                    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+                    /* $paymentmethod = $data['price'] == 0 ? PAYMENT_METHOD_CREDITS : PAYMENT_METHOD_CASHIER;
                     if ($paymentmethod === PAYMENT_METHOD_CASHIER) {
                         // We now need to specify the actual payment method (cash, debit or credit card).
                         switch ($paymenttype) {
@@ -773,7 +775,8 @@ class shopping_cart {
                                 $paymentmethod = $paymenttype;
                                 break;
                         }
-                    }
+                    } */
+                    $paymentmethod = $paymenttype;
 
                     // Make sure we can pass on a valid value.
                     $item['discount'] = $item['discount'] ?? 0;
@@ -1145,7 +1148,7 @@ class shopping_cart {
      * @param stdClass $record the record to add to the ledger table
      */
     public static function add_record_to_ledger_table(stdClass $record) {
-        global $DB;
+        global $DB, $USER;
         $id = null;
         switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
@@ -1173,8 +1176,15 @@ class shopping_cart {
                 }
                 break;
             case PAYMENT_CANCELED:
+                $now = time();
                 $record->price = null;
                 $record->discount = null;
+                $record->usermodified = $USER->id;
+                $record->timecreated = $now;
+                $record->timemodified = $now;
+                $record->payment = PAYMENT_METHOD_CREDITS;
+                $record->gateway = null;
+                $record->orderid = null;
                 $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                 cache_helper::purge_by_event('setbackcachedcashreport');
                 break;

@@ -269,6 +269,8 @@ $string['usecredit'] = 'Verwende Guthaben:';
 $string['deductible'] = 'Abziehbar:';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';
 $string['remainingtotal'] = 'Preis:';
+$string['creditsused'] = 'Guthaben eingelöst';
+$string['creditsusedannotation'] = 'Extra-Zeile für eingelöstes Guthaben';
 
 $string['nopermission'] = "No permission to cancel";
 
