@@ -95,4 +95,14 @@ interface service_provider {
      * @return float
      */
     public static function quota_consumed(string $area, int $itemid, int $userid = 0): float;
+
+    /**
+     * Callback function to check if an item can be cancelled.
+     *
+     * @param string $area
+     * @param int $itemid An identifier that is known to the plugin
+     *
+     * @return bool true if cancelling is allowed, else false
+     */
+    public static function allowed_to_cancel(string $area, int $itemid): bool;
 }

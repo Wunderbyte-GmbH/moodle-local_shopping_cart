@@ -1027,7 +1027,7 @@ class shopping_cart {
      */
     public static function allowed_to_cancel(int $historyid, int $itemid, string $area, int $userid):bool {
 
-        global $DB;
+        $context = context_system::instance();
 
         if (!$item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid)) {
             return false;
@@ -1038,6 +1038,16 @@ class shopping_cart {
             return false;
         }
 
+        // Cashier can always cancel but if it's no cashier...
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
+            // ...then we have to check, if the item itself allows cancellation.
+            $providerclass = static::get_service_provider_classname($item->componentname);
+            $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $itemid]);
+            if (!$itemallowedtocancel) {
+                return false;
+            }
+        }
+
         $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
 
         // If the cancelationfee is < 0, or the time has expired, the user is not allowed to cancel.
@@ -1045,7 +1055,6 @@ class shopping_cart {
             (!empty($item->canceluntil)
                 && ($item->canceluntil < time()))) {
             // Cancelation after time has expired is only allowed for cashiers.
-            $context = context_system::instance();
             if (!has_capability('local/shopping_cart:cashier', $context)) {
                 return false;
             }

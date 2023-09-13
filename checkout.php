@@ -33,14 +33,20 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 require_login();
 
-global $USER, $PAGE, $OUTPUT, $CFG;
+global $USER, $PAGE, $OUTPUT, $CFG, $ME;
 
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
 
 // As we might get a malformed URL, we have to jump through a few loops.
 if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
-    $url = html_entity_decode($ME);
+    if ($CFG->version >= 2023042400) {
+        // Moodle 4.2 needs second param.
+        $url = html_entity_decode($ME, ENT_QUOTES);
+    } else {
+        // Moodle 4.1 and older.
+        $url = html_entity_decode($ME, ENT_COMPAT);
+    }
     $urlcomponents = parse_url($url);
     if (isset($urlcomponents['query'])) {
         parse_str($urlcomponents['query'], $params);
