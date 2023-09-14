@@ -171,4 +171,20 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 return 0;
         }
     }
+
+    /**
+     * Callback function to check if an item can be cancelled.
+     *
+     * @param string $area
+     * @param int $itemid An identifier that is known to the plugin
+     *
+     * @return bool true if cancelling is allowed, else false
+     */
+    public static function allowed_to_cancel(string $area, int $itemid): bool {
+        $allowedtocancel = false; // By default, items in shopping cart cannot be cancelled.
+        if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
+            $allowedtocancel = true; // By default, cashier can cancel anything.
+        }
+        return $allowedtocancel;
+    }
 }
