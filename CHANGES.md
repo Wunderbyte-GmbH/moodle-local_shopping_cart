@@ -1,3 +1,11 @@
+## Version 0.5.6 (2023091400)
+* New feature: Create invoices via remote platform.
+* New feature: Do not allow cancellation of items if the items themselves do not allow cancellation (via callback).
+* Bugfix: Fix bugs in cash report.
+* Bugfix: Make sure we have the buyforuserid.
+* Bugfix: Cashier gets normal credit for her own cancelled bookings.
+* Bugfix: Make sure to throw an error if the identifier is not in db or not correct.
+
 ## Version 0.5.5 (2023090600)
 **New features:**
 * New feature: Transfer cash from one cashier to another cashier.
