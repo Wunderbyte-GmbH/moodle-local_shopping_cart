@@ -186,6 +186,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
             $allowedtocancel = true; // By default, cashier can cancel anything.
         }
+        if ($area == 'main') {
+            $allowedtocancel = true; // Test items can be cancelled.
+        }
         return $allowedtocancel;
     }
 }
