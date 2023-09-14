@@ -1,3 +1,6 @@
+## Version 0.5.7 (2023091401)
+* Bugfix: Add missing implementation of allowed_to_cancel in service provider of shopping cart.
+
 ## Version 0.5.6 (2023091400)
 * New feature: Create invoices via remote platform.
 * New feature: Do not allow cancellation of items if the items themselves do not allow cancellation (via callback).
