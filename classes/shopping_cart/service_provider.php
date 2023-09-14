@@ -16,6 +16,7 @@
 
 namespace local_shopping_cart\shopping_cart;
 
+use context_system;
 use local_shopping_cart\local\entities\cartitem;
 
 /**
