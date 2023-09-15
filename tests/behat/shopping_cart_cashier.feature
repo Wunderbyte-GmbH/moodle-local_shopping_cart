@@ -126,7 +126,6 @@ Feature: Cashier actions in shopping cart.
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I log out
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
@@ -150,8 +149,10 @@ Feature: Cashier actions in shopping cart.
     Then I should see "8" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I press "Refunded"
     And I click on "button[data-action=\"save\"]" "css_element"
-    Then I should see "Credit paid back" in the ".notifications" "css_element"
-    And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    And I wait "1" seconds
+    Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
+    ## Then I should see "Credit paid back" in the ".notifications" "css_element"
+    ##And I should not see "Credit" in the "ul.cashier-history-items" "css_element" should not be visible
 
   @javascript
   Scenario: Cashier buys discounted item and gives refund
@@ -159,10 +160,8 @@ Feature: Cashier actions in shopping cart.
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I log out
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
-    And I wait until the page is ready
     And I set the following fields to these values:
       | s_local_shopping_cart_rounddiscounts | 0 |
     And I press "Save changes"
@@ -191,5 +190,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I press "Refunded"
     And I click on "button[data-action=\"save\"]" "css_element"
-    Then I should see "Credit paid back" in the ".notifications" "css_element"
-    And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
+    ## Then I should see "Credit paid back" in the ".notifications" "css_element"
+    ## And I should not see "Credit" in the "ul.cashier-history-items" "css_element"

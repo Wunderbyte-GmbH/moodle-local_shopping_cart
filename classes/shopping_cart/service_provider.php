@@ -16,6 +16,7 @@
 
 namespace local_shopping_cart\shopping_cart;
 
+use context_system;
 use local_shopping_cart\local\entities\cartitem;
 
 /**
@@ -184,6 +185,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         $allowedtocancel = false; // By default, items in shopping cart cannot be cancelled.
         if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
             $allowedtocancel = true; // By default, cashier can cancel anything.
+        }
+        if ($area == 'main') {
+            $allowedtocancel = true; // Test items can be cancelled.
         }
         return $allowedtocancel;
     }
