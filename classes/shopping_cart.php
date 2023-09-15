@@ -950,6 +950,13 @@ class shopping_cart {
                 }
             }
 
+            // Apply rounding to all relevant values.
+
+            // If setting to round discounts is turned on, we round to full int.
+            $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
+
+            $customcredit = round($customcredit, $discountprecision);
+
             // Make sure customcredit is never negative due to cancelation fee.
             // For cashier as well as for self booking users.
             if ($customcredit < 0) {
