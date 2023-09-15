@@ -1,3 +1,6 @@
+## Version 0.5.9 (2023091501)
+* Bugfix: Add rounding on cancel credits.
+
 ## Version 0.5.7 (2023091401)
 * Bugfix: Add missing implementation of allowed_to_cancel in service provider of shopping cart.
 
