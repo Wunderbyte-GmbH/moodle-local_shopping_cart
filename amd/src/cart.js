@@ -65,9 +65,9 @@ const SELECTORS = {
  * @param {*} expirationdate
  */
 
- export const init = (expirationdate) => {
+ export const init = (expirationdate, nowdate) => {
 
-    initTimer(expirationdate);
+    initTimer(expirationdate, nowdate);
 
     // We might have more than one container.
     let containers = [];
@@ -251,7 +251,7 @@ export const reinit = (userid = 0) => {
                 // If we are on the cashier page, we add the possibility to add a discount to the cart items.
                 if (!(userid != 0 && data.iscashier)) {
                     clearInterval(interval);
-                    initTimer(data.expirationdate);
+                    initTimer(data.expirationdate, data.nowdate);
 
                     updateBadge(data.count);
                 }
@@ -517,7 +517,14 @@ function startTimer(duration, display) {
         display.textContent = minutes + ":" + seconds;
 
         if (--timer < 0) {
-            deleteAllItems();
+
+            // We so the expiration time has already kicked in on the server.
+            setTimeout(() => {
+                reinit(0);
+            }, 2000);
+
+            // We don't actually need to make this call.
+            // deleteAllItems();
 
             clearInterval(interval);
         }
@@ -529,13 +536,14 @@ function startTimer(duration, display) {
  * Initialize Timer.
  *
  * @param {integer} expirationdate
+ * @param {integer} nowdate
  *
  */
-function initTimer(expirationdate = null) {
+function initTimer(expirationdate = null, nowdate = null) {
 
     const countdownelement = document.querySelector(SELECTORS.COUNTDOWN);
 
-    if (!countdownelement) {
+    if (!countdownelement || !nowdate) {
         return;
     }
 
@@ -543,8 +551,7 @@ function initTimer(expirationdate = null) {
         clearInterval(interval);
     }
     let delta = 0;
-    let now = Date.now('UTC');
-    now = (new Date()).getTime() / 1000;
+    let now = nowdate;
     if (expirationdate) {
         delta = (expirationdate - now);
     }

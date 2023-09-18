@@ -112,6 +112,7 @@ class get_shopping_cart_items extends external_api {
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                         'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp of cart'),
+                        'nowdate' => new external_value(PARAM_INT, 'current Timestamp'),
                         'maxitems' => new external_value(PARAM_INT, 'Max Items'),
                         'items' => new external_multiple_structure (
                                 new external_single_structure(

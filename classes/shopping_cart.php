@@ -469,6 +469,7 @@ class shopping_cart {
         $data['checkboxid'] = bin2hex(random_bytes(3));
         $data['usecredit'] = $usecredit;
         $data['expirationdate'] = time();
+        $data['nowdate'] = time();
         $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
 
         if (!$cachedrawdata) {
