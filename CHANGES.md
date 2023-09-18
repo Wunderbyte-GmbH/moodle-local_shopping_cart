@@ -1,3 +1,6 @@
+## Version 0.5.9 (2023091800)
+* Bugfix: By wrong browser date delete all items could be triggered in permanence.
+
 ## Version 0.5.9 (2023091501)
 * Bugfix: Add rounding on cancel credits.
 
