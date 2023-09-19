@@ -38,7 +38,6 @@ use local_shopping_cart\event\item_bought;
 use local_shopping_cart\event\item_canceled;
 use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\event\payment_rebooked;
-use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use stdClass;
@@ -1050,7 +1049,12 @@ class shopping_cart {
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             // ...then we have to check, if the item itself allows cancellation.
             $providerclass = static::get_service_provider_classname($item->componentname);
-            $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $itemid]);
+            try {
+                $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $itemid]);
+            } catch (moodle_exception $e) {
+                $itemallowedtocancel = false;
+            }
+
             if (!$itemallowedtocancel) {
                 return false;
             }
