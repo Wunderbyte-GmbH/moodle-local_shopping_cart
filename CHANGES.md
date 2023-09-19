@@ -1,8 +1,13 @@
-## Version 0.5.9 (2023091800)
+## Version 0.5.10 (2023091800)
 * Bugfix: By wrong browser date delete all items could be triggered in permanence.
 
 ## Version 0.5.9 (2023091501)
 * Bugfix: Add rounding on cancel credits.
+
+## Version 0.5.8 (2023091500)
+* Test: Fix 2 scenarios (issue with notifications interception).
+* Test: Allow test items to be canceled.
+* Bugfix: Moodle exception: Exception - Class "local_shopping_cart\shopping_cart\context_system" not found.
 
 ## Version 0.5.7 (2023091401)
 * Bugfix: Add missing implementation of allowed_to_cancel in service provider of shopping cart.
