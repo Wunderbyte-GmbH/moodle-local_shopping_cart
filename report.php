@@ -310,6 +310,7 @@ if (!$gatewaysupported) {
 // Now we can define the columns.
 $table->define_sortablecolumns($sortablecols);
 $table->define_fulltextsearchcolumns($fulltextsearchcols);
+$table->pageable(true);
 
 // Table will be shown normally.
 echo $OUTPUT->header();
@@ -351,7 +352,7 @@ if (!$gatewaysupported) {
     </div>';
 }
 
-$table->out(50, false);
+$table->out(30, false);
 
 echo $OUTPUT->footer();
 
