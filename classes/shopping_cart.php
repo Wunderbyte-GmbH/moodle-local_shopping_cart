@@ -1002,7 +1002,7 @@ class shopping_cart {
      * @param int $method
      * @return array
      */
-    public static function credit_paid_back(int $userid, int $method): array {
+    public static function credit_paid_back(int $userid, int $method = PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {

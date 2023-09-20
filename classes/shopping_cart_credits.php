@@ -258,7 +258,7 @@ class shopping_cart_credits {
      * @param int $method
      * @return bool
      */
-    public static function credit_paid_back(int $userid, int $method = PAYMENT_METHOD_CREDITS_PAID_BACK) {
+    public static function credit_paid_back(int $userid, int $method = PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH) {
         global $USER;
 
         list($balance, $currency) = self::get_balance($userid);

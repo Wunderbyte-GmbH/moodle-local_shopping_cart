@@ -245,7 +245,8 @@ $filtercolumns['payment'] = [
     PAYMENT_METHOD_ONLINE => get_string('paymentmethodonline', 'local_shopping_cart'),
     PAYMENT_METHOD_CASHIER => get_string('paymentmethodcashier', 'local_shopping_cart'),
     PAYMENT_METHOD_CREDITS => get_string('paymentmethodcredits', 'local_shopping_cart'),
-    PAYMENT_METHOD_CREDITS_PAID_BACK => get_string('paymentmethodcreditspaidback', 'local_shopping_cart'),
+    PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH => get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
+    PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER => get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
     PAYMENT_METHOD_CASHIER_CASH => get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
     PAYMENT_METHOD_CASHIER_CREDITCARD => get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
     PAYMENT_METHOD_CASHIER_DEBITCARD => get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
@@ -394,8 +395,11 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
             case PAYMENT_METHOD_CREDITS:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidback', 'local_shopping_cart');
+            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
+                break;
+            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
             case PAYMENT_METHOD_CASHIER_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
@@ -443,8 +447,11 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
             case PAYMENT_METHOD_CREDITS:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidback', 'local_shopping_cart');
+            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
+                break;
+            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
             case PAYMENT_METHOD_CASHIER_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');

@@ -35,7 +35,6 @@ $services = array(
                         'local_shopping_cart_credit_paid_back',
                         'local_shopping_cart_cancel_purchase',
                         'local_shopping_cart_get_price',
-                        'local_shopping_cart_credit_paid_back',
                         'local_shopping_cart_confirm_cash_payment',
                         'local_shopping_cart_quota_consumed',
                 ),

@@ -37,6 +37,7 @@ use moodle_exception;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 /**
  * External Service for shopping cart.
@@ -55,19 +56,22 @@ class credit_paid_back extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(array(
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0')
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
+            'method' => new external_value(PARAM_INT, 'method', VALUE_OPTIONAL, PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
         ));
     }
 
     /**
      * Excecute this websrvice.
      * @param int $userid
+     * @param int $method
      * @return array
      */
-    public static function execute(int $userid) {
+    public static function execute(int $userid, int $method) {
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid
+            'userid' => $userid,
+            'method' => $method,
         ]);
 
         require_login();
@@ -77,7 +81,7 @@ class credit_paid_back extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::credit_paid_back($params['userid']);
+        return shopping_cart::credit_paid_back($params['userid'], $params['method']);
     }
 
     /**
