@@ -363,7 +363,7 @@ class shopping_cart_history {
 
         // Identify record.
         if ($entryid) {
-            $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid]);
+            $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid, 'paymentstatus' => PAYMENT_SUCCESS]);
         } else {
             // Only return successful payments.
             // We only take the last record.
