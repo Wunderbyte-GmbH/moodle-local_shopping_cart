@@ -265,7 +265,8 @@ $string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
 $string['confirmzeropricecheckoutbody'] = 'You have enough credits to pay fully for your purchase. Do you want to proceed?';
 $string['confirmzeropricecheckout'] = 'Confirm';
 
-$string['deletecredit'] = 'Refunded';
+$string['deletecreditcash'] = 'Refunded cash';
+$string['deletecredittransfer'] = 'Refunded via transfer';
 $string['credit'] = 'Credit:';
 $string['creditpaidback'] = 'Credit paid back.';
 

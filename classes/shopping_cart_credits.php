@@ -255,9 +255,10 @@ class shopping_cart_credits {
      * This function just get's the current balance and sets it to 0.
      *
      * @param int $userid
-     * @return void
+     * @param int $method
+     * @return bool
      */
-    public static function credit_paid_back($userid) {
+    public static function credit_paid_back(int $userid, int $method = PAYMENT_METHOD_CREDITS_PAID_BACK) {
         global $USER;
 
         list($balance, $currency) = self::get_balance($userid);
@@ -279,7 +280,7 @@ class shopping_cart_credits {
         $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->currency = $currency;
         $ledgerrecord->componentname = 'local_shopping_cart';
-        $ledgerrecord->payment = PAYMENT_METHOD_CREDITS_PAID_BACK;
+        $ledgerrecord->payment = $method;
         $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
         $ledgerrecord->usermodified = $USER->id;
         $ledgerrecord->timemodified = $now;

@@ -258,7 +258,8 @@ $string['confirmzeropricecheckouttitle'] = 'Mit Guthaben bezahlen';
 $string['confirmzeropricecheckoutbody'] = 'Sie haben genug Guthaben, um Ihren Kauf zur Gänze zu bezahlen. Wollen Sie fortfahren?';
 $string['confirmzeropricecheckout'] = 'Bestätige';
 
-$string['deletecredit'] = 'Ausbezahlt';
+$string['deletecreditcash'] = 'Ausbezahlt bar';
+$string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['credit'] = 'Guthaben:';
 $string['creditpaidback'] = 'Guthaben ausgezahlt';
 

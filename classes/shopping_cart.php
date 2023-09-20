@@ -40,6 +40,8 @@ use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\event\payment_rebooked;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
+use Exception;
+
 use stdClass;
 
 /**
@@ -997,9 +999,10 @@ class shopping_cart {
      * Sets credit to 0, because we get information about cash pay-back.
      *
      * @param int $userid
+     * @param int $method
      * @return array
      */
-    public static function credit_paid_back(int $userid): array {
+    public static function credit_paid_back(int $userid, int $method): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -1009,7 +1012,7 @@ class shopping_cart {
             ];
         }
 
-        if (!shopping_cart_credits::credit_paid_back($userid)) {
+        if (!shopping_cart_credits::credit_paid_back($userid, $method)) {
             return [
                     'status' => 0,
                     'error' => 'couldntpayback'
@@ -1051,7 +1054,7 @@ class shopping_cart {
             $providerclass = static::get_service_provider_classname($item->componentname);
             try {
                 $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $itemid]);
-            } catch (moodle_exception $e) {
+            } catch (Exception $e) {
                 $itemallowedtocancel = false;
             }
 

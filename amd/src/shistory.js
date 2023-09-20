@@ -252,10 +252,12 @@ function showCredit(credit, currency, userid) {
  */
 function confirmPaidBack(element) {
     const userid = element.dataset.userid;
+    const method = element.dataset.method;
     Ajax.call([{
         methodname: "local_shopping_cart_credit_paid_back",
         args: {
-            userid
+            userid,
+            method
         },
         done: function(data) {
 
@@ -267,8 +269,9 @@ function confirmPaidBack(element) {
             creditelement.textContent = 0;
 
             // We hide the creditelement once we have paid back everything.
-            let licreditelement = document.querySelector('.shopping_cart_history_paidback');
-            licreditelement.classList.add('hidden');
+            let licreditelements = document.querySelectorAll('.shopping_cart_history_paidback');
+
+            licreditelements.forEach(licreditelement => licreditelement.classList.add('hidden'));
 
             getString('creditpaidback', 'local_shopping_cart').then(message => {
 

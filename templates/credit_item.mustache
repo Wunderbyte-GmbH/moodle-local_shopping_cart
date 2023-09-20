@@ -85,9 +85,17 @@
     </div>
 
     {{#canpayback}}
+        {{! PAYMENT_METHOD_CREDITS_PAID_BACK  in lib.php}}
         <button type="button" class="shopping_cart_history_paidback_button btn btn-success btn-sm pull-right"
-            data-userid='{{userid}}'>
-            {{#str}} deletecredit, local_shopping_cart {{/str}}
+            data-userid='{{userid}}'
+            data-method='6'>
+            {{#str}} deletecreditcash, local_shopping_cart {{/str}}
+        </button>
+        {{! PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER  in lib.php}}
+        <button type="button" class="shopping_cart_history_paidback_button btn btn-success btn-sm pull-right"
+            data-userid='{{userid}}'
+            data-method='8'>
+            {{#str}} deletecredittransfer, local_shopping_cart {{/str}}
         </button>
     {{/canpayback}}
 
