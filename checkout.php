@@ -93,6 +93,7 @@ if (isset($success)) {
     // Makes sure no open purchase stays active.
     shopping_cart::check_for_ongoing_payment($userid);
 
+    // This creates just our list of boght items.
     $historylist = new shoppingcart_history_list($userid);
     $historylist->insert_list($data);
 

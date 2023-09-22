@@ -570,6 +570,9 @@ class shopping_cart {
         $cachekey = $userid . '_shopping_cart';
 
         $cachedrawdata = $cache->get($cachekey);
+        // First thing, we set the new expiration date in the cache.
+        $cachedrawdata["expirationdate"] = $expirationtimestamp;
+        $cachedrawdata = $cache->set($cachekey, $cachedrawdata);
 
         if (!$cachedrawdata
                 || !isset($cachedrawdata['items'])
