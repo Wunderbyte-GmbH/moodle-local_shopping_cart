@@ -265,10 +265,17 @@ $string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
 $string['confirmzeropricecheckoutbody'] = 'You have enough credits to pay fully for your purchase. Do you want to proceed?';
 $string['confirmzeropricecheckout'] = 'Confirm';
 
-$string['deletecreditcash'] = 'Refunded cash';
+$string['deletecreditcash'] = 'Refunded with cash';
 $string['deletecredittransfer'] = 'Refunded via transfer';
 $string['credit'] = 'Credit:';
 $string['creditpaidback'] = 'Credit paid back.';
+$string['creditsmanager'] = 'Credits manager';
+$string['creditsmanager:infotext'] = 'Add or remove credits for <b>{$a->username} (ID: {$a->userid})</b>.
+ Enter a negative value if you want to pay credits back or a positive value if you want to add credits for the user.';
+$string['creditsmanagersuccess'] = 'Credits have been booked successfully';
+$string['creditsmanagercredits'] = 'Credits';
+$string['creditsmanagercredits_desc'] = 'Negative = Credits paid back, Positive = Credits added';
+$string['creditsmanagerreason'] = 'Reason';
 
 $string['cashier'] = 'Cashier';
 

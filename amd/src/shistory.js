@@ -34,9 +34,21 @@ import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
 
+const SELECTORS = {
+    CANCELBUTTON: '.cashier-history-items .shopping_cart_history_cancel_button',
+    PAIDBACKBUTTON: 'button.shopping_cart_history_paidback_button',
+    CREDITSMANAGER: 'button.shopping_cart_history_creditsmanager',
+};
+
+// Little hack to get strings at top-level although getString is asynchronous.
+let creditsmanagersuccess = 'success';
+(async() => {
+    creditsmanagersuccess = await getString('creditsmanagersuccess', 'local_shopping_cart');
+})();
+
 export const init = (cancelationFee = null) => {
 
-    const buttons = document.querySelectorAll(".cashier-history-items .shopping_cart_history_cancel_button");
+    const buttons = document.querySelectorAll(SELECTORS.CANCELBUTTON);
 
     buttons.forEach(button => {
 
@@ -68,7 +80,7 @@ export const init = (cancelationFee = null) => {
         }
     });
 
-    const elements = document.querySelectorAll('button.shopping_cart_history_paidback_button');
+    const elements = document.querySelectorAll(SELECTORS.PAIDBACKBUTTON);
 
     elements.forEach(element => {
 
@@ -78,9 +90,22 @@ export const init = (cancelationFee = null) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                 confirmPaidBackModal(element);
+                confirmPaidBackModal(element);
             });
             element.dataset.initialized = true;
+        }
+    });
+
+    // Credits manager button.
+    const creditsmanagerbtn = document.querySelectorAll(SELECTORS.CREDITSMANAGER);
+    creditsmanagerbtn.forEach(btn => {
+        if (!btn.dataset.initialized) {
+            btn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                openCreditsManagerModal(btn);
+            });
+            btn.dataset.initialized = true;
         }
     });
 };
@@ -468,4 +493,38 @@ function confirmPaidBackModal(element) {
         // eslint-disable-next-line no-console
         console.log(e);
     });
+}
+
+/**
+ * Open the credits manager modal.
+ * @param {htmlElement} button
+ */
+function openCreditsManagerModal(button) {
+    // eslint-disable-next-line no-console
+    console.log('credits-managermodal');
+
+    const modalForm = new ModalForm({
+        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+        formClass: "local_shopping_cart\\form\\modal_creditsmanager",
+        // Add as many arguments as you need, they will be passed to the form:
+        args: {
+            userid: button.dataset.userid
+        },
+        // Pass any configuration settings to the modal dialogue, for example, the title:
+        modalConfig: {title: getString('creditsmanager', 'local_shopping_cart')},
+        // DOM element that should get the focus after the modal dialogue is closed:
+        returnFocus: button
+    });
+    // Listen to events if you want to execute something on form submit.
+    // Event detail will contain everything the process() function returned:
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+        const response = e.detail;
+        // eslint-disable-next-line no-console
+        console.log('credits-manager-modal response: ', response);
+
+        showNotification(creditsmanagersuccess, 'info');
+    });
+
+    // Show the form.
+    modalForm.show();
 }

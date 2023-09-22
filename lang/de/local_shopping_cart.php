@@ -262,6 +262,14 @@ $string['deletecreditcash'] = 'Ausbezahlt bar';
 $string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['credit'] = 'Guthaben:';
 $string['creditpaidback'] = 'Guthaben ausgezahlt';
+$string['creditsmanager'] = 'Guthaben-Manager';
+$string['creditsmanager:infotext'] = 'Guthaben für  <b>{$a->username} (ID: {$a->userid})</b> auf- oder abbuchen.
+ Geben Sie einen negativen Wert ein, wenn Sie Guthaben zurückbezahlen möchten oder einen positiven Wert, wenn Sie
+ Guthaben aufbuchen möchten.';
+$string['creditsmanagersuccess'] = 'Guthabenbuchung wurde durchgeführt.';
+$string['creditsmanagercredits'] = 'Guthaben';
+$string['creditsmanagercredits_desc'] = 'Negativ = Guthaben zurückbezahlt, Positiv = Guthaben aufbuchen';
+$string['creditsmanagerreason'] = 'Grund';
 
 $string['cashier'] = 'Kassa';
 
