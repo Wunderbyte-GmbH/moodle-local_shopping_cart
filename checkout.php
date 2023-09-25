@@ -26,6 +26,7 @@
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_bookingfee;
 use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -99,6 +100,9 @@ if (isset($success)) {
 
     // Here we are before checkout.
     $expirationtimestamp = shopping_cart::get_expirationdate();
+
+    // Make sure we have the fee (if we need it!).
+    shopping_cart_bookingfee::add_fee_to_cart($userid);
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
