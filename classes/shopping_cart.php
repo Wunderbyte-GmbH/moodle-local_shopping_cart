@@ -177,7 +177,7 @@ class shopping_cart {
             // Logged in on two different devices.
             $itemdata['success'] = 2;
             $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-            $itemdata['expirationdate'] = 0;
+            $itemdata['expirationdate'] = $expirationtimestamp;
         }
 
         return $itemdata;
