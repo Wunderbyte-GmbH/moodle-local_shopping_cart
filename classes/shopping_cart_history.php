@@ -240,32 +240,40 @@ class shopping_cart_history {
      *
      * @param stdClass $data
      * @return bool true if the history was written to the database, false otherwise
+     *  (e.g. if record already exists)
      */
     private static function write_to_db(stdClass $data): bool {
         global $DB;
 
         $now = time();
 
+        $success = true;
         if (isset($data->items)) {
             foreach ($data->items as $item) {
-
-                $data = (object)$item;
-                $data->timecreated = $now;
-                $record = $DB->insert_record('local_shopping_cart_history', $data);
-                // We also need to insert the record into the ledger table.
-                shopping_cart::add_record_to_ledger_table($data);
+                if (!self::write_to_db((object)$item)) {
+                    $success = false;
+                }
             }
         } else {
-            $data->timecreated = $now;
-            $record = $DB->insert_record('local_shopping_cart_history', $data);
-            // We also need to insert the record into the ledger table.
-            shopping_cart::add_record_to_ledger_table($data);
+            if (!$DB->record_exists('local_shopping_cart_history', [
+                'userid' => $data->userid,
+                'itemid' => $data->itemid,
+                'componentname' => $data->componentname ?? null,
+                'identifier' => $data->identifier,
+            ])) {
+                $data->timecreated = $now;
+                if ($DB->insert_record('local_shopping_cart_history', $data)) {
+                    // We also need to insert the record into the ledger table.
+                    shopping_cart::add_record_to_ledger_table($data);
+                    $success = true;
+                } else {
+                    $success = false;
+                }
+            } else {
+                $success = false;
+            }
         }
-        if ($record > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return $success;
     }
 
     /**
