@@ -581,6 +581,12 @@ class shopping_cart {
         }
         // Now we schedule tasks to delete item from cart after some time.
         foreach ($cachedrawdata['items'] as $taskdata) {
+
+            // We don't touch booking fee.
+            // The fee will be deleted together with the other items.
+            if ($taskdata->componentname === 'local_shpping_cart') {
+                continue;
+            }
             $deleteitemtask = new delete_item_task();
             $deleteitemtask->set_userid($userid);
             $deleteitemtask->set_next_run_time($expirationtimestamp);
