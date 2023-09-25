@@ -121,6 +121,9 @@ $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.
 $string['error:cancelationfeetoohigh'] = 'Stornogebühr darf nicht größer sein als der zurückerstattete Betrag!';
 $string['error:nofieldchosen'] = 'Sie müssen ein Feld auswählen.';
 $string['error:mustnotbeempty'] = 'Darf nicht leer sein.';
+$string['error:noreason'] = 'Bitte geben Sie einen Grund an.';
+$string['error:notpositive'] = 'Bitte geben Sie eine positive Zahl ein.';
+$string['error:choosevalue'] = 'Sie müssen hier einen Wert auswählen.';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
 
 // Cart.
@@ -263,13 +266,13 @@ $string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['credit'] = 'Guthaben:';
 $string['creditpaidback'] = 'Guthaben ausgezahlt';
 $string['creditsmanager'] = 'Guthaben-Manager';
-$string['creditsmanager:infotext'] = 'Guthaben für  <b>{$a->username} (ID: {$a->userid})</b> auf- oder abbuchen.
- Geben Sie einen negativen Wert ein, wenn Sie Guthaben zurückbezahlen möchten oder einen positiven Wert, wenn Sie
- Guthaben aufbuchen möchten.';
+$string['creditsmanagermode'] = 'Auf- oder Abbuchung?';
+$string['creditsmanager:infotext'] = 'Guthaben für  <b>{$a->username} (ID: {$a->userid})</b> auf- oder abbuchen.';
 $string['creditsmanagersuccess'] = 'Guthabenbuchung wurde durchgeführt.';
 $string['creditsmanagercredits'] = 'Guthaben';
-$string['creditsmanagercredits_desc'] = 'Negativ = Guthaben zurückbezahlt, Positiv = Guthaben aufbuchen';
 $string['creditsmanagerreason'] = 'Grund';
+$string['creditsmanager:addcredits'] = 'Guthaben aufbuchen';
+$string['creditsmanager:payback'] = 'Guthaben zurückbezahlen';
 
 $string['cashier'] = 'Kassa';
 
@@ -317,6 +320,7 @@ $string['orderid'] = 'OrderID';
 $string['usermodified'] = 'Bearbeitet von';
 
 // Payment methods.
+$string['paymentmethod'] = 'Bezahlmethode';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
 $string['paymentmethodcredits'] = 'Guthaben';

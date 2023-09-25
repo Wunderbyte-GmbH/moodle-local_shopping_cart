@@ -252,7 +252,7 @@ class shopping_cart_credits {
     }
 
     /**
-     * This function just get's the current balance and sets it to 0.
+     * This function just gets the current balance and sets it to 0.
      *
      * @param int $userid
      * @param int $method

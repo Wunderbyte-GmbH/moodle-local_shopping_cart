@@ -118,8 +118,10 @@ $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
 $string['error:nofieldchosen'] = 'You have to choose a field.';
 $string['error:mustnotbeempty'] = 'Must not be empty.';
+$string['error:noreason'] = 'Please enter a reason.';
+$string['error:notpositive'] = 'Please enter a positive number.';
+$string['error:choosevalue'] = 'Please enter a value.';
 $string['selectuserfirst'] = 'Select user first';
-
 
 // Cart.
 $string['total'] = 'Total:';
@@ -270,12 +272,13 @@ $string['deletecredittransfer'] = 'Refunded via transfer';
 $string['credit'] = 'Credit:';
 $string['creditpaidback'] = 'Credit paid back.';
 $string['creditsmanager'] = 'Credits manager';
-$string['creditsmanager:infotext'] = 'Add or remove credits for <b>{$a->username} (ID: {$a->userid})</b>.
- Enter a negative value if you want to pay credits back or a positive value if you want to add credits for the user.';
+$string['creditsmanagermode'] = 'Add or pay back credits?';
+$string['creditsmanager:infotext'] = 'Add or remove credits for <b>{$a->username} (ID: {$a->userid})</b>.';
 $string['creditsmanagersuccess'] = 'Credits have been booked successfully';
 $string['creditsmanagercredits'] = 'Credits';
-$string['creditsmanagercredits_desc'] = 'Negative = Credits paid back, Positive = Credits added';
 $string['creditsmanagerreason'] = 'Reason';
+$string['creditsmanager:addcredits'] = 'Add credits';
+$string['creditsmanager:payback'] = 'Pay back credits';
 
 $string['cashier'] = 'Cashier';
 
@@ -324,6 +327,7 @@ $string['orderid'] = 'OrderID';
 $string['usermodified'] = 'Modified by';
 
 // Payment methods.
+$string['paymentmethod'] = 'Payment method';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Cashier';
 $string['paymentmethodcredits'] = 'Credits';

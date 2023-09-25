@@ -521,8 +521,10 @@ function openCreditsManagerModal(button) {
         const response = e.detail;
         // eslint-disable-next-line no-console
         console.log('credits-manager-modal response: ', response);
-
         showNotification(creditsmanagersuccess, 'info');
+        setTimeout(function() {
+            window.location.reload();
+        }, 1500);
     });
 
     // Show the form.
