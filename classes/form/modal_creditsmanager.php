@@ -134,43 +134,11 @@ class modal_creditsmanager extends dynamic_form {
                 self::creditsmanager_add_credits($data);
                 break;
             case 2: // Pay back credits.
-                self::creditsmanager_payback_credits($data);
+                if (!self::creditsmanager_payback_credits($data)) {
+                    $data->error = 'notenoughcredits';
+                }
                 break;
         }
-        return;
-
-        /* shopping_cart_history::create_entry_in_history(
-            0, // Userid is 0, it doesn't concern a user.
-            0, // Itemid is 0, it doesn't concern an item.
-            get_string('cash', 'local_shopping_cart'),
-            (-1) * (float)$data->cashtransferamount,
-            0,
-            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-            'local_shopping_cart',
-            'cash',
-            0,
-            PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null,
-            $data->cashtransferreason,
-            $data->cashtransfercashierfrom
-        );
-
-        shopping_cart_history::create_entry_in_history(
-            0, // Userid is 0, it doesn't concern a user.
-            0, // Itemid is 0, it doesn't concern an item.
-            get_string('cash', 'local_shopping_cart'),
-            $data->cashtransferamount,
-            0,
-            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-            'local_shopping_cart',
-            'cash',
-            0,
-            PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null,
-            $data->cashtransferreason,
-            $data->cashtransfercashierto
-        ); */
-
         return $data;
     }
 
@@ -208,9 +176,61 @@ class modal_creditsmanager extends dynamic_form {
     /**
      * Pay back credits.
      * @param stdClass $data the form data
+     * @return bool true if successful, false if not
      */
-    public static function creditsmanager_payback_credits(stdClass $data) {
+    public static function creditsmanager_payback_credits(stdClass $data): bool {
+        global $DB, $USER;
+        $now = time();
+        $userid = $data->userid;
 
+        // Get the current credit balance.
+        list($currentbalance, $currency) = shopping_cart_credits::get_balance($userid);
+
+        $newbalance = $currentbalance - $data->creditsmanagercredits;
+        if ($newbalance < 0) {
+            return false;
+        }
+
+        $creditrecord = new stdClass;
+        $creditrecord->userid = $userid;
+        $creditrecord->credits = -$data->creditsmanagercredits;
+        $creditrecord->balance = $newbalance; // The new balance.
+        $creditrecord->currency = $currency;
+        $creditrecord->usermodified = $USER->id;
+        $creditrecord->timemodified = $now;
+        $creditrecord->timecreated = $now;
+
+        if (!$DB->insert_record('local_shopping_cart_credits', $creditrecord)) {
+            return false;
+        }
+
+        // We always have to add the cache.
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+        if ($cachedrawdata) {
+            $cachedrawdata['credit'] = round($creditrecord->balance, 2);
+            $cachedrawdata['currency'] = $creditrecord->currency;
+            $cache->set($cachekey, $cachedrawdata);
+        }
+
+        // At last, we log it to ledger.
+        $ledgerrecord = new stdClass;
+        $ledgerrecord->userid = $data->userid;
+        $ledgerrecord->itemid = 0;
+        $ledgerrecord->price = (float)(-1.0) * $data->creditsmanagercredits;
+        $ledgerrecord->credits = (float)(-1.0) * $data->creditsmanagercredits;
+        $ledgerrecord->currency = $currency;
+        $ledgerrecord->componentname = 'local_shopping_cart';
+        $ledgerrecord->payment = $data->creditsmanagerpaymentmethod;
+        $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+        $ledgerrecord->usermodified = $USER->id;
+        $ledgerrecord->timemodified = $now;
+        $ledgerrecord->timecreated = $now;
+        $ledgerrecord->annotation = $data->creditsmanagerreason;
+        shopping_cart::add_record_to_ledger_table($ledgerrecord);
+
+        return true;
     }
 
     /**

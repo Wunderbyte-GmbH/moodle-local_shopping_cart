@@ -122,6 +122,7 @@ $string['error:noreason'] = 'Please enter a reason.';
 $string['error:notpositive'] = 'Please enter a positive number.';
 $string['error:choosevalue'] = 'Please enter a value.';
 $string['selectuserfirst'] = 'Select user first';
+$string['notenoughcredits'] = 'Not enough credits available.';
 
 // Cart.
 $string['total'] = 'Total:';

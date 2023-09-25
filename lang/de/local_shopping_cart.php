@@ -125,6 +125,7 @@ $string['error:noreason'] = 'Bitte geben Sie einen Grund an.';
 $string['error:notpositive'] = 'Bitte geben Sie eine positive Zahl ein.';
 $string['error:choosevalue'] = 'Sie müssen hier einen Wert auswählen.';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
+$string['notenoughcredits'] = 'Nicht genügend Guthaben vorhanden.';
 
 // Cart.
 $string['total'] = 'Gesamt:';

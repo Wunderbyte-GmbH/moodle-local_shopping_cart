@@ -42,8 +42,10 @@ const SELECTORS = {
 
 // Little hack to get strings at top-level although getString is asynchronous.
 let creditsmanagersuccess = 'success';
+let notenoughcredits = 'notenoughcredits';
 (async() => {
     creditsmanagersuccess = await getString('creditsmanagersuccess', 'local_shopping_cart');
+    notenoughcredits = await getString('notenoughcredits', 'local_shopping_cart');
 })();
 
 export const init = (cancelationFee = null) => {
@@ -519,12 +521,17 @@ function openCreditsManagerModal(button) {
     // Event detail will contain everything the process() function returned:
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
-        // eslint-disable-next-line no-console
-        console.log('credits-manager-modal response: ', response);
-        showNotification(creditsmanagersuccess, 'info');
-        setTimeout(function() {
-            window.location.reload();
-        }, 1500);
+
+        if (response.error && response.error == 'notenoughcredits') {
+            showNotification(notenoughcredits, 'warning');
+        } else {
+            // eslint-disable-next-line no-console
+            console.log('credits-manager-modal response: ', response);
+            showNotification(creditsmanagersuccess, 'info');
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
+        }
     });
 
     // Show the form.
