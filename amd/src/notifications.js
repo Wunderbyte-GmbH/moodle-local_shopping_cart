@@ -21,20 +21,10 @@
 
 import Notification from 'core/notification';
 
-
-const SELECTORS = {
-    NOTIFICATION_LIST: '#user-notifications div.alert'
-};
-
 export const showNotification = (message, type) => {
 
     Notification.addNotification({
         message,
         type
     });
-    setTimeout(() => {
-        let notificationslist = document.querySelectorAll(SELECTORS.NOTIFICATION_LIST);
-        const notificatonelement = notificationslist[notificationslist.length - 1];
-        notificatonelement.remove();
-    }, 5000);
 };
