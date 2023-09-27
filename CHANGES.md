@@ -1,3 +1,18 @@
+## Version 0.6.0 (2023092700)
+* New feature: Add new button to pay back credits via bank transfer.
+* New feature: Credits manager to add or pay back individual amounts of credits.
+* Improvement: Don't automatically hide notifications.
+* Bugfix: Where exception in history via allowed to cancel to blocked booking.
+* Bugfix: Make report pageable to allow very big requests.
+* Bugfix: Avoid double payout of credits during very heavy server load.
+* Bugfix: Make sure the cart does not expire during checkout process.
+* Bugfix: Reloading an item a second time should not set back expiration time.
+* Bugfix: We don't want to delete booking fee individually from cart, only in combination with other items.
+* Bugfix: Prevent duplicates in shopping cart history.
+* Bugfix: Make sure we have the fee before checkout.
+* Bugfix: Add FontAwesome 6 compatibility for Moodle 4.2.
+* Bugfix: Remove duplicated date in history_item.
+
 ## Version 0.5.10 (2023091800)
 * Bugfix: By wrong browser date delete all items could be triggered in permanence.
 
