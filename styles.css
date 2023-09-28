@@ -229,23 +229,23 @@
 }
 
 #cashiertabs #user-tab:before {
-    font-family: FontAwesome, "Font Awesome 6 Free";
+    font-family: 'FontAwesome', 'Font Awesome 6 Free';
     content: "\f007";
 }
 
 #cashiertabs #cart-tab:before {
-    font-family: FontAwesome, "Font Awesome 6 Free";
+    font-family: 'FontAwesome', 'Font Awesome 6 Free';
     content: "\f07a";
 }
 
 #cashiertabs #checkout-tab:before {
-    font-family: FontAwesome, "Font Awesome 6 Free";
+    font-family: 'FontAwesome', 'Font Awesome 6 Free';
     content: "\f09d";
 }
 
 
 #cashiertabs #success-tab:before {
-    font-family: FontAwesome, "Font Awesome 6 Free";
+    font-family: 'FontAwesome', 'Font Awesome 6 Free';
     content: "\f00c";
 }
 
