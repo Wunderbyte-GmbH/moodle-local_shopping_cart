@@ -273,12 +273,15 @@ $string['deletecredittransfer'] = 'Refunded via transfer';
 $string['credit'] = 'Credit:';
 $string['creditpaidback'] = 'Credit paid back.';
 $string['creditsmanager'] = 'Credits manager';
-$string['creditsmanagermode'] = 'Add or pay back credits?';
+$string['creditsmanagermode'] = 'What do you want to do?';
 $string['creditsmanager:infotext'] = 'Add or remove credits for <b>{$a->username} (ID: {$a->userid})</b>.';
 $string['creditsmanagersuccess'] = 'Credits have been booked successfully';
-$string['creditsmanagercredits'] = 'Credits';
+$string['creditsmanagercredits'] = 'Correction value or credits to pay back';
+$string['creditsmanagercredits_help'] = 'If you have chosen "Correct credits" then enter the correction value here.
+Example: A user has 110 EUR in credits but should actually have 100 EUR in credits. In this case the correction value is -10.
+If you have chosen "Pay back credits" then enter the amount to pay back and choose if you want to pay back via cash or bank transfer.';
 $string['creditsmanagerreason'] = 'Reason';
-$string['creditsmanager:addcredits'] = 'Add credits';
+$string['creditsmanager:correctcredits'] = 'Correct credits';
 $string['creditsmanager:payback'] = 'Pay back credits';
 
 $string['cashier'] = 'Cashier';
@@ -334,6 +337,7 @@ $string['paymentmethodcashier'] = 'Cashier';
 $string['paymentmethodcredits'] = 'Credits';
 $string['paymentmethodcreditspaidbackcash'] = 'Credits paid back by cash';
 $string['paymentmethodcreditspaidbacktransfer'] = 'Credits paid back by transfer';
+$string['paymentmethodcreditscorrection'] = 'Credits correction';
 $string['paymentmethodcashier:cash'] = 'Cashier (Cash)';
 $string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
 $string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';

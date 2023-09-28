@@ -28,6 +28,7 @@ use core_form\dynamic_form;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use mod_booking\singleton_service;
+use moodle_exception;
 use moodle_url;
 use stdClass;
 
@@ -74,7 +75,7 @@ class modal_creditsmanager extends dynamic_form {
 
         $modes = [
             0 => get_string('choose...', 'local_shopping_cart'),
-            1 => get_string('creditsmanager:addcredits', 'local_shopping_cart'),
+            1 => get_string('creditsmanager:correctcredits', 'local_shopping_cart'),
             2 => get_string('creditsmanager:payback', 'local_shopping_cart'),
         ];
         $mform->addElement('select', 'creditsmanagermode',
@@ -84,6 +85,7 @@ class modal_creditsmanager extends dynamic_form {
         $mform->addElement('float', 'creditsmanagercredits',
             get_string('creditsmanagercredits', 'local_shopping_cart'));
         $mform->setDefault('creditsmanagercredits', 0.00);
+        $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'eq', 0);
 
         $paymentmethods = [
@@ -130,8 +132,10 @@ class modal_creditsmanager extends dynamic_form {
         // At first, we need to get the mode, so we know if credits are added or paid back.
         $mode = $data->creditsmanagermode;
         switch ($mode) {
-            case 1: // Add credits.
-                self::creditsmanager_add_credits($data);
+            case 1: // Correct credits.
+                if (!self::creditsmanager_correct_credits($data)) {
+                    $data->error = 'notenoughcredits';
+                }
                 break;
             case 2: // Pay back credits.
                 if (!self::creditsmanager_payback_credits($data)) {
@@ -143,34 +147,39 @@ class modal_creditsmanager extends dynamic_form {
     }
 
     /**
-     * Add credits.
+     * Correct credits.
      * @param stdClass $data the form data
      */
-    public function creditsmanager_add_credits(stdClass $data) {
+    public function creditsmanager_correct_credits(stdClass $data) {
         global $USER;
 
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
 
         // Add credits.
-        shopping_cart_credits::add_credit($data->userid, $data->creditsmanagercredits, $currency);
+        try {
+            shopping_cart_credits::add_credit($data->userid, $data->creditsmanagercredits, $currency);
 
-        // Log it in ledger.
-        // Also record this in the ledger table.
-        $ledgerrecord = new stdClass;
-        $now = time();
-        $ledgerrecord->userid = $data->userid;
-        $ledgerrecord->itemid = 0;
-        $ledgerrecord->price = 0;
-        $ledgerrecord->credits = (float) $data->creditsmanagercredits;
-        $ledgerrecord->currency = $currency;
-        $ledgerrecord->componentname = 'local_shopping_cart';
-        $ledgerrecord->payment = PAYMENT_METHOD_CREDITS;
-        $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
-        $ledgerrecord->usermodified = $USER->id;
-        $ledgerrecord->timemodified = $now;
-        $ledgerrecord->timecreated = $now;
-        $ledgerrecord->annotation = $data->creditsmanagerreason;
-        shopping_cart::add_record_to_ledger_table($ledgerrecord);
+            // Log it to ledger.
+            // Also record this in the ledger table.
+            $ledgerrecord = new stdClass;
+            $now = time();
+            $ledgerrecord->userid = $data->userid;
+            $ledgerrecord->itemid = 0;
+            $ledgerrecord->price = 0;
+            $ledgerrecord->credits = (float) $data->creditsmanagercredits;
+            $ledgerrecord->currency = $currency;
+            $ledgerrecord->componentname = 'local_shopping_cart';
+            $ledgerrecord->payment = PAYMENT_METHOD_CREDITS_CORRECTION;
+            $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+            $ledgerrecord->usermodified = $USER->id;
+            $ledgerrecord->timemodified = $now;
+            $ledgerrecord->timecreated = $now;
+            $ledgerrecord->annotation = $data->creditsmanagerreason;
+            shopping_cart::add_record_to_ledger_table($ledgerrecord);
+        } catch (moodle_exception $e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -289,7 +298,8 @@ class modal_creditsmanager extends dynamic_form {
         if (empty($data['creditsmanagermode'])) {
             $errors['creditsmanagermode'] = get_string('error:choosevalue', 'local_shopping_cart');
         }
-        if (empty($data['creditsmanagercredits']) || $data['creditsmanagercredits'] <= 0) {
+        if (empty($data['creditsmanagercredits']) ||
+            ($data['creditsmanagermode'] == 2 && $data['creditsmanagercredits'] <= 0)) {
             $errors['creditsmanagercredits'] = get_string('error:notpositive', 'local_shopping_cart');
         }
         if (isset($data['creditsmanagermode']) && $data['creditsmanagermode'] == 2 && empty($data['creditsmanagerpaymentmethod'])) {

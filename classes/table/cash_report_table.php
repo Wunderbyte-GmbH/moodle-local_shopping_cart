@@ -132,6 +132,9 @@ class cash_report_table extends wunderbyte_table {
             case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                 $paymentstring = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
+            case PAYMENT_METHOD_CREDITS_CORRECTION:
+                $paymentstring = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
+                break;
             case PAYMENT_METHOD_CASHIER_CASH:
                 $paymentstring = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
                 break;

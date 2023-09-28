@@ -267,12 +267,16 @@ $string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['credit'] = 'Guthaben:';
 $string['creditpaidback'] = 'Guthaben ausgezahlt';
 $string['creditsmanager'] = 'Guthaben-Manager';
-$string['creditsmanagermode'] = 'Auf- oder Abbuchung?';
+$string['creditsmanagermode'] = 'Was möchten Sie tun?';
 $string['creditsmanager:infotext'] = 'Guthaben für  <b>{$a->username} (ID: {$a->userid})</b> auf- oder abbuchen.';
 $string['creditsmanagersuccess'] = 'Guthabenbuchung wurde durchgeführt.';
-$string['creditsmanagercredits'] = 'Guthaben';
+$string['creditsmanagercredits'] = 'Korrekturwert bzw. auszubezahlendes Guthaben';
+$string['creditsmanagercredits_help'] = 'Wenn Sie "Guthaben korrigieren" gewählt haben, geben Sie hier den Korrekturwert ein.
+Beispiel: Ein/e Benutzer/in hat 110 Euro Guthaben, sollte aber nur 100 Euro Guthaben haben. In diesem Fall beträgt der Korrekturwert -10.
+Wenn Sie "Guthaben zurückbezahlen" ausgewählt haben, geben Sie hier den zurückzubezahlenden Betrag ein und geben Sie an, ob Sie in bar oder
+per Banküberweisung zurückbezahlen möchten.';
 $string['creditsmanagerreason'] = 'Grund';
-$string['creditsmanager:addcredits'] = 'Guthaben aufbuchen';
+$string['creditsmanager:correctcredits'] = 'Guthaben korrigieren';
 $string['creditsmanager:payback'] = 'Guthaben zurückbezahlen';
 
 $string['cashier'] = 'Kassa';
@@ -327,6 +331,7 @@ $string['paymentmethodcashier'] = 'Kassa';
 $string['paymentmethodcredits'] = 'Guthaben';
 $string['paymentmethodcreditspaidbackcash'] = 'Guthabenrückzahlung bar';
 $string['paymentmethodcreditspaidbacktransfer'] = 'Guthabenrückzahlung überwiesen';
+$string['paymentmethodcreditscorrection'] = 'Guthabenkorrektur';
 $string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
 $string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
 $string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';

@@ -523,7 +523,7 @@ function openCreditsManagerModal(button) {
         const response = e.detail;
 
         if (response.error && response.error == 'notenoughcredits') {
-            showNotification(notenoughcredits, 'warning');
+            showNotification(notenoughcredits, 'danger');
         } else {
             // eslint-disable-next-line no-console
             console.log('credits-manager-modal response: ', response);

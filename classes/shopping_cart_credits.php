@@ -194,7 +194,12 @@ class shopping_cart_credits {
         $data->timemodified = $now;
         $data->timecreated = $now;
 
-        $DB->insert_record('local_shopping_cart_credits', $data);
+        if ($data->balance >= 0) {
+            $DB->insert_record('local_shopping_cart_credits', $data);
+        } else {
+            // User cannot have a negative balance!
+            throw new moodle_exception('negativebalancenotallowed');
+        }
 
         list($newbalance, $currency) = self::get_balance($userid);
 

@@ -44,6 +44,7 @@ define('PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office u
 define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH', 6); // Credits removed and paid back to user by cash.
 define('PAYMENT_METHOD_CASHIER_MANUAL', 7); // If someone paid, but there was an error, the cashier can re-book someone manually.
 define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8); // Credits removed and paid back to user by (bank) transfer.
+define('PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 
 /**
  * Adds module specific settings to the settings block
