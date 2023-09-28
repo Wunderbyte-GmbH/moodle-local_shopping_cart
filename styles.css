@@ -228,25 +228,53 @@
     color: lightgrey;
 }
 
-#cashiertabs #user-tab:before {
-    font-family: 'FontAwesome', 'Font Awesome 6 Free';
+#cashiertabs:not(.moodleversionminfourtwo) #user-tab:before {
+    font-family: FontAwesome;
     content: "\f007";
 }
 
-#cashiertabs #cart-tab:before {
-    font-family: 'FontAwesome', 'Font Awesome 6 Free';
+#cashiertabs.moodleversionminfourtwo #user-tab:before {
+    font: var(--fa-font-solid);
+    content: "\f007";
+    font-size: x-large;
+    padding-top: 15px;
+}
+
+#cashiertabs:not(.moodleversionminfourtwo) #cart-tab:before {
+    font-family: FontAwesome;
     content: "\f07a";
 }
 
-#cashiertabs #checkout-tab:before {
-    font-family: 'FontAwesome', 'Font Awesome 6 Free';
+#cashiertabs.moodleversionminfourtwo #cart-tab:before {
+    font: var(--fa-font-solid);
+    content: "\f07a";
+    font-size: x-large;
+    padding-top: 15px;
+}
+
+#cashiertabs:not(.moodleversionminfourtwo) #checkout-tab:before {
+    font-family: FontAwesome;
     content: "\f09d";
 }
 
+#cashiertabs.moodleversionminfourtwo #checkout-tab:before {
+    font: var(--fa-font-solid);
+    content: "\f09d";
+    font-size: x-large;
+    padding-top: 15px;
+}
 
-#cashiertabs #success-tab:before {
-    font-family: 'FontAwesome', 'Font Awesome 6 Free';
+
+#cashiertabs:not(.moodleversionminfourtwo) #success-tab:before {
+    font-family: FontAwesome;
     content: "\f00c";
+}
+
+#cashiertabs.moodleversionminfourtwo #success-tab:before {
+    font: var(--fa-font-solid);
+    content: "\f00c";
+    font-size: x-large;
+    padding-top: 15px;
 }
 
 #cashiertabs li .active:before,

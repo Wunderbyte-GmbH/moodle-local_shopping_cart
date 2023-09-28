@@ -84,6 +84,11 @@ if (has_capability('local/shopping_cart:cashtransfer', $context)) {
     $data['allowcashtransfer'] = true;
 }
 
+// We need a param to check in the css if the version is minimum 4.2.
+if ($CFG->version >= 2023042400) {
+    $data['moodleversionminfourtwo'] = 'moodleversionminfourtwo';
+}
+
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
 

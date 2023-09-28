@@ -116,7 +116,8 @@
                             <p> {{#str}} selectuser, local_shopping_cart {{/str}} </p>
                         </div>
                     {{/userid}}
-                    <ul class="nav m-0" id="cashiertabs" role="tablist">
+                    <ul class="nav m-0 {{#moodleversionminfourtwo}}{{.}}{{/moodleversionminfourtwo}}"
+                        id="cashiertabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}"
                                     id="user-tab" data-toggle="" role="tab" aria-controls="user-tab"
@@ -124,8 +125,8 @@
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}} disabled" id="cart-tab" data-toggle="tab" role="tab"
-                                  aria-controls="cart" aria-selected="false"></span>
+                            <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}} disabled"
+                                id="cart-tab" data-toggle="tab" role="tab" aria-controls="cart" aria-selected="false"></span>
                         </li>
                         <li class="nav-item" role="presentation">
                             <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" role="tab" aria-controls="checkout" aria-selected="false"></span>
