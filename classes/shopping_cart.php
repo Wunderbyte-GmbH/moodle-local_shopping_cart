@@ -1186,7 +1186,8 @@ class shopping_cart {
         switch ($record->paymentstatus) {
             case PAYMENT_SUCCESS:
                 // We add a check to make sure we prevent duplicates!
-                if (!$DB->get_record('local_shopping_cart_ledger', [
+                // If itemid is 0, we cannot do this check, as we always want to write cash transfer, cash transaction, etc.
+                if (($record->itemid === 0) || (!$DB->get_record('local_shopping_cart_ledger', [
                     'userid' => $record->userid, // Not nullable.
                     'itemid' => $record->itemid, // Not nullable.
                     'itemname' => $record->itemname ?? null,
@@ -1202,7 +1203,7 @@ class shopping_cart {
                     'accountid' => $record->accountid ?? null,
                     'usermodified' => $record->usermodified, // Not nullable.
                     'area' => $record->area ?? null,
-                ])) {
+                ]))) {
                     // We only insert if entry does not exist yet.
                     $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                     cache_helper::purge_by_event('setbackcachedcashreport');

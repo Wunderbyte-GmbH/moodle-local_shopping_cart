@@ -76,7 +76,7 @@ class modal_cashout extends dynamic_form {
      * @return mixed
      */
     public function process_dynamic_submission() {
-
+        global $USER;
         $data = $this->get_data();
 
         shopping_cart_history::create_entry_in_history(
@@ -91,7 +91,8 @@ class modal_cashout extends dynamic_form {
             0,
             PAYMENT_METHOD_CASHIER_CASH,
             PAYMENT_SUCCESS, null, 0, 0, null, null, null,
-            $data->cashoutreason
+            $data->cashoutreason,
+            $USER->id
         );
 
         return $data;

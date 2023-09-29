@@ -254,6 +254,10 @@ class shopping_cart_history {
                     $success = false;
                 }
             }
+        } else if ($data->itemid === 0) {
+            /* For cash transactions, cash transfer and other entries that should
+            only be logged in ledger table, we always have itemid 0. */
+            shopping_cart::add_record_to_ledger_table($data);
         } else {
             if (!$DB->record_exists('local_shopping_cart_history', [
                 'userid' => $data->userid,
