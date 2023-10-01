@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $services = [
         'Wunderbyte shopping_cart external' => [
-                'functions' =>  [
+                'functions' => [
                         'local_shopping_cart_add_item',
                         'local_shopping_cart_delete_item',
                         'local_shopping_cart_delete_all_items_from_cart',

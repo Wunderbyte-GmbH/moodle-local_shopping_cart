@@ -313,8 +313,10 @@ if ($hassiteconfig) {
 
     // Add used platforms here. Currently we only support ERPNext.
     // Use lower case array keys. The key is used to create the appropriate class. Example: new erpnext_invoice($data).
-    $options = ['erpnext' => get_string('erpnext', 'local_shopping_cart'),
-            'noinvoice' => get_string('noselection', 'form')];
+    $options = [
+        'erpnext' => get_string('erpnext', 'local_shopping_cart'),
+        'noinvoice' => get_string('noselection', 'form'),
+    ];
     $settings->add(new admin_setting_configselect('local_shopping_cart/invoicingplatform',
             get_string('chooseplatform', 'local_shopping_cart'),
             get_string('chooseplatformdesc', 'local_shopping_cart'),
