@@ -1237,7 +1237,7 @@ class shopping_cart {
                     'userid' => $record->usermodified,
                     'relateduserid' => $record->userid,
                     'other' => [
-                            'identifier' => $record->identifier,
+                            'identifier' => $record->identifier ?? null,
                     ],
             ]);
             $event->trigger();
