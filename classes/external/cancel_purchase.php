@@ -60,7 +60,7 @@ class cancel_purchase extends external_api {
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
             'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
-            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED)
+            'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED),
             ]
         );
     }
@@ -112,7 +112,7 @@ class cancel_purchase extends external_api {
         return new external_single_structure([
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
             'error' => new external_value(PARAM_RAW, 'Error message if something went wrong'),
-            'credit' => new external_value(PARAM_FLOAT, 'New credit value')
+            'credit' => new external_value(PARAM_FLOAT, 'New credit value'),
             ]
         );
     }

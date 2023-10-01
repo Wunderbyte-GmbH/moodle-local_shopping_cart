@@ -40,8 +40,8 @@ $services = [
                 ],
                 'restrictedusers' => 1,
                 'shortname' => 'local_shopping_cart_external',
-                'enabled' => 1
-        ]
+                'enabled' => 1,
+        ],
 ];
 
 $functions = [
@@ -50,77 +50,77 @@ $functions = [
                 'description' => 'Add an Item to the shopping cart',
                 'type' => 'write',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_delete_item' => [
                 'classname' => 'local_shopping_cart\external\delete_item_from_cart',
                 'description' => 'Delete Item from cart',
                 'type' => 'write',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_delete_all_items_from_cart' => [
                 'classname' => 'local_shopping_cart\external\delete_all_items_from_cart',
                 'description' => 'Delete All Items from cart',
                 'type' => 'write',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_get_shopping_cart_items' => [
                 'classname' => 'local_shopping_cart\external\get_shopping_cart_items',
                 'description' => 'Get shopping cart items',
                 'type' => 'read',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_confirm_cash_payment' => [
                 'classname' => 'local_shopping_cart\external\confirm_cash_payment',
                 'description' => 'Confirm cash payment by cashier',
                 'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cashier',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_cancel_purchase' => [
                 'classname' => 'local_shopping_cart\external\cancel_purchase',
                 'description' => 'Cancel purchase',
                 'type' => 'write',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_get_price' => [
                 'classname' => 'local_shopping_cart\external\get_price',
                 'description' => 'Get price',
                 'type' => 'read',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_credit_paid_back' => [
                 'classname' => 'local_shopping_cart\external\credit_paid_back',
                 'description' => 'Register paid back credit',
                 'type' => 'write',
                 'capabilities' => 'local/shopping_cart:cashier',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_get_history_items' => [
                 'classname' => 'local_shopping_cart\external\get_history_items',
                 'description' => 'Get History items',
                 'type' => 'read',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_quota_consumed' => [
                 'classname' => 'local_shopping_cart\external\get_quota_consumed',
                 'description' => 'Return the consumed quota from a given item',
                 'type' => 'read',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
         'local_shopping_cart_search_users' => [
                 'classname' => 'local_shopping_cart\external\search_users',
                 'description' => 'Search a list of all users',
                 'type' => 'read',
                 'capabilities' => '',
-                'ajax' => 1
+                'ajax' => 1,
         ],
 ];
 

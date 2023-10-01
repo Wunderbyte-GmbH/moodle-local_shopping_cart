@@ -29,26 +29,26 @@ $definitions = [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
-        'staticaccelerationsize' => 1
+        'staticaccelerationsize' => 1,
     ],
     'cashier' => [
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,
         'staticacceleration' => true,
-        'staticaccelerationsize' => 1
+        'staticaccelerationsize' => 1,
     ],
     'schistory' => [ // Say: Shopping Cart history.
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,
         'staticacceleration' => true,
-        'staticaccelerationsize' => 1
+        'staticaccelerationsize' => 1,
     ],
     'cachedcashreport' => [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1,
-        'invalidationevents' => ['setbackcachedcashreport']
+        'invalidationevents' => ['setbackcachedcashreport'],
     ],
 ];
 

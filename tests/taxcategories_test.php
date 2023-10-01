@@ -135,7 +135,7 @@ class taxcategories_test extends TestCase {
         $this->assertEquals("A", $fromraw->defaultcategory(), "Unexpected default category");
         $this->assertEqualsCanonicalizing(['A', 'B', 'C'], $fromraw->validcategories());
         $expected = [
-                taxcategories::DEFAULT_COUNTRY_INDEX => ["A" => 0.2, "B" => 0.1, "C" => 0.0]
+                taxcategories::DEFAULT_COUNTRY_INDEX => ["A" => 0.2, "B" => 0.1, "C" => 0.0],
         ];
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
@@ -153,7 +153,7 @@ class taxcategories_test extends TestCase {
         $this->assertEquals(taxcategories::DEFAULT_CATEGORY_KEY, $fromraw->defaultcategory(), "Unexpected default category");
         $this->assertEqualsCanonicalizing([taxcategories::DEFAULT_CATEGORY_KEY], $fromraw->validcategories());
         $expected = [
-                taxcategories::DEFAULT_COUNTRY_INDEX => [taxcategories::DEFAULT_CATEGORY_KEY => 0.2]
+                taxcategories::DEFAULT_COUNTRY_INDEX => [taxcategories::DEFAULT_CATEGORY_KEY => 0.2],
         ];
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }
@@ -174,7 +174,7 @@ class taxcategories_test extends TestCase {
         $this->assertEqualsCanonicalizing(['A', 'B', 'C'], $fromraw->validcategories());
         $expected = [
                 taxcategories::DEFAULT_COUNTRY_INDEX => ["A" => 0, "B" => 0, "C" => 0.0],
-                "at" => ["A" => 0.2, "B" => 0.1, "C" => 0.0]
+                "at" => ["A" => 0.2, "B" => 0.1, "C" => 0.0],
         ];
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
     }

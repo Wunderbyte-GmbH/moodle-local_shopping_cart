@@ -93,7 +93,7 @@ class credit_paid_back extends external_api {
         return new external_single_structure(
             [
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
-                'error' => new external_value(PARAM_RAW, 'Error message.')
+                'error' => new external_value(PARAM_RAW, 'Error message.'),
             ]
         );
     }

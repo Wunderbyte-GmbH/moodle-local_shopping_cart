@@ -72,7 +72,7 @@ class get_price extends external_api {
     public static function execute(int $userid, int $usecredit): array {
         $params = self::validate_parameters(self::execute_parameters(), [
                 'userid' => $userid,
-                'usecredit' => $usecredit
+                'usecredit' => $usecredit,
         ]);
 
         global $USER;
@@ -132,7 +132,7 @@ class get_price extends external_api {
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction'),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
-                        'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
+                        'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                 ]
         );
     }

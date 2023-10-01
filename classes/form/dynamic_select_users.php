@@ -85,7 +85,7 @@ class dynamic_select_users extends dynamic_form {
             $url = new moodle_url(
                 $CFG->wwwroot . '/local/shopping_cart/cashier.php', [
                     'userid' => $data->userid,
-                    'submit' => 'Choose'
+                    'submit' => 'Choose',
                 ]);
             redirect($url);
         }

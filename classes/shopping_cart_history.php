@@ -658,7 +658,7 @@ class shopping_cart_history {
 
         $uid = $DB->insert_record('local_shopping_cart_id', [
             'userid' => $userid,
-            'timecreated' => time()
+            'timecreated' => time(),
         ]);
 
         $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;

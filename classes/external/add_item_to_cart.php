@@ -78,7 +78,7 @@ class add_item_to_cart extends external_api {
             'component' => $component,
             'area' => $area,
             'itemid' => $itemid,
-            'userid' => $userid
+            'userid' => $userid,
         ]);
 
         global $USER;
@@ -111,7 +111,7 @@ class add_item_to_cart extends external_api {
             'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
-            'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself')
+            'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),
             ]
         );
     }

@@ -182,7 +182,7 @@ $headers = [
     get_string('gateway', 'local_shopping_cart'),
     get_string('orderid', 'local_shopping_cart'),
     get_string('annotation', 'local_shopping_cart'),
-    get_string('cashier', 'local_shopping_cart')
+    get_string('cashier', 'local_shopping_cart'),
 ];
 // Columns.
 $columns = [
@@ -380,7 +380,7 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
     $dailysumsparams = [
         'startofday' => strtotime($date . ' 00:00'),
         'endofday' => strtotime($date . ' 24:00'),
-        'paymentsuccess' => PAYMENT_SUCCESS
+        'paymentsuccess' => PAYMENT_SUCCESS,
     ];
 
     $dailysumsfromdb = $DB->get_records_sql($dailysumssql, $dailysumsparams);
@@ -435,7 +435,7 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
         'startofday' => strtotime($date . ' 00:00'),
         'endofday' => strtotime($date . ' 24:00'),
         'paymentsuccess' => PAYMENT_SUCCESS,
-        'userid' => $USER->id
+        'userid' => $USER->id,
     ];
 
     $dailysumsfromdbcurrentcashier = $DB->get_records_sql($dailysumssqlcurrent, $dailysumsparamscurrent);

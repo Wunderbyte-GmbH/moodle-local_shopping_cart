@@ -116,7 +116,7 @@ echo $renderer->render_button($button);
 echo '<div style="width: 300px" class="mt-3">';
 $data = [
         'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
-        'count' => 2
+        'count' => 2,
 ];
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout_button', $data);
 echo '</div>';

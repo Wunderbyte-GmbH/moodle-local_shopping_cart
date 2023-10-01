@@ -79,7 +79,7 @@ class delete_item_from_cart extends external_api {
             'component' => $component,
             'area' => $area,
             'itemid' => $itemid,
-            'userid' => $userid
+            'userid' => $userid,
         ]);
 
         global $USER;

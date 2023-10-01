@@ -70,7 +70,7 @@ class delete_all_items_from_cart extends external_api {
         global $USER;
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid
+            'userid' => $userid,
         ]);
 
         require_login();

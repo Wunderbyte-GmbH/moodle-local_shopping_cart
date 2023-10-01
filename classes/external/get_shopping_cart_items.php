@@ -56,7 +56,7 @@ class get_shopping_cart_items extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
         ]);
     }
 
@@ -70,7 +70,7 @@ class get_shopping_cart_items extends external_api {
         global $USER;
 
         $params = self::validate_parameters(self::execute_parameters(), [
-            'userid' => $userid
+            'userid' => $userid,
         ]);
 
         require_login();
@@ -138,7 +138,7 @@ class get_shopping_cart_items extends external_api {
                                                         'Timestamp until when cancel is possible'),
                                         ]
                                 )
-                        )
+                        ),
                 ]
         );
     }

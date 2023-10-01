@@ -31,7 +31,7 @@ $capabilities = [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_SYSTEM,
                 'archetypes' => [
-                        'manager' => CAP_ALLOW
+                        'manager' => CAP_ALLOW,
                 ],
         ],
         'local/shopping_cart:cashtransfer' => [
@@ -39,7 +39,7 @@ $capabilities = [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_SYSTEM,
                 'archetypes' => [
-                        'manager' => CAP_ALLOW
+                        'manager' => CAP_ALLOW,
                 ],
         ],
         'local/shopping_cart:cashiermanualrebook' => [
@@ -58,7 +58,7 @@ $capabilities = [
                         'editingteacher' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'user' => CAP_ALLOW,
-                        'student' => CAP_ALLOW
+                        'student' => CAP_ALLOW,
                 ],
         ],
         'local/shopping_cart:canbuy' => [
@@ -70,7 +70,7 @@ $capabilities = [
                         'editingteacher' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'user' => CAP_ALLOW,
-                        'student' => CAP_ALLOW
+                        'student' => CAP_ALLOW,
                 ],
-        ]
+        ],
 ];

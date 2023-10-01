@@ -67,7 +67,7 @@ $table->define_headers([
     get_string('gateway', 'local_shopping_cart'),
     get_string('orderid', 'local_shopping_cart'),
     get_string('annotation', 'local_shopping_cart'),
-    get_string('cashier', 'local_shopping_cart')
+    get_string('cashier', 'local_shopping_cart'),
 ]);
 
 // Columns.
@@ -91,7 +91,7 @@ $table->define_columns([
     'gateway',
     'orderid',
     'annotation',
-    'usermodified'
+    'usermodified',
 ]);
 
 // File name and sheet name.

@@ -669,7 +669,7 @@ class shopping_cart {
                             'status' => 0,
                             'error' => get_string('notenoughcredit', 'local_shopping_cart'),
                             'credit' => $data['remainingcredit'],
-                            'identifier' => $identifier
+                            'identifier' => $identifier,
                     ];
                 }
             } else {
@@ -678,7 +678,7 @@ class shopping_cart {
                             'status' => 0,
                             'error' => get_string('nopermission', 'local_shopping_cart'),
                             'credit' => '',
-                            'identifier' => $identifier
+                            'identifier' => $identifier,
                     ];
                 }
             }
@@ -707,7 +707,7 @@ class shopping_cart {
                     'status' => 0,
                     'error' => get_string('noitemsincart', 'local_shopping_cart'),
                     'credit' => '',
-                    'identifier' => $identifier
+                    'identifier' => $identifier,
             ];
         }
 
@@ -848,7 +848,7 @@ class shopping_cart {
                     'status' => 1,
                     'error' => '',
                     'credit' => $data['remainingcredit'],
-                    'identifier' => $identifier
+                    'identifier' => $identifier,
 
             ];
         } else {
@@ -856,7 +856,7 @@ class shopping_cart {
                     'status' => 0,
                     'error' => implode('<br>', $error),
                     'credit' => $data['remainingcredit'],
-                    'identifier' => $identifier
+                    'identifier' => $identifier,
             ];
         }
     }
@@ -894,7 +894,7 @@ class shopping_cart {
                 return [
                     'success' => 0,
                     'error' => get_string('nopermission', 'local_shopping_cart'),
-                    'credit' => 0
+                    'credit' => 0,
                 ];
             }
         }
@@ -904,7 +904,7 @@ class shopping_cart {
             return [
                     'success' => 0,
                     'error' => get_string('nopermission', 'local_shopping_cart'),
-                    'credit' => 0
+                    'credit' => 0,
             ];
         }
 
@@ -914,7 +914,7 @@ class shopping_cart {
                 return [
                         'success' => 0,
                         'error' => get_string('canceldidntwork', 'local_shopping_cart'),
-                        'credit' => 0
+                        'credit' => 0,
                 ];
             }
         }
@@ -1000,7 +1000,7 @@ class shopping_cart {
         return [
                 'success' => $success,
                 'error' => $error,
-                'credit' => $newcredit
+                'credit' => $newcredit,
         ];
     }
 
@@ -1024,13 +1024,13 @@ class shopping_cart {
         if (!shopping_cart_credits::credit_paid_back($userid, $method)) {
             return [
                     'status' => 0,
-                    'error' => 'couldntpayback'
+                    'error' => 'couldntpayback',
             ];
         }
 
         return [
                 'status' => 1,
-                'error' => ''
+                'error' => '',
         ];
     }
 

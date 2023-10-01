@@ -30,6 +30,6 @@ $shortcodes = [
     'shoppingcarthistory' => [
         'callback' => 'local_shopping_cart\shortcodes::shoppingcarthistory',
         'wraps' => false,
-        'description' => 'shoppingcarthistory'
-    ]
+        'description' => 'shoppingcarthistory',
+    ],
 ];
