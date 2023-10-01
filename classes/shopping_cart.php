@@ -584,7 +584,7 @@ class shopping_cart {
 
             // We don't touch booking fee.
             // The fee will be deleted together with the other items.
-            if ($taskdata->componentname === 'local_shpping_cart') {
+            if ($taskdata['componentname'] === 'local_shpping_cart') {
                 continue;
             }
             $deleteitemtask = new delete_item_task();
