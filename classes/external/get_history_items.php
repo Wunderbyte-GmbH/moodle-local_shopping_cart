@@ -56,9 +56,9 @@ class get_history_items extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
-        ));
+        ]);
     }
 
     /**
@@ -94,7 +94,7 @@ class get_history_items extends external_api {
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(
             new external_single_structure(
-                array(
+                [
                     'itemid' => new external_value(PARAM_INT, 'Item id'),
                     'id' => new external_value(PARAM_INT, 'Historyid id'),
                     'itemname' => new external_value(PARAM_TEXT, 'Item name'),
@@ -102,7 +102,7 @@ class get_history_items extends external_api {
                     'currency' => new external_value(PARAM_ALPHA, 'Currency'),
                     'componentname' => new external_value(PARAM_TEXT, 'Component name'),
                     'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus')
-                )
+                ]
             )
         );
     }

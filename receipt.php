@@ -67,7 +67,7 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
     $userid = $items[array_key_first($items)]->userid;
 
     global $DB;
-    $userdetails = $DB->get_record('user', array('id' => $userid));
+    $userdetails = $DB->get_record('user', ['id' => $userid]);
 
     $cfghtml = str_replace("[[date]]", $date, $cfghtml);
     $cfghtml = str_replace("[[firstname]]", $userdetails->firstname, $cfghtml);
@@ -116,8 +116,8 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
     $pdf->SetKeywords('');
 
     // Set header and footer fonts.
-    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
     // Set default monospaced font.
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);

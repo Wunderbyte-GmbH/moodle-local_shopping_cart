@@ -55,7 +55,7 @@ class behat_local_shopping_cart_generator extends behat_generator_base {
     protected function get_account_id(string $accountname): int {
         global $DB;
 
-        if (!$id = $DB->get_field('payment_accounts', 'id', array('name' => $accountname))) {
+        if (!$id = $DB->get_field('payment_accounts', 'id', ['name' => $accountname])) {
             throw new Exception('The specified payment account with name "' . $accountname . '" does not exist');
         }
         return $id;

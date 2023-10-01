@@ -55,9 +55,9 @@ class get_shopping_cart_items extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0)
-        ));
+        ]);
     }
 
     /**
@@ -97,7 +97,7 @@ class get_shopping_cart_items extends external_api {
     public static function execute_returns(): external_single_structure {
 
         return new external_single_structure(
-                array(
+                [
                         'count' => new external_value(PARAM_INT, 'Number of items'),
                         'price' => new external_value(PARAM_FLOAT, 'Total price'),
                         'price_net' => new external_value(PARAM_FLOAT, 'Total net price', false),
@@ -116,7 +116,7 @@ class get_shopping_cart_items extends external_api {
                         'maxitems' => new external_value(PARAM_INT, 'Max Items'),
                         'items' => new external_multiple_structure (
                                 new external_single_structure(
-                                        array(
+                                        [
                                                 'userid' => new external_value(PARAM_INT, 'userid'),
                                                 'itemid' => new external_value(PARAM_INT, 'Item id'),
                                                 'itemname' => new external_value(PARAM_TEXT, 'Item name'),
@@ -136,10 +136,10 @@ class get_shopping_cart_items extends external_api {
                                                 'imageurl' => new external_value(PARAM_RAW, 'Image url'),
                                                 'canceluntil' => new external_value(PARAM_INT,
                                                         'Timestamp until when cancel is possible'),
-                                        )
+                                        ]
                                 )
                         )
-                )
+                ]
         );
     }
 }

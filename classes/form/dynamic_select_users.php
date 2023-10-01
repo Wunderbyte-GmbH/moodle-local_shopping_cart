@@ -149,7 +149,7 @@ class dynamic_select_users extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data->userid)) {
             $errors['userid'] = get_string('selectuserfirst', 'local_shopping_cart');

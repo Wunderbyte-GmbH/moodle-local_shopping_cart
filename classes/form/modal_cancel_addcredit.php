@@ -205,7 +205,7 @@ class modal_cancel_addcredit extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (isset($data["credittopayback"]) && $data["credittopayback"] < 0) {
             $errors["credittopayback"] = get_string('error:negativevaluenotallowed', 'local_shopping_cart');

@@ -24,31 +24,31 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$definitions = array(
-    'cacheshopping' => array(
+$definitions = [
+    'cacheshopping' => [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1
-    ),
-    'cashier' => array(
+    ],
+    'cashier' => [
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1
-    ),
-    'schistory' => array( // Say: Shopping Cart history.
+    ],
+    'schistory' => [ // Say: Shopping Cart history.
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1
-    ),
-    'cachedcashreport' => array(
+    ],
+    'cachedcashreport' => [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
         'staticaccelerationsize' => 1,
         'invalidationevents' => ['setbackcachedcashreport']
-    ),
-);
+    ],
+];
 

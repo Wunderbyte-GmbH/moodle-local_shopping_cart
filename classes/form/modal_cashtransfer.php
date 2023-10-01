@@ -189,7 +189,7 @@ class modal_cashtransfer extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['cashtransferamount']) || $data['cashtransferamount'] <= 0) {
             $errors['cashtransferamount'] = get_string('cashtransfernopositiveamount', 'local_shopping_cart');

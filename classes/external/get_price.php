@@ -54,10 +54,10 @@ class get_price extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
                         'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                         'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
-                )
+                ]
         );
     }
 
@@ -119,7 +119,7 @@ class get_price extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure(array(
+        return new external_single_structure([
                         'price' => new external_value(PARAM_FLOAT, 'Total price'),
                         'price_net' => new external_value(PARAM_FLOAT, 'Total price net amount', false),
                         'count' => new external_value(PARAM_INT, 'Number of items'),
@@ -133,7 +133,7 @@ class get_price extends external_api {
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0)
-                )
+                ]
         );
     }
 }

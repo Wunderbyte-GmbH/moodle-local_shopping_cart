@@ -406,8 +406,8 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_field('invoiceid', XMLDB_TYPE_CHAR, '255', null, null, null, null);
 
         // Define keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_index('identifier', XMLDB_INDEX_UNIQUE, array('identifier'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('identifier', XMLDB_INDEX_UNIQUE, ['identifier']);
 
         // Create the table.
         if (!$dbman->table_exists($table)) {

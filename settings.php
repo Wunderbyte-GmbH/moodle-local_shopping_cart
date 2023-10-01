@@ -199,7 +199,7 @@ if ($hassiteconfig) {
     $name = 'local_shopping_cart/receiptimage';
     $title = get_string('receiptimage', 'local_shopping_cart');
     $description = get_string('receiptimage:description', 'local_shopping_cart');
-    $opts = array('accepted_types' => array('.png', '.jpg'), 'maxfiles' => 1);
+    $opts = ['accepted_types' => ['.png', '.jpg'], 'maxfiles' => 1];
     $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
     $settings->add($setting);
 
@@ -313,8 +313,8 @@ if ($hassiteconfig) {
 
     // Add used platforms here. Currently we only support ERPNext.
     // Use lower case array keys. The key is used to create the appropriate class. Example: new erpnext_invoice($data).
-    $options = array('erpnext' => get_string('erpnext', 'local_shopping_cart'),
-            'noinvoice' => get_string('noselection', 'form'));
+    $options = ['erpnext' => get_string('erpnext', 'local_shopping_cart'),
+            'noinvoice' => get_string('noselection', 'form')];
     $settings->add(new admin_setting_configselect('local_shopping_cart/invoicingplatform',
             get_string('chooseplatform', 'local_shopping_cart'),
             get_string('chooseplatformdesc', 'local_shopping_cart'),

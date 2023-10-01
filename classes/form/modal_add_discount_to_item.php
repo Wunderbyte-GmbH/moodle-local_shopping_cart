@@ -206,7 +206,7 @@ class modal_add_discount_to_item extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (!empty($data['discountpercent']) && !empty($data['discountabsolute'])) {
             $errors['discountpercent'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');

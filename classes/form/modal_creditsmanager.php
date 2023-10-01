@@ -293,7 +293,7 @@ class modal_creditsmanager extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['creditsmanagermode'])) {
             $errors['creditsmanagermode'] = get_string('error:choosevalue', 'local_shopping_cart');

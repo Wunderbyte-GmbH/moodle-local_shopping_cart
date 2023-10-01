@@ -54,12 +54,12 @@ class add_item_to_cart extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
             'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            )
+            ]
         );
     }
 
@@ -101,7 +101,7 @@ class add_item_to_cart extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure(array(
+        return new external_single_structure([
             'itemid' => new external_value(PARAM_INT, 'Item id', VALUE_DEFAULT, 0),
             'itemname' => new external_value(PARAM_RAW, 'Item name', VALUE_DEFAULT, ''),
             'price' => new external_value(PARAM_RAW, 'Item price', VALUE_DEFAULT, ''),
@@ -112,7 +112,7 @@ class add_item_to_cart extends external_api {
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself')
-            )
+            ]
         );
     }
 }

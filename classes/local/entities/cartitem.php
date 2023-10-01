@@ -174,7 +174,7 @@ class cartitem {
      * @return array
      */
     public function as_array(): array {
-        $item = array();
+        $item = [];
         $item['itemid'] = $this->itemid;
         $item['itemname'] = $this->itemname;
         $item['price'] = $this->price;

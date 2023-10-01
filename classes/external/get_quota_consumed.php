@@ -54,13 +54,13 @@ class get_quota_consumed extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
             'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             'historyid'  => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
-            )
+            ]
         );
     }
 
@@ -107,14 +107,14 @@ class get_quota_consumed extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure(array(
+        return new external_single_structure([
             'success' => new external_value(PARAM_INT, 'Success 1, no success 0', VALUE_DEFAULT, 0),
             'quota' => new external_value(PARAM_FLOAT, 'Item id', VALUE_DEFAULT, 0),
             'remainingvalue' => new external_value(PARAM_FLOAT, 'Item name', VALUE_DEFAULT, 0),
             'initialvalue' => new external_value(PARAM_FLOAT, 'Item price', VALUE_DEFAULT, 0),
             'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
             'cancelationfee' => new external_value(PARAM_FLOAT, 'Cancelaton fee', VALUE_DEFAULT, 0),
-            )
+            ]
         );
     }
 }

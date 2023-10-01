@@ -185,14 +185,14 @@ class taxcategories {
      */
     private static function extract_categories(string $rawcategories): array {
         if ($rawcategories === "") { // Special case of empty line.
-            return array(); // No categories.
+            return []; // No categories.
         }
         if (is_numeric(trim($rawcategories))) { // Special case of value only.
-            return array(self::DEFAULT_CATEGORY_KEY); // Just one category which is default.
+            return [self::DEFAULT_CATEGORY_KEY]; // Just one category which is default.
         }
         $rows = preg_split('/\n/', trim($rawcategories));
         if ($rows === false) {
-            return array(); // No categories.
+            return []; // No categories.
         }
         $firstrow = $rows[0];
         $catandvalue = self::categories_from_raw_line($firstrow);
@@ -210,7 +210,7 @@ class taxcategories {
     private static function taxmatrix_from_raw_string(string $rawcategories, array $categories): array {
         $rows = preg_split('/\n/', trim($rawcategories));
         if ($rows === false) {
-            return array(); // No categories.
+            return []; // No categories.
         }
 
         $matrix = [];
@@ -235,7 +235,7 @@ class taxcategories {
         $linevalues = explode(' ', $trimmedrawline);
         if ($linevalues === false || count($linevalues) < 2) {
             if (is_numeric($trimmedrawline)) { // This might be a single value row.
-                return array(self::DEFAULT_COUNTRY_INDEX => array(self::DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100));
+                return [self::DEFAULT_COUNTRY_INDEX => [self::DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100]];
             }
             // Tines with no data are invalid.
             return null;
@@ -254,7 +254,7 @@ class taxcategories {
             }
         }
 
-        return array($countrycode => $validcats);
+        return [$countrycode => $validcats];
     }
 
     /**

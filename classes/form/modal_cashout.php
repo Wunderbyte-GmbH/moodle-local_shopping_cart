@@ -150,7 +150,7 @@ class modal_cashout extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['cashoutamount'])) {
             $errors['cashoutamount'] = get_string('cashoutnoamountgiven', 'local_shopping_cart');

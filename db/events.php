@@ -25,13 +25,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array(
-    array(
+$observers = [
+    [
         'eventname' => '\local_shopping_cart\event\payment_error',
         'callback' => '\local_shopping_cart\observer::payment_error',
-    ),
-    array(
+    ],
+    [
             'eventname' => '\local_shopping_cart\event\checkout_completed',
             'callback' => '\local_shopping_cart\observer::checkout_completed',
-    ),
-);
+    ],
+];

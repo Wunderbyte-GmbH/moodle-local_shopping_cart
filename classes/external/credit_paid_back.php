@@ -55,10 +55,10 @@ class credit_paid_back extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
             'method' => new external_value(PARAM_INT, 'method', VALUE_OPTIONAL, PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
-        ));
+        ]);
     }
 
     /**
@@ -91,10 +91,10 @@ class credit_paid_back extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(
-            array(
+            [
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
                 'error' => new external_value(PARAM_RAW, 'Error message.')
-            )
+            ]
         );
     }
 }

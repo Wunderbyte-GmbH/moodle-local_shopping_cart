@@ -60,7 +60,7 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
             $nodehome = $navigation;
         }
         $pluginname = get_string('pluginname', 'local_shopping_cart');
-        $link = new moodle_url('/local/shopping_cart/cashier.php', array());
+        $link = new moodle_url('/local/shopping_cart/cashier.php', []);
         $icon = new pix_icon('i/shopping_cart', $pluginname, 'local_shopping_cart');
         $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF,
             $pluginname, 'shopping_cart_cashier', $icon);
@@ -126,10 +126,10 @@ function local_shopping_cart_get_fontawesome_icon_map() {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     // Check the contextlevel is as expected - if your plugin is a block.
     // We need context course if wee like to acces template files.
-    if (!in_array($context->contextlevel, array(CONTEXT_SYSTEM))) {
+    if (!in_array($context->contextlevel, [CONTEXT_SYSTEM])) {
         return false;
     }
 

@@ -134,7 +134,7 @@ class modal_cashier_manual_rebook extends dynamic_form {
      */
     public function validation($data, $files) {
 
-        $errors = array();
+        $errors = [];
 
         if (empty($data['annotation'])) {
             $errors['annotation'] = get_string('error:mustnotbeempty', 'local_shopping_cart');

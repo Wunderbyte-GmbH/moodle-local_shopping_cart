@@ -54,14 +54,14 @@ class cancel_purchase extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'componentname'  => new external_value(PARAM_RAW, 'componentname', VALUE_REQUIRED),
             'area'  => new external_value(PARAM_RAW, 'area', VALUE_REQUIRED),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
             'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
             'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED)
-            )
+            ]
         );
     }
 
@@ -109,11 +109,11 @@ class cancel_purchase extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure(array(
+        return new external_single_structure([
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
             'error' => new external_value(PARAM_RAW, 'Error message if something went wrong'),
             'credit' => new external_value(PARAM_FLOAT, 'New credit value')
-            )
+            ]
         );
     }
 }

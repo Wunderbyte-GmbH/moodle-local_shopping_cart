@@ -54,11 +54,11 @@ class confirm_cash_payment extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
             'paymenttype' => new external_value(PARAM_INT, 'paymenttype', VALUE_DEFAULT, ''),
             'annotation' => new external_value(PARAM_RAW, 'annotation', VALUE_DEFAULT, '')
-        ));
+        ]);
     }
 
     /**
@@ -90,12 +90,12 @@ class confirm_cash_payment extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(
-            array(
+            [
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
                 'error' => new external_value(PARAM_RAW, 'Error message.'),
                 'credit' => new external_value(PARAM_RAW, 'credit'),
                 'identifier' => new external_value(PARAM_INT, 'identifier used in the shopping cart history')
-            )
+            ]
         );
     }
 }

@@ -53,9 +53,9 @@ class delete_all_items_from_cart extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(array(
+        return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            )
+            ]
         );
     }
 
@@ -93,8 +93,8 @@ class delete_all_items_from_cart extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns() {
-        return new external_single_structure(array(
+        return new external_single_structure([
             'success'  => new external_value(PARAM_INT, 'id'),
-        ));
+        ]);
     }
 }
