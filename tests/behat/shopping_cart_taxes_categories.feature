@@ -80,8 +80,10 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I click on "#btn-local_shopping_cart-main-3" "css_element"
     And I wait "1" seconds
     And I click on "#nav-shopping_cart-popover-container" "css_element"
+    And I wait "1" seconds
     And I click on "Proceed to checkout" "link"
-    And I wait until the page is ready
+    ##And I wait until the page is ready
+    And I wait to be redirected
     And I should see "Your shopping cart"
     Then I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
