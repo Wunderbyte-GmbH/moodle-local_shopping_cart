@@ -24,7 +24,9 @@
 
 namespace local_shopping_cart;
 
+use context_system;
 use Exception;
+use local_shopping_cart\event\payment_added;
 use moodle_exception;
 use moodle_url;
 use stdClass;
@@ -243,7 +245,7 @@ class shopping_cart_history {
      *  (e.g. if record already exists)
      */
     private static function write_to_db(stdClass $data): bool {
-        global $DB;
+        global $DB, $USER;
 
         $now = time();
 
@@ -266,10 +268,26 @@ class shopping_cart_history {
                 'identifier' => $data->identifier,
             ])) {
                 $data->timecreated = $now;
-                if ($DB->insert_record('local_shopping_cart_history', $data)) {
+                if ($id = $DB->insert_record('local_shopping_cart_history', $data)) {
                     // We also need to insert the record into the ledger table.
                     shopping_cart::add_record_to_ledger_table($data);
                     $success = true;
+
+                    $context = context_system::instance();
+                    // Trigger item deleted event.
+                    $event = payment_added::create([
+                        'context' => $context,
+                        'userid' => $USER->id,
+                        'relateduserid' => $data->userid,
+                        'objectid' => $id,
+                        'other' => [
+                            'identifier' => $data->identifier,
+                            'itemid' => $data->itemid,
+                            'component' => $data->componentname,
+                        ],
+                    ]);
+
+                    $event->trigger();
                 } else {
                     $success = false;
                 }

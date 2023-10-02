@@ -398,6 +398,8 @@ $string['userdeleteditem'] = 'User with the userid {$a->userid} deleted item {$a
 $string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
 $string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+$string['payment_added'] = 'User has started a payment transaction';
+$string['payment_added_log'] = 'User with the userid {$a->userid} has started a payment with the identifier {$a->identifier} for item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';

@@ -391,6 +391,8 @@ $string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a-
 $string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
 $string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
 $string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} storniert';
+$string['payment_added'] = 'Nutzer/in hat eine Zahlung gestartet';
+$string['payment_added_log'] = 'Nutzer/in mit der id {$a->userid} hat für den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} einen Zahlungsprozess mit dem identifier {$a->identifier} gestartet';
 
 // Caches.
 $string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';
