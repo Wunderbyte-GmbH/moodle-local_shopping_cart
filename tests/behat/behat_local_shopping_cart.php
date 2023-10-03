@@ -23,10 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
+
+require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
+
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart;
-
-// NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
 /**
  * Steps definitions related with the mooduell table management.
@@ -36,31 +38,44 @@ use local_shopping_cart\shopping_cart;
  * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_shopping_cart extends behat_base {
+class behat_local_shopping_cart extends behat_base {
 
     /*
-     * Put item in my cart.
-     * This ads a dummy item to the cache. After reloading the page, the item will be visible.
-     * @Given /^I put "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
+     * Put item in my cart. This ads a dummy item to the cache. After reloading the page, the item will be visible.
+     * @Given /^I put item "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
      * @param string $itemname
      * @return void
      */
-    // Notice: We commented this out as this is an unfinished behat test.
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* public function i_put_item_in_my_cart(string $itemname) {
-
-        $data = $item->as_array();
-        $item = new cartitem(
-            1,
-            $itemname,
-            10,
-            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-            'mod_quiz',
-            'main',
-            'item description'
-        );
+    public function i_put_item_in_my_cart(string $itemname) {
+        global $USER;
 
         $shoppingcart = new shopping_cart();
-        $shoppingcart->add_item_to_cart('local_shopping_cart', 1, 0); // TODO: Fix this with the correct params!
-    } */
+        $curritems = $shoppingcart::local_shopping_cart_get_cache_data($USER->id);
+        //TODO: get max itemid!
+        $now = time();
+        $canceluntil = strtotime('+14 days', $now);
+        $serviceperiodestart = $now;
+        $serviceperiodeend = strtotime('+100 days', $now);
+        $itemid = 5;
+        $price = 10.00;
+        $tax = 'A';
+        $area = 'main';
+        $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
+
+        $cartitem = new cartitem($itemid,
+            $itemname . ' ' . $itemid,
+            $price,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            $area,
+            'item description',
+            $imageurl->out(),
+            $canceluntil,
+            $serviceperiodestart,
+            $serviceperiodeend,
+            $tax,
+        );
+
+        $shoppingcart::add_item_to_cart('local_shopping_cart', 'bookingfee', $cartitem->itemid, $USER->id);
+    }
 }
