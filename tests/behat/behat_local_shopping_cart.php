@@ -15,67 +15,63 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Behat question-related steps definitions.
+ * Behat.
  *
  * @package    local_shopping_cart
- * @category   test
- * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
+ * @copyright  2013-2020, Open Badge Factory Oy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
-
-require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
-
+use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart;
 
 /**
- * Steps definitions related with the mooduell table management.
+ * Behat functions.
  *
- * @package    local_shopping_cart
- * @category   test
- * @copyright  2022 Wunderbyte Gmbh <info@wunderbyte.at>
+ * Currently requires modification to ienteravalidrequesttokento, and usage
+ * of demo OBF accounts as tests delete all badges on OBF after running.
+ *
+ * @copyright  2013-2020, Open Badge Factory Oy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_local_shopping_cart extends behat_base {
 
-    /*
-     * Put item in my cart. This ads a dummy item to the cache. After reloading the page, the item will be visible.
-     * @Given /^I put item "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
+    /**
+     * Put an item in your shopping cart.
+     * The name will actually ignored.
+     *
      * @param string $itemname
-     * @return void
+     * @Given /^I put item "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
      */
     public function i_put_item_in_my_cart(string $itemname) {
+
         global $USER;
 
-        $shoppingcart = new shopping_cart();
-        $curritems = $shoppingcart::local_shopping_cart_get_cache_data($USER->id);
-        //TODO: get max itemid!
-        $now = time();
-        $canceluntil = strtotime('+14 days', $now);
-        $serviceperiodestart = $now;
-        $serviceperiodeend = strtotime('+100 days', $now);
-        $itemid = 5;
-        $price = 10.00;
-        $tax = 'A';
-        $area = 'main';
-        $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
+        // Put in a cart item.
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, $USER->id);
+    }
 
-        $cartitem = new cartitem($itemid,
-            $itemname . ' ' . $itemid,
-            $price,
-            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-            'local_shopping_cart',
-            $area,
-            'item description',
-            $imageurl->out(),
-            $canceluntil,
-            $serviceperiodestart,
-            $serviceperiodeend,
-            $tax,
-        );
+    /**
+     * Delete existing cart, add two testitems and checkout.
+     *
+     * @param string $itemname
+     * @Given /^I buy two items$/
+     */
+    public function i_buy_two_items(string $itemname) {
 
-        $shoppingcart::add_item_to_cart('local_shopping_cart', 'bookingfee', $cartitem->itemid, $USER->id);
+        global $USER;
+
+        // Clean cart.
+        shopping_cart::delete_all_items_from_cart($USER->id);
+
+        // Put in 2 items.
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, $USER->id);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, $USER->id);
+
+        // Not sure if we should add the booking fee. It could be added automatically anyways.
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'bookingfee', 3, $USER->id);
+
+        shopping_cart::confirm_payment($USER->id, 0);
     }
 }
