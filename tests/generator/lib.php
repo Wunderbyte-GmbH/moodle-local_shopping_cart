@@ -22,6 +22,9 @@
  * @copyright 2023 Andrii Semenets
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use local_shopping_cart\shopping_cart;
+
 class local_shopping_cart_generator extends testing_module_generator {
 
     /**
@@ -100,5 +103,39 @@ class local_shopping_cart_generator extends testing_module_generator {
         $record->id = $DB->insert_record('local_shopping_cart_credits', $record);
 
         return $record;
+    }
+
+    /**
+     * Function to create a dummy user purchas record.
+     *
+     * @param array|stdClass $record
+     * @param int $testitemid
+     * @return array
+     */
+    public function create_user_purchase($record) {
+        global $USER;
+        // Clean cart.
+        shopping_cart::delete_all_items_from_cart($record['userid']);
+        // Set user to buy in behalf of.
+        shopping_cart::buy_for_user($record['userid']);
+        // Put in 2 items.
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, -1);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, -1);
+        $res = shopping_cart::confirm_payment($record['userid'], $USER->id);
+        return $res;
+    }
+
+    /**
+     * Function, to get userid
+     * @param string $username
+     * @return int
+     */
+    private function get_user(string $username) {
+        global $DB;
+
+        if (!$id = $DB->get_field('user', 'id', ['username' => $username])) {
+            throw new Exception('The specified user with username "' . $username . '" does not exist');
+        }
+        return $id;
     }
 }

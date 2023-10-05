@@ -38,11 +38,6 @@ Feature: Test purchase process in shopping cart.
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    ## debug
-    When I put item "auto item" in my cart
-    And I wait "11" seconds
-    And I should see "auto item" in the "div.checkoutgrid" "css_element"
-    ## debug
     Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
     And I should see "10.00" in the "ul.shopping-cart-items" "css_element"
     And I reload the page
