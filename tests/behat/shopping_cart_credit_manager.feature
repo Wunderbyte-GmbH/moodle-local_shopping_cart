@@ -40,7 +40,7 @@ Feature: Cashier manage credits in shopping cart
     ##And I should not see "Credits" in the ".cashier-history-items" "css_element"
     And "//*[@class='credit_total']" "xpath_element" should not exist
     When I click on "Credits manager" "button"
-    And I wait "1" seconds
+    And I wait until the page is ready
     ## Dynamicfields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Pay back credits"
     And I set the field "Correction value or credits to pay back" to "5"
@@ -60,7 +60,7 @@ Feature: Cashier manage credits in shopping cart
     ##And I should not see "Credits" in the ".cashier-history-items" "css_element"
     And "//*[@class='credit_total']" "xpath_element" should not exist
     When I click on "Credits manager" "button"
-    And I wait "1" seconds
+    And I wait until the page is ready
     ## Dynamicfields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "15"
