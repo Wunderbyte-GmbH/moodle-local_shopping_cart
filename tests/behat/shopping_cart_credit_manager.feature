@@ -37,11 +37,11 @@ Feature: Cashier manage credits in shopping cart
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I wait until the page is ready
-    ##And I should not see "Credits" in the ".cashier-history-items" "css_element"
+    ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
     And "//*[@class='credit_total']" "xpath_element" should not exist
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamicfields - step-by-step proceeding required
+    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Pay back credits"
     And I set the field "Correction value or credits to pay back" to "5"
     And I set the field "Payment method" to "Credits paid back by cash"
@@ -57,11 +57,11 @@ Feature: Cashier manage credits in shopping cart
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I wait until the page is ready
-    ##And I should not see "Credits" in the ".cashier-history-items" "css_element"
+    ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
     And "//*[@class='credit_total']" "xpath_element" should not exist
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamicfields - step-by-step proceeding required
+    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "15"
     And I set the field "Reason" to "add credits"
@@ -86,11 +86,9 @@ Feature: Cashier manage credits in shopping cart
     And I click on "Continue" "button"
     And I wait until the page is ready
     And I should see "20.00" in the ".cashier-history-items .credit_total" "css_element"
-    ##And I should not see "Credits" in the ".cashier-history-items" "css_element"
-    And "//*[@class='credit_total']" "xpath_element" should not exist
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamicfields - step-by-step proceeding required
+    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "-10"
     And I set the field "Reason" to "reduce credits"
@@ -101,4 +99,62 @@ Feature: Cashier manage credits in shopping cart
     And I wait until the page is ready
     And I should see "-10.00" in the "#cash_report_table_r1" "css_element"
     And I should see "reduce credits" in the "#cash_report_table_r1" "css_element"
+    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+
+  @javascript
+  Scenario: Shopping cart credits: cashier payback (cache) part of credits to user
+    Given the following "local_shopping_cart > user credits" exist:
+      | user  | credits | currency | balance |
+      | user1 | 25      | EUR      | 25      |
+    Given I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "25.00" in the ".cashier-history-items .credit_total" "css_element"
+    When I click on "Credits manager" "button"
+    And I wait until the page is ready
+    ## Dynamic fields - step-by-step proceeding required
+    And I set the field "What do you want to do?" to "Pay back credits"
+    And I set the field "Correction value or credits to pay back" to "12"
+    And I set the field "Payment method" to "Credits paid back by cash"
+    And I set the field "Reason" to "Pay back by cash"
+    And I press "Save changes"
+    And I wait until the page is ready
+    Then I should see "13.00" in the ".cashier-history-items .credit_total" "css_element"
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "-12.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Pay back by cash" in the "#cash_report_table_r1" "css_element"
+    And I should see "Username1" in the "#cash_report_table_r1" "css_element"
+    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+
+  @javascript
+  Scenario: Shopping cart credits: cashier payback (transfer) part of credits to user
+    Given the following "local_shopping_cart > user credits" exist:
+      | user  | credits | currency | balance |
+      | user1 | 25      | EUR      | 25      |
+    Given I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "25.00" in the ".cashier-history-items .credit_total" "css_element"
+    When I click on "Credits manager" "button"
+    And I wait until the page is ready
+    ## Dynamic fields - step-by-step proceeding required
+    And I set the field "What do you want to do?" to "Pay back credits"
+    And I set the field "Correction value or credits to pay back" to "20"
+    And I set the field "Payment method" to "Credits paid back by transfer"
+    And I set the field "Reason" to "Pay back by transfer"
+    And I press "Save changes"
+    And I wait until the page is ready
+    Then I should see "5.00" in the ".cashier-history-items .credit_total" "css_element"
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "-20.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Pay back by transfer" in the "#cash_report_table_r1" "css_element"
+    And I should see "Username1" in the "#cash_report_table_r1" "css_element"
     And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
