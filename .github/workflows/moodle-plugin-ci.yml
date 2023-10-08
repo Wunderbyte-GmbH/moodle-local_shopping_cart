@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/USI' || startsWith(github.ref, 'refs/heads/MOODLE')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/USI' || github.ref == 'refs/heads/dev_testing' || startsWith(github.ref, 'refs/heads/MOODLE')
 
     runs-on: ubuntu-22.04
 
