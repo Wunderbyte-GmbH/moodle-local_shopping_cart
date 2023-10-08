@@ -54,9 +54,8 @@ interface invoice {
     /**
      * Prepare the data for the curl request as JSON string.
      *
-     * @param int $identifier the id of the record in the ledger table.
      */
-    public function prepare_json_invoice_data(int $identifier): void;
+    public function prepare_json_invoice_data(): void;
 
     /**
      * Get an array of items for the invoice.

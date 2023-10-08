@@ -126,7 +126,17 @@ class erpnext_invoice implements invoice {
     public function create_invoice(int $identifier): bool {
         global $DB;
         $url = $this->baseurl . '/api/resource/Sales Invoice';
-        $this->prepare_json_invoice_data($identifier);
+        // Setup invoice creation.
+        $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
+        // Set user.
+        foreach ($this->invoiceitems as $item) {
+            if (empty($this->user)) {
+                $this->user = core_user::get_user($item->userid);
+                break;
+            }
+        }
+        $this->customer = fullname($this->user) . ' - ' . $this->user->id;
+        $this->prepare_json_invoice_data();
         $customerexists = $this->customer_exists();
         if (!$customerexists) {
             $this->create_customer();
@@ -152,19 +162,12 @@ class erpnext_invoice implements invoice {
 
     /**
      * Create the json for the REST API.
-     *
-     * @param int $identifier
      */
-    public function prepare_json_invoice_data(int $identifier): void {
-        $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
-
+    public function prepare_json_invoice_data(): void {
         foreach ($this->invoiceitems as $item) {
             if (!$this->item_exists($item->itemname)) {
                 throw new moodle_exception('generalexceptionmessage', 'local_shopping_cart', '',
                         'The invoice item could not be found on the remote platform.', $this->errormessage);
-            }
-            if (empty($this->user)) {
-                $this->user = core_user::get_user($item->userid);
             }
             if (empty($this->invoicedata['timecreated'])) {
                 $this->invoicedata['timecreated'] = $item->timemodified;
@@ -181,7 +184,6 @@ class erpnext_invoice implements invoice {
             }
             $this->invoicedata['items'][] = $itemdata;
         }
-        $this->customer = fullname($this->user) . ' - ' . $this->user->id;
         $this->invoicedata['customer'] = $this->customer;
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
         // Convert the Unix timestamp to ISO 8601 date format.
@@ -198,9 +200,10 @@ class erpnext_invoice implements invoice {
      * @return bool
      */
     public function customer_exists(): bool {
-        $url = str_replace(' ', '%20', $this->baseurl . "/api/resource/Customer/{$this->customer}/");
+        $uncleanedurl = $this->baseurl . "/api/resource/Customer/" . $this->customer . "/";
+        $url = str_replace(' ', '%20', $uncleanedurl);
         mtrace($url);
-        $response = $this->client->get(str_replace( ' ', '%20', $url));
+        $response = $this->client->get($url);
         if (!$response) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "customer_exists function got this error: " . $this->client->get_errno() . $this->errormessage .
