@@ -34,7 +34,6 @@ use local_shopping_cart\shopping_cart_history;
 use local_shopping_cart\task\create_invoice_task;
 use moodle_exception;
 use stdClass;
-use tool_brickfield\local\areas\core_course\fullname;
 
 /**
  * Class erpnext_invoice. This class allows to create invoices on a remote instance of the Open Source ERP solution ERPNext.
@@ -207,7 +206,7 @@ class erpnext_invoice implements invoice {
      * @return bool
      */
     public function customer_exists(): bool {
-        $uncleanedurl = $this->baseurl . "/api/resource/Customer/" . $this->customer . "/";
+        $uncleanedurl = $this->baseurl . "/api/resource/Customer/" . rawurlencode($this->customer) . "/";
         $url = str_replace(' ', '%20', $uncleanedurl);
         mtrace($url);
         $response = $this->client->get($url);
@@ -343,7 +342,7 @@ class erpnext_invoice implements invoice {
      * @throws moodle_exception
      */
     private function set_customer_name(): bool {
-        $url = $this->baseurl . '/api/resource/Customer/' . $this->customer;
+        $url = $this->baseurl . '/api/resource/Customer/' . rawurlencode($this->customer);
         $json = json_encode(['customer_name' => fullname($this->user)]);
         $response = $this->client->put(str_replace(' ', '%20', $url), $json);
         if (!$response) {
