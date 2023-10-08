@@ -34,6 +34,7 @@ use local_shopping_cart\shopping_cart_history;
 use local_shopping_cart\task\create_invoice_task;
 use moodle_exception;
 use stdClass;
+use tool_brickfield\local\areas\core_course\fullname;
 
 /**
  * Class erpnext_invoice. This class allows to create invoices on a remote instance of the Open Source ERP solution ERPNext.
@@ -139,7 +140,12 @@ class erpnext_invoice implements invoice {
         $this->prepare_json_invoice_data();
         $customerexists = $this->customer_exists();
         if (!$customerexists) {
-            $this->create_customer();
+            if (!$this->create_customer()) {
+                mtrace('Customer could not be created');
+            }
+            if (!$this->set_customer_name()) {
+                mtrace('Customer name could not be set');
+            }
         }
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
         if (!$response) {
@@ -188,6 +194,7 @@ class erpnext_invoice implements invoice {
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
         // Convert the Unix timestamp to ISO 8601 date format.
         $this->invoicedata['posting_date'] = $date;
+        $this->invoicedata['set_posting_time'] = 1;
         $this->invoicedata['due_date'] = $date;
         $this->jsoninvoice = json_encode($this->invoicedata);
     }
@@ -220,8 +227,7 @@ class erpnext_invoice implements invoice {
     public function create_customer(): bool {
         $url = $this->baseurl . '/api/resource/Customer';
         $customer = [];
-        $customer['name'] = $this->customer;
-        $customer['customer_name'] = fullname($this->user);
+        $customer['customer_name'] = $this->customer;
         $customer['customer_type'] = 'Individual';
         $customer['customer_group'] = 'All Customer Groups';
         // TODO: Implement Customer Address.
@@ -257,8 +263,7 @@ class erpnext_invoice implements invoice {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "item_exists function got this error: " . $this->client->get_errno() . $this->errormessage);
         }
-        $this->validate_response($response);
-        return true;
+        return $this->validate_response($response);
     }
 
     /**
@@ -329,5 +334,22 @@ class erpnext_invoice implements invoice {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Set customer name, as it is not set correctly curing customer creation.
+     *
+     * @return bool
+     * @throws moodle_exception
+     */
+    private function set_customer_name(): bool {
+        $url = $this->baseurl . '/api/resource/Customer/' . $this->customer;
+        $json = json_encode(['customer_name' => fullname($this->user)]);
+        $response = $this->client->put(str_replace(' ', '%20', $url), $json);
+        if (!$response) {
+            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                    "item_exists function got this error: " . $this->client->get_errno() . $this->errormessage);
+        }
+        return $this->validate_response($response);
     }
 }
