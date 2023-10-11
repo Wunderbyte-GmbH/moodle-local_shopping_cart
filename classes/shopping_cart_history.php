@@ -268,6 +268,8 @@ class shopping_cart_history {
                 'identifier' => $data->identifier,
             ])) {
                 $data->timecreated = $now;
+                $data->usecredit = shopping_cart_credits::use_credit_fallback(null, $data->userid);
+
                 if ($id = $DB->insert_record('local_shopping_cart_history', $data)) {
                     // We also need to insert the record into the ledger table.
                     shopping_cart::add_record_to_ledger_table($data);

@@ -99,7 +99,13 @@ class shopping_cart_credits {
      */
     public static function prepare_checkout(array &$data, int $userid, $usecredit = null) {
 
-        $usecredit = self::use_credit_fallback($usecredit, $userid);
+        /* Decide if we want to use credit when cached value already got lost. */
+        $item = !empty($data['items']) ? reset($data['items']) : null;
+        if (!empty($item) && isset($item->usecredit)) {
+            $usecredit = (int) $item->usecredit;
+        } else {
+            $usecredit = self::use_credit_fallback($usecredit, $userid);
+        }
 
         list($balance, $currency) = self::get_balance($userid);
 
