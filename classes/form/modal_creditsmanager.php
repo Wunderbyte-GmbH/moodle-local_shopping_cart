@@ -65,8 +65,6 @@ class modal_creditsmanager extends dynamic_form {
         $a->username = "$user->firstname $user->lastname";
         $a->userid = $userid;
 
-        // TODO: Bei payback: Checken, ob Zahl eh nicht größer als vorhandenes Guthaben.
-
         $mform->addElement('hidden', 'userid', $userid);
         $mform->setType('userid', PARAM_INT);
 
