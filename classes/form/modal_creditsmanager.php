@@ -25,9 +25,9 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 use context;
 use context_system;
 use core_form\dynamic_form;
+use core_user;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
-use mod_booking\singleton_service;
 use moodle_exception;
 use moodle_url;
 use stdClass;
@@ -60,7 +60,7 @@ class modal_creditsmanager extends dynamic_form {
             $mform->addElement('html', get_string('nopermissiontoaccesspage', 'local_shopping_cart'));
             return;
         }
-        $user = singleton_service::get_instance_of_user($userid);
+        $user = core_user::get_user($userid, 'id, firstname, lastname, email');
         $a = new stdClass();
         $a->username = "$user->firstname $user->lastname";
         $a->userid = $userid;
