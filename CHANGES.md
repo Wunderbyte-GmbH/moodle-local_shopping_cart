@@ -1,3 +1,8 @@
+## Version 0.6.2 (2023101300)
+* Bugfix: Fix ERPNext invoice creation.
+* Bugfix: Decide if we want to use credit when cached value already got lost.
+* Bugfix: We cannot use singleton service in shopping cart. Use core_user::get_user instead.
+*
 ## Version 0.6.1 (2023100900)
 * New feature: Credits manager now supports individual credits corrections.
 * Improvement: Add Event to see when new entries are created in shopping cart history (and a payment process is started).
