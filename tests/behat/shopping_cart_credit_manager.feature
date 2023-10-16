@@ -158,3 +158,55 @@ Feature: Cashier manage credits in shopping cart
     And I should see "Pay back by transfer" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
     And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+
+  @javascript
+  Scenario: Shopping cart credits: cashier payback (transfer) all of credits to user
+    Given the following "local_shopping_cart > user credits" exist:
+      | user  | credits | currency | balance |
+      | user1 | 23      | EUR      | 23      |
+    Given I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "23.00" in the ".cashier-history-items .credit_total" "css_element"
+    When I click on "Refunded via transfer" "button"
+    And I wait until the page is ready
+    And I should see "This will set her credit to 0" in the ".modal-body" "css_element"
+    ## And I press "Confirm"
+    And I click on "button[data-action=\"save\"]" "css_element"
+    And I wait until the page is ready
+    Then I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "-23.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
+    And I should see "Username1" in the "#cash_report_table_r1" "css_element"
+    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+
+  @javascript
+  Scenario: Shopping cart credits: cashier payback (cache) all of credits to user
+    Given the following "local_shopping_cart > user credits" exist:
+      | user  | credits | currency | balance |
+      | user1 | 22      | EUR      | 22      |
+    Given I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "22.00" in the ".cashier-history-items .credit_total" "css_element"
+    When I click on "Refunded with cash" "button"
+    And I wait until the page is ready
+    And I should see "This will set her credit to 0" in the ".modal-body" "css_element"
+    ## And I press "Confirm"
+    And I click on "button[data-action=\"save\"]" "css_element"
+    And I wait until the page is ready
+    Then I should not see "Credit" in the "ul.cashier-history-items" "css_element"
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "-22.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by cash" in the "#cash_report_table_r1" "css_element"
+    And I should see "Username1" in the "#cash_report_table_r1" "css_element"
+    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
