@@ -1,3 +1,17 @@
+## Version 0.6.2 (2023101300)
+* Bugfix: Fix ERPNext invoice creation.
+* Bugfix: Decide if we want to use credit when cached value already got lost.
+* Bugfix: We cannot use singleton service in shopping cart. Use core_user::get_user instead.
+*
+## Version 0.6.1 (2023100900)
+* New feature: Credits manager now supports individual credits corrections.
+* Improvement: Add Event to see when new entries are created in shopping cart history (and a payment process is started).
+* Bugfix: Fix FontAwesome6 issues.
+* Bugfix: $cachedrawdata was always set to true, so delete_item_task was never created!
+* Bugfix: Fix bugs with itemid 0 ledger records (cash transfer, cash transaction ...).
+* Bugfix: Fix linting errors and refactor behat tests.
+* Bugfix: Fix icons in cashier for Moodle 4.2.
+
 ## Version 0.6.0 (2023092700)
 * New feature: Add new button to pay back credits via bank transfer.
 * New feature: Credits manager to add or pay back individual amounts of credits.
