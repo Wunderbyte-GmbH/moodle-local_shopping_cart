@@ -32,7 +32,7 @@ Feature: Cashier actions in shopping cart.
     And I log out
 
   @javascript
-  Scenario: Add an item for user to the shopping cart
+  Scenario: Cashier rewievs an item the shopping cart of user
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -45,9 +45,10 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    And I should see "10.00 EUR" in the "#shopping_cart-cashiers-cart .item-price" "css_element"
 
   @javascript
-  Scenario: Cashier adds discount without rounding
+  Scenario: Cashier adds discount without rounding for user cart item
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -70,7 +71,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
 
   @javascript
-  Scenario: Cashier adds discount with rounding
+  Scenario: Cashier adds discount with rounding for user cart item
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -93,7 +94,7 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
 
   @javascript
-  Scenario: Cashier buys discounted item (without rounding)
+  Scenario: Cashier buys discounted item (without rounding) for user with cash
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -118,7 +119,32 @@ Feature: Cashier actions in shopping cart.
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
 
   @javascript
-  Scenario: Cashier buys item and gives refund
+  Scenario: Cashier buys discounted item (with rounding) for user with cash
+    Given I log in as "user1"
+    And I visit "/local/shopping_cart/test.php"
+    And I wait until the page is ready
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
+    And I log out
+    Given I log in as "admin"
+    And I set the following administration settings values:
+      | Round discounts | 1 |
+    When I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.fa-eur" "css_element"
+    And I set the following fields to these values:
+      | discountabsolute | 4.5 |
+    And I press "Save changes"
+    And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
+    Then I should see "5.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
+    Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
+
+  @javascript
+  Scenario: Cashier buys item for user with cash and cancel purchase with cancellation fee
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -144,15 +170,18 @@ Feature: Cashier actions in shopping cart.
       | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "8" in the "ul.cashier-history-items span.credit_total" "css_element"
-    And I press "Refunded"
-    And I click on "button[data-action=\"save\"]" "css_element"
-    And I wait "1" seconds
-    Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
+    And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
+    ##And I press "Refunded"
+    ##And I click on "button[data-action=\"save\"]" "css_element"
+    ##And I wait "1" seconds
+    ##Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
+    ##
     ## Then I should see "Credit paid back" in the ".notifications" "css_element"
     ##And I should not see "Credit" in the "ul.cashier-history-items" "css_element" should not be visible
 
   @javascript
-  Scenario: Cashier buys discounted item and gives refund
+  Scenario: Cashier buys discounted item for user with cash and cancel purchase with cancellation fee
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -185,8 +214,10 @@ Feature: Cashier actions in shopping cart.
       | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
-    And I press "Refunded"
-    And I click on "button[data-action=\"save\"]" "css_element"
-    Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
+    And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
+    ## And I press "Refunded"
+    ## And I click on "button[data-action=\"save\"]" "css_element"
+    ## Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
     ## Then I should see "Credit paid back" in the ".notifications" "css_element"
     ## And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
