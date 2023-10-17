@@ -57,8 +57,10 @@ class behat_local_shopping_cart extends behat_base {
      * @Given /^I put item in shopping cart in behalf of user "(?P<username_string>(?:[^"]|\\")*)"$/
      */
     public function i_put_item_in_users_cart(string $username) {
+        $userid = $this->get_user_id_by_identifier($username);
         // Put in a cart item.
-        shopping_cart::buy_for_user($this->get_user_id_by_identifier($username));
+        shopping_cart::buy_for_user($userid);
+        shopping_cart::local_shopping_cart_get_cache_data($userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, -1);
     }
 
@@ -73,13 +75,11 @@ class behat_local_shopping_cart extends behat_base {
 
         // Clean cart.
         shopping_cart::delete_all_items_from_cart($USER->id);
+        shopping_cart::local_shopping_cart_get_cache_data($USER->id);
 
         // Put in 2 items.
         shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, 0);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, 0);
-
-        // Not sure if we should add the booking fee. It could be added automatically anyways.
-        //shopping_cart::add_item_to_cart('local_shopping_cart', 'bookingfee', 4, $USER->id);
 
         shopping_cart::confirm_payment($USER->id, 0);
     }

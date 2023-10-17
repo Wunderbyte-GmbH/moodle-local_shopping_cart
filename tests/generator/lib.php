@@ -114,10 +114,12 @@ class local_shopping_cart_generator extends testing_module_generator {
      */
     public function create_user_purchase($record) {
         global $USER;
+
         // Clean cart.
         shopping_cart::delete_all_items_from_cart($record['userid']);
         // Set user to buy in behalf of.
         shopping_cart::buy_for_user($record['userid']);
+        shopping_cart::local_shopping_cart_get_cache_data($record['userid']);
         // Put in 2 items.
         shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, -1);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, -1);
