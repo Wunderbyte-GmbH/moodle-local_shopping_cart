@@ -33,40 +33,47 @@ Feature: As admin I debug1
     Given I log in as "admin"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
-    And I put item "my test item" in my cart
+    And I put testitem "2" in my cart
+    ## This approach requires reload
+    And I reload the page
+    And I wait until the page is ready
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "10" seconds
-    And I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
+    And I wait "1" seconds
+    And I should see "my test item 2" in the "ul.shopping-cart-items" "css_element"
 
 @javascript
   Scenario: Shopping cart debug2 - put item in my cart than view
     Given I log in as "admin"
-    And I put item "my test item" in my cart
+    And I put testitem "3" in my cart
+    ## Also working
+    ## And I put testitem "3" in shopping cart of user "admin"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     And I wait "1" seconds
-    And I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
+    And I should see "my test item 3" in the "ul.shopping-cart-items" "css_element"
 
   @javascript
   Scenario: Cashier debug1 - put item in shopping cart for user
     Given I log in as "admin"
-    And I put item in shopping cart in behalf of user "user1"
+    And I put testitem "2" in shopping cart of user "user1"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "my test item 2" in the "#shopping_cart-cashiers-cart" "css_element"
 
   @javascript
   Scenario: Cashier debug2 - buy two items for myself
     Given I log in as "admin"
-    And I buy two items
+    And I buy testitem "1"
+    And I buy testitem "2"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
     And I set the field "Select a user..." to "admin"
     And I should see "Admin User"
     And I click on "Continue" "button"
-    And I wait "10" seconds
+    And I wait "1" seconds
     Then I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"

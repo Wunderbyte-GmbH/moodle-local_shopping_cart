@@ -42,11 +42,13 @@ class behat_local_shopping_cart extends behat_base {
      * The name will actually ignored.
      *
      * @param string $itemname
-     * @Given /^I put item "(?P<itemname_string>(?:[^"]|\\")*)" in my cart$/
+     * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in my cart$/
      */
-    public function i_put_item_in_my_cart(string $itemname) {
+    public function i_put_testitem_in_my_cart(int $itemid) {
+        global $USER;
         // Put in a cart item.
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, 0);
+        shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, 0);
     }
 
     /**
@@ -54,33 +56,29 @@ class behat_local_shopping_cart extends behat_base {
      * The name will actually ignored.
      *
      * @param string $username
-     * @Given /^I put item in shopping cart in behalf of user "(?P<username_string>(?:[^"]|\\")*)"$/
+     * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in shopping cart of user "(?P<username_string>(?:[^"]|\\")*)"$/
      */
-    public function i_put_item_in_users_cart(string $username) {
+    public function i_put_testitem_in_users_cart(int $itemid, string $username) {
         $userid = $this->get_user_id_by_identifier($username);
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
         shopping_cart::local_shopping_cart_get_cache_data($userid);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, -1);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, -1);
     }
 
     /**
      * Delete existing cart, add two testitems and checkout.
      *
-     * @Given /^I buy two items$/
+     * @Given /^I buy testitem "(?P<itemid_int>(?:[^"]|\\")*)"$/
      */
-    public function i_buy_two_items() {
-
+    public function i_buy_testitem(int $itemid) {
         global $USER;
-
         // Clean cart.
         shopping_cart::delete_all_items_from_cart($USER->id);
+        // Put item in cart.
         shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-
-        // Put in 2 items.
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, 0);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, 0);
-
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, 0);
+        // Confirm purchase.
         shopping_cart::confirm_payment($USER->id, 0);
     }
 }
