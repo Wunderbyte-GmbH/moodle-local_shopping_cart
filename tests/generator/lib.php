@@ -113,17 +113,16 @@ class local_shopping_cart_generator extends testing_module_generator {
      * @return array
      */
     public function create_user_purchase($record) {
-        global $USER;
-
         // Clean cart.
         shopping_cart::delete_all_items_from_cart($record['userid']);
         // Set user to buy in behalf of.
         shopping_cart::buy_for_user($record['userid']);
+        // Get cached data or setup defaults.
         shopping_cart::local_shopping_cart_get_cache_data($record['userid']);
-        // Put in 2 items.
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 1, -1);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', 2, -1);
-        $res = shopping_cart::confirm_payment($record['userid'], $USER->id);
+        // Put in a test item with given ID (or default if ID > 4).
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $record['testitemid'], -1);
+        // Confirm cash payment.
+        $res = shopping_cart::confirm_payment($record['userid'], PAYMENT_METHOD_CASHIER_CASH);
         return $res;
     }
 

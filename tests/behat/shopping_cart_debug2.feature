@@ -24,8 +24,9 @@ Feature: As admin I debug2
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And the following "local_shopping_cart > user purchases" exist:
-      | user  |
-      | user1 |
+      | user  | testitemid |
+      | user1 | 1          |
+      | user1 | 3          |
     And I log in as "admin"
     And I set the following administration settings values:
       | Payment account | Account1 |
