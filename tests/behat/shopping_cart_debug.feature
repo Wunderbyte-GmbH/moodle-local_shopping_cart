@@ -1,6 +1,6 @@
 @local @local_shopping_cart @javascript
 
-Feature: As admin I debug1
+Feature: As admin I debug custom steps in shopping cart
 
   Background:
     Given the following "users" exist:
@@ -23,6 +23,10 @@ Feature: As admin I debug1
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
+    And the following "local_shopping_cart > user purchases" exist:
+      | user  | testitemid |
+      | user1 | 1          |
+      | user1 | 3          |
     And I log in as "admin"
     And I set the following administration settings values:
       | Payment account | Account1 |
@@ -56,11 +60,11 @@ Feature: As admin I debug1
   @javascript
   Scenario: Cashier debug1 - put item in shopping cart for user
     Given I log in as "admin"
-    And I put testitem "2" in shopping cart of user "user1"
+    And I put testitem "2" in shopping cart of user "user2"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
+    And I set the field "Select a user..." to "Username2"
+    And I should see "Username2 Test"
     And I click on "Continue" "button"
     Then I should see "my test item 2" in the "#shopping_cart-cashiers-cart" "css_element"
 
@@ -77,3 +81,15 @@ Feature: As admin I debug1
     And I wait "1" seconds
     Then I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"
+
+  @javascript
+  Scenario: Cashier debug3 - buy items via DB
+    Given I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I wait until the page is ready
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait "1" seconds
+    Then I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "my test item 3" in the "ul.cashier-history-items" "css_element"
