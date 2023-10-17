@@ -113,7 +113,7 @@ class shopping_cart {
         // If we have nothing in our cart and we are not about...
         // ... to add the booking fee...
         // ... we add the booking fee.
-        if (count($cachedrawdata['items']) === 0
+        if (empty($cachedrawdata['items'])
             && $area != 'bookingfee') {
 
             // If we buy for user, we need to use -1 as userid.
