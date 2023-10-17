@@ -87,6 +87,31 @@ class local_shopping_cart_generator extends testing_module_generator {
     }
 
     /**
+     * Function to setup a dummy plugin settings (payment gateway - required).
+     *
+     * @param array|stdClass $record
+     * @return bool status
+     */
+    public function create_plugin_setup($record = null) {
+
+        $record = (array) $record;
+        // Check required params.
+        if (!isset($record['accountid'])) {
+            throw new coding_exception(
+                    'accountid must be present in create_plugin_setup() $record');
+        }
+        // Set all params.
+        $res = true;
+        foreach ($record as $label => $value) {
+            if (!set_config($label, $value, 'local_shopping_cart')) {
+                // Return false if at least 1 param failed to setup.
+                $res = false;
+            }
+        }
+        return $res;
+    }
+
+    /**
      * Function to create a dummy user credit record.
      *
      * @param array|stdClass $record
