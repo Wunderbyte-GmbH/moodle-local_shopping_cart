@@ -34,16 +34,34 @@ namespace local_shopping_cart\event;
  */
 class payment_added extends \core\event\base {
 
+    /**
+     * Init vars.
+     *
+     * @return mixed
+     *
+     */
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'local_shpping_cart_history';
     }
 
+    /**
+     * Gets name.
+     *
+     * @return mixed
+     *
+     */
     public static function get_name() {
         return get_string('payment_added', 'local_shopping_cart');
     }
 
+    /**
+     * Gets description.
+     *
+     * @return mixed
+     *
+     */
     public function get_description() {
 
         $data = (object)[
@@ -57,6 +75,12 @@ class payment_added extends \core\event\base {
         return get_string('payment_added_log', 'local_shopping_cart', $data);
     }
 
+    /**
+     * Gets url.
+     *
+     * @return mixed
+     *
+     */
     public function get_url() {
         return new \moodle_url('/local/shopping_cart/checkout.php');
     }

@@ -31,7 +31,7 @@ Feature: As admin I debug custom steps in shopping cart
       | user1 | 1          |
       | user1 | 3          |
 
-@javascript
+  @javascript
   Scenario: Shopping cart custom steps demo1: put item in my cart than view
     Given I log in as "admin"
     ## Put intem in cart 1st than view page - because of caching.

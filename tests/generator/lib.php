@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use local_shopping_cart\shopping_cart;
+
 /**
  * Class local_shopping_cart_generator for generation of dummy data
  *
@@ -22,9 +24,6 @@
  * @copyright 2023 Andrii Semenets
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-use local_shopping_cart\shopping_cart;
-
 class local_shopping_cart_generator extends testing_module_generator {
 
     /**
@@ -134,7 +133,6 @@ class local_shopping_cart_generator extends testing_module_generator {
      * Function to create a dummy user purchas record.
      *
      * @param array|stdClass $record
-     * @param int $testitemid
      * @return array
      */
     public function create_user_purchase($record) {

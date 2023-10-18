@@ -41,7 +41,7 @@ class behat_local_shopping_cart extends behat_base {
      * Put an item in your shopping cart.
      * The name will actually ignored.
      *
-     * @param string $itemname
+     * @param int $itemid
      * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in my cart$/
      */
     public function i_put_testitem_in_my_cart(int $itemid) {
@@ -55,6 +55,7 @@ class behat_local_shopping_cart extends behat_base {
      * Put an item in shopping cart for specified user.
      * The name will actually ignored.
      *
+     * @param int $itemid
      * @param string $username
      * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in shopping cart of user "(?P<username_string>(?:[^"]|\\")*)"$/
      */
@@ -69,6 +70,7 @@ class behat_local_shopping_cart extends behat_base {
     /**
      * Delete existing cart, add two testitems and checkout.
      *
+     * @param int $itemid
      * @Given /^I buy testitem "(?P<itemid_int>(?:[^"]|\\")*)"$/
      */
     public function i_buy_testitem(int $itemid) {
