@@ -35,15 +35,10 @@ Feature: User cancellation after cash payment with consumption and discount roun
   Scenario: User buys items and cancel purchase when consumption and discount rounding enabled and cancellation fee given
     Given I log in as "admin"
     And I set the following administration settings values:
-    | Round discounts                                    | 1 |
-    And I log out
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I log out
-    Given I log in as "admin"
+      | Round discounts  | 1 |
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
@@ -74,7 +69,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## Then I should see "2" in the ".cashier-history-items span.credit_total" "css_element"
     Then I should see "2" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"0\"]" "css_element"
-    And I wait "11" seconds
+    And I wait "1" seconds
     And I should see "the costs of your purchase (20 EUR)" in the ".show .modal-content" "css_element"
     And I should see "minus a cancelation fee (1 EUR)" in the ".show .modal-content" "css_element"
     And I should see "as credit (19 EUR) for your next purchase" in the ".show .modal-content" "css_element"
@@ -92,15 +87,10 @@ Feature: User cancellation after cash payment with consumption and discount roun
   Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption enabled and cancellation fee given
     Given I log in as "admin"
     And I set the following administration settings values:
-      | Round discounts                                    |   |
-    And I log out
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I log out
-    Given I log in as "admin"
+      | Round discounts  |  |
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
@@ -110,7 +100,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I log out
-    Given I log in as "user1"
+    When I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
     And I should see "my test item 1" in the ".cashier-history-items" "css_element"
@@ -137,7 +127,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I should see "as credit (19.30 EUR) for your next purchase" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
-    Then I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
+    And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"1\"]" "css_element"
     And I wait "1" seconds
     And I should see "You have already consumed the whole article and won't get any refund of the price paid: 13.80 EUR" in the ".show .modal-content" "css_element"
