@@ -35,16 +35,10 @@ Feature: User cancellation after cash payment on the checkout page.
   @javascript
   Scenario: User select two items procedd to checkout cancel one than pay with credits
     Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I wait "1" seconds
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "1" seconds
-    And I click on "Proceed to checkout" "link"
-    ##And I wait until the page is ready
-    And I wait to be redirected
     And I should see "Your shopping cart"
     And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
