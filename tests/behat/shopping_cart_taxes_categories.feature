@@ -28,14 +28,13 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account                              | Account1      |
-      | Enable Tax processing                        | 1             |
-      | Tax categories and their tax percentage      | A:15 B:10 C:0 |
-      | Default tax category                         | A             |
-      | Prices for items are net prices: Add the tax | checked       |
-    And I log out
+    ## Enable Tax processing = 1
+    ## Tax categories and their tax percentage = "A:15 B:10 C:0"
+    ## Default tax category = "A"
+    ## Prices for items are net prices: Add the tax = 1
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              |
 
   @javascript
   Scenario: Add single item to the shopping cart as user when tax categories enabled
@@ -48,8 +47,6 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I should see "11.50 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50" in the "li.sc_initialtotal" "css_element"
-    And I reload the page
-    And I wait until the page is ready
 
   @javascript
   Scenario: Add two items to the shopping cart as user when tax categories enabled

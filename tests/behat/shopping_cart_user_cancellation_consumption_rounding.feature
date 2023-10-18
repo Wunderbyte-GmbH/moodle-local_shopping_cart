@@ -25,21 +25,17 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account                                    | Account1 |
-      | Credit on cancelation minus already consumed value | 1        |
-    And I log out
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 1
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation |
+      | Account1 | 1              | 1                    |
 
   @javascript
   Scenario: User buys items and cancel purchase when consumption and discount rounding enabled and cancellation fee given
     Given I log in as "admin"
-    And I visit "/admin/category.php?category=local_shopping_cart"
-    And I set the following fields to these values:
-      | Credit on cancelation minus already consumed value | 1 |
-      | Round discounts                                    | 1 |
-      | Cancelation fee                                    | 1 |
-    And I press "Save changes"
+    And I set the following administration settings values:
+    | Round discounts                                    | 1 |
     And I log out
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
@@ -95,13 +91,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
   @javascript
   Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption enabled and cancellation fee given
     Given I log in as "admin"
-    And I visit "/admin/category.php?category=local_shopping_cart"
-    And I visit "/admin/category.php?category=local_shopping_cart"
-    And I set the following fields to these values:
-      | Credit on cancelation minus already consumed value | 1 |
+    And I set the following administration settings values:
       | Round discounts                                    |   |
-      | Cancelation fee                                    | 1 |
-    And I press "Save changes"
     And I log out
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"

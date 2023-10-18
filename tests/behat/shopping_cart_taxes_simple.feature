@@ -26,14 +26,13 @@ Feature: Admin tax actions with simple taxin shopping cart.
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account                              | Account1 |
-      | Enable Tax processing                        | 1        |
-      | Default tax category                         |          |
-      | Tax categories and their tax percentage      | 15       |
-      | Prices for items are net prices: Add the tax | checked  |
-    And I log out
+    ## Enable Tax processing = 1
+    ## Default tax category = ""
+    ## Tax categories and their tax percentage = 15
+    ## Prices for items are net prices: Add the tax = 1
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         |                    | 15            | 1              |
 
   @javascript
   Scenario: Add single item to the shopping cart as user when tax without categories enabled

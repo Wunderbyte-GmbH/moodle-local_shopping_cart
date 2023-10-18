@@ -26,29 +26,16 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
+    ## Enable Tax processing = 1
+    ## Tax categories and their tax percentage = "A:15 B:10 C:0"
+    ## Default tax category = "A"
+    ## Prices for items are net prices: Add the tax = 1
     And the following "local_shopping_cart > plugin setup" exist:
-      | account  |
-      | Account1 |
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              |
 
   @javascript
   Scenario: Cashier buys three items when tax categories eanbled
-    Given I log in as "admin"
-    And I visit "/admin/category.php?category=local_shopping_cart"
-    And I wait until the page is ready
-    And I set the field "Enable Tax processing" to "checked"
-    And I press "Save changes"
-    Then I should see "Changes saved"
-    And I should see "" in the "#id_s_local_shopping_cart_taxcategories" "css_element"
-    And I set the following fields to these values:
-      | Tax categories and their tax percentage      | A:15 B:10 C:0 |
-      | Default tax category                         | A             |
-      | Prices for items are net prices: Add the tax | checked       |
-    And I press "Save changes"
-    Then I should see "Changes saved"
-    And the field "Tax categories and their tax percentage" matches value "A:15 B:10 C:0"
-    And the field "Default tax category" matches value "A"
-    And the field "Prices for items are net prices: Add the tax" matches value "checked"
-    And I log out
     Given I log in as "user1"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
