@@ -48,7 +48,7 @@ class behat_local_shopping_cart extends behat_base {
         global $USER;
         // Put in a cart item.
         shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, 0);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, 0);
     }
 
     /**
@@ -64,7 +64,7 @@ class behat_local_shopping_cart extends behat_base {
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
         shopping_cart::local_shopping_cart_get_cache_data($userid);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, -1);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
     }
 
     /**
@@ -79,7 +79,7 @@ class behat_local_shopping_cart extends behat_base {
         shopping_cart::delete_all_items_from_cart($USER->id);
         // Put item in cart.
         shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'behattest', $itemid, 0);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, 0);
         // Confirm purchase.
         shopping_cart::confirm_payment($USER->id, 0);
     }
