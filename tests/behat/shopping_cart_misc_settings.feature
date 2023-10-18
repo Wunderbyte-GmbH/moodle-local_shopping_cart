@@ -23,10 +23,9 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account | Account1 |
-    And I log out
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  |
+      | Account1 |
 
   @javascript
   Scenario: Shopping Cart settings: enable terms and conditions

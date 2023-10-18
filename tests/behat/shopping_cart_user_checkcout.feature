@@ -28,10 +28,9 @@ Feature: User cancellation after cash payment on the checkout page.
     And the following "local_shopping_cart > user credits" exist:
       | user  | credits | currency | balance |
       | user1 | 50      | EUR      | 50      |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account | Account1 |
-    And I log out
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  |
+      | Account1 |
 
   @javascript
   Scenario: User select two items procedd to checkout cancel one than pay with credits
