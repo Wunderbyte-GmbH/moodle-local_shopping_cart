@@ -57,7 +57,7 @@ class behat_local_shopping_cart extends behat_base {
      *
      * @param int $itemid
      * @param string $username
-     * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in shopping cart of user "(?P<username_string>(?:[^"]|\\")*)"$/
+     * @Given /^Testitem "(?P<itemid_int>(?:[^"]|\\")*)" has been put in shopping cart of user "([^"]*)"$/
      */
     public function i_put_testitem_in_users_cart(int $itemid, string $username) {
         $userid = $this->get_user_id_by_identifier($username);
