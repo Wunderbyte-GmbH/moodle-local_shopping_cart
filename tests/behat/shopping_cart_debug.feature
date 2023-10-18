@@ -30,29 +30,13 @@ Feature: As admin I debug custom steps in shopping cart
       | user  | testitemid |
       | user1 | 1          |
       | user1 | 3          |
-    ## And I log in as "admin"
-    ## And I set the following administration settings values:
-    ##  | Payment account | Account1 |
-    ## And I log out
 
 @javascript
-  Scenario: Shopping cart debug1 -view than put item in my cart
+  Scenario: Shopping cart custom steps demo1: put item in my cart than view
     Given I log in as "admin"
-    And I visit "/local/shopping_cart/test.php"
-    And I wait until the page is ready
-    And I put testitem "2" in my cart
-    ## This approach requires reload
-    And I reload the page
-    And I wait until the page is ready
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "1" seconds
-    And I should see "my test item 2" in the "ul.shopping-cart-items" "css_element"
-
-@javascript
-  Scenario: Shopping cart debug2 - put item in my cart than view
-    Given I log in as "admin"
+    ## Put intem in cart 1st than view page - because of caching.
     And I put testitem "3" in my cart
-    ## Also working
+    ## Also working OK
     ## And I put testitem "3" in shopping cart of user "admin"
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
@@ -61,7 +45,7 @@ Feature: As admin I debug custom steps in shopping cart
     And I should see "my test item 3" in the "ul.shopping-cart-items" "css_element"
 
   @javascript
-  Scenario: Cashier debug1 - put item in shopping cart for user
+  Scenario: Shopping cart custom steps demo2: cashier put item in shopping cart for user
     Given I log in as "admin"
     And I put testitem "2" in shopping cart of user "user2"
     And I visit "/local/shopping_cart/cashier.php"
@@ -72,7 +56,7 @@ Feature: As admin I debug custom steps in shopping cart
     Then I should see "my test item 2" in the "#shopping_cart-cashiers-cart" "css_element"
 
   @javascript
-  Scenario: Cashier debug2 - buy two items for myself
+  Scenario: Shopping cart custom steps demo3: cashier buy two items for myself
     Given I log in as "admin"
     And I buy testitem "1"
     And I buy testitem "2"
@@ -86,7 +70,7 @@ Feature: As admin I debug custom steps in shopping cart
     And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"
 
   @javascript
-  Scenario: Cashier debug3 - buy items via DB
+  Scenario: Shopping cart custom steps demo4: cashier view items purchased by user via DB
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
