@@ -36,14 +36,10 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
 
   @javascript
   Scenario: Cashier buys three items when tax categories eanbled
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I wait until the page is ready
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I log out
     Given I log in as "admin"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
     And I set the field "Select a user..." to "Username1"
