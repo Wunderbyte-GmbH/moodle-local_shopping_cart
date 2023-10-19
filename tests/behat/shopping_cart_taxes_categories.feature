@@ -70,17 +70,11 @@ Feature: Admin tax actions with tax categories in shopping cart.
   @javascript
   Scenario: Add three items to the shopping cart when tax categories enabled and goto checkout
     Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I wait "1" seconds
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "1" seconds
-    And I click on "Proceed to checkout" "link"
-    ##And I wait until the page is ready
-    And I wait to be redirected
     And I should see "Your shopping cart"
     Then I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
