@@ -66,5 +66,5 @@ Feature: As admin I debug custom steps in shopping cart
     And I visit "/local/shopping_cart/test.php"
     And I wait until the page is ready
     And I wait "1" seconds
-    Then I should see "my test item 1" in the "cashier-history-items" "css_element"
-    And I should see "my test item 3" in the "cashier-history-items" "css_element"
+    Then I should see "my test item 1" in the ".cashier-history-items" "css_element"
+    And I should see "my test item 3" in the ".cashier-history-items" "css_element"

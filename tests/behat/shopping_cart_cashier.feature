@@ -171,13 +171,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "8" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
-    ##And I press "Refunded"
-    ##And I click on "button[data-action=\"save\"]" "css_element"
-    ##And I wait "1" seconds
-    ##Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
-    ##
-    ## Then I should see "Credit paid back" in the ".notifications" "css_element"
-    ##And I should not see "Credit" in the "ul.cashier-history-items" "css_element" should not be visible
 
   @javascript
   Scenario: Cashier buys discounted item for user with cash and cancel purchase with cancellation fee
@@ -215,8 +208,3 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
-    ## And I press "Refunded"
-    ## And I click on "button[data-action=\"save\"]" "css_element"
-    ## Then "ul.cashier-history-items.shopping_cart_history_paidback" "css_element" should not be visible
-    ## Then I should see "Credit paid back" in the ".notifications" "css_element"
-    ## And I should not see "Credit" in the "ul.cashier-history-items" "css_element"
