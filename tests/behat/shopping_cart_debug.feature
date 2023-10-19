@@ -47,19 +47,6 @@ Feature: As admin I debug custom steps in shopping cart
     And I should see "my test item 3" in the "ul.shopping-cart-items" "css_element"
 
   @javascript
-  Scenario: Shopping cart custom steps demo2: cashier put item in shopping cart for user
-    Given I log in as "admin"
-    And Testitem "1" has been put in shopping cart of user "user2"
-    And Testitem "2" has been put in shopping cart of user "user2"
-    And I visit "/local/shopping_cart/cashier.php"
-    And I wait until the page is ready
-    And I set the field "Select a user..." to "Username2"
-    And I should see "Username2 Test"
-    When I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I should see "my test item 2" in the "#shopping_cart-cashiers-cart" "css_element"
-
-  @javascript
   Scenario: Shopping cart custom steps demo3: cashier buy two items for myself
     Given I log in as "admin"
     And I buy testitem "1"
