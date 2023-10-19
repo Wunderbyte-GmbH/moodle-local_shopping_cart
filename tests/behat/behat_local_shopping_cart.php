@@ -38,22 +38,7 @@ use local_shopping_cart\shopping_cart;
 class behat_local_shopping_cart extends behat_base {
 
     /**
-     * Put an item in your shopping cart.
-     * The name will actually ignored.
-     *
-     * @param int $itemid
-     * @Given /^I put testitem "(?P<itemid_int>(?:[^"]|\\")*)" in my cart$/
-     */
-    public function i_put_testitem_in_my_cart(int $itemid) {
-        global $USER;
-        // Put in a cart item.
-        shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, 0);
-    }
-
-    /**
-     * Put an item in shopping cart for specified user.
-     * The name will actually ignored.
+     * Put specified item in shopping cart for given user.
      *
      * @param int $itemid
      * @param string $username
@@ -68,19 +53,21 @@ class behat_local_shopping_cart extends behat_base {
     }
 
     /**
-     * Delete existing cart, add two testitems and checkout.
+     * Purchase specified testitem for user (with checkout by cash).
      *
      * @param int $itemid
-     * @Given /^I buy testitem "(?P<itemid_int>(?:[^"]|\\")*)"$/
+     * @param string $username
+     * @Given /^Testitem "(?P<itemid_int>(?:[^"]|\\")*)" has been purchased by user "([^"]*)"$/
      */
-    public function i_buy_testitem(int $itemid) {
-        global $USER;
+    public function i_buy_testitem_for_user(int $itemid, string $username) {
+        $userid = $this->get_user_id_by_identifier($username);
         // Clean cart.
-        shopping_cart::delete_all_items_from_cart($USER->id);
+        shopping_cart::delete_all_items_from_cart($userid);
         // Put item in cart.
-        shopping_cart::local_shopping_cart_get_cache_data($USER->id);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, 0);
+        shopping_cart::buy_for_user($userid);
+        shopping_cart::local_shopping_cart_get_cache_data($userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
         // Confirm purchase.
-        shopping_cart::confirm_payment($USER->id, 0);
+        shopping_cart::confirm_payment($userid, PAYMENT_METHOD_CASHIER_CASH);
     }
 }

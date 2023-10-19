@@ -26,45 +26,18 @@ Feature: As admin I debug custom steps in shopping cart
     And the following "local_shopping_cart > plugin setup" exist:
       | account  | cancelationfee |
       | Account1 | 1              |
-    And the following "local_shopping_cart > user purchases" exist:
-      | user  | testitemid |
-      | user1 | 1          |
-      | user1 | 3          |
 
   @javascript
-  Scenario: Shopping cart custom steps demo1: put item in my cart than view
+  ## when step Testitem "1" has been purchased by user "user2" become used in test - this file should be removed
+  Scenario: Shopping cart custom steps demo3: cashier buy two items for user2
     Given I log in as "admin"
-    ## Put intem in cart 1st than view page - because of caching.
-    And I put testitem "2" in my cart
-    And I put testitem "3" in my cart
-    ## Also working OK
-    ## And I put testitem "3" in shopping cart of user "admin"
-    And I visit "/local/shopping_cart/test.php"
-    And I wait until the page is ready
-    When I click on "#nav-shopping_cart-popover-container" "css_element"
-    And I wait "1" seconds
-    Then I should see "my test item 2" in the "ul.shopping-cart-items" "css_element"
-    And I should see "my test item 3" in the "ul.shopping-cart-items" "css_element"
-
-  @javascript
-  Scenario: Shopping cart custom steps demo3: cashier buy two items for myself
-    Given I log in as "admin"
-    And I buy testitem "1"
-    And I buy testitem "2"
+    And Testitem "1" has been purchased by user "user2"
+    And Testitem "2" has been purchased by user "user2"
     And I visit "/local/shopping_cart/cashier.php"
     And I wait until the page is ready
-    And I set the field "Select a user..." to "admin"
-    And I should see "Admin User"
+    And I set the field "Select a user..." to "Username2"
+    And I should see "Username2 Test"
     When I click on "Continue" "button"
     And I wait "1" seconds
     Then I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"
-
-  @javascript
-  Scenario: Shopping cart custom steps demo5: user view items purchased via DB
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I wait until the page is ready
-    And I wait "1" seconds
-    Then I should see "my test item 1" in the ".cashier-history-items" "css_element"
-    And I should see "my test item 3" in the ".cashier-history-items" "css_element"
