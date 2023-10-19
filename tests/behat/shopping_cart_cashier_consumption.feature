@@ -26,37 +26,23 @@ Feature: Cashier actions in shopping cart with consumption enabled
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    And I log in as "admin"
-    And I set the following administration settings values:
-      | Payment account                                    | Account1 |
-      | Credit on cancelation minus already consumed value | 1        |
-    And I log out
 
   @javascript
-  Scenario: Cashier buys items and cancel purchase when rounding of discounts disabled but consumption enabled
+  Scenario: Cashier cancel purchase when rounding of discounts disabled but consumption enabled
     Given I log in as "admin"
-    And I set the following administration settings values:
-      | Round discounts | |
-    And I log out
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I log out
-    Given I log in as "admin"
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 0
+    ## Round discounts = ""
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation | rounddiscounts |
+      | Account1 | 0              | 1                    |                |
+    And the following "local_shopping_cart > user purchases" exist:
+      | user  | testitemid |
+      | user1 | 1          |
+      | user1 | 2          |
+      | user1 | 3          |
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
-    And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    And I wait "2" seconds
-    And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
-    And I should see "Payment successful" in the "div.payment_message_result" "css_element"
-    And I reload the page
-    And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the "ul.cashier-history-items" "css_element"
@@ -86,26 +72,21 @@ Feature: Cashier actions in shopping cart with consumption enabled
     And I should see "23.6" in the "ul.cashier-history-items span.credit_total" "css_element"
 
   @javascript
-  Scenario: Cashier buys items and cancel purchase when consumption and rounding of discounts enabled
-    Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#btn-local_shopping_cart-main-2" "css_element"
-    And I click on "#btn-local_shopping_cart-main-3" "css_element"
-    And I log out
+  Scenario: Cashier cancel purchase when consumption and rounding of discounts enabled
     Given I log in as "admin"
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 0
+    ## Round discounts = 1
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation | rounddiscounts |
+      | Account1 | 0              | 1                    | 1              |
+    And the following "local_shopping_cart > user purchases" exist:
+      | user  | testitemid |
+      | user1 | 1          |
+      | user1 | 2          |
+      | user1 | 3          |
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
-    And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    And I wait "2" seconds
-    And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
-    And I should see "Payment successful" in the "div.payment_message_result" "css_element"
-    And I reload the page
-    And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the "ul.cashier-history-items" "css_element"
