@@ -25,17 +25,16 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And the following "local_shopping_cart > payment gateways" exist:
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
-    ## Credit on cancelation minus already consumed value = 1
-    ## Cancelation fee = 1
-    And the following "local_shopping_cart > plugin setup" exist:
-      | account  | cancelationfee | calculateconsumation |
-      | Account1 | 1              | 1                    |
 
   @javascript
   Scenario: User buys items and cancel purchase when consumption and discount rounding enabled and cancellation fee given
     Given I log in as "admin"
-    And I set the following administration settings values:
-      | Round discounts  | 1 |
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 0
+    ## Round discounts = 1
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation | rounddiscounts |
+      | Account1 | 1              | 1                    | 1              |
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And Testitem "3" has been put in shopping cart of user "user1"
@@ -86,8 +85,12 @@ Feature: User cancellation after cash payment with consumption and discount roun
   @javascript
   Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption enabled and cancellation fee given
     Given I log in as "admin"
-    And I set the following administration settings values:
-      | Round discounts  |  |
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 0
+    ## Round discounts = ""
+    And the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation | rounddiscounts |
+      | Account1 | 1              | 1                    |                |
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And Testitem "3" has been put in shopping cart of user "user1"
