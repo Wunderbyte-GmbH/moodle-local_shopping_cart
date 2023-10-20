@@ -1,3 +1,6 @@
+## Version 0.6.3 (2023102000)
+* Improvement: Lots of new behat tests, fixes for GitHub actions etc.
+
 ## Version 0.6.2 (2023101300)
 * Bugfix: Fix ERPNext invoice creation.
 * Bugfix: Decide if we want to use credit when cached value already got lost.
