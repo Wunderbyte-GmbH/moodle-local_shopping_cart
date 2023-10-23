@@ -20,6 +20,7 @@
                 <FIELD NAME="usecredit" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Store if credits have been used for the payment of this item."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
                 <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
+                <FIELD NAME="costcenter" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The cost center of the bought item if provided by the item plugin."/>
                 <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
                 <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of payment."/>
                 <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
@@ -84,6 +85,7 @@
                        COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>
                 <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like mod_booking."/>
+                <FIELD NAME="costcenter" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The cost center of the bought item if provided by the item plugin."/>
                 <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"
                        COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
                 <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The type of payment."/>

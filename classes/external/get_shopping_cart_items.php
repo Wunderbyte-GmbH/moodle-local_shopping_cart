@@ -131,6 +131,7 @@ class get_shopping_cart_items extends external_api {
                                                         'Tax percentage of item price as an int', false),
                                                 'currency' => new external_value(PARAM_ALPHA, 'Currency'),
                                                 'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                                                'costcenter' => new external_value(PARAM_TEXT, 'Cost center for item'),
                                                 'area' => new external_value(PARAM_TEXT, 'Area'),
                                                 'description' => new external_value(PARAM_RAW, 'Item description'),
                                                 'imageurl' => new external_value(PARAM_RAW, 'Image url'),

@@ -810,7 +810,9 @@ class shopping_cart {
                             $item['tax'] ?? null,
                             $item['taxpercentage'] ?? null,
                             $item['taxcategory'] ?? null,
+                            $item['costcenter'] ?? null,
                             $annotation ?? '',
+                            $USER->id
                     );
                 }
 

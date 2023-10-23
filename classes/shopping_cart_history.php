@@ -321,6 +321,7 @@ class shopping_cart_history {
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
+     * @param string|null $costcenter
      * @param string|null $annotation
      * @param int|null $usermodified
      * @return void
@@ -343,6 +344,7 @@ class shopping_cart_history {
             float $tax = null,
             float $taxpercentage = null,
             string $taxcategory = null,
+            string $costcenter = null,
             string $annotation = null,
             int $usermodified = null
     ) {
@@ -372,6 +374,7 @@ class shopping_cart_history {
         $data->tax = empty($tax) ? null : round($tax, 2);
         $data->taxpercentage = empty($taxpercentage) ? null : round($taxpercentage, 2);
         $data->taxcategory = $taxcategory;
+        $data->costcenter = $costcenter;
         $data->annotation = $annotation;
 
         return self::write_to_db($data);

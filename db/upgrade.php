@@ -433,6 +433,24 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023101100, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2023102300) {
+
+        // Define field costcenter to be added to local_shopping_cart_ledger and to local_shopping_cart_history.
+        $scledger = new xmldb_table('local_shopping_cart_ledger');
+        $schistory = new xmldb_table('local_shopping_cart_history');
+        $costcenter = new xmldb_field('costcenter', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'componentname');
+
+        // Conditionally launch add field costcenter.
+        if (!$dbman->field_exists($scledger, $costcenter)) {
+            $dbman->add_field($scledger, $costcenter);
+        }
+        if (!$dbman->field_exists($schistory, $costcenter)) {
+            $dbman->add_field($schistory, $costcenter);
+        }
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2023102300, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

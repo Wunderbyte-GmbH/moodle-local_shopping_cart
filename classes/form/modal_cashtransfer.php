@@ -113,7 +113,7 @@ class modal_cashtransfer extends dynamic_form {
             'cash',
             0,
             PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null,
+            PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
             $data->cashtransferreason,
             $data->cashtransfercashierfrom
         );
@@ -129,7 +129,7 @@ class modal_cashtransfer extends dynamic_form {
             'cash',
             0,
             PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null,
+            PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
             $data->cashtransferreason,
             $data->cashtransfercashierto
         );
