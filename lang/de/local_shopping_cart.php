@@ -93,6 +93,9 @@ $string['fixedpercentageafterserviceperiodstart_desc'] = 'Aktivieren Sie diese E
 $string['cashreportsettings'] = 'Kassajournal-Einstellungen';
 $string['cashreport:showcustomorderid'] = 'Benutzerdefinierte OrderID statt der normalen OrderID anzeigen';
 $string['cashreport:showcustomorderid_desc'] = 'Achtung: Nur aktivieren, wenn ihr Zahlungsgateway-Plugin benutzerdefinierte OrderIDs unterstützt.';
+$string['samecostcenter'] = 'Nur eine Kostenstelle pro Zahlungsvorgang';
+$string['samecostcenter_desc'] = 'Alle Items im Warenkorb müssen die selbe Kostenstelle haben.
+Items mit unterschiedlichen Kostenstellen müssen separat gebucht werden.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';

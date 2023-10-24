@@ -143,6 +143,12 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
+    // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/samecostcenter',
+                get_string('samecostcenter', 'local_shopping_cart'),
+                get_string('samecostcenter_desc', 'local_shopping_cart'), 1));
+
     // Setting to activate manual rebooking for cashier.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/manualrebookingisallowed',

@@ -90,6 +90,9 @@ $string['fixedpercentageafterserviceperiodstart_desc'] = 'Activate this if you w
 $string['cashreportsettings'] = 'Cash report settings';
 $string['cashreport:showcustomorderid'] = 'Show custom OrderID instead of normal OrderID';
 $string['cashreport:showcustomorderid_desc'] = 'Be careful: Only activate this setting if your payment gateway supports custom order ids.';
+$string['samecostcenter'] = 'Only one cost center per payment';
+$string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
+Items with different cost centers need to be booked separately.';
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
