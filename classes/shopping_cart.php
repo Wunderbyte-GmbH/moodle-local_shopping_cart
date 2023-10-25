@@ -132,13 +132,42 @@ class shopping_cart {
         $expirationtimestamp = self::get_expirationdate();
 
         if ($success) {
-            // This gets the data from the componennt and also triggers reserveration.
-            // If reserveration is not successful, we have to react here.
+            // This gets the data from the componennt and also triggers reservation.
+            // If reservation is not successful, we have to react here.
             $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
             if (isset($cartitemarray['cartitem'])) {
                 // Get the itemdata as array.
                 $itemdata = $cartitemarray['cartitem']->as_array();
                 $itemdata['price'] = $itemdata['price'];
+
+                // If the setting 'samecostcenter' ist turned on...
+                // ... then we do not allow to add items with different cost centers.
+                if (get_config('local_shopping_cart', 'samecostcenter')) {
+                    if ($itemdata['area'] != 'bookingfee') {
+                        $currentcostcenter = $itemdata['costcenter'] ?? '';
+                        $costcenterincart = '';
+                        if (!empty($cachedrawdata['items'])) {
+                            foreach ($cachedrawdata['items'] as $itemincart) {
+                                if ($itemincart['area'] == 'bookingfee') {
+                                    // We only need to check for "real" items, booking fee does not apply.
+                                    continue;
+                                } else {
+                                    $costcenterincart = $itemincart['costcenter'] ?? '';
+                                    if ($currentcostcenter != $costcenterincart) {
+                                        // TODO: Show a notification here that different cost centers are not allowed!
+                                        // TODO: Currently the wrong notification is shown ("Your shopping cart is full.").
+                                        $itemdata = [];
+                                        $itemdata['success'] = 0;
+                                        $itemdata['expirationdate'] = 0;
+                                        $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                                        return $itemdata;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // Then we set item in Cache.
                 $cachedrawdata['items'][$cacheitemkey] = $itemdata;

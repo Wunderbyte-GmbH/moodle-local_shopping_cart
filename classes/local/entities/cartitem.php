@@ -128,7 +128,7 @@ class cartitem {
      *
      * @var ?string
      */
-    private $costcenter;
+    public $costcenter; // Needs to be public!
 
     /**
      * Constructor for creating a cartitem.

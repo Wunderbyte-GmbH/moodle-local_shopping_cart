@@ -151,6 +151,9 @@ class shoppingcart_history_list implements renderable, templatable {
             $item->serviceperiodstart = $item->serviceperiodstart ?? 0;
             $item->serviceperiodend = $item->serviceperiodend ?? 0;
 
+            // Cost center.
+            $item->costcenter = $item->costcenter ?? '';
+
             // Localize the payment string.
             switch ($item->payment) {
                 case PAYMENT_METHOD_ONLINE:
