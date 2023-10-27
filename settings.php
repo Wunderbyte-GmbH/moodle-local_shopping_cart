@@ -147,7 +147,7 @@ if ($hassiteconfig) {
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/samecostcenter',
                 get_string('samecostcenter', 'local_shopping_cart'),
-                get_string('samecostcenter_desc', 'local_shopping_cart'), 1));
+                get_string('samecostcenter_desc', 'local_shopping_cart'), 0));
 
     // Setting to activate manual rebooking for cashier.
     $settings->add(

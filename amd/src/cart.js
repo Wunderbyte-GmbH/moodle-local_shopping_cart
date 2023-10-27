@@ -348,29 +348,68 @@ export const addItem = (itemid, component, area) => {
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
 
-            if (data.success != 1) {
-
-                getString('cartisfull', 'local_shopping_cart').then(message => {
-                    showNotification(message, 'danger');
+            switch (data.success) {
+                case 0:
+                    getString('cartisfull', 'local_shopping_cart').then(message => {
+                        showNotification(message, 'danger');
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
                     return;
-                }).catch(e => {
-                    // eslint-disable-next-line no-console
-                    console.log(e);
-                });
-
-                return;
-            } else if (data.success == 1) {
-                getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
-                    showNotification(message, 'success');
+                case 1:
+                    getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
+                        showNotification(message, 'success');
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
+                    reinit(userid);
                     return;
-                }).catch(e => {
-                    // eslint-disable-next-line no-console
-                    console.log(e);
-                });
+                case 2:
+                    getString('error:costcentersdonotmatch', 'local_shopping_cart').then(message => {
+                        showNotification(message, 'danger');
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
 
-                reinit(userid);
+                    // Show a modal too.
+                    getStrings([
+                        {key: 'error:costcentertitle', component: 'local_shopping_cart'},
+                        {key: 'error:costcentersdonotmatch', component: 'local_shopping_cart'},
+                        {key: 'ok', component: 'core'},
+                    ]).then(strings => {
+                        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+                            modal.setTitle(strings[0]);
+                            modal.setBody(strings[1]);
+                            modal.setSaveButtonText(strings[2]);
+                            modal.show();
+                            return modal;
+                        }).catch(e => {
+                            // eslint-disable-next-line no-console
+                            console.log(e);
+                        });
+                        return true;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
+
+                    return;
+                default:
+                    getString('error:generalcarterror', 'local_shopping_cart').then(message => {
+                        showNotification(message, 'danger');
+                        return;
+                    }).catch(e => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
+                    return;
             }
-
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console

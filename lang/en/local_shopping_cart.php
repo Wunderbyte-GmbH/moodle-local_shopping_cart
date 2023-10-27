@@ -115,8 +115,13 @@ $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:capabilitymissing'] = 'ERROR: You do not have a necessary capability.';
 $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
+$string['error:costcentertitle'] = 'Different cost center';
+$string['error:costcentersdonotmatch'] = 'You already have an item with a <b>different cost center</b> in your cart.
+You have to buy this item separately!';
 $string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need
 to set up a payment gateway.';
+$string['error:generalcarterror'] = 'You cannot add this item to your shopping cart because there was an error.
+Please contact an administrator.';
 $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:cancelationfeetoohigh'] = 'Cancelation fee cannot be bigger than amount to be paid back!';
 $string['error:nofieldchosen'] = 'You have to choose a field.';

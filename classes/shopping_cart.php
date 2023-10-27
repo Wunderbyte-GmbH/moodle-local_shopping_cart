@@ -154,10 +154,8 @@ class shopping_cart {
                                 } else {
                                     $costcenterincart = $itemincart['costcenter'] ?? '';
                                     if ($currentcostcenter != $costcenterincart) {
-                                        // TODO: Show a notification here that different cost centers are not allowed!
-                                        // TODO: Currently the wrong notification is shown ("Your shopping cart is full.").
                                         $itemdata = [];
-                                        $itemdata['success'] = 0;
+                                        $itemdata['success'] = 2; // Important. In JS we show the modal based on success 2.
                                         $itemdata['expirationdate'] = 0;
                                         $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                                         return $itemdata;
