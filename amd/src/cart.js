@@ -342,65 +342,11 @@ export const addItem = (itemid, component, area) => {
             'userid': userid
         },
         done: function(data) {
-
             data.component = component;
             data.area = area;
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
-
-            switch (data.success) {
-                case 0:
-                    getString('cartisfull', 'local_shopping_cart').then(message => {
-                        showNotification(message, 'danger');
-                        return;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
-                    return;
-                case 1:
-                    getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
-                        showNotification(message, 'success');
-                        return;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
-                    reinit(userid);
-                    return;
-                case 2:
-                    getStrings([
-                        {key: 'error:costcentertitle', component: 'local_shopping_cart'},
-                        {key: 'error:costcentersdonotmatch', component: 'local_shopping_cart'},
-                        {key: 'ok', component: 'core'},
-                    ]).then(strings => {
-                        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                            modal.setTitle(strings[0]);
-                            modal.setBody(strings[1]);
-                            modal.setSaveButtonText(strings[2]);
-                            modal.show();
-                            return modal;
-                        }).catch(e => {
-                            // eslint-disable-next-line no-console
-                            console.log(e);
-                        });
-                        return true;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
-
-                    return;
-                default:
-                    getString('error:generalcarterror', 'local_shopping_cart').then(message => {
-                        showNotification(message, 'danger');
-                        return;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
-                    return;
-            }
+            addItemShowNotification(data);
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -511,6 +457,102 @@ function addZeroPriceListener(data) {
             paymentbutton.removeEventListener('click', dealWithZeroPrice);
         }
     }
+}
+
+/**
+ * Function to show notifications when items are added.
+ * @param {*} data
+ */
+export function addItemShowNotification(data) {
+    const CARTPARAM_ALREADYINCART = 0; // Already in cart.
+    const CARTPARAM_SUCCESS = 1; // Item added to cart successfully.
+    const CARTPARAM_CARTISFULL = 2; // Item added to cart successfully.
+    const CARTPARAM_COSTCENTER = 3; // Item added to cart successfully.
+
+    switch (data.success) {
+        case CARTPARAM_ALREADYINCART:
+            getString('alreadyincart', 'local_shopping_cart').then(message => {
+                showNotification(message, 'danger');
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return;
+        case CARTPARAM_SUCCESS:
+            getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
+                showNotification(message, 'success');
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            reinit(data.userid);
+            return;
+        case CARTPARAM_CARTISFULL:
+            getStrings([
+                {key: 'cartisfull', component: 'local_shopping_cart'},
+                {key: 'ok', component: 'core'},
+            ]).then(strings => {
+                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+                    modal.setBody(strings[0]);
+                    modal.setSaveButtonText(strings[1]);
+                    modal.show();
+                    return modal;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+                return true;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return;
+        case CARTPARAM_COSTCENTER:
+            getStrings([
+                {key: 'error:costcentertitle', component: 'local_shopping_cart'},
+                {key: 'error:costcentersdonotmatch', component: 'local_shopping_cart'},
+                {key: 'ok', component: 'core'},
+            ]).then(strings => {
+                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+                    modal.setTitle(strings[0]);
+                    modal.setBody(strings[1]);
+                    modal.setSaveButtonText(strings[2]);
+                    modal.show();
+                    return modal;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+                return true;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return;
+        default:
+            getStrings([
+                {key: 'error:generalcarterror', component: 'local_shopping_cart'},
+                {key: 'ok', component: 'core'},
+            ]).then(strings => {
+                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+                    modal.setBody(strings[0]);
+                    modal.setSaveButtonText(strings[1]);
+                    modal.show();
+                    return modal;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+                return true;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return;
+    }
+
 }
 
 /**

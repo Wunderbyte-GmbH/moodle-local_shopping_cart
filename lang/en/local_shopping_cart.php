@@ -145,6 +145,8 @@ $string['success'] = 'Success';
 $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
 
+
+$string['alreadyincart'] = 'The item is already in your cart.';
 $string['cartisfull'] = 'Your shopping cart is full.';
 $string['cartisempty'] = 'Your shopping cart is empty.';
 $string['yourcart'] = 'Your shopping cart';

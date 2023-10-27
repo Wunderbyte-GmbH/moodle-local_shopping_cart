@@ -104,6 +104,7 @@ class shopping_cart {
         if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
             return [
                 'success' => CARTPARAM_CARTISFULL,
+                'itemname' => '',
             ];
         }
 
@@ -119,10 +120,11 @@ class shopping_cart {
         if (isset($cachedrawdata['items'][$cacheitemkey])) {
             return [
                 'success' => CARTPARAM_ALREADYINCART,
+                'itemname' => '',
             ];
         }
 
-        // This gets the data from the componennt and also triggers reservation.
+        // This gets the data from the component and also triggers reservation.
         // If reservation is not successful, we have to react here.
         $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
         if (isset($cartitemarray['cartitem'])) {
@@ -145,6 +147,7 @@ class shopping_cart {
                                 if ($currentcostcenter != $costcenterincart) {
                                     return [
                                         'success' => CARTPARAM_COSTCENTER,
+                                        'itemname' => $itemdata['itemname'] ?? '',
                                     ];
                                 }
                                 break;
@@ -155,10 +158,12 @@ class shopping_cart {
             }
             return [
                 'success' => CARTPARAM_SUCCESS,
+                'itemname' => $itemdata['itemname'] ?? '',
             ];
         } else {
             return [
-                'success' => CARTPARAM_CARTISFULL,
+                'success' => CARTPARAM_ERROR,
+                'itemname' => $itemdata['itemname'] ?? '',
             ];
         }
     }
@@ -224,7 +229,7 @@ class shopping_cart {
 
         switch ($cartparam) {
             case CARTPARAM_SUCCESS:
-                // This gets the data from the componennt and also triggers reservation.
+                // This gets the data from the component and also triggers reservation.
                 // If reservation is not successful, we have to react here.
                 $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
                 if (isset($cartitemarray['cartitem'])) {
@@ -238,7 +243,7 @@ class shopping_cart {
                     $cache->set($cachekey, $cachedrawdata);
 
                     $itemdata['expirationdate'] = $expirationtimestamp;
-                    $itemdata['success'] = 1;
+                    $itemdata['success'] = CARTPARAM_SUCCESS;
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
 
                     // Add or reschedule all delete_item_tasks for all the items in the cart.

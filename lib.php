@@ -47,6 +47,7 @@ define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8); // Credits removed an
 define('PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 
 // Cart success params.
+define('CARTPARAM_ERROR', -1); // General error.
 define('CARTPARAM_ALREADYINCART', 0); // Already in cart.
 define('CARTPARAM_SUCCESS', 1); // Item added to cart successfully.
 define('CARTPARAM_CARTISFULL', 2); // Item could not be added because cart is full.

@@ -148,6 +148,7 @@ $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
 
+$string['alreadyincart'] = 'Das gewählte Item ist bereits im Warenkorb.';
 $string['cartisfull'] = 'Ihr Warenkorb ist voll.';
 $string['cartisempty'] = 'Ihr Warenkorb ist leer.';
 $string['yourcart'] = 'Ihr Warenkorb';
