@@ -46,6 +46,12 @@ define('PAYMENT_METHOD_CASHIER_MANUAL', 7); // If someone paid, but there was an
 define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8); // Credits removed and paid back to user by (bank) transfer.
 define('PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 
+// Cart success params.
+define('CARTPARAM_ALREADYINCART', 0); // Already in cart.
+define('CARTPARAM_SUCCESS', 1); // Item added to cart successfully.
+define('CARTPARAM_CARTISFULL', 2); // Item could not be added because cart is full.
+define('CARTPARAM_COSTCENTER', 3); // Item could not be added because of different cost center.
+
 /**
  * Adds module specific settings to the settings block
  *

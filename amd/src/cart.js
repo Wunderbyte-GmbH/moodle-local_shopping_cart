@@ -369,15 +369,6 @@ export const addItem = (itemid, component, area) => {
                     reinit(userid);
                     return;
                 case 2:
-                    getString('error:costcentersdonotmatch', 'local_shopping_cart').then(message => {
-                        showNotification(message, 'danger');
-                        return;
-                    }).catch(e => {
-                        // eslint-disable-next-line no-console
-                        console.log(e);
-                    });
-
-                    // Show a modal too.
                     getStrings([
                         {key: 'error:costcentertitle', component: 'local_shopping_cart'},
                         {key: 'error:costcentersdonotmatch', component: 'local_shopping_cart'},

@@ -74,6 +74,110 @@ class shopping_cart {
      *
      * @return array
      */
+    public static function allow_add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
+
+        global $USER;
+
+        // If there is no user specified, we determine it automatically.
+        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
+            $context = context_system::instance();
+            if (has_capability('local/shopping_cart:cashier', $context)) {
+                $userid = self::return_buy_for_userid();
+            }
+        } else {
+            // As we are not on cashier anymore, we delete buy for user.
+            self::buy_for_user(0);
+        }
+        if ($userid < 1) {
+            $userid = $USER->id;
+        }
+
+        // Check the cache for items in cart.
+        $maxitems = get_config('local_shopping_cart', 'maxitems');
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $cachedrawdata = $cache->get($cachekey);
+        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
+
+        // Check if maxitems is exceeded.
+        if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
+            return [
+                'success' => CARTPARAM_CARTISFULL,
+            ];
+        }
+
+        // If we have nothing in our cart and we are not about...
+        // ... to add the booking fee...
+        // ... we add the booking fee.
+        if (empty($cachedrawdata['items'])
+            && $area != 'bookingfee') {
+            $cachedrawdata = $cache->get($cachekey);
+        }
+
+        // Todo: Admin setting could allow for more than one item. Right now, only one.
+        if (isset($cachedrawdata['items'][$cacheitemkey])) {
+            return [
+                'success' => CARTPARAM_ALREADYINCART,
+            ];
+        }
+
+        // This gets the data from the componennt and also triggers reservation.
+        // If reservation is not successful, we have to react here.
+        $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
+        if (isset($cartitemarray['cartitem'])) {
+            // Get the itemdata as array.
+            $itemdata = $cartitemarray['cartitem']->as_array();
+
+            // If the setting 'samecostcenter' ist turned on...
+            // ... then we do not allow to add items with different cost centers.
+            if (get_config('local_shopping_cart', 'samecostcenter')) {
+                if ($itemdata['area'] != 'bookingfee') {
+                    $currentcostcenter = $itemdata['costcenter'] ?? '';
+                    $costcenterincart = '';
+                    if (!empty($cachedrawdata['items'])) {
+                        foreach ($cachedrawdata['items'] as $itemincart) {
+                            if ($itemincart['area'] == 'bookingfee') {
+                                // We only need to check for "real" items, booking fee does not apply.
+                                continue;
+                            } else {
+                                $costcenterincart = $itemincart['costcenter'] ?? '';
+                                if ($currentcostcenter != $costcenterincart) {
+                                    return [
+                                        'success' => CARTPARAM_COSTCENTER,
+                                    ];
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return [
+                'success' => CARTPARAM_SUCCESS,
+            ];
+        } else {
+            return [
+                'success' => CARTPARAM_CARTISFULL,
+            ];
+        }
+    }
+
+    /**
+     *
+     * Add Item to cart.
+     * - First we check if we are below maxitems from the shopping_cart isde.
+     * - Then we check if the item is already in the cart and can be add it again the shopping_cart side.
+     * - Now we check if the component has the product still available
+     * - For any fail, we return success 0.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     *
+     * @return array
+     */
     public static function add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
         global $USER;
@@ -95,20 +199,11 @@ class shopping_cart {
             $userid = $USER->id;
         }
 
-        $success = true;
-
         // Check the cache for items in cart.
-        $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
-
         $cachedrawdata = $cache->get($cachekey);
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
-
-        // Check if maxitems is exceeded.
-        if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
-            $success = false;
-        }
 
         // If we have nothing in our cart and we are not about...
         // ... to add the booking fee...
@@ -122,91 +217,76 @@ class shopping_cart {
             $cachedrawdata = $cache->get($cachekey);
         }
 
-        // Todo: Admin setting could allow for more than one item. Right now, only one.
-        // Therefore: if the item is already in the cart, we just return false.
-        if ($success && isset($cachedrawdata['items'][$cacheitemkey])) {
-            $success = false;
-            $itemdata = $cachedrawdata['items'][$cacheitemkey];
-        }
+        $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
+        $cartparam = $response['success'];
 
         $expirationtimestamp = self::get_expirationdate();
 
-        if ($success) {
-            // This gets the data from the componennt and also triggers reservation.
-            // If reservation is not successful, we have to react here.
-            $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
-            if (isset($cartitemarray['cartitem'])) {
-                // Get the itemdata as array.
-                $itemdata = $cartitemarray['cartitem']->as_array();
-                $itemdata['price'] = $itemdata['price'];
+        switch ($cartparam) {
+            case CARTPARAM_SUCCESS:
+                // This gets the data from the componennt and also triggers reservation.
+                // If reservation is not successful, we have to react here.
+                $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
+                if (isset($cartitemarray['cartitem'])) {
+                    // Get the itemdata as array.
+                    $itemdata = $cartitemarray['cartitem']->as_array();
+                    $itemdata['price'] = $itemdata['price'];
 
-                // If the setting 'samecostcenter' ist turned on...
-                // ... then we do not allow to add items with different cost centers.
-                if (get_config('local_shopping_cart', 'samecostcenter')) {
-                    if ($itemdata['area'] != 'bookingfee') {
-                        $currentcostcenter = $itemdata['costcenter'] ?? '';
-                        $costcenterincart = '';
-                        if (!empty($cachedrawdata['items'])) {
-                            foreach ($cachedrawdata['items'] as $itemincart) {
-                                if ($itemincart['area'] == 'bookingfee') {
-                                    // We only need to check for "real" items, booking fee does not apply.
-                                    continue;
-                                } else {
-                                    $costcenterincart = $itemincart['costcenter'] ?? '';
-                                    if ($currentcostcenter != $costcenterincart) {
-                                        $itemdata = [];
-                                        $itemdata['success'] = 2; // Important. In JS we show the modal based on success 2.
-                                        $itemdata['expirationdate'] = 0;
-                                        $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-                                        return $itemdata;
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    // Then we set item in Cache.
+                    $cachedrawdata['items'][$cacheitemkey] = $itemdata;
+                    $cachedrawdata['expirationdate'] = $expirationtimestamp;
+                    $cache->set($cachekey, $cachedrawdata);
+
+                    $itemdata['expirationdate'] = $expirationtimestamp;
+                    $itemdata['success'] = 1;
+                    $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+
+                    // Add or reschedule all delete_item_tasks for all the items in the cart.
+                    self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
+
+                    $context = context_system::instance();
+                    // Trigger item deleted event.
+                    $event = item_added::create([
+                        'context' => $context,
+                        'userid' => $USER->id,
+                        'relateduserid' => $userid,
+                        'other' => [
+                            'itemid' => $itemid,
+                            'component' => $component,
+                        ],
+                    ]);
+
+                    $event->trigger();
+                } else {
+                    $itemdata = [];
+                    $itemdata['success'] = CARTPARAM_SUCCESS;
+                    $itemdata['expirationdate'] = 0;
+                    $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 }
-
-                // Then we set item in Cache.
-                $cachedrawdata['items'][$cacheitemkey] = $itemdata;
-                $cachedrawdata['expirationdate'] = $expirationtimestamp;
-                $cache->set($cachekey, $cachedrawdata);
-
-                $itemdata['expirationdate'] = $expirationtimestamp;
-                $itemdata['success'] = 1;
-                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-
-                // Add or reschedule all delete_item_tasks for all the items in the cart.
-                self::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
-
-                $context = context_system::instance();
-                // Trigger item deleted event.
-                $event = item_added::create([
-                    'context' => $context,
-                    'userid' => $USER->id,
-                    'relateduserid' => $userid,
-                    'other' => [
-                        'itemid' => $itemid,
-                        'component' => $component,
-                    ],
-                ]);
-
-                $event->trigger();
-            } else {
+                break;
+            case CARTPARAM_COSTCENTER:
                 $itemdata = [];
-                $itemdata['success'] = 0;
+                $itemdata['success'] = CARTPARAM_COSTCENTER; // Important. In JS we show the modal based on success 2.
                 $itemdata['expirationdate'] = 0;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-            }
-        } else {
-            // This case means that we have the item already in the cart.
-            // Normally, this should not happen, because of JS, but it might occure when a user is...
-            // Logged in on two different devices.
-            $itemdata['success'] = 2;
-            $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-            $itemdata['expirationdate'] = $expirationtimestamp;
+                return $itemdata;
+                break;
+            case CARTPARAM_ALREADYINCART:
+                // This case means that we have the item already in the cart.
+                // Normally, this should not happen, because of JS, but it might occure when a user is...
+                // Logged in on two different devices.
+                $itemdata = [];
+                $itemdata['success'] = CARTPARAM_ALREADYINCART;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                break;
+            case CARTPARAM_CARTISFULL:
+            default:
+                $itemdata['success'] = CARTPARAM_CARTISFULL;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                break;
         }
-
         return $itemdata;
     }
 
