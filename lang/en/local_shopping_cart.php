@@ -116,7 +116,7 @@ $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:capabilitymissing'] = 'ERROR: You do not have a necessary capability.';
 $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier capability needed to create receipts.';
 $string['error:costcentertitle'] = 'Different cost center';
-$string['error:costcentersdonotmatch'] = 'You already have an item with a <b>different cost center</b> in your cart.
+$string['error:costcentersdonotmatch'] = 'You already have an item with a different cost center in your cart.
 You have to buy this item separately!';
 $string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need
 to set up a payment gateway.';

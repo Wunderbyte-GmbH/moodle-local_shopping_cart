@@ -471,13 +471,6 @@ export function addItemShowNotification(data) {
 
     switch (data.success) {
         case CARTPARAM_ALREADYINCART:
-            getString('alreadyincart', 'local_shopping_cart').then(message => {
-                showNotification(message, 'danger');
-                return;
-            }).catch(e => {
-                // eslint-disable-next-line no-console
-                console.log(e);
-            });
             return;
         case CARTPARAM_SUCCESS:
             getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
