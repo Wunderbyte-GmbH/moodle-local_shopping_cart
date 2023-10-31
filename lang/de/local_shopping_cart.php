@@ -119,8 +119,7 @@ $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['error:capabilitymissing'] = 'FEHLER: Ihnen fehlt eine erforderliche Berechtigung.';
 $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
 $string['error:costcentertitle'] = 'Andere Kostenstelle';
-$string['error:costcentersdonotmatch'] = 'Sie haben bereits ein Item mit einer anderen Kostenstelle im Warenkorb.
-Bitte kaufen Sie dieses Item separat!';
+$string['error:costcentersdonotmatch'] = 'Diese Kurse können nicht gemeinsam gebucht werden.';
 $string['error:gatewaymissingornotsupported'] = 'Sie haben entweder noch kein Zahlungs-Gateway eingerichtet
 oder das eingerichtete Zahlungsgateway wird nicht unterstützt.';
 $string['error:generalcarterror'] = 'Sie können dieses Item aufgrund eines Fehlers nicht in den Warenkorb legen.
