@@ -156,16 +156,11 @@ class shopping_cart {
                     }
                 }
             }
-            return [
-                'success' => CARTPARAM_SUCCESS,
-                'itemname' => $itemdata['itemname'] ?? '',
-            ];
-        } else {
-            return [
-                'success' => CARTPARAM_ERROR,
-                'itemname' => $itemdata['itemname'] ?? '',
-            ];
         }
+        return [
+            'success' => CARTPARAM_SUCCESS,
+            'itemname' => $itemdata['itemname'] ?? '',
+        ];
     }
 
     /**
@@ -813,8 +808,7 @@ class shopping_cart {
         }
 
         // Check if we have items for this user.
-        if (!isset($data['items'])
-                || count($data['items']) < 1) {
+        if (empty($data['items'])) {
             return [
                     'status' => 0,
                     'error' => get_string('noitemsincart', 'local_shopping_cart'),
