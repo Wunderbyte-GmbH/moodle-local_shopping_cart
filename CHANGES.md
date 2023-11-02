@@ -1,3 +1,6 @@
+## Version 0.6.4 (2023110200)
+* New feature: Introduce a new setting to avoid booking of items with different cost centers.
+
 ## Version 0.6.3 (2023102000)
 * Improvement: Lots of new behat tests, fixes for GitHub actions etc.
 
