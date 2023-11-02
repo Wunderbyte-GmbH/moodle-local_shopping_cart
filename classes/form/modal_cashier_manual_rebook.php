@@ -25,7 +25,6 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 use context;
 use context_system;
 use core_form\dynamic_form;
-use local_shopping_cart\event\payment_rebooked;
 use moodle_url;
 use stdClass;
 
@@ -54,6 +53,17 @@ class modal_cashier_manual_rebook extends dynamic_form {
             get_string('annotation', 'local_shopping_cart'),
             get_string('annotation_rebook_desc', 'local_shopping_cart')
         );
+
+        $paidbyoptions = [
+            "VC" => get_string('paidby:visa', 'local_shopping_cart'),
+            "MC" => get_string('paidby:mastercard', 'local_shopping_cart'),
+            "EP" => get_string('paidby:eps', 'local_shopping_cart'),
+            "DC" => get_string('paidby:dinersclub', 'local_shopping_cart'),
+            "AX" => get_string('paidby:americanexpress', 'local_shopping_cart'),
+            "UK" => get_string('paidby:unknown', 'local_shopping_cart'),
+        ];
+
+        $mform->addElement('select', 'paidby', get_string('paidby', 'local_shopping_cart'), $paidbyoptions);
     }
 
     /**

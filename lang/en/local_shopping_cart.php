@@ -353,6 +353,14 @@ $string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
 $string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';
 $string['paymentmethodcashier:manual'] = 'Manually rebooked';
 
+$string['paidby'] = 'Paid by';
+$string['paidby:visa'] = 'VISA';
+$string['paidby:mastercard'] = 'Mastercard';
+$string['paidby:eps'] = 'EPS';
+$string['paidby:dinersclub'] = 'Diners Club';
+$string['paidby:americanexpress'] = 'American Express';
+$string['paidby:unknown'] = 'Unknown';
+
 // Payment status.
 $string['paymentpending'] = 'Pending';
 $string['paymentaborted'] = 'Aborted';
