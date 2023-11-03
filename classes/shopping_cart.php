@@ -744,11 +744,10 @@ class shopping_cart {
      * @param int $paymenttype
      * @param array $datafromhistory
      * @param string $annotation - empty on default
-     * @param string $paidby - "UK" is default, which means "unknown"
      * @return array
      */
     public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null,
-        string $annotation = '', string $paidby = 'UK') {
+        string $annotation = '') {
         global $USER;
 
         $identifier = 0;
@@ -948,7 +947,6 @@ class shopping_cart {
                         'userid' => $userid, // The user for whom the rebooking was done.
                         'identifier' => $identifier,
                         'annotation' => $annotation, // The annotation. Might also contain an OrderID.
-                        'paidby' => $paidby, // E.g. "VC" for Visa or "MC" for Mastercard.
                         'usermodified' => $USER->id, // The cashier.
                     ],
                 ]);

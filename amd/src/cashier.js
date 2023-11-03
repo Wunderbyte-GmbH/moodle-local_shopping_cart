@@ -61,7 +61,7 @@ export const init = (userid = 0) => {
     }
 };
 
-export const confirmPayment = (userid, paymenttype, annotation = '', paidby = 'UK') => {
+export const confirmPayment = (userid, paymenttype, annotation = '') => {
 
     Ajax.call([{
         methodname: "local_shopping_cart_confirm_cash_payment",
@@ -69,7 +69,6 @@ export const confirmPayment = (userid, paymenttype, annotation = '', paidby = 'U
             'userid': userid,
             'paymenttype': paymenttype,
             'annotation': annotation,
-            'paidby': paidby,
         },
         done: function(data) {
             if (data.status === 1) {
@@ -243,7 +242,8 @@ export function rebookOrderidModal(userid, identifier) {
         // eslint-disable-next-line no-console
         console.log('rebookOrderidModal response: ', response);
 
-        confirmPayment(userid, 7, response.annotation, response.paidby);
+        // We just add the paidby code to the annotation.
+        confirmPayment(userid, 7, `${response.annotation} ${response.paidby}`);
     });
 
     // Show the form.

@@ -58,7 +58,6 @@ class confirm_cash_payment extends external_api {
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
             'paymenttype' => new external_value(PARAM_INT, 'paymenttype', VALUE_DEFAULT, ''),
             'annotation' => new external_value(PARAM_RAW, 'annotation', VALUE_DEFAULT, ''),
-            'paidby' => new external_value(PARAM_RAW, 'paidby', VALUE_DEFAULT, 'UK'),
         ]);
     }
 
@@ -69,13 +68,12 @@ class confirm_cash_payment extends external_api {
      * @param string $annotation
      * @return array
      */
-    public static function execute(int $userid, string $paymenttype, string $annotation = '', string $paidby = 'UK'): array {
+    public static function execute(int $userid, string $paymenttype, string $annotation = ''): array {
         require_login();
         $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
             'paymenttype' => $paymenttype,
             'annotation' => $annotation,
-            'paidby' => $paidby,
         ]);
 
         $context = context_system::instance();
@@ -83,7 +81,7 @@ class confirm_cash_payment extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
         return shopping_cart::confirm_payment($params['userid'], $params['paymenttype'], null,
-            $params['annotation'], $params['paidby']);
+            $params['annotation']);
     }
 
     /**
