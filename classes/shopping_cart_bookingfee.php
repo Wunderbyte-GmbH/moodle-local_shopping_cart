@@ -131,7 +131,7 @@ class shopping_cart_bookingfee {
      *
      * @param string $component
      * @param string $area
-     * @return boolean
+     * @return bool
      */
     public static function is_fee(string $component, string $area):bool {
 

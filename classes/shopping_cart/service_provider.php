@@ -196,8 +196,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * Callback to check if adding item to cart is allowed.
      *
      * @param string $area
-     * @param integer $itemid
-     * @param integer $userid
+     * @param int $itemid
+     * @param int $userid
      * @return array
      */
     public static function allow_add_item_to_cart(string $area, int $itemid, int $userid = 0): array {
