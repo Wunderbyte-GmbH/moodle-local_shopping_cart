@@ -105,4 +105,15 @@ interface service_provider {
      * @return bool true if cancelling is allowed, else false
      */
     public static function allowed_to_cancel(string $area, int $itemid): bool;
+
+    /**
+     * Callback to check if adding item to cart is allowed.
+     *
+     * @param string $area
+     * @param integer $itemid
+     * @param integer $userid
+     * @return array
+     */
+    public static function allow_add_item_to_cart(string $area, int $itemid,
+        int $userid = 0): array;
 }

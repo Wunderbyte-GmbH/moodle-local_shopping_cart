@@ -200,7 +200,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @param integer $userid
      * @return array
      */
-    private static function allow_add_item_to_cart(string $area, int $itemid, int $userid = 0): array {
+    public static function allow_add_item_to_cart(string $area, int $itemid, int $userid = 0): array {
 
         // Shopping cart items like booking fee are currently always allowed.
         return [
