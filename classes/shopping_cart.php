@@ -72,95 +72,11 @@ class shopping_cart {
      * @param int $itemid
      * @param int $userid
      *
-     * @return array
+     * @return mixed
      */
-    public static function allow_add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
-
-        global $USER;
-
-        // If there is no user specified, we determine it automatically.
-        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
-            $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = self::return_buy_for_userid();
-            }
-        } else {
-            // As we are not on cashier anymore, we delete buy for user.
-            self::buy_for_user(0);
-        }
-        if ($userid < 1) {
-            $userid = $USER->id;
-        }
-
-        // Check the cache for items in cart.
-        $maxitems = get_config('local_shopping_cart', 'maxitems');
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-
-        $cachedrawdata = $cache->get($cachekey);
-        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
-
-        // Check if maxitems is exceeded.
-        if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
-            return [
-                'success' => CARTPARAM_CARTISFULL,
-                'itemname' => '',
-            ];
-        }
-
-        // If we have nothing in our cart and we are not about...
-        // ... to add the booking fee...
-        // ... we add the booking fee.
-        if (empty($cachedrawdata['items'])
-            && $area != 'bookingfee') {
-            $cachedrawdata = $cache->get($cachekey);
-        }
-
-        // Todo: Admin setting could allow for more than one item. Right now, only one.
-        if (isset($cachedrawdata['items'][$cacheitemkey])) {
-            return [
-                'success' => CARTPARAM_ALREADYINCART,
-                'itemname' => '',
-            ];
-        }
-
-        // This gets the data from the component and also triggers reservation.
-        // If reservation is not successful, we have to react here.
-        $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
-        if (isset($cartitemarray['cartitem'])) {
-            // Get the itemdata as array.
-            $itemdata = $cartitemarray['cartitem']->as_array();
-
-            // If the setting 'samecostcenter' ist turned on...
-            // ... then we do not allow to add items with different cost centers.
-            if (get_config('local_shopping_cart', 'samecostcenter')) {
-                if ($itemdata['area'] != 'bookingfee') {
-                    $currentcostcenter = $itemdata['costcenter'] ?? '';
-                    $costcenterincart = '';
-                    if (!empty($cachedrawdata['items'])) {
-                        foreach ($cachedrawdata['items'] as $itemincart) {
-                            if ($itemincart['area'] == 'bookingfee') {
-                                // We only need to check for "real" items, booking fee does not apply.
-                                continue;
-                            } else {
-                                $costcenterincart = $itemincart['costcenter'] ?? '';
-                                if ($currentcostcenter != $costcenterincart) {
-                                    return [
-                                        'success' => CARTPARAM_COSTCENTER,
-                                        'itemname' => $itemdata['itemname'] ?? '',
-                                    ];
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return [
-            'success' => CARTPARAM_SUCCESS,
-            'itemname' => $itemdata['itemname'] ?? '',
-        ];
+    public static function allow_add_item_to_cart(string $component, string $area, int $itemid, int $userid): mixed {
+        $providerclass = static::get_service_provider_classname($component);
+        return component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
     }
 
     /**

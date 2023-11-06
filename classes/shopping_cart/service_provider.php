@@ -191,4 +191,21 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         }
         return $allowedtocancel;
     }
+
+    /**
+     * Callback to check if adding item to cart is allowed.
+     *
+     * @param string $area
+     * @param integer $itemid
+     * @param integer $userid
+     * @return array
+     */
+    private static function allow_add_item_to_cart(string $area, int $itemid, int $userid = 0): array {
+
+        // Shopping cart items like booking fee are currently always allowed.
+        return [
+            'success' => CARTPARAM_SUCCESS,
+            'itemname' => '', // Not needed here.
+        ];
+    }
 }
