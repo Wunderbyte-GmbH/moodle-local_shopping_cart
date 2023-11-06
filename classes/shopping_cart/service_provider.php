@@ -202,10 +202,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      */
     public static function allow_add_item_to_cart(string $area, int $itemid, int $userid = 0): array {
 
-        // Shopping cart items like booking fee are currently always allowed.
-        return [
-            'success' => CARTPARAM_SUCCESS,
-            'itemname' => '', // Not needed here.
-        ];
+        $data = self::load_cartitem($area, $itemid, $userid);
+        /** @var cartitem $cartitem */
+        $cartitem = $data['cartitem'];
+        return $cartitem->as_array() ?? [];
     }
 }
