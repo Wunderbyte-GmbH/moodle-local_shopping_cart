@@ -317,6 +317,18 @@ export const deleteItem = (itemid, component, area, userid) => {
             });
 
             reinit(userid);
+
+            import('local_wunderbyte_table/reload')
+                // eslint-disable-next-line promise/always-return
+                .then(wbt => {
+                    wbt.reloadAllTables();
+                })
+                .catch(err => {
+                    // Handle any errors, including if the module doesn't exist
+                    // eslint-disable-next-line no-console
+                    console.log(err);
+            });
+
         },
         fail: function() {
 
