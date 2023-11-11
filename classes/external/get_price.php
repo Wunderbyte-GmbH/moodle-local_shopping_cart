@@ -120,18 +120,17 @@ class get_price extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-                        'price' => new external_value(PARAM_FLOAT, 'Total price'),
-                        'price_net' => new external_value(PARAM_FLOAT, 'Total price net amount', false),
-                        'count' => new external_value(PARAM_INT, 'Number of items'),
-                        'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled'),
-                        'credit' => new external_value(PARAM_FLOAT, 'Credit'),
-                        'currency' => new external_value(PARAM_RAW, 'Currency'),
-                        'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits'),
-                        'initialtotal_net' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits net amount',
-                                false),
-                        'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction'),
-                        'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount'),
-                        'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
+                        'price' => new external_value(PARAM_FLOAT, 'Total price', VALUE_REQUIRED),
+                        'price_net' => new external_value(PARAM_FLOAT, 'Total price net amount', VALUE_REQUIRED),
+                        'count' => new external_value(PARAM_INT, 'Number of items', VALUE_REQUIRED),
+                        'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled', VALUE_REQUIRED),
+                        'credit' => new external_value(PARAM_FLOAT, 'Credit', VALUE_REQUIRED),
+                        'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_REQUIRED),
+                        'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits', VALUE_REQUIRED),
+                        'initialtotal_net' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits net amount', VALUE_REQUIRED),
+                        'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
+                        'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
+                        'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                 ]
         );
