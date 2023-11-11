@@ -76,7 +76,7 @@ class get_quota_consumed extends external_api {
      * @return array
      */
     public static function execute(string $component, string $area, int $itemid, int $userid, int $historyid): array {
-        $params = self::validate_parameters(self::execute_parameters(), [
+        $params = external_api::validate_parameters(self::execute_parameters(), [
             'component' => $component,
             'area' => $area,
             'itemid' => $itemid,

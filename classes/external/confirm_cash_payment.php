@@ -70,7 +70,7 @@ class confirm_cash_payment extends external_api {
      */
     public static function execute(int $userid, string $paymenttype, string $annotation = ''): array {
         require_login();
-        $params = self::validate_parameters(self::execute_parameters(), [
+        $params = external_api::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
             'paymenttype' => $paymenttype,
             'annotation' => $annotation,

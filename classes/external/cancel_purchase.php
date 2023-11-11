@@ -83,7 +83,7 @@ class cancel_purchase extends external_api {
             int $userid,
             int $historyid,
             float $credit): array {
-        $params = self::validate_parameters(self::execute_parameters(), [
+        $params = external_api::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
             'area' => $area,
             'itemid' => $itemid,
