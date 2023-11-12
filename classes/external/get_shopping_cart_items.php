@@ -69,7 +69,7 @@ class get_shopping_cart_items extends external_api {
     public static function execute($userid) {
         global $USER;
 
-        $params = external_api::validate_parameters(self::execute_parameters(), [
+        $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
         ]);
 

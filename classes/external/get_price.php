@@ -70,7 +70,7 @@ class get_price extends external_api {
      * @return array
      */
     public static function execute(int $userid, int $usecredit): array {
-        $params = external_api::validate_parameters(self::execute_parameters(), [
+        $params = self::validate_parameters(self::execute_parameters(), [
                 'userid' => $userid,
                 'usecredit' => $usecredit,
         ]);

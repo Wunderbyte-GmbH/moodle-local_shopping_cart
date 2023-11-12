@@ -69,7 +69,7 @@ class credit_paid_back extends external_api {
      */
     public static function execute(int $userid, int $method) {
 
-        $params = external_api::validate_parameters(self::execute_parameters(), [
+        $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
             'method' => $method,
         ]);
