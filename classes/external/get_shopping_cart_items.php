@@ -100,7 +100,7 @@ class get_shopping_cart_items extends external_api {
                 [
                         'count' => new external_value(PARAM_INT, 'Number of items', VALUE_REQUIRED),
                         'price' => new external_value(PARAM_FLOAT, 'Total price', VALUE_REQUIRED),
-                        'price_net' => new external_value(PARAM_FLOAT, 'Total net price', VALUE_REQUIRED),
+                        'price_net' => new external_value(PARAM_FLOAT, 'Total net price', VALUE_DEFAULT, 0),
                         'credit' => new external_value(PARAM_FLOAT, 'Credit', VALUE_REQUIRED),
                         'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_REQUIRED),
                         'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled', VALUE_REQUIRED),
@@ -108,7 +108,7 @@ class get_shopping_cart_items extends external_api {
                         'initialtotal_net' => new external_value(
                             PARAM_FLOAT,
                             'Initial price before deduced credits net amount',
-                            VALUE_REQUIRED),
+                            VALUE_DEFAULT, 0),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reducation', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not'),
