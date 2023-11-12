@@ -127,7 +127,10 @@ class get_price extends external_api {
                         'credit' => new external_value(PARAM_FLOAT, 'Credit', VALUE_REQUIRED),
                         'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_REQUIRED),
                         'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits', VALUE_REQUIRED),
-                        'initialtotal_net' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits net amount', VALUE_REQUIRED),
+                        'initialtotal_net' => new external_value(
+                            PARAM_FLOAT,
+                            'Initial price before deduced credits net amount',
+                            VALUE_REQUIRED),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
