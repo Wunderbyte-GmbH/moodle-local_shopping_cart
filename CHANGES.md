@@ -1,3 +1,12 @@
+## Version 0.6.5 (2023111300)
+* New feature: Add payment type to manual rebookings (will be added to annotation).
+* Improvement: On removing an item from the cart, we reload wb tables, if there are any.
+* Improvement: Code quality: Always use int and bool - never integer or boolean.
+* Improvement: We hide the checkout button on checkout.php if the cart is empty.
+* Bugfix: Fix namespaces.
+* Bugfix: Fix keys that were wrongly required in webservices.
+* Bugfix: Fix selector for items in cart, so disabling of addtocart button works correctly.
+
 ## Version 0.6.4 (2023110200)
 * New feature: Introduce a new setting to avoid booking of items with different cost centers.
 
@@ -8,7 +17,7 @@
 * Bugfix: Fix ERPNext invoice creation.
 * Bugfix: Decide if we want to use credit when cached value already got lost.
 * Bugfix: We cannot use singleton service in shopping cart. Use core_user::get_user instead.
-*
+
 ## Version 0.6.1 (2023100900)
 * New feature: Credits manager now supports individual credits corrections.
 * Improvement: Add Event to see when new entries are created in shopping cart history (and a payment process is started).
