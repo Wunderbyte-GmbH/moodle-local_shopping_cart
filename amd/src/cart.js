@@ -748,7 +748,7 @@ function toggleActiveButtonState(button = null) {
         area = addtocartbutton.dataset.area;
         itemid = addtocartbutton.dataset.itemid;
 
-        const cartitem = shoppingcart.querySelector('[id^="item-' + component + '-' + area + '-' + itemid + '"]');
+        const cartitem = shoppingcart.querySelector('[id="item-' + component + '-' + area + '-' + itemid + '"]');
 
         if (cartitem) {
 
