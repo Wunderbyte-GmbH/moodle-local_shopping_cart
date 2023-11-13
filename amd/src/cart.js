@@ -428,12 +428,22 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             }));
 
             const checkoutButton = document.querySelector(SELECTORS.CHECKOUTBUTTON);
+            const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
             if (data.count == 0) {
-                checkoutButton.classList.add("disabled");
+                if (checkoutButton) {
+                    checkoutButton.classList.add("disabled");
+                }
+                if (paymentbutton) {
+                    paymentbutton.style.display = "none";
+                }
             } else {
-                checkoutButton.classList.remove("disabled");
+                if (checkoutButton) {
+                    checkoutButton.classList.remove("disabled");
+                }
+                if (paymentbutton) {
+                    paymentbutton.style.display = "inline";
+                }
             }
-
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
