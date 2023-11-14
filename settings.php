@@ -201,6 +201,17 @@ if ($hassiteconfig) {
             )
     );
 
+    $settings->add(
+        new admin_setting_configtextarea(
+                $componentname . '/receipthtml',
+                get_string('receipthtml', $componentname),
+                get_string('receipthtml:description', $componentname),
+                null,
+                PARAM_RAW
+        )
+    );
+
+
     $fileid = 'local_shopping_cart_receiptimage';
     $name = 'local_shopping_cart/receiptimage';
     $title = get_string('receiptimage', 'local_shopping_cart');
