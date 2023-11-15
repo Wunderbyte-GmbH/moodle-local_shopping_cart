@@ -368,6 +368,7 @@ $string['paymentsuccess'] = 'Success';
 $string['paymentcanceled'] = 'Canceled';
 
 // Receipt.
+$string['receipt'] = 'Receipt';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[pos]], [[name]] between [[items]] and [[/items]].

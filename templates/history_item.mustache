@@ -55,7 +55,8 @@
       "canceluntilstring":"2022-11-23",
       "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
       "buttonclass":"disabled hidden",
-      "paymentstring":"in bar an der Kassa"
+      "paymentstring":"in bar an der Kassa",
+      "receipturl":"https://www.wunderbyte.at/"
    }
 }}
 <li class="list-group-item flex-column align-items-start text-dark">
@@ -87,6 +88,11 @@
             {{canceluntilalert}}
         </span>
     </p>
+    {{^canceled}}
+    <a href="{{{receipturl}}}" target="_blank" class="shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left">
+        <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} receipt, local_shopping_cart {{/str}}
+    </a>
+    {{/canceled}}
     <button type="button" class="shopping_cart_history_cancel_button btn btn-sm pull-right {{buttonclass}}"
         data-historyid="{{id}}"
         data-componentname="{{componentname}}"
@@ -102,7 +108,7 @@
             {{#str}} canceled, local_shopping_cart {{/str}}
         {{/canceled}}
         {{^canceled}}
-            {{#str}} cancelpurchase, local_shopping_cart {{/str}}
+            <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;{{#str}} cancelpurchase, local_shopping_cart {{/str}}
         {{/canceled}}
     </button>
 </li>

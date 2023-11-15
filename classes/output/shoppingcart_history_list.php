@@ -28,6 +28,7 @@ namespace local_shopping_cart\output;
 use context_system;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use moodle_url;
 use renderable;
 use renderer_base;
 use stdClass;
@@ -113,6 +114,12 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
+
+            // Receipt URL for the item.
+            $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", [
+                'id' => $item->identifier,
+                'userid' => $item->userid,
+            ]);
 
             shopping_cart::add_quota_consumed_to_item($item, $userid);
             self::add_round_config($item);

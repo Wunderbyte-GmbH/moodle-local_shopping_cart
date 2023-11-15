@@ -360,6 +360,7 @@ $string['paymentsuccess'] = 'Erfolg';
 $string['paymentcanceled'] = 'Storno';
 
 // Receipt.
+$string['receipt'] = 'Buchungsbestätigung';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
