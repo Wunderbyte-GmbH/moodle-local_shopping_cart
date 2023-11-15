@@ -481,6 +481,35 @@ class shopping_cart_history {
     }
 
     /**
+     * Return ledger data from DB via identifier (cash report data).
+     * This function won't return data if the payment is already aborted.
+     *
+     * @param int $identifier
+     * @return array
+     */
+    public static function return_data_from_ledger_via_identifier(int $identifier):array {
+        global $DB;
+        if ($data = $DB->get_records('local_shopping_cart_ledger', ['identifier' => $identifier])) {
+
+            // If there is an error registered, we return null.
+            foreach ($data as $record) {
+                $aborted = false;
+                // Status PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
+                if ($record->paymentstatus == 1) {
+                    $aborted = true;
+                }
+            }
+            if ($aborted) {
+                return [];
+            }
+
+            return $data;
+        }
+
+        return [];
+    }
+
+    /**
      * Sets the cart item to payment => 'aborted' if it was still pending.
      * Won't change other status.
      *

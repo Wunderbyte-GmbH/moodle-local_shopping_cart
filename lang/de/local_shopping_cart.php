@@ -363,7 +363,7 @@ $string['paymentcanceled'] = 'Storno';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
- Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[email]] und [[date]] verwenden.
+ Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]] und [[date]] verwenden.
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';

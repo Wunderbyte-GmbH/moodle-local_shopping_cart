@@ -201,12 +201,59 @@ if ($hassiteconfig) {
             )
     );
 
+    $defaultreceipthtml =
+    '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
+        <tr>
+            <td><!--<img src="url-to-your-logo"--></td>
+            <td style="text-align: right">
+                    Datum: [[date]]<br>
+                    <br>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size:1.3em; font-weight: bold;">
+                <br><br>
+                Buchungsbest&auml;tigung<br>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: left;">Transaktionsnummer: [[id]]</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: left;">[[firstname]] [[lastname]]<br>
+                    [[mail]]
+            </td>
+        </tr>
+    </table>
+    <br><br><br>
+    <table cellpadding="5" cellspacing="0" style="width: 100%;" border="0">
+        <tr style="background-color: #cccccc; padding:5px;">
+            <td style="text-align: center; width: 10%;"><b>#</b></td>
+            <td style="text-align: left; width: 60%;"><b>Name</b></td>
+            <td style="text-align: center; width: 30%;"><b>Preis</b></td>
+        </tr>
+        [[items]]
+        <tr>
+            <td style="text-align: center;">[[pos]]</td>
+            <td style="text-align: left;">[[name]]</td>
+            <td style="text-align: right;">[[price]] EUR</td>
+        </tr>
+        [[/items]]
+    </table>
+    <hr>
+    <table cellpadding="5" cellspacing="0" style="width: 100%;" border="0">
+    <tr>
+        <td colspan="3"><b>Gesamtsumme: </b></td>
+        <td style="text-align: right;"><b>[[sum]] EUR</b></td>
+    </tr>
+    </table>';
+
     $settings->add(
         new admin_setting_configtextarea(
                 $componentname . '/receipthtml',
                 get_string('receipthtml', $componentname),
                 get_string('receipthtml:description', $componentname),
-                null,
+                $defaultreceipthtml,
                 PARAM_RAW
         )
     );

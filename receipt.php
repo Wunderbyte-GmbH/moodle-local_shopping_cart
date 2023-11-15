@@ -33,6 +33,8 @@ $userid = required_param('userid', PARAM_INT);
 
 $context = context_system::instance();
 
+$commaseparator = current_language() == 'de' ? ',' : '.';
+
 // Only cashier is allowed to create receipts.
 if (has_capability('local/shopping_cart:cashier', $context)) {
 
@@ -61,7 +63,7 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
         }
     }
 
-    $items = local_shopping_cart\shopping_cart_history::return_data_via_identifier($id);
+    $items = local_shopping_cart\shopping_cart_history::return_data_from_ledger_via_identifier($id);
     $timecreated = $items[array_key_first($items)]->timecreated;
     $date = date("Y-m-d", $timecreated);
     $userid = $items[array_key_first($items)]->userid;
@@ -73,23 +75,27 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
     $cfghtml = str_replace("[[firstname]]", $userdetails->firstname, $cfghtml);
     $cfghtml = str_replace("[[lastname]]", $userdetails->lastname, $cfghtml);
     $cfghtml = str_replace("[[mail]]", $userdetails->email, $cfghtml);
+    $cfghtml = str_replace("[[id]]", $id, $cfghtml);
 
     $prehtml = explode('[[items]]', $cfghtml);
     $repeathtml = explode('[[/items]]', $prehtml[1]);
     $posthtml = $repeathtml[1];
 
     $pos = 1;
-    $sum = 0;
+    $sum = 0.0;
     $itemhtml = '';
     foreach ($items as $item) {
-        $tmp = str_replace("[[price]]", $item->price, $repeathtml[0]);
+        $tmp = str_replace("[[price]]", number_format((float) $item->price, 2, $commaseparator, ''),
+            $repeathtml[0]);
         $tmp = str_replace("[[name]]", $item->itemname, $tmp);
         $tmp = str_replace("[[pos]]", $pos, $tmp);
         $sum += $item->price;
         $itemhtml .= $tmp;
         $pos++;
     }
-    $posthtml = str_replace("[[sum]]", $sum, $posthtml);
+
+    $sumstring = number_format((float) $sum, 2, $commaseparator, '');
+    $posthtml = str_replace("[[sum]]", $sumstring, $posthtml);
     $html = '
     <style>
         h1 {
@@ -102,7 +108,6 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
         }
         tr {
             border: 1px solid #c3c3c3;
-            background-color: #ffffee;
         }
     </style>
     '. $prehtml[0] . $itemhtml . $posthtml;
@@ -111,7 +116,7 @@ if (has_capability('local/shopping_cart:cashier', $context)) {
     // Set document information.
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor($userdetails->email);
-    $pdf->SetTitle($userid.' '.$date);
+    $pdf->SetTitle('bookingreceipt_' . $id . '_' . $userid . '_' . $date);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 

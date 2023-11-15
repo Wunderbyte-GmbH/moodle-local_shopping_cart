@@ -371,7 +371,7 @@ $string['paymentcanceled'] = 'Canceled';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[pos]], [[name]] between [[items]] and [[/items]].
- Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[email]] and [[date]] (outside of [[items]] tag).
+ Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]] and [[date]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
 
 $string['receiptimage'] = 'Background image for cashiers receipt';
