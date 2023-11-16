@@ -68,6 +68,35 @@ $userid = $items[array_key_first($items)]->userid;
 global $DB;
 $userdetails = $DB->get_record('user', ['id' => $userid]);
 
+/*
+ * TODO: We'll have to add the user profile picture in the future.
+ * But it does not work with HTML. So we'll need a config setting
+ * in shopping cart and have to add it using TCPDF.
+ */
+// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+/*$picturefile = null;
+if ($usercontext = context_user::instance($userid, IGNORE_MISSING)) {
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($usercontext->id, 'user', 'icon');
+    foreach ($files as $file) {
+        $filenamewithoutextension = explode('.', $file->get_filename())[0];
+        if ($filenamewithoutextension === 'f1') {
+            $picturefile = $file;
+            // We found it, so break the loop.
+            break;
+        }
+    }
+}
+if (!empty($picturefile)) {
+    // Retrieve the image contents and encode them as base64.
+    $picturedata = $picturefile->get_content();
+    $picturebase64 = base64_encode($picturedata);
+    // Now load the HTML of the image into the profilepicture param.
+    $userpic = '<img src="data:image/image;base64,' . $picturebase64 . '" />';
+} else {
+    $userpic = '';
+}*/
+
 $cfghtml = str_replace("[[date]]", $date, $cfghtml);
 $cfghtml = str_replace("[[firstname]]", $userdetails->firstname, $cfghtml);
 $cfghtml = str_replace("[[lastname]]", $userdetails->lastname, $cfghtml);
