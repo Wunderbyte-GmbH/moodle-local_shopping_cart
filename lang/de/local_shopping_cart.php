@@ -33,6 +33,7 @@ $string['addtocart'] = 'In den Warenkorb';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
 $string['mycart'] = 'Mein Warenkorb';
+$string['optioncancelled'] = 'Buchungsoption storniert';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
 
