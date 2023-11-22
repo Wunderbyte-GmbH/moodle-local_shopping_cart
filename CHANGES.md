@@ -1,3 +1,9 @@
+## Version 0.6.6 (2023112200)
+* New feature: Create receipt PDF directly from shopping cart history list.
+* Improvement: Better receipts.
+* Improvement: Better string for internal annotation when booking option is cancelled.
+* Bugfix: Reintroduce lost textarea for receipthtml.
+
 ## Version 0.6.5 (2023111300)
 * New feature: Add payment type to manual rebookings (will be added to annotation).
 * Improvement: On removing an item from the cart, we reload wb tables, if there are any.
