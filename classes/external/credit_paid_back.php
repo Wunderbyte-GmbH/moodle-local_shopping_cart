@@ -57,7 +57,8 @@ class credit_paid_back extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            'method' => new external_value(PARAM_INT, 'method', VALUE_DEFAULT, PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
+            'method' => new external_value(PARAM_INT, 'method', VALUE_DEFAULT,
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
         ]);
     }
 

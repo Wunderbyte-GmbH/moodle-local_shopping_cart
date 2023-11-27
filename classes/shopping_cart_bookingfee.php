@@ -29,9 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
 
-define('BOOKINGFEE_ANY', 0);
-define('BOOKINGFEE_EACHPURCHASE', 1);
-define('BOOKINGFEE_ONLYONCE', 2);
+define('LOCAL_SHOPPING_CART_BOOKINGFEE_ANY', 0);
+define('LOCAL_SHOPPING_CART_BOOKINGFEE_EACHPURCHASE', 1);
+define('LOCAL_SHOPPING_CART_BOOKINGFEE_ONLYONCE', 2);
 
 /**
  * Class shopping_cart
@@ -78,9 +78,9 @@ class shopping_cart_bookingfee {
                     return false;
                 }
             }
-            $itemid = BOOKINGFEE_ONLYONCE;
+            $itemid = LOCAL_SHOPPING_CART_BOOKINGFEE_ONLYONCE;
         } else {
-            $itemid = BOOKINGFEE_EACHPURCHASE;
+            $itemid = LOCAL_SHOPPING_CART_BOOKINGFEE_EACHPURCHASE;
         }
 
         shopping_cart::add_item_to_cart('local_shopping_cart', 'bookingfee', $itemid, $userid);
@@ -95,17 +95,17 @@ class shopping_cart_bookingfee {
      * @param int $bookingfeetype
      * @return bool
      */
-    private static function user_has_paid_fee(int $userid, int $bookingfeetype = BOOKINGFEE_ANY) {
+    private static function user_has_paid_fee(int $userid, int $bookingfeetype = LOCAL_SHOPPING_CART_BOOKINGFEE_ANY) {
 
-        if ($bookingfeetype === BOOKINGFEE_ANY) {
+        if ($bookingfeetype === LOCAL_SHOPPING_CART_BOOKINGFEE_ANY) {
             // Any booking fee type. So look for all of them and merge.
             $records1 = shopping_cart_history::return_items_from_history(
-                BOOKINGFEE_ONLYONCE,
+                LOCAL_SHOPPING_CART_BOOKINGFEE_ONLYONCE,
                 'local_shopping_cart',
                 'bookingfee',
                 $userid);
             $records2 = shopping_cart_history::return_items_from_history(
-                BOOKINGFEE_EACHPURCHASE,
+                LOCAL_SHOPPING_CART_BOOKINGFEE_EACHPURCHASE,
                 'local_shopping_cart',
                 'bookingfee',
                 $userid);

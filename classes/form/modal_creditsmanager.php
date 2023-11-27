@@ -88,9 +88,9 @@ class modal_creditsmanager extends dynamic_form {
 
         $paymentmethods = [
             0 => get_string('choose...', 'local_shopping_cart'),
-            PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
                 get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
-            PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
                 get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
         ];
         $mform->addElement('select', 'creditsmanagerpaymentmethod',
@@ -167,8 +167,8 @@ class modal_creditsmanager extends dynamic_form {
             $ledgerrecord->credits = (float) $data->creditsmanagercredits;
             $ledgerrecord->currency = $currency;
             $ledgerrecord->componentname = 'local_shopping_cart';
-            $ledgerrecord->payment = PAYMENT_METHOD_CREDITS_CORRECTION;
-            $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+            $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
+            $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $ledgerrecord->usermodified = $USER->id;
             $ledgerrecord->timemodified = $now;
             $ledgerrecord->timecreated = $now;
@@ -230,7 +230,7 @@ class modal_creditsmanager extends dynamic_form {
         $ledgerrecord->currency = $currency;
         $ledgerrecord->componentname = 'local_shopping_cart';
         $ledgerrecord->payment = $data->creditsmanagerpaymentmethod;
-        $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+        $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
         $ledgerrecord->usermodified = $USER->id;
         $ledgerrecord->timemodified = $now;
         $ledgerrecord->timecreated = $now;

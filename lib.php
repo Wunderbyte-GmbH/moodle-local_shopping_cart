@@ -26,32 +26,35 @@ use local_shopping_cart\shopping_cart;
 // Define constants.
 
 // First entry in shopping cart history. This means that payment was initiated, but not successfully completed.
-define('PAYMENT_PENDING', 0);
+define('LOCAL_SHOPPING_CART_PAYMENT_PENDING', 0);
 // Pending will be switched to aborted, once we can be sure that the payment process will not be continued.
-define('PAYMENT_ABORTED', 1);
+define('LOCAL_SHOPPING_CART_PAYMENT_ABORTED', 1);
 // Payment was successful.
-define('PAYMENT_SUCCESS', 2);
+define('LOCAL_SHOPPING_CART_PAYMENT_SUCCESS', 2);
 // Canceled payments mean that items - which have already been paid for - are canceled after successful checkout.
-define('PAYMENT_CANCELED', 3);
+define('LOCAL_SHOPPING_CART_PAYMENT_CANCELED', 3);
 
 // Payment methods.
-define('PAYMENT_METHOD_ONLINE', 0); // Payment via payment gateway (which is usually connected with a credit card).
-define('PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (unknown if cash, debit or credit card).
-define('PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
-define('PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using cash.
-define('PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at cashier's office using a debit card.
-define('PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
-define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH', 6); // Credits removed and paid back to user by cash.
-define('PAYMENT_METHOD_CASHIER_MANUAL', 7); // If someone paid, but there was an error, the cashier can re-book someone manually.
-define('PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8); // Credits removed and paid back to user by (bank) transfer.
-define('PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE', 0);
+    // Payment via payment gateway (which is usually connected with a credit card).
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (unknown if cash, debit or credit card).
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using cash.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at cashier's office using a debit card.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH', 6); // Credits removed and paid back to user by cash.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL', 7);
+    // If someone paid, but there was an error, the cashier can re-book someone manually.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8);
+    // Credits removed and paid back to user by (bank) transfer.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 
 // Cart success params.
-define('CARTPARAM_ERROR', -1); // General error.
-define('CARTPARAM_ALREADYINCART', 0); // Already in cart.
-define('CARTPARAM_SUCCESS', 1); // Item added to cart successfully.
-define('CARTPARAM_CARTISFULL', 2); // Item could not be added because cart is full.
-define('CARTPARAM_COSTCENTER', 3); // Item could not be added because of different cost center.
+define('LOCAL_SHOPPING_CART_CARTPARAM_ERROR', -1); // General error.
+define('LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART', 0); // Already in cart.
+define('LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS', 1); // Item added to cart successfully.
+define('LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL', 2); // Item could not be added because cart is full.
+define('LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER', 3); // Item could not be added because of different cost center.
 
 /**
  * Adds module specific settings to the settings block

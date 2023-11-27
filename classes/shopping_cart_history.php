@@ -195,7 +195,7 @@ class shopping_cart_history {
                 WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
                 ORDER BY sch.timemodified DESC";
 
-        $records = $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => PAYMENT_SUCCESS]);
+        $records = $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]);
 
         // If the setting to show custom order IDs is turned on...
         // ... then we replace the order ID with the custom order ID.
@@ -337,7 +337,7 @@ class shopping_cart_history {
             string $area,
             string $identifier,
             string $payment,
-            int $paymentstatus = PAYMENT_PENDING,
+            int $paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_PENDING,
             int $canceluntil = null,
             int $serviceperiodstart = 0,
             int $serviceperiodend = 0,
@@ -398,7 +398,8 @@ class shopping_cart_history {
 
         // Identify record.
         if ($entryid) {
-            $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid, 'paymentstatus' => PAYMENT_SUCCESS]);
+            $record = $DB->get_record('local_shopping_cart_history', ['id' => $entryid,
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]);
         } else {
             // Only return successful payments.
             // We only take the last record.
@@ -408,7 +409,7 @@ class shopping_cart_history {
                     AND  userid=:userid
                     AND componentname=:componentname
                     AND area=:area
-                    AND paymentstatus = " . PAYMENT_SUCCESS . "
+                    AND paymentstatus = " . LOCAL_SHOPPING_CART_PAYMENT_SUCCESS . "
                     ORDER BY timemodified
                     LIMIT 1";
 
@@ -426,7 +427,7 @@ class shopping_cart_history {
 
         // Now update found record as canceled.
 
-        $record->paymentstatus = PAYMENT_CANCELED;
+        $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_CANCELED;
         $record->timemodified = time();
 
         try {
@@ -465,7 +466,7 @@ class shopping_cart_history {
             // If there is an error registered, we return null.
             foreach ($data as $record) {
                 $aborted = false;
-                // Status PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
+                // Status LOCAL_SHOPPING_CART_PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
                 if ($record->paymentstatus == 1) {
                     $aborted = true;
                 }
@@ -494,7 +495,7 @@ class shopping_cart_history {
             // If there is an error registered, we return null.
             foreach ($data as $record) {
                 $aborted = false;
-                // Status PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
+                // Status LOCAL_SHOPPING_CART_PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
                 if ($record->paymentstatus == 1) {
                     $aborted = true;
                 }
@@ -529,8 +530,8 @@ class shopping_cart_history {
         // If it's still pending, we set all items to error.
         foreach ($records as $record) {
             // If we haven't found a record where it's not pending, we check this one.
-            if ($record->paymentstatus == PAYMENT_PENDING) {
-                $record->paymentstatus = PAYMENT_ABORTED;
+            if ($record->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_PENDING) {
+                $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_ABORTED;
                 $record->timemodified = time();
                 $DB->update_record('local_shopping_cart_history', $record);
             }
@@ -555,7 +556,7 @@ class shopping_cart_history {
         foreach ($records as $record) {
 
             $identifier = $record->identifier;
-            $record->paymentstatus = PAYMENT_SUCCESS;
+            $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $record->timemodified = $now;
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
@@ -623,8 +624,8 @@ class shopping_cart_history {
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
             $data['userid'] = $userid; // The user for which the item was bought.
-            $data['payment'] = PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
-            $data['paymentstatus'] = PAYMENT_PENDING;
+            $data['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
+            $data['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_PENDING;
             $data['discount'] = $item['discount'] ?? null;
             $dataarr['items'][] = $data;
         }

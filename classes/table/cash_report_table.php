@@ -117,34 +117,34 @@ class cash_report_table extends wunderbyte_table {
         $paymentstring = '';
 
         switch ($values->payment) {
-            case PAYMENT_METHOD_ONLINE:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                 $paymentstring = get_string('paymentmethodonline', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
                 $paymentstring = get_string('paymentmethodcashier', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
                 $paymentstring = get_string('paymentmethodcredits', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
                 $paymentstring = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                 $paymentstring = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_CORRECTION:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
                 $paymentstring = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                 $paymentstring = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CREDITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
                 $paymentstring = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_DEBITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $paymentstring = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_MANUAL:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
                 $paymentstring = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
                 break;
         }
@@ -164,19 +164,19 @@ class cash_report_table extends wunderbyte_table {
         $status = '';
 
         switch ($values->paymentstatus) {
-            case PAYMENT_PENDING:
+            case LOCAL_SHOPPING_CART_PAYMENT_PENDING:
                 $status = get_string('paymentpending', 'local_shopping_cart');
                 $classes = "text-danger";
                 break;
-            case PAYMENT_ABORTED:
+            case LOCAL_SHOPPING_CART_PAYMENT_ABORTED:
                 $status = get_string('paymentaborted', 'local_shopping_cart');
                 $classes = "text-danger";
                 break;
-            case PAYMENT_SUCCESS:
+            case LOCAL_SHOPPING_CART_PAYMENT_SUCCESS:
                 $status = get_string('paymentsuccess', 'local_shopping_cart');
                 $classes = "text-success";
                 break;
-            case PAYMENT_CANCELED:
+            case LOCAL_SHOPPING_CART_PAYMENT_CANCELED:
                 $status = get_string('paymentcanceled', 'local_shopping_cart');
                 $classes = "text-danger";
                 break;

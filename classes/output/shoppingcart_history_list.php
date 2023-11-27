@@ -128,7 +128,7 @@ class shoppingcart_history_list implements renderable, templatable {
             }
 
             $item->date = date('Y-m-d', $item->timemodified);
-            $item->canceled = $item->paymentstatus == PAYMENT_CANCELED ? true : false;
+            $item->canceled = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ? true : false;
 
             // Depending on how is calling this and which status the person has, we display different cancel options.
             if (!$item->canceled) {
@@ -148,7 +148,8 @@ class shoppingcart_history_list implements renderable, templatable {
                     }
 
                 } else {
-                    $item->buttonclass = $item->paymentstatus == PAYMENT_CANCELED ? 'btn-danger disabled' : 'btn-primary';
+                    $item->buttonclass = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ?
+                        'btn-danger disabled' : 'btn-primary';
                 }
             } else {
                 // If the item is already canceled, we can just disable the button.
@@ -163,34 +164,34 @@ class shoppingcart_history_list implements renderable, templatable {
 
             // Localize the payment string.
             switch ($item->payment) {
-                case PAYMENT_METHOD_ONLINE:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                     $item->paymentstring = get_string('paymentonline', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CASHIER:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
                     $item->paymentstring = get_string('paymentcashier', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CREDITS:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
                     $item->paymentstring = get_string('paymentcredits', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
                     $item->paymentstring = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                     $item->paymentstring = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CREDITS_CORRECTION:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
                     $item->paymentstring = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CASHIER_CASH:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                     $item->paymentstring = get_string('paymentcashier:cash', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CASHIER_CREDITCARD:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
                     $item->paymentstring = get_string('paymentcashier:creditcard', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CASHIER_DEBITCARD:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
                     $item->paymentstring = get_string('paymentcashier:debitcard', 'local_shopping_cart');
                     break;
-                case PAYMENT_METHOD_CASHIER_MANUAL:
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
                     $item->paymentstring = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
                     break;
                 default:

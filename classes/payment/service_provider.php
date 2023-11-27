@@ -133,7 +133,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
             return false;
         }
 
-        shopping_cart::confirm_payment($userid, PAYMENT_METHOD_ONLINE, $data);
+        shopping_cart::confirm_payment($userid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
 
         $success = shopping_cart_history::set_success_in_db($data['items']);
         return $success;

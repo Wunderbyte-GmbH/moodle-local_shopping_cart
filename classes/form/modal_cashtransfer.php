@@ -112,8 +112,8 @@ class modal_cashtransfer extends dynamic_form {
             'local_shopping_cart',
             'cash',
             0,
-            PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH,
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
             $data->cashtransferreason,
             $data->cashtransfercashierfrom
         );
@@ -128,8 +128,8 @@ class modal_cashtransfer extends dynamic_form {
             'local_shopping_cart',
             'cash',
             0,
-            PAYMENT_METHOD_CASHIER_CASH,
-            PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH,
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
             $data->cashtransferreason,
             $data->cashtransfercashierto
         );

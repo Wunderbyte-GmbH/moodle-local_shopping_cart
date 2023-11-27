@@ -68,6 +68,6 @@ class behat_local_shopping_cart extends behat_base {
         shopping_cart::local_shopping_cart_get_cache_data($userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
         // Confirm purchase.
-        shopping_cart::confirm_payment($userid, PAYMENT_METHOD_CASHIER_CASH);
+        shopping_cart::confirm_payment($userid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH);
     }
 }

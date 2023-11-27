@@ -242,23 +242,25 @@ $table->sortable(true, 'id', SORT_DESC);
 $filtercolumns = [];
 $filtercolumns['payment'] = [
     'localizedname' => get_string('payment', 'local_shopping_cart'),
-    PAYMENT_METHOD_ONLINE => get_string('paymentmethodonline', 'local_shopping_cart'),
-    PAYMENT_METHOD_CASHIER => get_string('paymentmethodcashier', 'local_shopping_cart'),
-    PAYMENT_METHOD_CREDITS => get_string('paymentmethodcredits', 'local_shopping_cart'),
-    PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH => get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
-    PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER => get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
-    PAYMENT_METHOD_CREDITS_CORRECTION => get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
-    PAYMENT_METHOD_CASHIER_CASH => get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
-    PAYMENT_METHOD_CASHIER_CREDITCARD => get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
-    PAYMENT_METHOD_CASHIER_DEBITCARD => get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
-    PAYMENT_METHOD_CASHIER_MANUAL => get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE => get_string('paymentmethodonline', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER => get_string('paymentmethodcashier', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS => get_string('paymentmethodcredits', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
+        get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
+        get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION => get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH => get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD => get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD => get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL => get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
 ];
 $filtercolumns['paymentstatus'] = [
     'localizedname' => get_string('paymentstatus', 'local_shopping_cart'),
-    PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
-    PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
-    PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
-    PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
+    LOCAL_SHOPPING_CART_PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
 ];
 $table->define_filtercolumns($filtercolumns);
 
@@ -380,41 +382,41 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
     $dailysumsparams = [
         'startofday' => strtotime($date . ' 00:00'),
         'endofday' => strtotime($date . ' 24:00'),
-        'paymentsuccess' => PAYMENT_SUCCESS,
+        'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
     ];
 
     $dailysumsfromdb = $DB->get_records_sql($dailysumssql, $dailysumsparams);
     foreach ($dailysumsfromdb as $dailysumrecord) {
         $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
         switch ($dailysumrecord->payment) {
-            case PAYMENT_METHOD_ONLINE:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_CORRECTION:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CREDITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_DEBITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_MANUAL:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
                 break;
         }
@@ -434,7 +436,7 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
     $dailysumsparamscurrent = [
         'startofday' => strtotime($date . ' 00:00'),
         'endofday' => strtotime($date . ' 24:00'),
-        'paymentsuccess' => PAYMENT_SUCCESS,
+        'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
         'userid' => $USER->id,
     ];
 
@@ -442,34 +444,34 @@ function generate_and_output_daily_sums(string $date, string $selectorformoutput
     foreach ($dailysumsfromdbcurrentcashier as $dailysumrecord) {
         $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
         switch ($dailysumrecord->payment) {
-            case PAYMENT_METHOD_ONLINE:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CREDITS_CORRECTION:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CASH:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_CREDITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_DEBITCARD:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
                 break;
-            case PAYMENT_METHOD_CASHIER_MANUAL:
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
                 $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
                 break;
         }

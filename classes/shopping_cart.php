@@ -103,7 +103,7 @@ class shopping_cart {
         // Check if maxitems is exceeded.
         if (isset($maxitems) && isset($cachedrawdata['items']) && (count($cachedrawdata['items']) >= $maxitems)) {
             return [
-                'success' => CARTPARAM_CARTISFULL,
+                'success' => LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL,
                 'itemname' => '',
             ];
         }
@@ -119,7 +119,7 @@ class shopping_cart {
         // Todo: Admin setting could allow for more than one item. Right now, only one.
         if (isset($cachedrawdata['items'][$cacheitemkey])) {
             return [
-                'success' => CARTPARAM_ALREADYINCART,
+                'success' => LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART,
                 'itemname' => '',
             ];
         }
@@ -132,12 +132,12 @@ class shopping_cart {
 
             if (empty($cartitem)) {
                 return [
-                    'success' => CARTPARAM_ERROR,
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_ERROR,
                     'itemname' => '',
                 ];
             } else if (isset($cartitem['allow']) && $cartitem['allow']) {
                 return [
-                    'success' => CARTPARAM_SUCCESS,
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
                     'itemname' => $cartitem['itemname'] ?? '',
                 ];
             }
@@ -153,7 +153,7 @@ class shopping_cart {
                         $costcenterincart = $itemincart['costcenter'] ?? '';
                         if ($currentcostcenter != $costcenterincart) {
                             return [
-                                'success' => CARTPARAM_COSTCENTER,
+                                'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
                                 'itemname' => $cartitem['itemname'] ?? '',
                             ];
                         }
@@ -162,14 +162,14 @@ class shopping_cart {
                 }
             }
             return [
-                'success' => CARTPARAM_SUCCESS,
+                'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
                 'itemname' => $cartitem['itemname'] ?? '',
             ];
         }
 
         // Default.
         return [
-            'success' => CARTPARAM_SUCCESS,
+            'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
             'itemname' => $cartitem['itemname'] ?? '',
         ];
     }
@@ -234,7 +234,7 @@ class shopping_cart {
         $expirationtimestamp = self::get_expirationdate();
 
         switch ($cartparam) {
-            case CARTPARAM_SUCCESS:
+            case LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS:
                 // This gets the data from the component and also triggers reservation.
                 // If reservation is not successful, we have to react here.
                 $cartitemarray = self::load_cartitem($component, $area, $itemid, $userid);
@@ -249,7 +249,7 @@ class shopping_cart {
                     $cache->set($cachekey, $cachedrawdata);
 
                     $itemdata['expirationdate'] = $expirationtimestamp;
-                    $itemdata['success'] = CARTPARAM_SUCCESS;
+                    $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS;
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
 
                     // Add or reschedule all delete_item_tasks for all the items in the cart.
@@ -270,30 +270,31 @@ class shopping_cart {
                     $event->trigger();
                 } else {
                     $itemdata = [];
-                    $itemdata['success'] = CARTPARAM_SUCCESS;
+                    $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS;
                     $itemdata['expirationdate'] = 0;
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 }
                 break;
-            case CARTPARAM_COSTCENTER:
+            case LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER:
                 $itemdata = [];
-                $itemdata['success'] = CARTPARAM_COSTCENTER; // Important. In JS we show the modal based on success 2.
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER;
+                    // Important. In JS we show the modal based on success 2.
                 $itemdata['expirationdate'] = 0;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 return $itemdata;
                 break;
-            case CARTPARAM_ALREADYINCART:
+            case LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART:
                 // This case means that we have the item already in the cart.
                 // Normally, this should not happen, because of JS, but it might occure when a user is...
                 // Logged in on two different devices.
                 $itemdata = [];
-                $itemdata['success'] = CARTPARAM_ALREADYINCART;
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 break;
-            case CARTPARAM_CARTISFULL:
+            case LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL:
             default:
-                $itemdata['success'] = CARTPARAM_CARTISFULL;
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 break;
@@ -513,7 +514,8 @@ class shopping_cart {
 
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'successful_checkout', [$area, $itemid, PAYMENT_METHOD_CASHIER, $userid]);
+        return component_class_callback($providerclass, 'successful_checkout',
+            [$area, $itemid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER, $userid]);
     }
 
     /**
@@ -854,7 +856,7 @@ class shopping_cart {
             $ledgerrecord->componentname = 'local_shopping_cart';
             $ledgerrecord->identifier = $identifier;
             $ledgerrecord->payment = $paymenttype;
-            $ledgerrecord->paymentstatus = PAYMENT_SUCCESS;
+            $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $ledgerrecord->usermodified = $USER->id;
             $ledgerrecord->timemodified = time();
             $ledgerrecord->timecreated = time();
@@ -890,17 +892,18 @@ class shopping_cart {
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
 
-                    // In cash report we have to sum up cash sums, so we cannot use PAYMENT_METHOD_CREDITS.
+                    // In cash report we have to sum up cash sums, so we cannot use LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS.
                     // So do not do this anymore but use the actual payment method.
                     // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-                    /* $paymentmethod = $data['price'] == 0 ? PAYMENT_METHOD_CREDITS : PAYMENT_METHOD_CASHIER;
-                    if ($paymentmethod === PAYMENT_METHOD_CASHIER) {
+                    /* $paymentmethod = $data['price'] == 0 ? LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS :
+                        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER;
+                    if ($paymentmethod === LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER) {
                         // We now need to specify the actual payment method (cash, debit or credit card).
                         switch ($paymenttype) {
-                            case PAYMENT_METHOD_CASHIER_CASH:
-                            case PAYMENT_METHOD_CASHIER_CREDITCARD:
-                            case PAYMENT_METHOD_CASHIER_DEBITCARD:
-                            case PAYMENT_METHOD_CASHIER_MANUAL:
+                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
+                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
+                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
+                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
                                 $paymentmethod = $paymenttype;
                                 break;
                         }
@@ -921,7 +924,7 @@ class shopping_cart {
                             $item['area'],
                             $identifier,
                             $paymentmethod,
-                            PAYMENT_SUCCESS,
+                            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
                             $item['canceluntil'] ?? null,
                             $item['serviceperiodstart'] ?? null,
                             $item['serviceperiodend'] ?? null,
@@ -948,7 +951,7 @@ class shopping_cart {
 
         if ($success) {
 
-            if ($paymenttype == PAYMENT_METHOD_CASHIER_MANUAL) {
+            if ($paymenttype == LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL) {
                 // Trigger manual rebook event, so we can react on it within other plugins.
                 $event = payment_rebooked::create([
                     'context' => context_system::instance(),
@@ -1131,7 +1134,8 @@ class shopping_cart {
      * @param int $method
      * @return array
      */
-    public static function credit_paid_back(int $userid, int $method = PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH): array {
+    public static function credit_paid_back(int $userid,
+        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -1173,7 +1177,7 @@ class shopping_cart {
         }
 
         // We can only cancel items that are successfully paid.
-        if ($item->paymentstatus != PAYMENT_SUCCESS) {
+        if ($item->paymentstatus != LOCAL_SHOPPING_CART_PAYMENT_SUCCESS) {
             return false;
         }
 
@@ -1304,7 +1308,7 @@ class shopping_cart {
         global $DB, $USER;
         $id = null;
         switch ($record->paymentstatus) {
-            case PAYMENT_SUCCESS:
+            case LOCAL_SHOPPING_CART_PAYMENT_SUCCESS:
                 // We add a check to make sure we prevent duplicates!
                 // If itemid is 0, we cannot do this check, as we always want to write cash transfer, cash transaction, etc.
                 if (($record->itemid === 0) || (!$DB->get_record('local_shopping_cart_ledger', [
@@ -1329,14 +1333,14 @@ class shopping_cart {
                     cache_helper::purge_by_event('setbackcachedcashreport');
                 }
                 break;
-            case PAYMENT_CANCELED:
+            case LOCAL_SHOPPING_CART_PAYMENT_CANCELED:
                 $now = time();
                 $record->price = null;
                 $record->discount = null;
                 $record->usermodified = $USER->id;
                 $record->timecreated = $now;
                 $record->timemodified = $now;
-                $record->payment = PAYMENT_METHOD_CREDITS;
+                $record->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS;
                 $record->gateway = null;
                 $record->orderid = null;
                 $id = $DB->insert_record('local_shopping_cart_ledger', $record);
@@ -1344,8 +1348,8 @@ class shopping_cart {
                 break;
             // Aborted or pending payments will never be added to ledger.
             // We use the <gateway>_openorders tables to track open orders.
-            case PAYMENT_ABORTED:
-            case PAYMENT_PENDING:
+            case LOCAL_SHOPPING_CART_PAYMENT_ABORTED:
+            case LOCAL_SHOPPING_CART_PAYMENT_PENDING:
             default:
                 break;
         }
@@ -1567,7 +1571,7 @@ class shopping_cart {
 
         $now = time();
 
-        $params['paymentstatus'] = PAYMENT_PENDING;
+        $params['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_PENDING;
         $params['userid'] = $userid;
 
         $dbman = $DB->get_manager();

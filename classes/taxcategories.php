@@ -92,7 +92,7 @@ class taxcategories {
         if (key_exists($countrycode, $this->taxmatrix)) {
             return $this->taxmatrix[$countrycode];
         } else {
-            return $this->taxmatrix[self::DEFAULT_COUNTRY_INDEX];
+            return $this->taxmatrix[self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX];
         }
     }
 
@@ -136,7 +136,7 @@ class taxcategories {
             return null;
         }
         if (empty($defaultcategory)) {
-            $defaultcategory = self::DEFAULT_CATEGORY_KEY;
+            $defaultcategory = self::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY;
         }
         $categories = self::extract_categories($rawcategories);
         if (!in_array($defaultcategory, $categories)) {
@@ -167,8 +167,8 @@ class taxcategories {
         if (!empty($categories)) {
             $matrix = self::taxmatrix_from_raw_string($rawcategories, $categories);
             // There has to be a default key.
-            if (key_exists(self::DEFAULT_COUNTRY_INDEX, $matrix)) {
-                $defaultvalues = $matrix[self::DEFAULT_COUNTRY_INDEX];
+            if (key_exists(self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX, $matrix)) {
+                $defaultvalues = $matrix[self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX];
                 // Default key categories have to match the categories.
                 return is_array($defaultvalues) && array_keys($defaultvalues) == $categories;
             }
@@ -188,7 +188,7 @@ class taxcategories {
             return []; // No categories.
         }
         if (is_numeric(trim($rawcategories))) { // Special case of value only.
-            return [self::DEFAULT_CATEGORY_KEY]; // Just one category which is default.
+            return [self::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY]; // Just one category which is default.
         }
         $rows = preg_split('/\n/', trim($rawcategories));
         if ($rows === false) {
@@ -235,7 +235,11 @@ class taxcategories {
         $linevalues = explode(' ', $trimmedrawline);
         if ($linevalues === false || count($linevalues) < 2) {
             if (is_numeric($trimmedrawline)) { // This might be a single value row.
-                return [self::DEFAULT_COUNTRY_INDEX => [self::DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100]];
+                return [
+                    self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX => [
+                        self::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100,
+                    ],
+                ];
             }
             // Tines with no data are invalid.
             return null;
@@ -243,7 +247,7 @@ class taxcategories {
         if (!str_contains($linevalues[0], ':')) { // Assume first value is country code.
             $countrycode = array_shift($linevalues);
         } else {
-            $countrycode = self::DEFAULT_COUNTRY_INDEX;
+            $countrycode = self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX;
         }
 
         $validcats = [];
@@ -260,11 +264,11 @@ class taxcategories {
     /**
      * Default country index for tax categories per country.
      */
-    public const DEFAULT_COUNTRY_INDEX = "default";
+    public const LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX = "default";
     /**
      * Default tax cqtegory key
      */
-    public const DEFAULT_CATEGORY_KEY = "cat";
+    public const LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY = "cat";
 }
 
 
