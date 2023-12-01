@@ -144,8 +144,7 @@ export function discountModal(event) {
     // We two parents up, we find the right element with the necessary information.
     const element = event.target.closest('li');
 
-    // eslint-disable-next-line no-console
-    console.log('closest', element);
+    /* Console.log('closest', element); */
 
     const price = element.dataset.price;
     const itemid = element.dataset.itemid;
@@ -153,8 +152,7 @@ export function discountModal(event) {
     const componentname = element.dataset.component;
     const area = element.dataset.area;
 
-    // eslint-disable-next-line no-console
-    console.log('discountModal', price, itemid, userid, componentname, 'area ' + area);
+    /* Console.log('discountModal', price, itemid, userid, componentname, 'area ' + area); */
 
     const modalForm = new ModalForm({
 
@@ -173,10 +171,10 @@ export function discountModal(event) {
     });
     // Listen to events if you want to execute something on form submit.
     // Event detail will contain everything the process() function returned:
-    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
-        const response = e.detail;
-        // eslint-disable-next-line no-console
-        console.log('confirmCancelAndSetCreditModal response: ', response);
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => {
+
+        /* Const response = e.detail;
+        console.log('confirmCancelAndSetCreditModal response: ', response); */
 
         reinit(-1);
     });
@@ -206,9 +204,7 @@ function displayPaymentMessage(message, success = true) {
             }
             return;
         }).catch(e => {
-
-            // eslint-disable-next-line no-console
-            console.log(e);
+            showNotification(`Error: ${e}`, "error");
         });
     }
 }
@@ -239,8 +235,8 @@ export function rebookOrderidModal(userid, identifier) {
     // Event detail will contain everything the process() function returned:
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
-        // eslint-disable-next-line no-console
-        console.log('rebookOrderidModal response: ', response);
+
+        /* Console.log('rebookOrderidModal response: ', response); */
 
         // We just add the paidby code to the annotation.
         confirmPayment(userid, 7, `${response.annotation} ${response.paidby}`);

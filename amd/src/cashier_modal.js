@@ -74,7 +74,8 @@ const show = async(rootNode, {
         try {
             focusOnClose.focus();
         } catch (e) {
-            // eslint-disable-line
+            // eslint-disable-next-line no-console
+            console.log('error: ', e);
         }
     });
 
@@ -103,7 +104,8 @@ const show = async(rootNode, {
             // We cannot use await in the following line.
             // The reason is that we are preventing the default action of the save event being triggered,
             // therefore we cannot define the event handler function asynchronous.
-            getString('nogatewayselected', 'core_payment').then(message => addToast(message, {type: 'warning'})).catch();
+            // eslint-disable-next-line promise/catch-or-return
+            getString('nogatewayselected', 'core_payment').then(message => addToast(message, {type: 'warning'}));
         }
 
         e.preventDefault();

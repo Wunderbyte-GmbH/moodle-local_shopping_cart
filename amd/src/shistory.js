@@ -379,42 +379,43 @@ function confirmCancelModal(button, cancelationFee) {
     // eslint-disable-next-line no-console
     console.log(params);
 
+    // eslint-disable-next-line promise/no-nesting
     getStrings([
             {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
             {key: bodystring, component: 'local_shopping_cart', param: params},
             {key: 'cancelpurchase', component: 'local_shopping_cart'}
         ]
-        ).then(strings => {
+    ).then(strings => {
+        // eslint-disable-next-line promise/no-nesting
+        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
 
-            ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+            modal.setTitle(strings[0]);
+            modal.setBody(strings[1]);
+            modal.setSaveButtonText(strings[2]);
+            modal.getRoot().on(ModalEvents.save, function() {
 
-                modal.setTitle(strings[0]);
-                    modal.setBody(strings[1]);
-                    modal.setSaveButtonText(strings[2]);
-                    modal.getRoot().on(ModalEvents.save, function() {
+                const historyid = button.dataset.historyid;
+                const itemid = button.dataset.itemid;
+                const userid = button.dataset.userid;
+                const currency = button.dataset.currency;
+                const componentname = button.dataset.componentname;
+                const area = button.dataset.area;
+                const price = button.dataset.price;
 
-                        const historyid = button.dataset.historyid;
-                        const itemid = button.dataset.itemid;
-                        const userid = button.dataset.userid;
-                        const currency = button.dataset.currency;
-                        const componentname = button.dataset.componentname;
-                        const area = button.dataset.area;
-                        const price = button.dataset.price;
-
-                        cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button);
-                    });
-
-                    modal.show();
-                    return modal;
-            }).catch(e => {
-                // eslint-disable-next-line no-console
-                console.log(e);
+                cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button);
             });
-            return true;
+
+            modal.show();
+            return modal;
         }).catch(e => {
             // eslint-disable-next-line no-console
             console.log(e);
         });
+        return true;
+    }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log(e);
+    });
 }
 
 /**
@@ -467,13 +468,14 @@ function confirmCancelAndSetCreditModal(button) {
  */
 function confirmPaidBackModal(element) {
 
+    // eslint-disable-next-line promise/no-nesting
     getStrings([
         {key: 'confirmpaidbacktitle', component: 'local_shopping_cart'},
         {key: 'confirmpaidbackbody', component: 'local_shopping_cart'},
         {key: 'confirmpaidback', component: 'local_shopping_cart'}
     ]
     ).then(strings => {
-
+        // eslint-disable-next-line promise/no-nesting
         ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
 
             modal.setTitle(strings[0]);
