@@ -379,7 +379,6 @@ function confirmCancelModal(button, cancelationFee) {
     // eslint-disable-next-line no-console
     console.log(params);
 
-    // eslint-disable-next-line promise/no-nesting
     getStrings([
             {key: 'confirmcanceltitle', component: 'local_shopping_cart'},
             {key: bodystring, component: 'local_shopping_cart', param: params},
@@ -468,7 +467,6 @@ function confirmCancelAndSetCreditModal(button) {
  */
 function confirmPaidBackModal(element) {
 
-    // eslint-disable-next-line promise/no-nesting
     getStrings([
         {key: 'confirmpaidbacktitle', component: 'local_shopping_cart'},
         {key: 'confirmpaidbackbody', component: 'local_shopping_cart'},

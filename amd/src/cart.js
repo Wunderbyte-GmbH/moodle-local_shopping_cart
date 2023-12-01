@@ -505,7 +505,6 @@ export function addItemShowNotification(data) {
             reinit(data.userid);
             return;
         case CARTPARAM_CARTISFULL:
-            // eslint-disable-next-line promise/no-nesting
             getStrings([
                 {key: 'cartisfull', component: 'local_shopping_cart'},
                 {key: 'ok', component: 'core'},
@@ -527,7 +526,6 @@ export function addItemShowNotification(data) {
             });
             return;
         case CARTPARAM_COSTCENTER:
-            // eslint-disable-next-line promise/no-nesting
             getStrings([
                 {key: 'error:costcentertitle', component: 'local_shopping_cart'},
                 {key: 'error:costcentersdonotmatch', component: 'local_shopping_cart'},
@@ -551,7 +549,6 @@ export function addItemShowNotification(data) {
             });
             return;
         default:
-            // eslint-disable-next-line promise/no-nesting
             getStrings([
                 {key: 'error:generalcarterror', component: 'local_shopping_cart'},
                 {key: 'ok', component: 'core'},
@@ -663,7 +660,6 @@ function initTimer(expirationdate = null, nowdate = null) {
  */
 function confirmZeroPriceCheckoutModal(element) {
 
-    // eslint-disable-next-line promise/no-nesting
     getStrings([
         {key: 'confirmzeropricecheckouttitle', component: 'local_shopping_cart'},
         {key: 'confirmzeropricecheckoutbody', component: 'local_shopping_cart'},
