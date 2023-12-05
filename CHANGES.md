@@ -1,3 +1,7 @@
+## Version 0.6.7 (2023120500)
+* Improvement: Added support for Moodle 4.3 and PHP 8.2.
+* Bugfix: All plugin constants must start with uppercase frankenstyle prefix.
+
 ## Version 0.6.6 (2023112200)
 * New feature: Create receipt PDF directly from shopping cart history list.
 * Improvement: Better receipts.
