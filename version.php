@@ -30,5 +30,5 @@ $plugin->version = 2023120500;
 $plugin->requires = 2022041900; // Requires this Moodle version. Current: Moodle 4.0.0.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
-    'local_wunderbyte_table' => 2023120400,
+    'local_wunderbyte_table' => 2023120600,
 ];
