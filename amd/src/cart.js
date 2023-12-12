@@ -49,7 +49,7 @@ const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
-    DISCOUNTCLASS: 'fa-eur',
+    DISCOUNTCLASS: 'shoppingcart-discount-icon',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
@@ -276,13 +276,15 @@ export const reinit = (userid = 0) => {
 
 /**
  * This function is only called when the timer invalidates the cart.
- * This always works for the USER-user, so no userid is transmitted.
- * The USER-user is chosen with the userid 0, we just reinit everything afert sending.
+ * If no userid is provided the logged in USER will be used.
+ * The USER-user is chosen with the userid 0, we just reinit everything after sending.
+ * @param {*} userid
  */
-export const deleteAllItems = () => {
+export const deleteAllItems = (userid = 0) => {
     Ajax.call([{
         methodname: "local_shopping_cart_delete_all_items_from_cart",
         args: {
+            'userid': userid
         },
         done: function() {
             reinit(0);

@@ -55,6 +55,7 @@
     data-item="shopping_cart_item"
     data-currency='{{currency}}'
     data-userid='{{userid}}'>
+
     <span class="item-name">
         {{#imageurl}}
             <img alt="Image of cart item: {{itemname}}" class="sc-cart-item-image" src="{{.}}">
@@ -68,7 +69,7 @@
     </span>
     {{#iscashier}}
         <span class="item-button pull-right">
-            <i class="fa fa-fw fa-eur pl-2" aria-hidden="true"
+            <i class="shoppingcart-discount-icon fa fa-fw fa-percent pl-2" aria-hidden="true"
             data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
             data-itemid="{{itemid}}" data-action="discount" data-userid="{{userid}}"></i>
         </span>

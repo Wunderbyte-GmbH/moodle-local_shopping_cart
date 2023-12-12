@@ -26,8 +26,13 @@ import Url from 'core/url';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
 import {reinit} from 'local_shopping_cart/cart';
+import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
 
+/**
+ * Init function.
+ * @param {*} userid the user id, 0 means logged-in USER
+ */
 export const init = (userid = 0) => {
 
     console.log('run init', userid);
@@ -35,8 +40,8 @@ export const init = (userid = 0) => {
     document.getElementById('checkout-tab').classList.remove('success');
 
     const buybuttons = document.querySelectorAll('.buy-btn');
-
     const manualrebookbtn = document.querySelector('#cashiermanualrebook-btn');
+    const cartcancelbtn = document.querySelector('#shoppingcart-cancel-btn');
 
     if (buybuttons) {
         buybuttons.forEach(buybutton => {
@@ -46,6 +51,14 @@ export const init = (userid = 0) => {
 
     if (manualrebookbtn) {
         manualrebookbtn.addEventListener('click', (e) => rebookOrderidModal(userid, e.target.dataset.paymenttype));
+    }
+
+    if (cartcancelbtn) {
+        cartcancelbtn.addEventListener('click', () => {
+            deleteAllItems(userid);
+            const newurl = Url.relativeUrl("/local/shopping_cart/cashier.php", [], false);
+            location.href = newurl;
+        });
     }
 
     const checkoutbutton = document.querySelector('#checkout-btn');
