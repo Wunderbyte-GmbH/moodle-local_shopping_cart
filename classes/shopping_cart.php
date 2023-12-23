@@ -270,7 +270,7 @@ class shopping_cart {
                     $event->trigger();
                 } else {
                     $itemdata = [];
-                    $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS;
+                    $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ERROR;
                     $itemdata['expirationdate'] = 0;
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 }
