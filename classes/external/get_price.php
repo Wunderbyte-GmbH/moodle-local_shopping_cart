@@ -80,6 +80,9 @@ class get_price extends external_api {
         require_login();
 
         $context = context_system::instance();
+
+        self::validate_context($context);
+
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
@@ -125,7 +128,7 @@ class get_price extends external_api {
                         'count' => new external_value(PARAM_INT, 'Number of items', VALUE_REQUIRED),
                         'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled', VALUE_REQUIRED),
                         'credit' => new external_value(PARAM_FLOAT, 'Credit', VALUE_REQUIRED),
-                        'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_REQUIRED),
+                        'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_REQUIRED),
                         'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits', VALUE_REQUIRED),
                         'initialtotal_net' => new external_value(
                             PARAM_FLOAT,

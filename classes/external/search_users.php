@@ -24,6 +24,7 @@ use external_description;
 use external_single_structure;
 use external_multiple_structure;
 use local_shopping_cart\shopping_cart;
+use context_system;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -63,6 +64,10 @@ class search_users extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), [
             'query' => $query,
         ]);
+
+        $context = context_system::instance();
+
+        self::validate_context($context);
 
         return shopping_cart::load_users($params['query']);
     }

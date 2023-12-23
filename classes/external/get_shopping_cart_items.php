@@ -76,6 +76,9 @@ class get_shopping_cart_items extends external_api {
         require_login();
 
         $context = context_system::instance();
+
+        self::validate_context($context);
+
         if ($params['userid'] == 0) {
             $userid = (int) $USER->id;
         } else if ($params['userid'] < 0) {
@@ -102,7 +105,7 @@ class get_shopping_cart_items extends external_api {
                         'price' => new external_value(PARAM_FLOAT, 'Total price', VALUE_REQUIRED),
                         'price_net' => new external_value(PARAM_FLOAT, 'Total net price', VALUE_DEFAULT, 0),
                         'credit' => new external_value(PARAM_FLOAT, 'Credit', VALUE_REQUIRED),
-                        'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_REQUIRED),
+                        'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_REQUIRED),
                         'taxesenabled' => new external_value(PARAM_BOOL, 'Is tax information enabled', VALUE_REQUIRED),
                         'initialtotal' => new external_value(PARAM_FLOAT, 'Initial price before deduced credits', VALUE_REQUIRED),
                         'initialtotal_net' => new external_value(
@@ -146,14 +149,14 @@ class get_shopping_cart_items extends external_api {
                                                 'taxpercentage_visual' => new external_value(PARAM_FLOAT,
                                                         'Tax percentage of item price as an int', VALUE_OPTIONAL),
                                                 'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_OPTIONAL),
-                                                'componentname' => new external_value(PARAM_TEXT, 'Component name', VALUE_OPTIONAL),
+                                                'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_OPTIONAL),
                                                 'costcenter' => new external_value(
                                                     PARAM_TEXT,
                                                     'Cost center for item',
                                                     VALUE_OPTIONAL),
-                                                'area' => new external_value(PARAM_TEXT, 'Area', VALUE_OPTIONAL),
+                                                'area' => new external_value(PARAM_ALPHANUM, 'Area', VALUE_OPTIONAL),
                                                 'description' => new external_value(PARAM_RAW, 'Item description', VALUE_OPTIONAL),
-                                                'imageurl' => new external_value(PARAM_RAW, 'Image url', VALUE_OPTIONAL),
+                                                'imageurl' => new external_value(PARAM_URL, 'Image url', VALUE_OPTIONAL),
                                                 'canceluntil' => new external_value(PARAM_INT,
                                                         'Timestamp until when cancel is possible', VALUE_OPTIONAL),
                                         ]

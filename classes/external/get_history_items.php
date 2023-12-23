@@ -77,6 +77,8 @@ class get_history_items extends external_api {
 
         $context = context_system::instance();
 
+        self::validate_context($context);
+
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
         } else {
@@ -100,7 +102,7 @@ class get_history_items extends external_api {
                     'itemname' => new external_value(PARAM_TEXT, 'Item name'),
                     'price' => new external_value(PARAM_FLOAT, 'Price of item'),
                     'currency' => new external_value(PARAM_ALPHA, 'Currency'),
-                    'componentname' => new external_value(PARAM_TEXT, 'Component name'),
+                    'componentname' => new external_value(PARAM_COMPONENT, 'Component name'),
                     'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus'),
                 ]
             )

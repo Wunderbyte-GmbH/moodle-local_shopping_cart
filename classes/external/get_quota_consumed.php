@@ -55,8 +55,8 @@ class get_quota_consumed extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
-            'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
+            'component'  => new external_value(PARAM_COMPONENT, 'component', VALUE_DEFAULT, ''),
+            'area'  => new external_value(PARAM_ALPHA, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             'historyid'  => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
@@ -87,6 +87,9 @@ class get_quota_consumed extends external_api {
         require_login();
 
         $context = context_system::instance();
+
+        self::validate_context($context);
+
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }

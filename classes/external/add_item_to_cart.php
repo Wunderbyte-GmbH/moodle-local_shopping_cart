@@ -55,8 +55,8 @@ class add_item_to_cart extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'component'  => new external_value(PARAM_RAW, 'component', VALUE_DEFAULT, ''),
-            'area'  => new external_value(PARAM_RAW, 'area', VALUE_DEFAULT, ''),
+            'component'  => new external_value(PARAM_COMPONENT, 'component', VALUE_DEFAULT, ''),
+            'area'  => new external_value(PARAM_ALPHANUM, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             ]
@@ -86,6 +86,9 @@ class add_item_to_cart extends external_api {
         require_login();
 
         $context = context_system::instance();
+
+        self::validate_context($context);
+
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
@@ -103,11 +106,11 @@ class add_item_to_cart extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'itemid' => new external_value(PARAM_INT, 'Item id', VALUE_DEFAULT, 0),
-            'itemname' => new external_value(PARAM_RAW, 'Item name', VALUE_DEFAULT, ''),
-            'price' => new external_value(PARAM_RAW, 'Item price', VALUE_DEFAULT, ''),
-            'currency' => new external_value(PARAM_RAW, 'Currency', VALUE_DEFAULT, ''),
-            'componentname' => new external_value(PARAM_RAW, 'Component name', VALUE_DEFAULT, ''),
-            'area' => new external_value(PARAM_RAW, 'Area', VALUE_DEFAULT, ''),
+            'itemname' => new external_value(PARAM_TEXT, 'Item name', VALUE_DEFAULT, ''),
+            'price' => new external_value(PARAM_FLOAT, 'Item price', VALUE_DEFAULT, ''),
+            'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
+            'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_DEFAULT, ''),
+            'area' => new external_value(PARAM_ALPHANUM, 'Area', VALUE_DEFAULT, ''),
             'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),

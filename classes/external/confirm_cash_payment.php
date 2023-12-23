@@ -77,6 +77,9 @@ class confirm_cash_payment extends external_api {
         ]);
 
         $context = context_system::instance();
+
+        self::validate_context($context);
+
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
@@ -94,7 +97,7 @@ class confirm_cash_payment extends external_api {
             [
                 'status' => new external_value(PARAM_INT, 'Just to confirm payment went through 0 is fail.'),
                 'error' => new external_value(PARAM_RAW, 'Error message.'),
-                'credit' => new external_value(PARAM_RAW, 'credit'),
+                'credit' => new external_value(PARAM_FLOAT, 'credit'),
                 'identifier' => new external_value(PARAM_INT, 'identifier used in the shopping cart history'),
             ]
         );
