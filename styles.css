@@ -74,11 +74,11 @@
     margin-right: 8px;
 }
 
-.shopping-cart.item-price {
+.shopping-cart-price.item-price {
     line-height: 1;
 }
 
-.shopping-cart.item-price b {
+.shopping-cart-price.item-price b {
     margin-right: 2px;
 }
 
