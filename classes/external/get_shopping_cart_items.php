@@ -149,7 +149,10 @@ class get_shopping_cart_items extends external_api {
                                                 'taxpercentage_visual' => new external_value(PARAM_FLOAT,
                                                         'Tax percentage of item price as an int', VALUE_OPTIONAL),
                                                 'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_OPTIONAL),
-                                                'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_OPTIONAL),
+                                                'componentname' => new external_value(
+                                                    PARAM_COMPONENT,
+                                                    'Component name',
+                                                    VALUE_OPTIONAL),
                                                 'costcenter' => new external_value(
                                                     PARAM_TEXT,
                                                     'Cost center for item',
