@@ -50,7 +50,7 @@ class provider implements \core_privacy\local\metadata\provider,
                           \core_privacy\local\request\core_userlist_provider {
 
     /**
-     *
+     * Get data from tables.
      * @param collection $collection
      * @return collection
      */
@@ -157,7 +157,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     *
+     * Export all user data.
      * @param approved_contextlist $contextlist
      * @return void
      * @throws dml_exception
@@ -217,7 +217,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     *
+     * Delete userdata.
      * @param approved_contextlist $contextlist
      * @return void
      * @throws dml_exception
@@ -252,7 +252,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     *
+     * Get userdata in context.
      * @param userlist $userlist
      * @return void
      * @throws dml_exception
@@ -272,7 +272,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     *
+     * Delete data for users.
      * @param approved_userlist $userlist
      * @return void
      * @throws dml_exception
