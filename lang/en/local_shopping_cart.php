@@ -448,3 +448,8 @@ $string['choosedefaultcountry'] = 'Choose Default Country for Customers';
 $string['choosedefaultcountrydesc'] = 'Select the default country for your customers. If user does not provide invoice data, this
  country is selected for the invoice.';
 $string['erpnext'] = 'ERPNext';
+
+// Privacy API.
+$string['history'] = "Purchaces";
+$string['ledger'] = "Ledger";
+$string['credits'] = "Credits";

@@ -440,3 +440,8 @@ $string['choosedefaultcountry'] = 'Standardland auswählen';
 $string['choosedefaultcountrydesc'] = 'Wählen Sie das Standardland für die Rechnungsadresse aus. Dieses wird verwendet,
  wenn die Kund/innen keine Angaben zur Rechnungsadresse machen.';
 $string['erpnext'] = 'ERPNext';
+
+// Privacy API.
+$string['history'] = "Käufe";
+$string['ledger'] = "Zahlungsjournal";
+$string['credits'] = "Guthaben";
