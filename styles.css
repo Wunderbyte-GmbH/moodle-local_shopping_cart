@@ -74,11 +74,11 @@
     margin-right: 8px;
 }
 
-.item-price {
+.shopping-cart.item-price {
     line-height: 1;
 }
 
-.item-price b {
+.shopping-cart.item-price b {
     margin-right: 2px;
 }
 
