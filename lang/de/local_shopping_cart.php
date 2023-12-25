@@ -98,6 +98,11 @@ $string['samecostcenter'] = 'Nur eine Kostenstelle pro Zahlungsvorgang';
 $string['samecostcenter_desc'] = 'Alle Items im Warenkorb müssen die selbe Kostenstelle haben.
 Items mit unterschiedlichen Kostenstellen müssen separat gebucht werden.';
 
+$string['privacyheading'] = "Privatsphäreneinstellungen";
+$string['privacyheadingdescription'] = "Einstellungen in Verbindung mit den Moodle Privatsphäreneinstellugnen";
+$string['deleteledger'] = "Lösche das Zahlungsjournal wenn ein/e NutzerIn das Löschen ihrer Daten verlangt";
+$string['deleteledgerdescription'] = "Das Zahlungsjournal enthält Zahlungsinformationen, die aus rechtlichen Gründen womöglich erhalten bleiben müssen.";
+
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';

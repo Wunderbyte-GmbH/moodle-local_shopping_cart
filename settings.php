@@ -418,4 +418,16 @@ if ($hassiteconfig) {
             'Austria', // Default value (empty for none selected).
             $newcountries
     ));
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading('local_shopping_cart/privacyheading',
+            get_string('privacyheading', 'local_shopping_cart'),
+            get_string('privacyheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/deleteledger',
+                get_string('deleteledger', 'local_shopping_cart'),
+                get_string('deleteledgerdescription', 'local_shopping_cart'), 0));
 }

@@ -95,6 +95,11 @@ $string['samecostcenter'] = 'Only one cost center per payment';
 $string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
 Items with different cost centers need to be booked separately.';
 
+$string['privacyheading'] = "Privacy settings";
+$string['privacyheadingdescription'] = "Set behaviour related to the privacy settings in Moodle";
+$string['deleteledger'] = "Delete ledger on deletion request of user";
+$string['deleteledgerdescription'] = "The ledger will hold payment information which you might need to keep for legal reasons, even when a user is deleted.";
+
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
@@ -453,3 +458,4 @@ $string['erpnext'] = 'ERPNext';
 $string['history'] = "Purchaces";
 $string['ledger'] = "Ledger";
 $string['credits'] = "Credits";
+

@@ -239,11 +239,14 @@ class provider implements \core_privacy\local\metadata\provider,
 
             $DB->delete_records('local_shopping_cart_history', ['userid' => $user->id]);
             $DB->delete_records('local_shopping_cart_credits', ['userid' => $user->id]);
-            $DB->delete_records('local_shopping_cart_leger', ['userid' => $user->id]);
 
             foreach ($records as $record) {
                 // Delete identifier.
                 $DB->delete_records('local_shopping_cart_invoices', ['identifier' => $record->identifier]);
+            }
+
+            if (!empty(get_config('local_shopping_cart', 'deleteledger'))) {
+                $DB->delete_records('local_shopping_cart_leger', ['userid' => $user->id]);
             }
         }
     }
@@ -296,8 +299,11 @@ class provider implements \core_privacy\local\metadata\provider,
         }
 
         $DB->delete_records_list('local_shopping_cart_history', 'userid', $userids);
-        $DB->delete_records_list('local_shopping_cart_ledger', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_credits', 'userid', $userids);
+
+        if (!empty(get_config('local_shopping_cart', 'deleteledger'))) {
+            $DB->delete_records_list('local_shopping_cart_ledger', 'userid', $userids);
+        }
     }
 
     /**
