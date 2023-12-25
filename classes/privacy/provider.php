@@ -45,7 +45,6 @@ use moodle_exception;
  * @author     Thomas Winkler
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class provider implements \core_privacy\local\metadata\provider,
                           \core_privacy\local\request\plugin\provider,
                           \core_privacy\local\request\core_userlist_provider {
@@ -301,6 +300,13 @@ class provider implements \core_privacy\local\metadata\provider,
         $DB->delete_records_list('local_shopping_cart_credits', 'userid', $userids);
     }
 
+    /**
+     * Export all historyitems.
+     * @param mixed $contextlist
+     * @return void
+     * @throws dml_exception
+     * @throws coding_exception
+     */
     private static function export_all_historyitems($contextlist) {
 
         global $DB;
@@ -356,6 +362,13 @@ class provider implements \core_privacy\local\metadata\provider,
         }
     }
 
+    /**
+     * Export all ledger items.
+     * @param mixed $contextlist
+     * @return void
+     * @throws dml_exception
+     * @throws coding_exception
+     */
     private static function export_all_ledgeritems($contextlist) {
 
         global $DB;
@@ -415,6 +428,13 @@ class provider implements \core_privacy\local\metadata\provider,
         }
     }
 
+    /**
+     * Export all credit items.
+     * @param mixed $contextlist
+     * @return void
+     * @throws dml_exception
+     * @throws coding_exception
+     */
     private static function export_all_creditsitems($contextlist) {
 
         global $DB;
