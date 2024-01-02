@@ -455,7 +455,7 @@ $string['choosedefaultcountrydesc'] = 'Select the default country for your custo
 $string['erpnext'] = 'ERPNext';
 
 // Privacy API.
-$string['history'] = "Purchaces";
+$string['history'] = "Purchases";
 $string['ledger'] = "Ledger";
 $string['credits'] = "Credits";
 
