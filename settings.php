@@ -322,11 +322,11 @@ if ($hassiteconfig) {
     $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
     if ($taxprocessingenabled) {
         $taxcategoriesexample = '
-                <a data-toggle="collapse" href="#collapseExample" role="button"
-                        aria-expanded="false" aria-controls="collapseExample">
+                <a data-toggle="collapse" href="#collapseTaxCategories" role="button"
+                        aria-expanded="false" aria-controls="collapseTaxCategories">
                 ' . get_string('taxcategories_examples_button', $componentname) . '
                 </a>
-                <div class="collapse mb-5" id="collapseExample">
+                <div class="collapse mb-5" id="collapseTaxCategories">
                 <div class="card card-body">
                 Multi country multi tax categories:
                 <pre class="mb-1 p-1">default A:0 B:0 C:0
