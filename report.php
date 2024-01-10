@@ -35,6 +35,12 @@ $dbman = $DB->get_manager();
 $date = optional_param('date', date('Y-m-d'), PARAM_TEXT); // Default: today.
 $download = optional_param('download', '', PARAM_ALPHA);
 
+// Optional debug param.
+$debug = optional_param('debug', 0, PARAM_INT);
+// 1 ... Show: Table without daily sums and without dismissible alert.
+// 2 ... Show: Daily sums and dismissible alert, but no table.
+// 3 ... JSON: Output table data as json (no daily sums and no dismissible alert).
+
 // No guest autologin.
 require_login(0, false);
 
@@ -153,210 +159,267 @@ $params = [];
 // File name and sheet name.
 $fileandsheetname = "cash_report";
 
-$table = new cash_report_table('cash_report_table');
+if ($debug != 2) {
+    $table = new cash_report_table('cash_report_table');
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER INIT:<br>$encodedtable", DEBUG_ALL);
+    }
 
-$table->is_downloading($download, $fileandsheetname, $fileandsheetname);
+    $table->is_downloading($download, $fileandsheetname, $fileandsheetname);
 
-$downloadbaseurl = new moodle_url('/local/shopping_cart/download_cash_report.php');
-$downloadbaseurl->remove_params('page');
-$table->define_baseurl($downloadbaseurl);
+    $downloadbaseurl = new moodle_url('/local/shopping_cart/download_cash_report.php');
+    $downloadbaseurl->remove_params('page');
+    $table->define_baseurl($downloadbaseurl);
 
-// Headers.
-$headers = [
-    get_string('id', 'local_shopping_cart'),
-    get_string('identifier', 'local_shopping_cart'),
-    get_string('timecreated', 'local_shopping_cart'),
-    get_string('timemodified', 'local_shopping_cart'),
-    get_string('paid', 'local_shopping_cart'),
-    get_string('discount', 'local_shopping_cart'),
-    get_string('credit', 'local_shopping_cart'),
-    get_string('cancelationfee', 'local_shopping_cart'),
-    get_string('currency', 'local_shopping_cart'),
-    get_string('lastname', 'local_shopping_cart'),
-    get_string('firstname', 'local_shopping_cart'),
-    get_string('email', 'local_shopping_cart'),
-    get_string('itemid', 'local_shopping_cart'),
-    get_string('itemname', 'local_shopping_cart'),
-    get_string('payment', 'local_shopping_cart'),
-    get_string('paymentstatus', 'local_shopping_cart'),
-    get_string('gateway', 'local_shopping_cart'),
-    get_string('orderid', 'local_shopping_cart'),
-    get_string('annotation', 'local_shopping_cart'),
-    get_string('cashier', 'local_shopping_cart'),
-];
-// Columns.
-$columns = [
-    'id',
-    'identifier',
-    'timecreated',
-    'timemodified',
-    'price',
-    'discount',
-    'credits',
-    'fee',
-    'currency',
-    'lastname',
-    'firstname',
-    'email',
-    'itemid',
-    'itemname',
-    'payment',
-    'paymentstatus',
-    'gateway',
-];
-if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
-    // Only show custom order id if config setting is turned on.
-    $columns[] = 'customorderid';
-} else {
-    // Default.
-    $columns[] = 'orderid';
+    // Headers.
+    $headers = [
+        get_string('id', 'local_shopping_cart'),
+        get_string('identifier', 'local_shopping_cart'),
+        get_string('timecreated', 'local_shopping_cart'),
+        get_string('timemodified', 'local_shopping_cart'),
+        get_string('paid', 'local_shopping_cart'),
+        get_string('discount', 'local_shopping_cart'),
+        get_string('credit', 'local_shopping_cart'),
+        get_string('cancelationfee', 'local_shopping_cart'),
+        get_string('currency', 'local_shopping_cart'),
+        get_string('lastname', 'local_shopping_cart'),
+        get_string('firstname', 'local_shopping_cart'),
+        get_string('email', 'local_shopping_cart'),
+        get_string('itemid', 'local_shopping_cart'),
+        get_string('itemname', 'local_shopping_cart'),
+        get_string('payment', 'local_shopping_cart'),
+        get_string('paymentstatus', 'local_shopping_cart'),
+        get_string('gateway', 'local_shopping_cart'),
+        get_string('orderid', 'local_shopping_cart'),
+        get_string('annotation', 'local_shopping_cart'),
+        get_string('cashier', 'local_shopping_cart'),
+    ];
+    // Columns.
+    $columns = [
+        'id',
+        'identifier',
+        'timecreated',
+        'timemodified',
+        'price',
+        'discount',
+        'credits',
+        'fee',
+        'currency',
+        'lastname',
+        'firstname',
+        'email',
+        'itemid',
+        'itemname',
+        'payment',
+        'paymentstatus',
+        'gateway',
+    ];
+    if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
+        // Only show custom order id if config setting is turned on.
+        $columns[] = 'customorderid';
+    } else {
+        // Default.
+        $columns[] = 'orderid';
+    }
+    $columns[] = 'annotation';
+    $columns[] = 'usermodified';
+
+    if (!$gatewaysupported) {
+        // We remove orderid if no gateway is set or if gateway is not supported.
+        if (($oid = array_search(get_string('orderid', 'local_shopping_cart'), $headers)) !== false) {
+            unset($headers[$oid]);
+            $headers = array_values($headers); // Re-index so we do not mess order.
+        }
+        if (($oid = array_search('orderid', $columns)) !== false) {
+            unset($columns[$oid]);
+            $columns = array_values($columns); // Re-index so we do not mess order.
+        }
+    }
+
+    $table->define_headers($headers);
+    $table->define_columns($columns);
+
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER DEFINE HEADERS & COLS:<br>$encodedtable", DEBUG_ALL);
+    }
+
+    // Table cache.
+    $table->define_cache('local_shopping_cart', 'cachedcashreport');
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER DEFINE CACHE:<br>$encodedtable", DEBUG_ALL);
+    }
+    $table->showdownloadbutton = true;
+
+    // Now build the table.
+    $table->set_sql($fields, $from, $where, $params);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER SET_SQL:<br>$encodedtable", DEBUG_ALL);
+    }
+
+    $table->sortable(true, 'id', SORT_DESC);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER SORTABLE:<br>$encodedtable", DEBUG_ALL);
+    }
+
+    // Filters.
+    $filtercolumns = [];
+    $filtercolumns['payment'] = [
+        'localizedname' => get_string('payment', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE =>
+            get_string('paymentmethodonline', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER =>
+            get_string('paymentmethodcashier', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS =>
+            get_string('paymentmethodcredits', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
+            get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
+            get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION =>
+            get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH =>
+            get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD =>
+            get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD =>
+            get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL =>
+            get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
+    ];
+    $filtercolumns['paymentstatus'] = [
+        'localizedname' => get_string('paymentstatus', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
+    ];
+    $table->define_filtercolumns($filtercolumns);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER FILTERCOLS:<br>$encodedtable", DEBUG_ALL);
+    }
+
+    // Sortable columns.
+    $sortablecols = [
+        'id',
+        'identifier',
+        'timecreated',
+        'timemodified',
+        'price',
+        'discount',
+        'credits',
+        'fee',
+        'currency',
+        'lastname',
+        'firstname',
+        'email',
+        'itemid',
+        'itemname',
+        'payment',
+        'paymentstatus',
+        'gateway',
+        'orderid',
+        'annotation',
+        'usermodified',
+    ];
+
+    // Columns used for fulltext search.
+    $fulltextsearchcols = [
+        'identifier',
+        'lastname',
+        'firstname',
+        'email',
+        'itemname',
+        'gateway',
+        'orderid',
+        'annotation',
+    ];
+
+    if (!$gatewaysupported) {
+        // We remove orderid if no gateway is set or if gateway is not supported.
+        if (($oid = array_search('orderid', $sortablecols)) !== false) {
+            unset($sortablecols[$oid]);
+            $sortablecols = array_values($sortablecols); // Re-index so we do not mess order.
+        }
+        if (($oid = array_search('orderid', $fulltextsearchcols)) !== false) {
+            unset($fulltextsearchcols[$oid]);
+            $fulltextsearchcols = array_values($fulltextsearchcols); // Re-index so we do not mess order.
+        }
+    }
+    // Now we can define the columns.
+    $table->define_sortablecolumns($sortablecols);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER SORTABLECOLS:<br>$encodedtable", DEBUG_ALL);
+    }
+    $table->define_fulltextsearchcolumns($fulltextsearchcols);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER FULLTEXTSEARCHCOLS:<br>$encodedtable", DEBUG_ALL);
+    }
+    $table->pageable(true);
+    if ($debug == 3) {
+        $encodedtable = json_encode($table);
+        debugging("TABLE AFTER PAGEABLE:<br>$encodedtable", DEBUG_ALL);
+    }
 }
-$columns[] = 'annotation';
-$columns[] = 'usermodified';
-
-if (!$gatewaysupported) {
-    // We remove orderid if no gateway is set or if gateway is not supported.
-    if (($oid = array_search(get_string('orderid', 'local_shopping_cart'), $headers)) !== false) {
-        unset($headers[$oid]);
-        $headers = array_values($headers); // Re-index so we do not mess order.
-    }
-    if (($oid = array_search('orderid', $columns)) !== false) {
-        unset($columns[$oid]);
-        $columns = array_values($columns); // Re-index so we do not mess order.
-    }
-}
-
-$table->define_headers($headers);
-$table->define_columns($columns);
-
-// Table cache.
-$table->define_cache('local_shopping_cart', 'cachedcashreport');
-$table->showdownloadbutton = true;
-
-// Now build the table.
-$table->set_sql($fields, $from, $where, $params);
-
-$table->sortable(true, 'id', SORT_DESC);
-
-// Filters.
-$filtercolumns = [];
-$filtercolumns['payment'] = [
-    'localizedname' => get_string('payment', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE => get_string('paymentmethodonline', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER => get_string('paymentmethodcashier', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS => get_string('paymentmethodcredits', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
-        get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
-        get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION => get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH => get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD => get_string('paymentmethodcashier:creditcard', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD => get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL => get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
-];
-$filtercolumns['paymentstatus'] = [
-    'localizedname' => get_string('paymentstatus', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
-    LOCAL_SHOPPING_CART_PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
-];
-$table->define_filtercolumns($filtercolumns);
-
-// Sortable columns.
-$sortablecols = [
-    'id',
-    'identifier',
-    'timecreated',
-    'timemodified',
-    'price',
-    'discount',
-    'credits',
-    'fee',
-    'currency',
-    'lastname',
-    'firstname',
-    'email',
-    'itemid',
-    'itemname',
-    'payment',
-    'paymentstatus',
-    'gateway',
-    'orderid',
-    'annotation',
-    'usermodified',
-];
-
-// Columns used for fulltext search.
-$fulltextsearchcols = [
-    'identifier',
-    'lastname',
-    'firstname',
-    'email',
-    'itemname',
-    'gateway',
-    'orderid',
-    'annotation',
-];
-
-if (!$gatewaysupported) {
-    // We remove orderid if no gateway is set or if gateway is not supported.
-    if (($oid = array_search('orderid', $sortablecols)) !== false) {
-        unset($sortablecols[$oid]);
-        $sortablecols = array_values($sortablecols); // Re-index so we do not mess order.
-    }
-    if (($oid = array_search('orderid', $fulltextsearchcols)) !== false) {
-        unset($fulltextsearchcols[$oid]);
-        $fulltextsearchcols = array_values($fulltextsearchcols); // Re-index so we do not mess order.
-    }
-}
-// Now we can define the columns.
-$table->define_sortablecolumns($sortablecols);
-$table->define_fulltextsearchcolumns($fulltextsearchcols);
-$table->pageable(true);
 
 // Table will be shown normally.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
 
-// Initialize the Moodle form for filtering the table.
-$mform = new daily_sums_date_selector_form();
+// Debug-Mode 1 + 3: We do not show daily sums.
+if ($debug != 1 && $debug != 3) {
+    // Initialize the Moodle form for filtering the table.
+    $mform = new daily_sums_date_selector_form();
 
-ob_start();
-$mform->display();
-$selectorformoutput = ob_get_contents();
-ob_end_clean();
+    ob_start();
+    $mform->display();
+    $selectorformoutput = ob_get_contents();
+    ob_end_clean();
 
-// Form processing and displaying is done here.
-if ($fromform = $mform->get_data()) {
-    $dailysumsdate = $fromform->dailysumsdate;
-    $date = date('Y-m-d', $dailysumsdate);
-    generate_and_output_daily_sums($date, $selectorformoutput);
-} else {
-    // Show daily sums.
-    generate_and_output_daily_sums($date, $selectorformoutput);
-}
+    // Form processing and displaying is done here.
+    if ($fromform = $mform->get_data()) {
+        $dailysumsdate = $fromform->dailysumsdate;
+        $date = date('Y-m-d', $dailysumsdate);
+        generate_and_output_daily_sums($date, $selectorformoutput);
+    } else {
+        // Show daily sums.
+        generate_and_output_daily_sums($date, $selectorformoutput);
+    }
 
-// Dismissible alert containing the description of the report.
-echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .
-    get_string('cashreport_desc', 'local_shopping_cart') .
-    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-    </button>
-</div>';
-
-// Dismissible alert showing a warning if payment gateway is missing or not supported.
-if (!$gatewaysupported) {
-    echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">' .
-        get_string('error:gatewaymissingornotsupported', 'local_shopping_cart') .
+    // Dismissible alert containing the description of the report.
+    echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .
+        get_string('cashreport_desc', 'local_shopping_cart') .
         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>';
+
+    // Dismissible alert showing a warning if payment gateway is missing or not supported.
+    if (!$gatewaysupported) {
+        echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">' .
+            get_string('error:gatewaymissingornotsupported', 'local_shopping_cart') .
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>';
+    }
 }
 
-$table->out(30, false);
+// Debug-mode 2 and 3 we do not output the table.
+if ($debug != 2 && $debug != 3) {
+    $table->out(30, false);
+}
+if ($debug == 3) {
+    $encodedtable = json_encode($table);
+    debugging("FINAL TABLE:<br>$encodedtable", DEBUG_ALL);
+}
 
 echo $OUTPUT->footer();
 
