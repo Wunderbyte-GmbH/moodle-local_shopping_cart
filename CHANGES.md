@@ -1,3 +1,15 @@
+## Version 0.6.8 (2024011000)
+* Improvement: Empty cart after cashier cancels, layout improvements and new discount icon.
+* Improvement: Improve Param types in external services, add context validation.
+* Improvement: More distinct css.
+* Improvement: Add privacy class #58.
+* Improvement: Add setting to decide wether to delete ledger on deletion request.
+* Improvement: Accessibility: Add aria-name for shopping cart icon.
+* Improvement: Rename some ids for better code quality.
+* Improvement: Add debugging modes to cash report.
+* Bugfix: Fix a bug where we returned success instead of error.
+* Bugfix: Fix css classes.
+
 ## Version 0.6.7 (2023120500)
 * Improvement: Added support for Moodle 4.3 and PHP 8.2.
 * Bugfix: All plugin constants must start with uppercase frankenstyle prefix.
