@@ -1629,11 +1629,19 @@ class shopping_cart {
 
                         // TODO: NO switch case ! Make params optional ! TRY catch complete call
                         // TODO: test all providers again
-                        // We need to differentiate between gateways here as they have different params.
+                        // Make sure all gateways use the same params!
                         try {
-                            $response = $transactioncomplete::execute('local_shopping_cart', '',
-                            $record->identifier, $record->tid, '', '',
-                            true, '', $userid);
+                            $response = $transactioncomplete::execute(
+                                'local_shopping_cart',
+                                '',
+                                $record->identifier,
+                                $record->tid,
+                                '',
+                                '',
+                                true,
+                                '',
+                                $userid,
+                            );
                         } catch (\Throwable $e) {
                             return;
                         }
