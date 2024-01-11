@@ -41,7 +41,7 @@ use local_shopping_cart\event\payment_rebooked;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use Exception;
-
+use local_shopping_cart\interfaces\interface_transaction_complete;
 use stdClass;
 
 /**
@@ -1617,8 +1617,8 @@ class shopping_cart {
                     continue;
                 }
 
-                $transactioncomplete = 'paygw_' .$name . '\external\transaction_complete';
-                if (class_exists($transactioncomplete)) {
+                $transactioncompletestring = 'paygw_' .$name . '\external\transaction_complete';
+                if (class_exists($transactioncompletestring)) {
 
                     // Now, we run through all pending payments we found above.
                     foreach ($records as $record) {
@@ -1627,23 +1627,26 @@ class shopping_cart {
                             continue;
                         }
 
-                        // TODO: NO switch case ! Make params optional ! TRY catch complete call
-                        // TODO: test all providers again
-                        // Make sure all gateways use the same params!
                         try {
-                            $response = $transactioncomplete::execute(
-                                'local_shopping_cart',
-                                '',
-                                $record->identifier,
-                                $record->tid,
-                                '',
-                                '',
-                                true,
-                                '',
-                                $userid,
-                            );
+                            $transactioncomplete = new $transactioncompletestring();
+                            if ($transactioncomplete instanceof interface_transaction_complete) {
+                                $response = $transactioncomplete::execute(
+                                    'local_shopping_cart',
+                                    '',
+                                    $record->identifier,
+                                    $record->tid,
+                                    '',
+                                    '',
+                                    true,
+                                    '',
+                                    $userid,
+                                );
+                            } else {
+                                throw new moodle_exception(
+                                    'ERROR: transaction_complete does not implement transaction_complete interface!');
+                            }
                         } catch (\Throwable $e) {
-                            return;
+                            echo "ERROR: " . $e;
                         }
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
