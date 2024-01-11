@@ -79,7 +79,8 @@ class delete_all_items_from_cart extends external_api {
 
         self::validate_context($context);
 
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
+        if (has_capability('local/shopping_cart:cashier', $context)) {
+            // If it's a cashier, we might delete items for another user.
             $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
         } else {
             // If it's no cashier, we always use the logged-in USER.
