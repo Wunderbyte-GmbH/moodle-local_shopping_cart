@@ -291,6 +291,7 @@ class shopping_cart {
                 $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['price'] = 0;
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL:
             default:
