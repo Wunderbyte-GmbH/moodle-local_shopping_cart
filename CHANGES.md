@@ -1,3 +1,8 @@
+## Version 0.6.9 (2024011500)
+* Improvement: New interface for transaction_complete and check if payment classes implement it.
+* Bugfix: Fix call of transaction_complete so that it works with payunity, mpay24 and unigraz.
+* Bugfix: When cashier cancels, the items of the selected user should be removed from cart.
+
 ## Version 0.6.8 (2024011000)
 * Improvement: Empty cart after cashier cancels, layout improvements and new discount icon.
 * Improvement: Improve Param types in external services, add context validation.
