@@ -24,8 +24,6 @@ require_once("$CFG->libdir/formslib.php");
 use context;
 use context_system;
 use core_form\dynamic_form;
-use local_shopping_cart\shopping_cart;
-use moodle_exception;
 use moodle_url;
 use stdClass;
 
