@@ -1,3 +1,6 @@
+## Version 0.6.10 (2024011600)
+* Bugfix: Fix error when item is already in cart.
+
 ## Version 0.6.9 (2024011500)
 * Improvement: New interface for transaction_complete and check if payment classes implement it.
 * Bugfix: Fix call of transaction_complete so that it works with payunity, mpay24 and unigraz.
