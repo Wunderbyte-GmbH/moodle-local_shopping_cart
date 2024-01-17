@@ -298,6 +298,7 @@ class shopping_cart {
                 $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['price'] = 0;
                 break;
         }
         return $itemdata;
