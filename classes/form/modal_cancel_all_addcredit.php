@@ -77,13 +77,18 @@ class modal_cancel_all_addcredit extends dynamic_form {
         }
 
         $mform->addElement('hidden', 'itemid', $itemid);
+        $mform->setType('itemid', PARAM_TEXT);
         $mform->addElement('hidden', 'componentname', $componentname);
+        $mform->setType('componentname', PARAM_TEXT);
         $mform->addElement('hidden', 'area', $area);
+        $mform->setType('area', PARAM_TEXT);
 
         $mform->addElement('static', 'bodytext', '', get_string('confirmcancelallbody', 'local_shopping_cart', $data));
 
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
         $mform->setDefault('cancelationfee', $cancelationfee);
+        $mform->setType('area', PARAM_FLOAT);
+
     }
 
     /**
