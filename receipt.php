@@ -115,6 +115,19 @@ foreach ($items as $item) {
         $repeathtml[0]);
     $tmp = str_replace("[[name]]", $item->itemname, $tmp);
     $tmp = str_replace("[[pos]]", $pos, $tmp);
+
+    // If it's a booking option, we add option-specific data.
+    if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
+        $optionid = $item->itemid;
+        $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
+        $tmp = str_replace("[[location]]", $optionsettings->location ?? '', $tmp); // Add location.
+        $tmp = str_replace("[[dayofweektime]]", $optionsettings->dayofweektime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
+    } else {
+        // It should still be replaced with an empty string in case it's no booking option.
+        $tmp = str_replace("[[location]]", '', $tmp);
+        $tmp = str_replace("[[dayofweektime]]", '', $tmp);
+    }
+
     $sum += $item->price;
     $itemhtml .= $tmp;
     $pos++;
