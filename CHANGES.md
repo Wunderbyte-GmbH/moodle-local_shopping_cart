@@ -1,3 +1,9 @@
+## Version 0.7.0 (2024011900)
+* Bugfix: Add setType to form.
+* Bugfix: Avoid error because of missing param when cart is full.
+* Improvement: Add placeholders for location and dayofweektime to receipt.
+* Improvement: Better feedback when "isallowed" callback returns false.
+
 ## Version 0.6.10 (2024011600)
 * Bugfix: Fix error when item is already in cart.
 
