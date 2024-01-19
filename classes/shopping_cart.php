@@ -140,6 +140,11 @@ class shopping_cart {
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
                     'itemname' => $cartitem['itemname'] ?? '',
                 ];
+            } else if (isset($cartitem['allow']) && $cartitem['allow'] == false) {
+                return [
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_ERROR,
+                    'itemname' => $cartitem['itemname'] ?? '',
+                ];
             }
 
             $currentcostcenter = $cartitem['costcenter'] ?? '';
