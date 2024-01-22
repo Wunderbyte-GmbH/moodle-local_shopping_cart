@@ -1,3 +1,6 @@
+## Version 0.7.1 (2024012200)
+* Improvement: Localization, better description and default HTML for booking receipt.
+
 ## Version 0.7.0 (2024011900)
 * Bugfix: Add setType to form.
 * Bugfix: Avoid error because of missing param when cart is full.
