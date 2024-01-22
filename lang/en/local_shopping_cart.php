@@ -377,12 +377,19 @@ $string['paymentcanceled'] = 'Canceled';
 $string['receipt'] = 'Receipt';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
-[[price]], [[pos]], [[name]] between [[items]] and [[/items]].
+[[price]], [[pos]], [[name]], [[location]], [[dayofweektime]] between [[items]] and [[/items]].
  Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]] and [[date]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
 
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
+$string['receipt:bookingconfirmation'] = 'Booking confirmation';
+$string['receipt:transactionno'] = 'Transaction number';
+$string['receipt:name'] = 'Name';
+$string['receipt:location'] = 'Location';
+$string['receipt:dayofweektime'] = 'Day & Time';
+$string['receipt:price'] = 'Price';
+$string['receipt:total'] = 'Total sum';
 
 // Terms and conditions.
 $string['confirmterms'] = "I accept the terms and conditions";

@@ -369,11 +369,18 @@ $string['paymentcanceled'] = 'Storno';
 $string['receipt'] = 'Buchungsbestätigung';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
-[[price]], [[pos]], [[name]] zwischen [[items]] und [[/items]].
+[[price]], [[pos]], [[name]], [[location]], [[dayofweektime]] zwischen [[items]] und [[/items]].
  Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]] und [[date]] verwenden.
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
+$string['receipt:bookingconfirmation'] = 'Buchungsbest&auml;tigung';
+$string['receipt:transactionno'] = 'Transaktionsnummer';
+$string['receipt:name'] = 'Name';
+$string['receipt:location'] = 'Ort';
+$string['receipt:dayofweektime'] = 'Tag & Uhrzeit';
+$string['receipt:price'] = 'Preis';
+$string['receipt:total'] = 'Gesamtsumme';
 
 // Terms and conditions.
 $string['confirmterms'] = "AGBs akzeptieren";
