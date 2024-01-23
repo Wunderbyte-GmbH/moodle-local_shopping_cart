@@ -315,6 +315,14 @@ if ($hassiteconfig) {
             new admin_setting_configcheckbox($componentname . '/cashreportshowcustomorderid',
                     get_string('cashreport:showcustomorderid', 'local_shopping_cart'),
                     get_string('cashreport:showcustomorderid_desc', 'local_shopping_cart'), 0));
+    $cashreportsettings->add(
+        new admin_setting_configcheckbox($componentname . '/showdailysums',
+                get_string('showdailysums', 'local_shopping_cart'),
+                '', 1));
+    $cashreportsettings->add(
+        new admin_setting_configcheckbox($componentname . '/showdailysumscurrentcashier',
+                get_string('showdailysumscurrentcashier', 'local_shopping_cart'),
+                '', 1));
     $ADMIN->add($componentname, $cashreportsettings);
 
     // Setting to enable taxes processing.

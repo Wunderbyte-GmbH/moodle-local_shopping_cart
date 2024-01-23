@@ -315,10 +315,13 @@ $string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle get�
 Sie können das Kassajournal auch im gewünschten Format exportieren.';
 $string['accessdenied'] = 'Zugriff verweigert';
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
-$string['showdailysums'] = '&sum; Tageseinnahmen anzeigen...';
+$string['showdailysums'] = '&sum; Tageseinnahmen anzeigen';
+$string['showdailysumscurrentcashier'] = '&sum; Tageseinnahmen der aktuell eingeloggten Kassier:in anzeigen';
 $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';
+$string['titledailysums:total'] = 'Saldo';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
+$string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
 
 // Report headers.
 $string['timecreated'] = 'Erstellt';

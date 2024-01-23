@@ -34,30 +34,40 @@
         "todo": "todo"
     }
 }}
+{{#selectorform}}
 <p>
   <a data-toggle="collapse" href="#collapseDailySums" role="button" aria-expanded="false" aria-controls="collapseDailySums">
-    {{#str}} showdailysums, local_shopping_cart {{/str}}
+    {{#str}} showdailysums, local_shopping_cart {{/str}}...
   </a>
 </p>
+{{/selectorform}}
 <div class="collapse mb-5" id="collapseDailySums">
   <div class="card card-body">
     <div id="dailysums-selector-form">{{{selectorform}}}</div>
     <h4>{{#str}} titledailysums, local_shopping_cart {{/str}} ({{date}})</h4>
+    <div style="background-color: #DBF9DB; border: 1px dashed #000; width: fit-content; padding: 10px; font-weight: bold; font-size: large;">
+      {{#str}}titledailysums:total, local_shopping_cart{{/str}}: {{currency}} {{totalsum}}
+    </div>
     <p>
       {{#dailysums:exist}}
         <h5>{{#str}} titledailysums:all, local_shopping_cart {{/str}}</h5>
+        {{#dailysums}}
+          <strong>{{paymentmethod}}:</strong> {{currency}} {{dailysumformatted}}<br>
+        {{/dailysums}}
       {{/dailysums:exist}}
-      {{#dailysums}}
-        <strong>{{paymentmethod}}:</strong> {{dailysumformatted}}<br>
-      {{/dailysums}}
     </p>
     <p>
       {{#dailysumscurrentcashier:exist}}
         <h5>{{#str}} titledailysums:current, local_shopping_cart {{/str}} ({{currentcashier:fullname}})</h5>
+        {{#dailysumscurrentcashier}}
+          <strong>{{paymentmethod}}:</strong> {{currency}} {{dailysumformatted}}<br>
+        {{/dailysumscurrentcashier}}
       {{/dailysumscurrentcashier:exist}}
-      {{#dailysumscurrentcashier}}
-        <strong>{{paymentmethod}}:</strong> {{dailysumformatted}}<br>
-      {{/dailysumscurrentcashier}}
     </p>
+    <div>
+      {{#dailysumspdfurl}}
+        <a href="{{{dailysumspdfurl}}}" class="btn btn-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> {{#str}}dailysums:downloadpdf, local_shopping_cart{{/str}}</a>
+      {{/dailysumspdfurl}}
+    </div>
   </div>
 </div>

@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\form\daily_sums_date_selector_form;
+use local_shopping_cart\shopping_cart;
 use local_shopping_cart\table\cash_report_table;
 
 require_once(__DIR__ . '/../../config.php');
@@ -375,22 +376,28 @@ echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
 
 // Debug-Mode 1 + 3: We do not show daily sums.
 if ($debug != 1 && $debug != 3) {
-    // Initialize the Moodle form for filtering the table.
-    $mform = new daily_sums_date_selector_form();
 
-    ob_start();
-    $mform->display();
-    $selectorformoutput = ob_get_contents();
-    ob_end_clean();
+    // Check if daily sums are turned on in settings.
+    if (get_config('local_shopping_cart', 'showdailysums')) {
+        // Initialize the Moodle form for filtering the table.
+        $mform = new daily_sums_date_selector_form();
 
-    // Form processing and displaying is done here.
-    if ($fromform = $mform->get_data()) {
-        $dailysumsdate = $fromform->dailysumsdate;
-        $date = date('Y-m-d', $dailysumsdate);
-        generate_and_output_daily_sums($date, $selectorformoutput);
-    } else {
-        // Show daily sums.
-        generate_and_output_daily_sums($date, $selectorformoutput);
+        ob_start();
+        $mform->display();
+        $selectorformoutput = ob_get_contents();
+        ob_end_clean();
+
+        // Form processing and displaying is done here.
+        if ($fromform = $mform->get_data()) {
+            $dailysumsdate = $fromform->dailysumsdate;
+            $date = date('Y-m-d', $dailysumsdate);
+            echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums',
+                shopping_cart::get_daily_sums_data($date, $selectorformoutput));
+        } else {
+            // Show daily sums.
+            echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums',
+                shopping_cart::get_daily_sums_data($date, $selectorformoutput));
+        }
     }
 
     // Dismissible alert containing the description of the report.
@@ -422,144 +429,3 @@ if ($debug == 3) {
 }
 
 echo $OUTPUT->footer();
-
-/**
- * Internal helper function to create daily sums.
- *
- * @param string $date date in the form 'YYYY-MM-DD'
- * @param string $selectorformoutput the HTML of the date selector form
- */
-function generate_and_output_daily_sums(string $date, string $selectorformoutput) {
-    global $DB, $OUTPUT, $USER;
-
-    $commaseparator = current_language() == 'de' ? ',' : '.';
-
-    // SQL to get daily sums.
-    $dailysumssql = "SELECT payment, sum(price) dailysum
-        FROM {local_shopping_cart_ledger}
-        WHERE timecreated BETWEEN :startofday AND :endofday
-        AND paymentstatus = :paymentsuccess
-        GROUP BY payment";
-
-    // SQL params.
-    $dailysumsparams = [
-        'startofday' => strtotime($date . ' 00:00'),
-        'endofday' => strtotime($date . ' 24:00'),
-        'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-    ];
-
-    $dailysumsfromdb = $DB->get_records_sql($dailysumssql, $dailysumsparams);
-    foreach ($dailysumsfromdb as $dailysumrecord) {
-        $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
-        switch ($dailysumrecord->payment) {
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
-                break;
-        }
-        $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
-    }
-
-    // Now get data for current cashier.
-    // SQL to get daily sums.
-    $dailysumssqlcurrent = "SELECT payment, sum(price) dailysum
-        FROM {local_shopping_cart_ledger}
-        WHERE timecreated BETWEEN :startofday AND :endofday
-        AND paymentstatus = :paymentsuccess
-        AND usermodified = :userid
-        GROUP BY payment";
-
-    // SQL params.
-    $dailysumsparamscurrent = [
-        'startofday' => strtotime($date . ' 00:00'),
-        'endofday' => strtotime($date . ' 24:00'),
-        'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-        'userid' => $USER->id,
-    ];
-
-    $dailysumsfromdbcurrentcashier = $DB->get_records_sql($dailysumssqlcurrent, $dailysumsparamscurrent);
-    foreach ($dailysumsfromdbcurrentcashier as $dailysumrecord) {
-        $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
-        switch ($dailysumrecord->payment) {
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcredits', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:creditcard', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:debitcard', 'local_shopping_cart');
-                break;
-            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
-                $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:manual', 'local_shopping_cart');
-                break;
-        }
-        $dailysumsdata['dailysumscurrentcashier'][] = (array)$dailysumrecord;
-    }
-
-    if (!empty($dailysumsdata['dailysums'])) {
-        $dailysumsdata['dailysums:exist'] = true;
-    }
-
-    if (!empty($dailysumsdata['dailysumscurrentcashier'])) {
-        $dailysumsdata['dailysumscurrentcashier:exist'] = true;
-    }
-
-    $dailysumsdata['currentcashier:fullname'] = "$USER->firstname $USER->lastname";
-
-    // Transform date to German format if current language is German.
-    if (current_language() == 'de') {
-        list($year, $month, $day) = explode('-', $date);
-        $dailysumsdata['date'] = $day . '.' . $month . '.' . $year;
-    } else {
-        $dailysumsdata['date'] = $date;
-    }
-
-    $dailysumsdata['selectorform'] = $selectorformoutput;
-
-    echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums', $dailysumsdata);
-}
