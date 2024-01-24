@@ -1,3 +1,6 @@
+## Version 0.7.2 (2024012400)
+* New feature: Add PDF download for daily sums, total sum and possibility to turn off daily sums and sums of current cashier.
+
 ## Version 0.7.1 (2024012200)
 * Improvement: Localization, better description and default HTML for booking receipt.
 
