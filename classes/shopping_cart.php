@@ -797,7 +797,7 @@ class shopping_cart {
                     return [
                             'status' => 0,
                             'error' => get_string('notenoughcredit', 'local_shopping_cart'),
-                            'credit' => $data['remainingcredit'],
+                            'credit' => (float)$data['remainingcredit'],
                             'identifier' => $identifier,
                     ];
                 }
@@ -806,7 +806,7 @@ class shopping_cart {
                     return [
                             'status' => 0,
                             'error' => get_string('nopermission', 'local_shopping_cart'),
-                            'credit' => '',
+                            'credit' => 0.0,
                             'identifier' => $identifier,
                     ];
                 }
@@ -834,7 +834,7 @@ class shopping_cart {
             return [
                     'status' => 0,
                     'error' => get_string('noitemsincart', 'local_shopping_cart'),
-                    'credit' => '',
+                    'credit' => 0.0,
                     'identifier' => $identifier,
             ];
         }
@@ -978,7 +978,7 @@ class shopping_cart {
             return [
                     'status' => 1,
                     'error' => '',
-                    'credit' => $data['remainingcredit'],
+                    'credit' => (float)$data['remainingcredit'],
                     'identifier' => $identifier,
 
             ];
@@ -986,7 +986,7 @@ class shopping_cart {
             return [
                     'status' => 0,
                     'error' => implode('<br>', $error),
-                    'credit' => $data['remainingcredit'],
+                    'credit' => (float)$data['remainingcredit'],
                     'identifier' => $identifier,
             ];
         }
