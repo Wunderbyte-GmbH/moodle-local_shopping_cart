@@ -306,6 +306,11 @@ if ($hassiteconfig) {
                 get_string('fixedpercentageafterserviceperiodstart', 'local_shopping_cart'),
                 get_string('fixedpercentageafterserviceperiodstart_desc', 'local_shopping_cart'), 1));
 
+    $cancellationsettings->add(
+        new admin_setting_configcheckbox($componentname . '/allowrebookingcredit',
+                get_string('allowrebookingcredit', 'local_shopping_cart'),
+                get_string('allowrebookingcredit_desc', 'local_shopping_cart'), 0));
+
     $ADMIN->add($componentname, $cancellationsettings);
 
     // Cash report settings.

@@ -58,14 +58,23 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 );
                 return ['cartitem' => $cartitem];
             case 'rebookingcredit':
+
+                if (get_config('local_shopping_cart', 'cancelationfee') > 0) {
+                    $price = -1 * (
+                        (float)get_config('local_shopping_cart', 'bookingfee') +
+                        (float)get_config('local_shopping_cart', 'cancelationfee')
+                    );
+                } else {
+                    $price = -1 * (
+                        (float)get_config('local_shopping_cart', 'bookingfee')
+                    );
+                }
+
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('rebookingcredit', 'local_shopping_cart'),
-                    ((-1.0) * (
-                        (float)get_config('local_shopping_cart', 'bookingfee') +
-                        (float)get_config('local_shopping_cart', 'cancelationfee')
-                    )),
+                    $price,
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
                     'local_shopping_cart',
                     'rebookingcredit',

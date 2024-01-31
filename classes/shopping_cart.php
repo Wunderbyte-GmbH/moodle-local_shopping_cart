@@ -234,7 +234,8 @@ class shopping_cart {
         // ... to add the booking fee...
         // ... we add the booking fee.
         if (empty($cachedrawdata['items'])
-            && $area != 'bookingfee') {
+            && $area != 'bookingfee'
+            && $area != 'rebookingcredit') {
 
             // If we buy for user, we need to use -1 as userid.
             // Also we add $userid as second param so we can check if fee was already paid.
@@ -250,6 +251,16 @@ class shopping_cart {
             'now' => time(),
         ], '');
         // TODO: We have to check, if the number of currently canceled records is larger than the number of rebookingcredits.
+        if (!empty($canceledrecords)
+            && $area != 'bookingfee'
+            && $area != 'rebookingcredit') {
+            foreach ($canceledrecords as $canceledrecord) {
+
+                // Determine logic.
+                shopping_cart_rebookingcredit::add_rebookingcredit_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+                $cachedrawdata = $cache->get($cachekey);
+            }
+        }
 
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];
