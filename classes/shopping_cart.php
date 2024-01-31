@@ -205,7 +205,7 @@ class shopping_cart {
      */
     public static function add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
-        global $USER;
+        global $DB, $USER;
 
         $buyforuser = false;
 
@@ -241,6 +241,15 @@ class shopping_cart {
             shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
             $cachedrawdata = $cache->get($cachekey);
         }
+
+        // If the user has recently cancelled an option we'll refund the rebookingcredit.
+        // This will always only work with the MOST RECENTLY canceled option.
+        $canceledrecords = $DB->get_records_select('local_shopping_cart_history',
+            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :now", [
+            'userid' => $userid,
+            'now' => time(),
+        ], '');
+        // TODO: We have to check, if the number of currently canceled records is larger than the number of rebookingcredits.
 
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];

@@ -34,6 +34,7 @@ $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
 $string['mycart'] = 'Mein Warenkorb';
 $string['optioncancelled'] = 'Buchungsoption storniert';
+$string['rebookingcredit'] = 'Umbuchungsgutschrift';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
 

@@ -34,6 +34,7 @@ $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
 $string['mycart'] = 'My Cart';
 $string['optioncancelled'] = 'Booking option cancelled';
+$string['rebookingcredit'] = 'Rebooking credit';
 $string['sendpaymentbutton'] = 'Checkout';
 $string['showorderid'] = 'Show Order-ID...';
 
