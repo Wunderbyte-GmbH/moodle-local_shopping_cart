@@ -92,7 +92,5 @@ if ($CFG->version >= 2023042400) {
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
 
-echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
-
 // Now output the footer.
 echo $OUTPUT->footer();

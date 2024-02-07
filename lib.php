@@ -86,7 +86,7 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
  * @return string The HTML
  */
 function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
-    global $USER, $CFG;
+    global $USER, $CFG, $PAGE;
 
     // Early bail out conditions.
     if (!isloggedin() || isguestuser()) {
@@ -106,6 +106,14 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     shopping_cart::convert_prices_to_number_format($cache);
 
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $cache);
+
+    $output .= '<div id="local-shopping-cart-app" name="local-shopping-cart-app"
+            view="cart">
+          <router-view></router-view>
+        </div>';
+
+    $PAGE->requires->js_call_amd('local_shopping_cart/app-lazy', 'init');
+
     return $output;
 }
 

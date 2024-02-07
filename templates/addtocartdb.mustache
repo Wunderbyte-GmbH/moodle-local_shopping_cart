@@ -53,7 +53,10 @@
   <i class="fa fa-cart-plus" aria-hidden="true"></i>
   <span class="addtocartstring">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
 </div>
-
+<div id="local-shopping-cart-app" name="local-shopping-cart-app"
+    view="button" itemid="{{itemid}}">
+  <router-view></router-view>
+</div>
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {
         fn.buttoninit("{{itemid}}", "{{componentname}}", "{{area}}");

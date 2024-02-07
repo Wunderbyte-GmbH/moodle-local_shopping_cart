@@ -122,5 +122,12 @@ $functions = [
                 'capabilities' => '',
                 'ajax' => 1,
         ],
+        'local_shopping_cart_get_item' => [
+                'classname' => 'local_shopping_cart\external\get_booking_item',
+                'description' => 'Get single item',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1,
+        ],
 ];
 

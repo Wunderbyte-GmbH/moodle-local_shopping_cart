@@ -652,6 +652,31 @@ class shopping_cart {
     }
 
     /**
+     * Function local_shopping_cart_get_cache_data
+     * This function returns all the item and calculates live the price for them.
+     * This function also supports the credit system of this moodle.
+     * If usecredit is true, the credit of the user is substracted from price...
+     * ... and supplementary information about the subtraction is returned.
+     *
+     * @param int $userid
+     * @param bool $usecredit
+     * @return array
+     */
+    public static function get_booking_item_by_id(int $itemid): array {
+        global $DB;
+        $sql = "SELECT bop.id, bop.text, bpr.price
+            FROM {booking_options} bop
+            LEFT JOIN m_booking_prices bpr ON bop.id = bpr.itemid AND bpr.pricecategoryidentifier = 'default'
+            WHERE bop.id = :itemid";
+        $params['itemid'] = $itemid;
+        // Using get_records_sql function to execute the query with parameters.
+        $record = $DB->get_record_sql($sql, $params);
+
+        return (array)$record;
+    }
+
+
+    /**
      * Returns 0|1 fore the saved usecredit state, null if no such state exists.
      *
      * @param int $userid
