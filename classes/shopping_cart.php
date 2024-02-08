@@ -125,12 +125,33 @@ class shopping_cart {
             ];
         }
 
-        if ($area == "option" && get_config('local_shopping_cart', 'samecostcenter')) {
+        if ($area == "option") {
             // If the setting 'samecostcenter' ist turned on...
             // ... then we do not allow to add items with different cost centers.
             $providerclass = static::get_service_provider_classname($component);
             $cartitem = component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
 
+            if (get_config('local_shopping_cart', 'samecostcenter')) {
+                $currentcostcenter = $cartitem['costcenter'] ?? '';
+                $costcenterincart = '';
+                if (!empty($cachedrawdata['items'])) {
+                    foreach ($cachedrawdata['items'] as $itemincart) {
+                        if ($itemincart['area'] == 'bookingfee') {
+                            // We only need to check for "real" items, booking fee does not apply.
+                            continue;
+                        } else {
+                            $costcenterincart = $itemincart['costcenter'] ?? '';
+                            if ($currentcostcenter != $costcenterincart) {
+                                return [
+                                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
+                                    'itemname' => $cartitem['itemname'] ?? '',
+                                ];
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
             if (empty($cartitem)) {
                 return [
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_ERROR,
@@ -153,26 +174,7 @@ class shopping_cart {
                     'itemname' => $cartitem['itemname'] ?? '',
                 ];
             }
-
-            $currentcostcenter = $cartitem['costcenter'] ?? '';
-            $costcenterincart = '';
-            if (!empty($cachedrawdata['items'])) {
-                foreach ($cachedrawdata['items'] as $itemincart) {
-                    if ($itemincart['area'] == 'bookingfee') {
-                        // We only need to check for "real" items, booking fee does not apply.
-                        continue;
-                    } else {
-                        $costcenterincart = $itemincart['costcenter'] ?? '';
-                        if ($currentcostcenter != $costcenterincart) {
-                            return [
-                                'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
-                                'itemname' => $cartitem['itemname'] ?? '',
-                            ];
-                        }
-                        break;
-                    }
-                }
-            }
+            // Default behavior.
             return [
                 'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
                 'itemname' => $cartitem['itemname'] ?? '',
@@ -284,6 +286,7 @@ class shopping_cart {
                     $itemdata = [];
                     $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ERROR;
                     $itemdata['expirationdate'] = 0;
+                    $itemdata['price'] = 0;
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 }
                 break;
@@ -293,7 +296,7 @@ class shopping_cart {
                     // Important. In JS we show the modal based on success 2.
                 $itemdata['expirationdate'] = 0;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-                return $itemdata;
+                $itemdata['price'] = 0;
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART:
                 // This case means that we have the item already in the cart.

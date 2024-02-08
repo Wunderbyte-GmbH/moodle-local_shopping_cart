@@ -496,6 +496,7 @@ export function addItemShowNotification(data) {
 
     switch (data.success) {
         case CARTPARAM_ALREADYINCART:
+            reinit();
             return;
         case CARTPARAM_SUCCESS:
             getString('addedtocart', 'local_shopping_cart', data.itemname).then(message => {
