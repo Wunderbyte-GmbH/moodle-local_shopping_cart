@@ -124,6 +124,8 @@ $string['error:cashiercapabilitymissing'] = 'ERROR: You are missing the cashier 
 $string['error:costcentertitle'] = 'Different cost center';
 $string['error:costcentersdonotmatch'] = 'You already have an item with a different cost center in your cart.
 You have to buy this item separately!';
+$string['error:fullybookedtitle'] = 'Fully booked';
+$string['error:fullybooked'] = 'You cannot book this item anymore because it is already fully booked.';
 $string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need
 to set up a payment gateway.';
 $string['error:generalcarterror'] = 'You cannot add this item to your shopping cart because there was an error.
@@ -150,7 +152,6 @@ $string['backtohome'] = 'Back to home.';
 $string['success'] = 'Success';
 $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
-
 
 $string['alreadyincart'] = 'The item is already in your cart.';
 $string['cartisfull'] = 'Your shopping cart is full.';

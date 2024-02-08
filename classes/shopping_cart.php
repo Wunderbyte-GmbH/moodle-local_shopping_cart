@@ -136,6 +136,12 @@ class shopping_cart {
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_ERROR,
                     'itemname' => '',
                 ];
+            } else if (isset($cartitem['allow']) && $cartitem['allow'] == false
+                && isset($cartitem['info']) && $cartitem['info'] == "fullybooked") {
+                return [
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED,
+                    'itemname' => $cartitem['itemname'] ?? '',
+                ];
             } else if (isset($cartitem['allow']) && $cartitem['allow']) {
                 return [
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
@@ -300,8 +306,20 @@ class shopping_cart {
                 $itemdata['price'] = 0;
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL:
-            default:
                 $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['price'] = 0;
+                break;
+            case LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED:
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['price'] = 0;
+                break;
+            case LOCAL_SHOPPING_CART_CARTPARAM_ERROR:
+            default:
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ERROR;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 $itemdata['price'] = 0;

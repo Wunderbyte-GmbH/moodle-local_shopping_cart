@@ -126,6 +126,8 @@ $string['error:capabilitymissing'] = 'FEHLER: Ihnen fehlt eine erforderliche Ber
 $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigung zum Erstellen von Kassenbelegen.';
 $string['error:costcentertitle'] = 'Andere Kostenstelle';
 $string['error:costcentersdonotmatch'] = 'Diese Kurse können nicht gemeinsam gebucht werden.';
+$string['error:fullybookedtitle'] = 'Ausgebucht';
+$string['error:fullybooked'] = 'Sie können nicht mehr buchen, da bereits alle Plätze belegt sind.';
 $string['error:gatewaymissingornotsupported'] = 'Sie haben entweder noch kein Zahlungs-Gateway eingerichtet
 oder das eingerichtete Zahlungsgateway wird nicht unterstützt.';
 $string['error:generalcarterror'] = 'Sie können dieses Item aufgrund eines Fehlers nicht in den Warenkorb legen.
@@ -158,6 +160,8 @@ $string['cartisfull'] = 'Ihr Warenkorb ist voll.';
 $string['cartisempty'] = 'Ihr Warenkorb ist leer.';
 $string['yourcart'] = 'Ihr Warenkorb';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
+$string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
+Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';
 
 // Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';

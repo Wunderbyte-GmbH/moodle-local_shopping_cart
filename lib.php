@@ -55,6 +55,7 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_ALREADYINCART', 0); // Already in cart.
 define('LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS', 1); // Item added to cart successfully.
 define('LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL', 2); // Item could not be added because cart is full.
 define('LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER', 3); // Item could not be added because of different cost center.
+define('LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED', 4); // Item could not be added because it's already fully booked.
 
 /**
  * Adds module specific settings to the settings block
