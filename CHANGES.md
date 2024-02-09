@@ -1,3 +1,8 @@
+## Version 0.7.4 (2024020900)
+* Improvement: Slightly smaller addtocart button.
+* Improvement: Show a modal when trying to book a fully booked item. Also reload the page after pressing the OK button.
+* Bugfix: Fix cost center check and reinit() cart area when trying to book an item that is already in cart.
+
 ## Version 0.7.3 (2024013000)
 * Bugfix: Make sure credit is always a float value and no string.
 
