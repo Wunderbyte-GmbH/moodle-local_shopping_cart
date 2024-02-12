@@ -30,6 +30,9 @@ $string['modulename'] = 'Warenkorb';
 
 // General strings.
 $string['addtocart'] = 'In den Warenkorb';
+$string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
+$string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
+wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
 $string['mycart'] = 'Mein Warenkorb';

@@ -56,8 +56,8 @@ class shopping_cart_rebookingcredit {
      */
     public static function add_rebookingcredit_to_cart(int $userid, int $buyforuserid = 0): bool {
 
-        // Do we need to add a fee at all?
-        if (get_config('local_shopping_cart', 'allowrebookingcredit')) {
+        // If rebookingcredit is turned off in settings, we never add it at all.
+        if (!get_config('local_shopping_cart', 'allowrebookingcredit')) {
             return false;
         }
 

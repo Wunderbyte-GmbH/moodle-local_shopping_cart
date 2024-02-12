@@ -136,7 +136,7 @@ class shopping_cart {
                 $costcenterincart = '';
                 if (!empty($cachedrawdata['items'])) {
                     foreach ($cachedrawdata['items'] as $itemincart) {
-                        if ($itemincart['area'] == 'bookingfee') {
+                        if ($itemincart['area'] = 'bookingfee' || $itemincart['area'] = 'rebookingcredit') {
                             // We only need to check for "real" items, booking fee does not apply.
                             continue;
                         } else {
@@ -256,7 +256,7 @@ class shopping_cart {
             && $area != 'rebookingcredit') {
             foreach ($canceledrecords as $canceledrecord) {
 
-                // Determine logic.
+                // Add the rebookingcredit to the shopping cart.
                 shopping_cart_rebookingcredit::add_rebookingcredit_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
                 $cachedrawdata = $cache->get($cachekey);
             }
@@ -420,19 +420,34 @@ class shopping_cart {
             $event->trigger();
         }
 
-        // If there is only one item left and it'sthe booking fee, we delete it.
-        if (isset($cachedrawdata['items']) && count($cachedrawdata['items']) === 1) {
+        // If there are only fees and/or rebookingcredits left, we delete them.
+        if (!empty($cachedrawdata['items'])) {
 
-            $item = reset($cachedrawdata['items']);
+            // At first, check we can delete.
+            $letsdelete = true;
+            foreach ($cachedrawdata['items'] as $remainingitem) {
+                if ($remainingitem['area'] === 'bookingfee' ||
+                    $remainingitem['area'] === 'rebookingcredit') {
+                    continue;
+                } else {
+                    // If we still have bookable items, we cannot delete fees and credits from cart.
+                    $letsdelete = false;
+                }
+            }
 
-            if ($item['area'] == 'bookingfee'
-                && $item['componentname'] == 'local_shopping_cart') {
-                self::delete_item_from_cart(
-                    $item['componentname'],
-                    $item['area'],
-                    $item['itemid'],
-                    $userid,
-                );
+            if ($letsdelete) {
+                foreach ($cachedrawdata['items'] as $item) {
+                    if (($item['area'] == 'bookingfee' ||
+                        $item['area'] == 'rebookingcredit')
+                        && $item['componentname'] == 'local_shopping_cart') {
+                        self::delete_item_from_cart(
+                            $item['componentname'],
+                            $item['area'],
+                            $item['itemid'],
+                            $userid,
+                        );
+                    }
+                }
             }
         }
 
@@ -2008,5 +2023,23 @@ class shopping_cart {
         }
 
         return $dailysumsdata;
+    }
+
+    /**
+     * Is rebooking credit.
+     *
+     * @param string $component
+     * @param string $area
+     * @return bool
+     */
+    public static function is_rebookingcredit(string $component, string $area): bool {
+
+        if ($component === 'local_shopping_cart'
+            && $area === 'rebookingcredit') {
+
+            return true;
+        }
+
+        return false;
     }
 }

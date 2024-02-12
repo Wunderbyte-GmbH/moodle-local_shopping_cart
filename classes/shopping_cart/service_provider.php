@@ -185,7 +185,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      */
     public static function quota_consumed(string $area, int $itemid, int $userid = 0): float {
 
-        if ($area == 'bookingfee') {
+        if ($area == 'bookingfee' || $area == 'rebookingcredit') {
             return 0;
         }
 

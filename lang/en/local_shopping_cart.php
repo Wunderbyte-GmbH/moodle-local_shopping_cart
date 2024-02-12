@@ -30,6 +30,9 @@ $string['modulename'] = 'Shopping Cart';
 
 // General strings.
 $string['addtocart'] = 'Add to cart';
+$string['allowrebookingcredit'] = 'Rebooking credit';
+$string['allowrebookingcredit_desc'] = 'If you activate rebooking credit, a user will get refunded the cancelation and booking fee
+if (s)he cancels an item within the cancelation period and books another item.';
 $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
 $string['mycart'] = 'My Cart';

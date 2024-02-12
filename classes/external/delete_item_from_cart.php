@@ -111,6 +111,12 @@ class delete_item_from_cart extends external_api {
             return false;
         }
 
+        // We can't delete the rebookingcredit item via webservice.
+        if (shopping_cart::is_rebookingcredit($params['component'], $params['area'])
+            && !has_capability('local/shopping_cart:cashier', $context)) {
+            return false;
+        }
+
         // This treats the cache side.
         if (shopping_cart::delete_item_from_cart($params['component'], $params['area'], $params['itemid'], $userid)) {
             return ['success' => 1];
