@@ -121,8 +121,8 @@
         <TABLE NAME="local_shopping_cart_invoices" COMMENT="Table for issued invoices">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Primary key"/>
-                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Reference to local_shopping_cart_ledger"/>
-                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Timestamp when the record was created"/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reference to local_shopping_cart_ledger"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"  DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp when the record was created"/>
                 <FIELD NAME="invoiceid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Invoice ID from the invoicing platform"/>
             </FIELDS>
             <KEYS>
