@@ -32,19 +32,6 @@ use local_wunderbyte_table\wunderbyte_table;
 class cash_report_table extends wunderbyte_table {
 
     /**
-     * Constructor
-     * @param string $uniqueid all tables have to have a unique id, this is used
-     */
-    public function __construct(string $uniqueid) {
-        parent::__construct($uniqueid);
-
-        global $PAGE;
-        $this->baseurl = $PAGE->url;
-
-        // Columns and headers are not defined in constructor, in order to keep things as generic as possible.
-    }
-
-    /**
      * This function is called for each data row to allow processing of the
      * 'price' value.
      *
