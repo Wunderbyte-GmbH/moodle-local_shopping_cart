@@ -61,7 +61,7 @@ class shopping_cart_rebookingcredit {
             return false;
         }
 
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingcredit', 1, $userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingcredit', 0, $userid);
 
         return true;
     }

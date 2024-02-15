@@ -243,17 +243,36 @@ class shopping_cart {
             $cachedrawdata = $cache->get($cachekey);
         }
 
+        $now = time();
         // If the user has recently cancelled an option we'll refund the rebookingcredit.
         // This will always only work with the MOST RECENTLY canceled option.
         $canceledrecords = $DB->get_records_select('local_shopping_cart_history',
-            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :now", [
+            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil", [
             'userid' => $userid,
-            'now' => time(),
+            'canceluntil' => $now,
         ], '');
+
         // TODO: We have to check, if the number of currently canceled records is larger than the number of rebookingcredits.
         if (!empty($canceledrecords)
             && $area != 'bookingfee'
             && $area != 'rebookingcredit') {
+
+            // Get the sum of already paid fees for the canceled records.
+            $sumofalreadypaidfees = (float) $DB->get_field_sql(
+                "SELECT SUM(price) + SUM(fee) AS sumofalreadypaidfees
+                FROM {local_shopping_cart_ledger} scl
+                WHERE identifier IN (
+                    SELECT identifier
+                    FROM {local_shopping_cart_history} sch
+                    WHERE userid = :userid AND paymentstatus = 3 AND area = 'option' AND (canceluntil > :canceluntil)
+                )
+                AND (fee IS NOT NULL OR area = 'bookingfee')", [
+                    'userid' => $userid,
+                    'canceluntil' => $now,
+                ]);
+
+            // Next, we get the sum of already refunded rebooking credits.
+
             foreach ($canceledrecords as $canceledrecord) {
 
                 // Add the rebookingcredit to the shopping cart.

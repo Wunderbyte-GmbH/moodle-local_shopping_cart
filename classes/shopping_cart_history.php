@@ -266,6 +266,7 @@ class shopping_cart_history {
                 'itemid' => $data->itemid,
                 'componentname' => $data->componentname ?? null,
                 'identifier' => $data->identifier,
+                'area' => $data->area,
             ])) {
                 $data->timecreated = $now;
                 $data->usecredit = shopping_cart_credits::use_credit_fallback(null, $data->userid);

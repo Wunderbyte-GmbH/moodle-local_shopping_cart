@@ -72,14 +72,14 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
                 $cartitem = new cartitem(
-                    $itemid,
+                    1,
                     get_string('rebookingcredit', 'local_shopping_cart'),
                     $price,
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
                     'local_shopping_cart',
                     'rebookingcredit',
-                    '',  // No item description for booking fee.
-                    $imageurl->out(), // Fee image.
+                    '',  // No item description for rebookingcredit.
+                    $imageurl->out(),
                     time(),
                     0,
                     0,
