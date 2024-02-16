@@ -270,13 +270,28 @@ class shopping_cart {
                     'userid' => $userid,
                     'canceluntil' => $now,
                 ]);
+            // TODO:
+            // (1) Anzahl der gecancelten records.
+            // (2) Anzahl der Bookingfees und Stornogebühren der gecancelten records.
 
             // Next, we get the sum of already refunded rebooking credits.
 
             foreach ($canceledrecords as $canceledrecord) {
 
+                $itemswithoutspecial = array_filter($cachedrawdata["items"],
+                    fn($a) => ($a["area"] != 'bookingfee' && $a["area"] != 'rebookingcredit'));
+                $itemcount = count($itemswithoutspecial);
+
+                $rebookingcreditrecords = array_filter($cachedrawdata["items"],
+                    fn($a) => ($a["area"] == 'rebookingcredit'));
+                if (!empty($rebookingcreditrecords)) {
+                    $rebookingcredititem = reset($rebookingcreditrecords);
+                    self::delete_item_from_cart('local_shopping_cart', 'rebookingcredit', $rebookingcredititem['itemid'], $userid);
+                }
+
                 // Add the rebookingcredit to the shopping cart.
-                shopping_cart_rebookingcredit::add_rebookingcredit_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+                shopping_cart_rebookingcredit::add_rebookingcredit_to_cart($buyforuser ? -1 : $userid,
+                    $buyforuser ? $userid : 0, $itemcount + 1);
                 $cachedrawdata = $cache->get($cachekey);
             }
         }
@@ -459,12 +474,13 @@ class shopping_cart {
                     if (($item['area'] == 'bookingfee' ||
                         $item['area'] == 'rebookingcredit')
                         && $item['componentname'] == 'local_shopping_cart') {
-                        self::delete_item_from_cart(
+                        self::delete_all_items_from_cart($userid);
+                        /*self::delete_item_from_cart(
                             $item['componentname'],
                             $item['area'],
                             $item['itemid'],
                             $userid,
-                        );
+                        );*/
                     }
                 }
             }

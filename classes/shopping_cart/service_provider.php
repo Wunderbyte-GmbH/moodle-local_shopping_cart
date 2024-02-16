@@ -62,7 +62,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 if (get_config('local_shopping_cart', 'cancelationfee') > 0) {
                     $price = -1 * (
                         (float)get_config('local_shopping_cart', 'bookingfee') +
-                        (float)get_config('local_shopping_cart', 'cancelationfee')
+                        (float)$itemid * (float)get_config('local_shopping_cart', 'cancelationfee')
                     );
                 } else {
                     $price = -1 * (
@@ -72,7 +72,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
                 $cartitem = new cartitem(
-                    1,
+                    $itemid,
                     get_string('rebookingcredit', 'local_shopping_cart'),
                     $price,
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
@@ -135,7 +135,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
     /**
      * Callback function that unloads a cart item and thus frees
-     * Used only in test.php for test purches.
+     * Used only in test.php for test purchases.
      *
      * @param string $area
      * @param int $itemid An identifier that is known to the plugin

@@ -51,17 +51,18 @@ class shopping_cart_rebookingcredit {
      *
      * @param int $userid the id of the user who books (-1 if cashier books for another user)
      * @param int $buyforuserid the id of the user to buy for (for cashier only)
+     * @param int $itemcount number of items
      *
      * @return bool
      */
-    public static function add_rebookingcredit_to_cart(int $userid, int $buyforuserid = 0): bool {
+    public static function add_rebookingcredit_to_cart(int $userid, int $buyforuserid = 0, int $itemcount = 1): bool {
 
         // If rebookingcredit is turned off in settings, we never add it at all.
         if (!get_config('local_shopping_cart', 'allowrebookingcredit')) {
             return false;
         }
 
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingcredit', 0, $userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingcredit', $itemcount, $userid);
 
         return true;
     }
