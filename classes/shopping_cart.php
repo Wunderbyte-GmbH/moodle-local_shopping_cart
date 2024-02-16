@@ -244,7 +244,7 @@ class shopping_cart {
         }
 
         // If it applies, we add the rebookingcredit.
-        shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+        shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid);
 
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];
@@ -374,6 +374,11 @@ class shopping_cart {
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
                 $cache->set($cachekey, $cachedrawdata);
+
+                // When deleting items, we have to correct the rebooking credit!
+                // TODO: The rebookingcredit needs to be reduced, once we have less items than canceled records!
+                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+                /* shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid); */
             }
         }
 

@@ -84,8 +84,7 @@ class shopping_cart_rebookingcredit {
                 }
 
                 // Add the rebookingcredit to the shopping cart.
-                self::add_rebookingcredit_item_to_cart($buyforuser ? -1 : $userid,
-                    $buyforuser ? $userid : 0, $itemcount + 1);
+                self::add_rebookingcredit_item_to_cart($userid, 0, $itemcount);
                 $cachedrawdata = $cache->get($cachekey);
             }
         }
