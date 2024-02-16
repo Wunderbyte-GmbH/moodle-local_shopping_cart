@@ -25,6 +25,10 @@
 
 namespace local_shopping_cart;
 
+use cache;
+use dml_exception;
+use coding_exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
@@ -45,6 +49,106 @@ class shopping_cart_rebookingcredit {
     }
 
     /**
+     * Performs checks and adds the rebookingcredit if it should be applied.
+     *
+     * @param array $cachedrawdata
+     * @param int $userid
+     * @param int $buyforuser
+     * @return void
+     * @throws dml_exception
+     * @throws coding_exception
+     */
+    public static function add_rebookingcredit(array &$cachedrawdata, string $area, int $userid, int $buyforuser = 0) {
+
+        $cache = cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+
+        $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
+
+        if (!empty($canceledrecords)
+            && $area != 'bookingfee'
+            && $area != 'rebookingcredit') {
+
+            $normalitemsonly = array_filter($cachedrawdata["items"],
+                fn($a) => ($a["area"] != 'bookingfee' && $a["area"] != 'rebookingcredit'));
+            $itemcount = count($normalitemsonly);
+
+            // We can only add as many rebookingcredits as we have canceled records.
+            if ($itemcount < count($canceledrecords)) {
+                $rebookingcreditrecords = array_filter($cachedrawdata["items"],
+                    fn($a) => ($a["area"] == 'rebookingcredit'));
+                if (!empty($rebookingcreditrecords)) {
+                    $rebookingcredititem = reset($rebookingcreditrecords);
+                    shopping_cart::delete_item_from_cart('local_shopping_cart', 'rebookingcredit',
+                        $rebookingcredititem['itemid'], $userid);
+                }
+
+                // Add the rebookingcredit to the shopping cart.
+                self::add_rebookingcredit_item_to_cart($buyforuser ? -1 : $userid,
+                    $buyforuser ? $userid : 0, $itemcount + 1);
+                $cachedrawdata = $cache->get($cachekey);
+            }
+        }
+    }
+
+    /**
+     * If the user has recently cancelled an option we'll refund the rebookingcredit.
+     *
+     * @param int $userid
+     * @return array
+     */
+    private static function get_records_canceled_with_future_canceluntil(int $userid): array {
+        global $DB;
+        $now = time();
+
+        // If the user has recently cancelled an option we'll refund the rebookingcredit.
+        // This will always only work with the MOST RECENTLY canceled option.
+        $canceledrecords = $DB->get_records_select('local_shopping_cart_history',
+            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil", [
+            'userid' => $userid,
+            'canceluntil' => $now,
+        ], '');
+
+        return $canceledrecords;
+    }
+
+    /**
+     * Helper function to check if a user has already used the rebookingcredit.
+     *
+     * @param int $userid
+     * @return bool true if user has already received a rebookingcredit, else false
+     */
+    private static function rebookingcredit_already_used($userid) {
+        global $DB;
+        return $DB->record_exists_select('local_shopping_cart_ledger',
+            "area = 'rebookingcredit' AND timecreated BETWEEN :lowesttimecreated AND :now", [
+            'lowesttimecreated' => self::get_lowest_timecreated_of_canceledrecords($userid),
+            'now' => time(),
+        ]);
+    }
+
+    /**
+     * Get the lowest timecreated timestamp of the canceled records.
+     *
+     * @param int $userid
+     * @return void
+     */
+    private static function get_lowest_timecreated_of_canceledrecords(int $userid) {
+        global $DB;
+        // If the user has recently cancelled an option we'll refund the rebookingcredit.
+        // This will always only work with the MOST RECENTLY canceled option.
+        $lowesttimecreated = $DB->get_field_sql("SELECT MIN(timecreated) AS lowesttimecreated
+            FROM {local_shopping_cart_history}
+            WHERE userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil",
+            [
+                'userid' => $userid,
+                'canceluntil' => time(),
+            ]);
+
+        return $lowesttimecreated;
+    }
+
+    /**
      *
      * Add rebookingcredit to cart.
      *
@@ -55,10 +159,10 @@ class shopping_cart_rebookingcredit {
      *
      * @return bool
      */
-    public static function add_rebookingcredit_to_cart(int $userid, int $buyforuserid = 0, int $itemcount = 1): bool {
+    public static function add_rebookingcredit_item_to_cart(int $userid, int $buyforuserid = 0, int $itemcount = 1): bool {
 
         // If rebookingcredit is turned off in settings, we never add it at all.
-        if (!get_config('local_shopping_cart', 'allowrebookingcredit')) {
+        if (!get_config('local_shopping_cart', 'allowrebookingcredit') || self::rebookingcredit_already_used($userid)) {
             return false;
         }
 
