@@ -243,9 +243,6 @@ class shopping_cart {
             $cachedrawdata = $cache->get($cachekey);
         }
 
-        // If it applies, we add the rebookingcredit.
-        shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid);
-
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];
 
@@ -265,6 +262,9 @@ class shopping_cart {
                     $cachedrawdata['items'][$cacheitemkey] = $itemdata;
                     $cachedrawdata['expirationdate'] = $expirationtimestamp;
                     $cache->set($cachekey, $cachedrawdata);
+
+                    // If it applies, we add the rebookingcredit.
+                    shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $buyforuser ? -1 : $userid);
 
                     $itemdata['expirationdate'] = $expirationtimestamp;
                     $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS;
@@ -374,11 +374,6 @@ class shopping_cart {
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
                 $cache->set($cachekey, $cachedrawdata);
-
-                // When deleting items, we have to correct the rebooking credit!
-                // TODO: The rebookingcredit needs to be reduced, once we have less items than canceled records!
-                // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-                /* shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid); */
             }
         }
 
@@ -421,6 +416,9 @@ class shopping_cart {
                 } else {
                     // If we still have bookable items, we cannot delete fees and credits from cart.
                     $letsdelete = false;
+
+                    // Also check, if we need to adjust rebookingcredit.
+                    shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid);
                 }
             }
 

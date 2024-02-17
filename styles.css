@@ -394,3 +394,17 @@ div.shopping-cart-items-container div.item-description {
 .shopping-cart-items .item-button:hover {
     color: rgb(29, 33, 37);
 }
+
+#page-local-shopping_cart-cashier li[data-area="rebookingcredit"] img {
+    width: 20px;
+}
+
+#page-local-shopping_cart-cashier li[data-area="bookingfee"] img {
+    width: 20px;
+}
+
+#page-local-shopping_cart-cashier #shopping_cart-cashiers-section #checkout .shopping-cart-items li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px dashed #ccc;
+}

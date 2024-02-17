@@ -96,7 +96,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
-        // For behat tests, we want clear separtion of items and no random values.
+        // For behat tests, we want clear separation of items and no random values.
         switch ($itemid) {
             case 1:
                 $price = 10.00;

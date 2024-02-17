@@ -53,12 +53,16 @@ class shopping_cart_rebookingcredit {
      *
      * @param array $cachedrawdata
      * @param int $userid
-     * @param int $buyforuser
      * @return void
      * @throws dml_exception
      * @throws coding_exception
      */
-    public static function add_rebookingcredit(array &$cachedrawdata, string $area, int $userid, int $buyforuser = 0) {
+    public static function add_rebookingcredit(array &$cachedrawdata, string $area, int $userid) {
+
+        // If we are on cashier and have a user to buy for.
+        if ($userid == -1) {
+            $userid = shopping_cart::return_buy_for_userid();
+        }
 
         $cache = cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
@@ -74,7 +78,7 @@ class shopping_cart_rebookingcredit {
             $itemcount = count($normalitemsonly);
 
             // We can only add as many rebookingcredits as we have canceled records.
-            if ($itemcount < count($canceledrecords)) {
+            if ($itemcount <= count($canceledrecords)) {
                 $rebookingcreditrecords = array_filter($cachedrawdata["items"],
                     fn($a) => ($a["area"] == 'rebookingcredit'));
                 if (!empty($rebookingcreditrecords)) {
@@ -84,7 +88,7 @@ class shopping_cart_rebookingcredit {
                 }
 
                 // Add the rebookingcredit to the shopping cart.
-                self::add_rebookingcredit_item_to_cart($userid, 0, $itemcount);
+                self::add_rebookingcredit_item_to_cart($userid, $itemcount);
                 $cachedrawdata = $cache->get($cachekey);
             }
         }
@@ -120,8 +124,9 @@ class shopping_cart_rebookingcredit {
     private static function rebookingcredit_already_used($userid) {
         global $DB;
         return $DB->record_exists_select('local_shopping_cart_ledger',
-            "area = 'rebookingcredit' AND timecreated BETWEEN :lowesttimecreated AND :now", [
+            "area = 'rebookingcredit' AND userid = :userid AND timecreated BETWEEN :lowesttimecreated AND :now", [
             'lowesttimecreated' => self::get_lowest_timecreated_of_canceledrecords($userid),
+            'userid' => $userid,
             'now' => time(),
         ]);
     }
@@ -153,12 +158,11 @@ class shopping_cart_rebookingcredit {
      *
      *
      * @param int $userid the id of the user who books (-1 if cashier books for another user)
-     * @param int $buyforuserid the id of the user to buy for (for cashier only)
      * @param int $itemcount number of items
      *
      * @return bool
      */
-    public static function add_rebookingcredit_item_to_cart(int $userid, int $buyforuserid = 0, int $itemcount = 1): bool {
+    public static function add_rebookingcredit_item_to_cart(int $userid, int $itemcount = 1): bool {
 
         // If rebookingcredit is turned off in settings, we never add it at all.
         if (!get_config('local_shopping_cart', 'allowrebookingcredit') || self::rebookingcredit_already_used($userid)) {
