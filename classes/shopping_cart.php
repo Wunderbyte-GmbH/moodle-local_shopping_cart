@@ -43,6 +43,7 @@ use moodle_exception;
 use Exception;
 use local_shopping_cart\event\item_notbought;
 use local_shopping_cart\interfaces\interface_transaction_complete;
+use local_shopping_cart\payment\service_provider;
 use moodle_url;
 use stdClass;
 
@@ -1712,6 +1713,20 @@ class shopping_cart {
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
                         if (isset($response['success']) && $response['success']) {
+
+                            // At this point, we need to do one more check.
+                            // If, for some reason, the payment was successful...
+                            // ...  but the shopping car history is not updated, we might run in a loop.
+
+                            if ($paymentid = $DB->get_field('payments', 'id', [
+                                'component' => 'local_shopping_cart',
+                                'itemid' => $record->identifier,
+                                'userid' => $record->userid,
+                                'gateway' => $name,
+                            ])) {
+                                service_provider::deliver_order('', $record->identifier, $paymentid, $record->userid);
+                            }
+
                             if (!empty($response['url'])) {
                                 redirect($response['url']);
                             }
