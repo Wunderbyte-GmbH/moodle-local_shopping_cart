@@ -28,6 +28,7 @@ namespace local_shopping_cart;
 use cache;
 use dml_exception;
 use coding_exception;
+use context_system;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -165,7 +166,10 @@ class shopping_cart_rebookingcredit {
     public static function add_rebookingcredit_item_to_cart(int $userid, int $itemcount = 1): bool {
 
         // If rebookingcredit is turned off in settings, we never add it at all.
-        if (!get_config('local_shopping_cart', 'allowrebookingcredit') || self::rebookingcredit_already_used($userid)) {
+        if (!get_config('local_shopping_cart', 'allowrebookingcredit')
+            || self::rebookingcredit_already_used($userid) // If it was already used, we do not add.
+            // For cashier rebookingcredit never gets added.
+            || has_capability('local/shopping_cart:cashier', context_system::instance())) {
             return false;
         }
 
