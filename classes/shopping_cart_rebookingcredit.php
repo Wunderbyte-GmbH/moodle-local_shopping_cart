@@ -29,6 +29,8 @@ use cache;
 use dml_exception;
 use coding_exception;
 use context_system;
+use moodle_exception;
+use ddl_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -53,10 +55,13 @@ class shopping_cart_rebookingcredit {
      * Performs checks and adds the rebookingcredit if it should be applied.
      *
      * @param array $cachedrawdata
+     * @param string $area
      * @param int $userid
      * @return void
-     * @throws dml_exception
      * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     * @throws ddl_exception
      */
     public static function add_rebookingcredit(array &$cachedrawdata, string $area, int $userid) {
 

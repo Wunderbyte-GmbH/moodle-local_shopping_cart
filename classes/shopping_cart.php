@@ -1214,7 +1214,7 @@ class shopping_cart {
      * @param int $userid
      * @return bool
      */
-    public static function allowed_to_cancel(int $historyid, int $itemid, string $area, int $userid):bool {
+    public static function allowed_to_cancel(int $historyid, int $itemid, string $area, int $userid): bool {
 
         $context = context_system::instance();
 

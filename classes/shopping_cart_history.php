@@ -151,6 +151,7 @@ class shopping_cart_history {
         }
 
         // If we have open orders tables select statements, we can now UNION them.
+
         if (!empty($openorderselects)) {
             $customorderid = "oo.tid AS customorderid, ";
             $openorderselectsstring = implode(' UNION ', $openorderselects);
@@ -462,7 +463,7 @@ class shopping_cart_history {
      * @param int $identifier
      * @return array
      */
-    public static function return_data_via_identifier(int $identifier):array {
+    public static function return_data_via_identifier(int $identifier): array {
         global $DB;
         if ($data = $DB->get_records('local_shopping_cart_history', ['identifier' => $identifier])) {
 
@@ -491,7 +492,7 @@ class shopping_cart_history {
      * @param int $identifier
      * @return array
      */
-    public static function return_data_from_ledger_via_identifier(int $identifier):array {
+    public static function return_data_from_ledger_via_identifier(int $identifier): array {
         global $DB;
         if ($data = $DB->get_records('local_shopping_cart_ledger', ['identifier' => $identifier])) {
 
@@ -521,7 +522,7 @@ class shopping_cart_history {
      * @param int $userid
      * @return bool
      */
-    public static function error_occured_for_identifier(int $identifier, int $userid):bool {
+    public static function error_occured_for_identifier(int $identifier, int $userid): bool {
 
         global $DB;
 
@@ -549,7 +550,7 @@ class shopping_cart_history {
      * @param array $records
      * @return bool
      */
-    public static function set_success_in_db(array $records):bool {
+    public static function set_success_in_db(array $records): bool {
 
         global $DB;
 
