@@ -35,6 +35,16 @@ $context = context_system::instance();
 
 $commaseparator = current_language() == 'de' ? ',' : '.';
 
+// Localized date format.
+switch(current_language()) {
+    case 'de':
+        $dateformat = "d.m.Y";
+        break;
+    default:
+        $dateformat = "Y-m-d";
+        break;
+}
+
 ob_start();
 
 // Create new PDF document.
@@ -62,11 +72,11 @@ foreach ($files as $file) {
 
 $items = local_shopping_cart\shopping_cart_history::return_data_from_ledger_via_identifier($id);
 $timecreated = $items[array_key_first($items)]->timecreated;
-$date = date("Y-m-d", $timecreated);
+$date = date($dateformat, $timecreated);
 $userid = $items[array_key_first($items)]->userid;
 
 global $DB;
-$userdetails = $DB->get_record('user', ['id' => $userid]);
+$user = $DB->get_record('user', ['id' => $userid]);
 
 /*
  * TODO: We'll have to add the user profile picture in the future.
@@ -97,11 +107,41 @@ if (!empty($picturefile)) {
     $userpic = '';
 }*/
 
-$cfghtml = str_replace("[[date]]", $date, $cfghtml);
-$cfghtml = str_replace("[[firstname]]", $userdetails->firstname, $cfghtml);
-$cfghtml = str_replace("[[lastname]]", $userdetails->lastname, $cfghtml);
-$cfghtml = str_replace("[[mail]]", $userdetails->email, $cfghtml);
 $cfghtml = str_replace("[[id]]", $id, $cfghtml);
+$cfghtml = str_replace("[[date]]", $date, $cfghtml);
+$cfghtml = str_replace("[[username]]", $user->username, $cfghtml);
+$cfghtml = str_replace("[[firstname]]", $user->firstname, $cfghtml);
+$cfghtml = str_replace("[[lastname]]", $user->lastname, $cfghtml);
+$cfghtml = str_replace("[[mail]]", $user->email, $cfghtml);
+$cfghtml = str_replace("[[email]]", $user->email, $cfghtml);
+$cfghtml = str_replace("[[institution]]", $user->institution, $cfghtml);
+$cfghtml = str_replace("[[department]]", $user->department, $cfghtml);
+$cfghtml = str_replace("[[address]]", $user->address, $cfghtml);
+$cfghtml = str_replace("[[city]]", $user->city, $cfghtml);
+$cfghtml = str_replace("[[country]]", $user->country, $cfghtml);
+
+// We also add the possibility to use any custom user profile field as param.
+if (empty($user->profile)) {
+    $user->profile = [];
+    profile_load_data($user);
+    foreach ($user as $userkey => $uservalue) {
+        if (substr($userkey, 0, 14) == "profile_field_") {
+            $profilefieldkey = str_replace('profile_field_', '', $userkey);
+            $user->profile[$profilefieldkey] = $uservalue;
+        }
+    }
+}
+foreach ($user->profile as $profilefieldkey => $profilefieldvalue) {
+    if (!isset($user->{$$profilefieldkey})) {
+        // Convert unix timestamps to rendered dates.
+        if (is_numeric($profilefieldvalue)) {
+            if (strlen((string)$profilefieldvalue) > 8 && strlen((string)$profilefieldvalue) < 12) {
+                $profilefieldvalue = date($dateformat, $profilefieldvalue);
+            }
+        }
+        $cfghtml = str_replace("[[" . $profilefieldkey . "]]", $profilefieldvalue, $cfghtml);
+    }
+}
 
 $prehtml = explode('[[items]]', $cfghtml);
 $repeathtml = explode('[[/items]]', $prehtml[1]);
@@ -154,7 +194,7 @@ $html = '
 
 // Set document information.
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor($userdetails->email);
+$pdf->SetAuthor($user->email);
 $pdf->SetTitle('bookingreceipt_' . $id . '_' . $userid . '_' . $date);
 $pdf->SetSubject('');
 $pdf->SetKeywords('');
@@ -196,4 +236,4 @@ ob_end_clean();
 
 // Close and output PDF document.
 // This method has several options, check the source code documentation for more information.
-$pdf->Output($userdetails->firstname . '_' . $userdetails->lastname . '_' . $date . '.pdf', 'I');
+$pdf->Output($user->firstname . '_' . $user->lastname . '_' . $date . '.pdf', 'I');
