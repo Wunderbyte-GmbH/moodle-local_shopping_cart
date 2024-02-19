@@ -454,7 +454,10 @@ function confirmCancelAndSetCreditModal(button) {
         const response = e.detail;
         // eslint-disable-next-line no-console
         console.log(response);
-        window.location.reload();
+
+        const url = new URL(window.location.href);
+        url.searchParams.append('userid', userid);
+        window.location.replace(url.toString());
     });
 
     // Show the form.
