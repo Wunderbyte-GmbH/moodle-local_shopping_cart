@@ -1,3 +1,10 @@
+## Version 0.7.5 (2024021900)
+* New feature: Add possibility to custom user profile fields to receipt.
+* Improvement: Use "usecredit" state even when cache was purged.
+* Bugfix: Fix install.xml lines which were not compatible with upgrade.php.
+* Bugfix: When cancelling from cashier, we want to stay on page for selected user.
+* Bugfix: New wunderbyte table doesn't allow constructor.
+
 ## Version 0.7.4 (2024020900)
 * Improvement: Slightly smaller addtocart button.
 * Improvement: Show a modal when trying to book a fully booked item. Also reload the page after pressing the OK button.
