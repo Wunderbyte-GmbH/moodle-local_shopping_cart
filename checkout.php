@@ -38,6 +38,7 @@ global $USER, $PAGE, $OUTPUT, $CFG, $ME;
 
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
+$jsononly = optional_param('jsononly', null, PARAM_INT);
 
 // As we might get a malformed URL, we have to jump through a few loops.
 if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
@@ -55,21 +56,42 @@ if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
     $identifier = $params['identifier'] ?? null;
 }
 
-// Setup the page.
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
-$PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
-
-// Set the page layout.
-$PAGE->set_pagelayout('base');
+if (empty($jsononly)) {
+    // Setup the page.
+    $PAGE->set_context(\context_system::instance());
+    $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
+    $PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
+    $PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
+    // Set the page layout.
+    $PAGE->set_pagelayout('base');
+}
 
 $userid = $USER->id;
 $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
 $data["userid"] = $USER->id;
+
+// If we have a successful checkout, we show the bought items via transaction id.
+if (isset($identifier)) {
+    $historylist = new shoppingcart_history_list($userid, $identifier);
+    $historylist->insert_list($data);
+
+    // Make sure we actually have a success.
+    if ($records = shopping_cart_history::return_data_via_identifier($identifier)) {
+        foreach ($records as $record) {
+            if (LOCAL_SHOPPING_CART_PAYMENT_SUCCESS == $record->paymentstatus) {
+                $success = true;
+            } else {
+                $success = false;
+            }
+
+        }
+    }
+}
+
 if (isset($success)) {
+
     if ($success) {
         $data['success'] = 1;
         $data['finished'] = 1;
@@ -80,10 +102,10 @@ if (isset($success)) {
             'deleteAllItems', []
         );
 
-        // If we have a successful checkout, we show the bought items via transaction id.
-        if (isset($identifier)) {
-            $historylist = new shoppingcart_history_list($userid, $identifier);
-            $historylist->insert_list($data);
+        // If we just want to show the success json, we return it.
+        if (!empty($jsononly)) {
+            echo json_encode(['status' => 0]);
+            die;
         }
 
     } else {
@@ -132,12 +154,13 @@ if (isset($success)) {
 
 }
 
-// Output the header.
-echo $OUTPUT->header();
+if (empty($jsononly)) {
+    // Output the header.
+    echo $OUTPUT->header();
+    // Convert numbers to strings with 2 fixed decimals right before rendering.
+    shopping_cart::convert_prices_to_number_format($data);
 
-// Convert numbers to strings with 2 fixed decimals right before rendering.
-shopping_cart::convert_prices_to_number_format($data);
-
-echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
-// Now output the footer.
-echo $OUTPUT->footer();
+    echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+    // Now output the footer.
+    echo $OUTPUT->footer();
+}
