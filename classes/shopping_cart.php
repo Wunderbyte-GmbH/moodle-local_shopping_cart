@@ -41,6 +41,7 @@ use local_shopping_cart\event\payment_rebooked;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use Exception;
+use local_shopping_cart\event\item_notbought;
 use local_shopping_cart\interfaces\interface_transaction_complete;
 use moodle_url;
 use stdClass;
@@ -346,6 +347,7 @@ class shopping_cart {
 
     /**
      * This is to unload all the items from the cart.
+     * In the first instance, this is about cached items.
      *
      * @param string $component
      * @param string $area
@@ -930,6 +932,19 @@ class shopping_cart {
             if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
+
+                $context = context_system::instance();
+                // Trigger item deleted event.
+                $event = item_notbought::create([
+                    'context' => $context,
+                    'userid' => $USER->id,
+                    'relateduserid' => $userid,
+                    'other' => [
+                        'itemid' => $item['itemid'],
+                        'component' => $item['componentname'],
+                    ],
+                ]);
+
             } else {
                 // Delete Item from cache.
                 // Here, we don't need to unload the component, so the last parameter is false.

@@ -423,6 +423,7 @@ $string['floatonly'] = 'Nur Dezimalzahlen werden akzeptiert. Das richtige Trennz
 
 // Events.
 $string['item_bought'] = 'Artikel gekauft';
+$string['item_notbought'] = 'Artikel konnte nicht gekauft werden';
 $string['item_added'] = 'Artikel hinzugefügt';
 $string['item_expired'] = 'Zeit für Artikel im Warenkorb abgelaufen';
 $string['item_deleted'] = 'Artikel gelöscht';
@@ -430,6 +431,7 @@ $string['item_canceled'] = 'Artikel storniert';
 $string['useraddeditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} hinzugefügt';
 $string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gelöscht';
 $string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
+$string['usernotboughtitem'] = 'Nutzer/in mit der id {$a->userid} konnte den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} nicht kaufen';
 $string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
 $string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} storniert';
 $string['payment_added'] = 'Nutzer/in hat eine Zahlung gestartet';

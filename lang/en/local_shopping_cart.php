@@ -429,6 +429,7 @@ $string['floatonly'] = 'Only numeric values (decimals) are accepted. The correct
 
 // Events.
 $string['item_bought'] = 'Item bought';
+$string['item_notbought'] = 'Item could not be bought';
 $string['item_added'] = 'Item added';
 $string['item_expired'] = 'Item expired';
 $string['item_deleted'] = 'Item deleted';
@@ -436,6 +437,7 @@ $string['item_canceled'] = 'Item canceled';
 $string['useraddeditem'] = 'User with the userid {$a->userid} added item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userdeleteditem'] = 'User with the userid {$a->userid} deleted item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
+$string['usernotboughtitem'] = 'User with the userid {$a->userid} could not buy item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
 $string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['payment_added'] = 'User has started a payment transaction';
