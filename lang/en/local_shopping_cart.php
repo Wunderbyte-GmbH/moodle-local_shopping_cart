@@ -130,6 +130,8 @@ $string['error:costcentersdonotmatch'] = 'You already have an item with a differ
 You have to buy this item separately!';
 $string['error:fullybookedtitle'] = 'Fully booked';
 $string['error:fullybooked'] = 'You cannot book this item anymore because it is already fully booked.';
+$string['error:alreadybookedtitle'] = 'Already booked';
+$string['error:alreadybooked'] = 'You have already booked this item.';
 $string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need
 to set up a payment gateway.';
 $string['error:generalcarterror'] = 'You cannot add this item to your shopping cart because there was an error.

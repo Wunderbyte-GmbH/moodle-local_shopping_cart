@@ -165,6 +165,12 @@ class shopping_cart {
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED,
                     'itemname' => $cartitem['itemname'] ?? '',
                 ];
+            } else if (isset($cartitem['allow']) && $cartitem['allow'] == false
+                && isset($cartitem['info']) && $cartitem['info'] == "alreadybooked") {
+                return [
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED,
+                    'itemname' => $cartitem['itemname'] ?? '',
+                ];
             } else if (isset($cartitem['allow']) && $cartitem['allow']) {
                 return [
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
@@ -232,21 +238,22 @@ class shopping_cart {
         $cachedrawdata = $cache->get($cachekey);
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
-        // If we have nothing in our cart and we are not about...
-        // ... to add the booking fee...
-        // ... we add the booking fee.
-        if (empty($cachedrawdata['items'])
-            && $area != 'bookingfee'
-            && $area != 'rebookingcredit') {
-
-            // If we buy for user, we need to use -1 as userid.
-            // Also we add $userid as second param so we can check if fee was already paid.
-            shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
-            $cachedrawdata = $cache->get($cachekey);
-        }
-
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];
+
+        if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
+            // If we have nothing in our cart and we are not about...
+            // ... to add the booking fee...
+            // ... we add the booking fee.
+            if (empty($cachedrawdata['items'])
+                && $area != 'bookingfee'
+                && $area != 'rebookingcredit') {
+                // If we buy for user, we need to use -1 as userid.
+                // Also we add $userid as second param so we can check if fee was already paid.
+                shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+                $cachedrawdata = $cache->get($cachekey);
+            }
+        }
 
         $expirationtimestamp = self::get_expirationdate();
 
@@ -322,6 +329,12 @@ class shopping_cart {
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED:
                 $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED;
+                $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
+                $itemdata['expirationdate'] = $expirationtimestamp;
+                $itemdata['price'] = 0;
+                break;
+            case LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED:
+                $itemdata['success'] = LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED;
                 $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
                 $itemdata['expirationdate'] = $expirationtimestamp;
                 $itemdata['price'] = 0;

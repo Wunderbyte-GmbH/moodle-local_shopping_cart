@@ -493,6 +493,7 @@ export function addItemShowNotification(data) {
     const CARTPARAM_CARTISFULL = 2; // Item added to cart successfully.
     const CARTPARAM_COSTCENTER = 3; // Item added to cart successfully.
     const CARTPARAM_FULLYBOOKED = 4; // Item not added because item is already fully booked.
+    const CARTPARAM_ALREADYBOOKED = 5; // Item not added because item was already booked before.
 
     switch (data.success) {
         case CARTPARAM_ALREADYINCART:
@@ -556,6 +557,35 @@ export function addItemShowNotification(data) {
             getStrings([
                 {key: 'error:fullybookedtitle', component: 'local_shopping_cart'},
                 {key: 'error:fullybooked', component: 'local_shopping_cart'},
+                {key: 'ok', component: 'core'},
+            ]).then(strings => {
+                // eslint-disable-next-line promise/no-nesting
+                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
+                    modal.setTitle(strings[0]);
+                    modal.setBody(strings[1]);
+                    modal.setSaveButtonText(strings[2]);
+
+                    // Reload when OK button is clicked.
+                    modal.getRoot().on(ModalEvents.save, function() {
+                        window.location.reload();
+                    });
+
+                    modal.show();
+                    return modal;
+                }).catch(e => {
+                    // eslint-disable-next-line no-console
+                    console.log(e);
+                });
+                return true;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+            return;
+        case CARTPARAM_ALREADYBOOKED:
+            getStrings([
+                {key: 'error:alreadybookedtitle', component: 'local_shopping_cart'},
+                {key: 'error:alreadybooked', component: 'local_shopping_cart'},
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
