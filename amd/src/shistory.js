@@ -38,6 +38,7 @@ const SELECTORS = {
     CANCELBUTTON: '.cashier-history-items .shopping_cart_history_cancel_button',
     PAIDBACKBUTTON: 'button.shopping_cart_history_paidback_button',
     CREDITSMANAGER: 'button.shopping_cart_history_creditsmanager',
+    REBOOKBUTTON: '.shopping_cart_history_rebook_button',
 };
 
 // Little hack to get strings at top-level although getString is asynchronous.
@@ -106,6 +107,19 @@ export const init = (cancelationFee = null) => {
                 event.preventDefault();
                 event.stopPropagation();
                 openCreditsManagerModal(btn);
+            });
+            btn.dataset.initialized = true;
+        }
+    });
+
+    // Mark for rebooking button.
+    const rebookbuttons = document.querySelectorAll(SELECTORS.REBOOKBUTTON);
+    rebookbuttons.forEach(btn => {
+        if (!btn.dataset.initialized) {
+            btn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                markforrebooking(btn);
             });
             btn.dataset.initialized = true;
         }
@@ -539,4 +553,34 @@ function openCreditsManagerModal(button) {
 
     // Show the form.
     modalForm.show();
+}
+
+/**
+ * Mark booking options for rebooking.
+ * @param {htmlElement} button
+ */
+function markforrebooking(button) {
+
+    // eslint-disable-next-line no-console
+    console.log(button);
+
+    const historyid = button.dataset.historyid;
+
+    Ajax.call([{
+        methodname: "local_shopping_cart_mark_item_for_rebooking",
+        args: {
+            historyid
+        },
+        done: function(data) {
+
+            // eslint-disable-next-line no-console
+            console.log(data);
+            window.location.reload();
+
+        },
+        fail: ex => {
+            // eslint-disable-next-line no-console
+            console.log("ex:" + ex);
+        },
+    }]);
 }

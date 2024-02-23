@@ -30,7 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../lib.php');
 
 use cache_helper;
+use coding_exception;
 use context_system;
+use dml_exception;
 use lang_string;
 use local_shopping_cart\event\checkout_completed;
 use local_shopping_cart\event\item_added;
@@ -79,21 +81,7 @@ class shopping_cart {
      */
     public static function allow_add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
-        global $USER;
-
-        // If there is no user specified, we determine it automatically.
-        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
-            $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = self::return_buy_for_userid();
-            }
-        } else {
-            // As we are not on cashier anymore, we delete buy for user.
-            self::buy_for_user(0);
-        }
-        if ($userid < 1) {
-            $userid = $USER->id;
-        }
+        $userid = self::set_user($userid);
 
         // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
@@ -217,20 +205,7 @@ class shopping_cart {
 
         $buyforuser = false;
 
-        // If there is no user specified, we determine it automatically.
-        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
-            $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = self::return_buy_for_userid();
-                $buyforuser = true;
-            }
-        } else {
-            // As we are not on cashier anymore, we delete buy for user.
-            self::buy_for_user(0);
-        }
-        if ($userid < 1) {
-            $userid = $USER->id;
-        }
+        $userid = self::set_user($userid);
 
         // Check the cache for items in cart.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
@@ -348,6 +323,33 @@ class shopping_cart {
                 break;
         }
         return $itemdata;
+    }
+
+    /**
+     * Function to set the userid correctly.
+     * @param int $userid
+     * @return mixed
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function set_user(int $userid) {
+
+        global $USER;
+
+        // If there is no user specified, we determine it automatically.
+        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
+            $context = context_system::instance();
+            if (has_capability('local/shopping_cart:cashier', $context)) {
+                $userid = self::return_buy_for_userid();
+            }
+        } else {
+            // As we are not on cashier anymore, we delete buy for user.
+            self::buy_for_user(0);
+        }
+        if ($userid < 1) {
+            $userid = $USER->id;
+        }
+        return $userid;
     }
 
     /**

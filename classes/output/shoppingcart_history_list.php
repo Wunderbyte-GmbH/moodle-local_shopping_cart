@@ -199,6 +199,10 @@ class shoppingcart_history_list implements renderable, templatable {
                     break;
             }
 
+            // Get the marked information.
+            $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, $userid);
+
+
             $this->historyitems[] = (array)$item;
 
         }

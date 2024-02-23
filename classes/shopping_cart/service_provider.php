@@ -18,6 +18,7 @@ namespace local_shopping_cart\shopping_cart;
 
 use context_system;
 use local_shopping_cart\local\entities\cartitem;
+use local_shopping_cart\shopping_cart_history;
 
 /**
  * Shopping_cart subsystem callback implementation for local_shopping_cart, for testing, does not have any use for production.
@@ -37,6 +38,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return array
      */
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
+
+        global $DB;
 
         switch ($area) {
             case 'bookingfee':
@@ -78,6 +81,30 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
                     'local_shopping_cart',
                     'rebookingcredit',
+                    '',  // No item description for rebookingcredit.
+                    $imageurl->out(),
+                    time(),
+                    0,
+                    0,
+                    'A',
+                    1, // Rebookingcredit cannot be deleted.
+                );
+                return ['cartitem' => $cartitem];
+            case 'rebookitem':
+                $record = $DB->get_record('local_shopping_cart_history', ['id' => $itemid]);
+
+                if ($record->componentname === 'local_shopping_cart') {
+                    return [];
+                }
+
+                $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
+                $cartitem = new cartitem(
+                    $itemid,
+                    get_string('rebook', 'local_shopping_cart') . $record->itemname,
+                    - ((float)$record->price + (float)$record->tax),
+                    $record->currency ?? 'EUR',
+                    $record->componentname,
+                    $record->area,
                     '',  // No item description for rebookingcredit.
                     $imageurl->out(),
                     time(),

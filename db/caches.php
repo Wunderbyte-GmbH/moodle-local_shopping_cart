@@ -50,5 +50,11 @@ $definitions = [
         'staticaccelerationsize' => 1,
         'invalidationevents' => ['setbackcachedcashreport'],
     ],
+    'cacherebooking' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 1,
+    ],
 ];
 
