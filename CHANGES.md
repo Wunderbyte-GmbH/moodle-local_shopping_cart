@@ -1,3 +1,11 @@
+## Version 0.7.6 (2024022300)
+* New Feature: Rebooking credit - If you activate rebooking credit, a user will get refunded the cancelation and booking fee
+if (s)he cancels an item within the cancelation period and books another item.
+* Improvment: Add "Item not bought" event when component feedback fails.
+* Improvement: deliver_order on successfull payment if it failed for some reason.
+* Improvement: Check Feedback with success.
+* Bugfix: Function allow_add_item_to_cart needs to respect availability conditions.
+
 ## Version 0.7.5 (2024021900)
 * New feature: Add possibility to custom user profile fields to receipt.
 * Improvement: Use "usecredit" state even when cache was purged.
