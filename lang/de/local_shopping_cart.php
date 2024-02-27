@@ -228,8 +228,8 @@ $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
 $string['applytocomponent'] = 'Stornierung an Artikel Plugin melden';
 $string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt, kann das Häkchen entfernt werden um hier zu stornieren, ohne dass die Käuferin aus z.B. dem Kurs ausgeschrieben wird.';
-$string['markforrebooking'] = 'Kurs austauschen';
-$string['markedforrebooking'] = 'Kurs für austausch markiert';
+$string['markforrebooking'] = 'Kurs umbuchen';
+$string['markedforrebooking'] = 'Fürs Umbuchen markiert';
 
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';

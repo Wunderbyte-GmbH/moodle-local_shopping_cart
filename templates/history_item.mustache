@@ -111,7 +111,9 @@
             <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;{{#str}} cancelpurchase, local_shopping_cart {{/str}}
         {{/canceled}}
     </button>
-    <button type="button" class="shopping_cart_history_rebook_button btn btn-sm pull-left {{buttonclass}}"
+    {{#showrebooking}}
+    <button type="button"
+        class="shopping_cart_history_rebook_button btn btn-sm pull-left {{#rebooking}}btn-warning{{/rebooking}} {{buttonclass}} "
         data-historyid="{{id}}"
         data-componentname="{{componentname}}"
         data-area="{{area}}"
@@ -122,11 +124,13 @@
         data-price="{{price}}"
         data-round="{{round}}"
         data-quotaconsumed="{{quotaconsumed}}">
+        <i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;
         {{#rebooking}}
             {{#str}} markedforrebooking, local_shopping_cart {{/str}}
         {{/rebooking}}
         {{^rebooking}}
-            <i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;{{#str}} markforrebooking, local_shopping_cart {{/str}}
+            {{#str}} markforrebooking, local_shopping_cart {{/str}}
         {{/rebooking}}
     </button>
+    {{/showrebooking}}
 </li>

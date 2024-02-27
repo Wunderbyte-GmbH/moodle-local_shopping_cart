@@ -69,7 +69,6 @@ class mark_for_rebooking extends external_api {
      * @param string $area
      * @param int $itemid
      * @param int $userid
-     *
      * @return array
      */
     public static function execute(int $historyid, int $userid): array {
@@ -77,8 +76,6 @@ class mark_for_rebooking extends external_api {
             'historyid' => $historyid,
             'userid' => $userid,
         ]);
-
-        global $USER;
 
         require_login();
 

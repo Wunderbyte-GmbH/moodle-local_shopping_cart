@@ -227,8 +227,8 @@ $string['cancelsuccess'] = 'Successfully canceled';
 $string['applytocomponent'] = 'Cancel without callback to plugin';
 $string['applytocomponent_desc'] = 'With this setting unchecked, you can cancel eg a double booking without unenroling a buyer from the bought course.';
 
-$string['markforrebooking'] = 'Mark course for rebooking';
-$string['markedforrebooking'] = 'Course marked for rebooking';
+$string['markforrebooking'] = 'Rebook to another course';
+$string['markedforrebooking'] = 'Marked for rebooking';
 
 $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';

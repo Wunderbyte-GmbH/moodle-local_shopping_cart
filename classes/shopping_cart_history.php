@@ -775,9 +775,9 @@ class shopping_cart_history {
      * Marks an item for rebooking.
      * @param int $historyid
      * @param int $userid
-     * @return void
+     * @return array
      */
-    public static function toggle_mark_for_rebooking(int $historyid, int $userid) {
+    public static function toggle_mark_for_rebooking(int $historyid, int $userid): array {
 
         $userid = shopping_cart::set_user($userid);
 

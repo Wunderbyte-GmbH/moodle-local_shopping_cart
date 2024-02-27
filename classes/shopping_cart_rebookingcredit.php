@@ -173,8 +173,7 @@ class shopping_cart_rebookingcredit {
         // If rebookingcredit is turned off in settings, we never add it at all.
         if (!get_config('local_shopping_cart', 'allowrebookingcredit')
             || self::rebookingcredit_already_used($userid) // If it was already used, we do not add.
-            // For cashier rebookingcredit never gets added.
-            || has_capability('local/shopping_cart:cashier', context_system::instance())) {
+        ) {
             return false;
         }
 
