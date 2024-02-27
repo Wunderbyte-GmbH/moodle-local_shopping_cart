@@ -449,7 +449,8 @@ $string['payment_added'] = 'User has started a payment transaction';
 $string['payment_added_log'] = 'User with the userid {$a->userid} has started a payment with the identifier {$a->identifier} for item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 
 // Caches.
-$string['cachedef_schistory'] = 'Cache is used to store shopping cart items for users';
+$string['cachedef_schistory'] = 'Shopping cart items cache (shopping cart history cache)';
+$string['cachedef_cacherebooking'] = 'Rebooking cache';
 
 // Cashier manual rebook.
 $string['annotation'] = 'Annotation';

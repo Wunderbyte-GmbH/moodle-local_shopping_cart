@@ -442,7 +442,8 @@ $string['payment_added'] = 'Nutzer/in hat eine Zahlung gestartet';
 $string['payment_added_log'] = 'Nutzer/in mit der id {$a->userid} hat für den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} einen Zahlungsprozess mit dem identifier {$a->identifier} gestartet';
 
 // Caches.
-$string['cachedef_schistory'] = 'Cache wird verwendet um die Einkaufskörbe der user zu speichern';
+$string['cachedef_schistory'] = 'Warenkorb-Cache (Shopping Cart History Cache)';
+$string['cachedef_cacherebooking'] = 'Umbuchungs-Cache (Rebooking Cache)';
 
 // Cashier manual rebook.
 $string['annotation'] = 'Anmerkung';
