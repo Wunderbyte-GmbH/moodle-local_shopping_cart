@@ -792,6 +792,7 @@ class shopping_cart_history {
             if (in_array($historyid, $itemstorebook)) {
                 $itemstorebook = array_filter($itemstorebook, fn($a) => $a != $historyid);
                 $marked = 0;
+                shopping_cart::delete_item_from_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
             } else {
                 // If so, decide if a add or remove.
                 $itemstorebook[] = $historyid;

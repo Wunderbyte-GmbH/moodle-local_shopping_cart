@@ -221,8 +221,7 @@ class shopping_cart {
             // ... to add the booking fee...
             // ... we add the booking fee.
             if (empty($cachedrawdata['items'])
-                && $area != 'bookingfee'
-                && $area != 'rebookingcredit') {
+                && !in_array($area, ['bookingfee', 'rebookingcredit', 'rebookitem'])) {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
                 shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);

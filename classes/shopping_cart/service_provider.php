@@ -103,15 +103,15 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     get_string('rebook', 'local_shopping_cart') . $record->itemname,
                     - ((float)$record->price + (float)$record->tax),
                     $record->currency ?? 'EUR',
-                    $record->componentname,
-                    $record->area,
-                    '',  // No item description for rebookingcredit.
+                    'local_shopping_cart',
+                    'rebookitem',
+                    '',  // No item description for rebookitem.
                     $imageurl->out(),
                     time(),
                     0,
                     0,
                     'A',
-                    1, // Rebookingcredit cannot be deleted.
+                    0, // Rebook items can be deleted again.
                 );
                 return ['cartitem' => $cartitem];
         }
