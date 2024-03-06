@@ -1,3 +1,7 @@
+## Version 0.7.7 (2024030600)
+* Bugfix: Don't fail on space in img url for item picture.
+* Bugfix: Set service period on null for booking option without date.
+
 ## Version 0.7.6 (2024022300)
 * New Feature: Rebooking credit - If you activate rebooking credit, a user will get refunded the cancelation and booking fee
 if (s)he cancels an item within the cancelation period and books another item.
