@@ -33,6 +33,8 @@ use external_value;
 use external_single_structure;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_bookingfee;
+use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\shopping_cart_rebookingcredit;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -115,6 +117,11 @@ class delete_item_from_cart extends external_api {
         if (shopping_cart::is_rebookingcredit($params['component'], $params['area'])
             && !has_capability('local/shopping_cart:cashier', $context)) {
             return false;
+        }
+
+        if ($params['component'] == 'local_shopping_cart' && $params['area'] == 'rebookitem') {
+            shopping_cart_history::toggle_mark_for_rebooking($params['itemid'], $userid);
+            return ['success' => 1];
         }
 
         // This treats the cache side.

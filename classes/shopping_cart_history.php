@@ -808,7 +808,6 @@ class shopping_cart_history {
         }
 
         return ['marked' => $marked];
-
     }
 
     /**

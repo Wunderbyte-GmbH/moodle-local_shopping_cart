@@ -318,7 +318,7 @@ export const deleteItem = (itemid, component, area, userid) => {
                 console.log(e);
             });
 
-            reinit(userid);
+            window.location.reload();
 
             import('local_wunderbyte_table/reload')
                 // eslint-disable-next-line promise/always-return

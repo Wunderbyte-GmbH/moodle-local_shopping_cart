@@ -72,6 +72,11 @@ class mark_for_rebooking extends external_api {
      * @return array
      */
     public static function execute(int $historyid, int $userid): array {
+        global $USER;
+        if (empty($userid)) {
+            $userid = $USER->id;
+        }
+
         $params = self::validate_parameters(self::execute_parameters(), [
             'historyid' => $historyid,
             'userid' => $userid,
@@ -85,6 +90,12 @@ class mark_for_rebooking extends external_api {
 
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
+
+        // Only a cashier can book for other users than herself.
+        if (!has_capability('local/shopping_cart:cashier', $context)
+            && $params['userid'] != $USER->id) {
+            throw new moodle_exception('norighttobookforotherusers', 'local_shopping_cart');
         }
 
         return shopping_cart_history::toggle_mark_for_rebooking($params['historyid'], $params['userid']);

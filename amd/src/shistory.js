@@ -565,11 +565,13 @@ function markforrebooking(button) {
     console.log(button);
 
     const historyid = button.dataset.historyid;
+    const userid = button.dataset.userid;
 
     Ajax.call([{
-        methodname: "local_shopping_cart_mark_item_for_rebooking",
+        methodname: 'local_shopping_cart_mark_item_for_rebooking',
         args: {
-            historyid
+            historyid,
+            userid
         },
         done: function(data) {
 
@@ -580,7 +582,7 @@ function markforrebooking(button) {
         },
         fail: ex => {
             // eslint-disable-next-line no-console
-            console.log("ex:" + ex);
+            console.log("local_shopping_cart_mark_item_for_rebooking failed: " + JSON.stringify(ex));
         },
     }]);
 }
