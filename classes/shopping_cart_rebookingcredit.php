@@ -67,11 +67,11 @@ class shopping_cart_rebookingcredit {
 
         // If we are on cashier and have a user to buy for.
         if ($userid == -1) {
-            $userid = shopping_cart::return_buy_for_userid();
+            $userid = buyfor::get_user_id();
         }
 
         $cache = cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = shopping_cart::generate_cachekey($userid);
 
         $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
 

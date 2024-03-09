@@ -212,7 +212,7 @@ class shopping_cart_credits {
         if ($newbalance > 0) {
             // We add the right cache.
             $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-            $cachekey = $userid . '_shopping_cart';
+            $cachekey = shopping_cart::generate_cachekey($userid);
 
             $cachedrawdata = $cache->get($cachekey);
             if ($cachedrawdata) {
@@ -252,7 +252,7 @@ class shopping_cart_credits {
 
         // We always have to add the cache.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = shopping_cart::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {

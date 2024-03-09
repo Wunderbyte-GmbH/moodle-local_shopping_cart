@@ -83,19 +83,23 @@ class add_item_to_cart extends external_api {
 
         global $USER;
 
-        require_login();
-
-        $context = context_system::instance();
-
-        self::validate_context($context);
-
-        if (!has_capability('local/shopping_cart:canbuy', $context)) {
-            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        if (empty(get_config('local_shopping_cart', 'selltoguests'))) {
+            require_login();
+            $context = context_system::instance();
+            self::validate_context($context);
+            if (!has_capability('local/shopping_cart:canbuy', $context)) {
+                throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+            }
         }
 
-        // The transformation of the userid will be done in the add_item_to_cart function.
+        // If the user comes in as guest and is changed to a user on the fly, we need a trigger to reload the site.
+        $originaluserid = $USER->id;
 
-        return shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
+        // The transformation of the userid will be done in the add_item_to_cart function.
+        $result = shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
+
+        $result['reload'] = $originaluserid != $USER->id ? true : false;
+        return $result;
     }
 
     /**
@@ -115,6 +119,7 @@ class add_item_to_cart extends external_api {
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),
+            'reload' => new external_value(PARAM_BOOL, 'True if we need to reload', VALUE_DEFAULT, false),
             ]
         );
     }

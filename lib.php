@@ -90,9 +90,11 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
 function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     global $USER, $CFG;
 
-    // Early bail out conditions.
-    if (!isloggedin() || isguestuser()) {
-        return '';
+    if (empty(get_config('local_shopping_cart', 'selltoguests'))) {
+        if (!isloggedin() || isguestuser()) {
+            // Early bail out conditions.
+            return '';
+        }
     }
 
     $output = '';

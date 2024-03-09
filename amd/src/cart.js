@@ -356,6 +356,11 @@ export const addItem = (itemid, component, area) => {
             'userid': userid
         },
         done: function(data) {
+
+            if (data.reload) {
+                const currentUrl = window.location.href;
+                window.location.replace(currentUrl);
+            }
             data.component = component;
             data.area = area;
             data.itemid = itemid;

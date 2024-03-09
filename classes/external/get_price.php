@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\buyfor;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -95,7 +96,7 @@ class get_price extends external_api {
             $userid = (int) $USER->id;
         } else if ($params['userid'] < 0) {
             if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = (int) shopping_cart::return_buy_for_userid();
+                $userid = (int) buyfor::return_buy_for_userid();
             }
         } else {
             $userid = (int) $params['userid'];

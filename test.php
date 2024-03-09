@@ -27,7 +27,7 @@ use local_shopping_cart\output\button;
 use local_shopping_cart\shopping_cart_history;
 
 require_once(__DIR__ . '/../../config.php');
-require_login();
+// require_login();
 
 $syscontext = context_system::instance();
 global $PAGE, $OUTPUT, $CFG;

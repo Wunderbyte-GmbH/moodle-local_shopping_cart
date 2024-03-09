@@ -594,7 +594,7 @@ class shopping_cart_history {
         $userfromid = $USER->id;
         $userid = $USER->id;
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = shopping_cart::generate_cachekey($userid);
         $dataarr = [];
 
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;

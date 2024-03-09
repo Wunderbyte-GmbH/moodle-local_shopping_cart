@@ -90,6 +90,11 @@ if ($hassiteconfig) {
                 get_string('globalcurrencydesc', $componentname),
                 'EUR', $currencies));
 
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/selltoguests',
+                get_string('selltoguests', 'local_shopping_cart'),
+                get_string('selltoguests_desc', 'local_shopping_cart'), 0));
+
     // Max items in cart.
     $settings->add(
             new admin_setting_configtext(

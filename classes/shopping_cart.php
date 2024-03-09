@@ -79,26 +79,12 @@ class shopping_cart {
      */
     public static function allow_add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
-        global $USER;
-
-        // If there is no user specified, we determine it automatically.
-        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
-            $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = self::return_buy_for_userid();
-            }
-        } else {
-            // As we are not on cashier anymore, we delete buy for user.
-            self::buy_for_user(0);
-        }
-        if ($userid < 1) {
-            $userid = $USER->id;
-        }
+        list($userid) = buyfor::get_user_id($userid);
 
         // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
@@ -213,29 +199,15 @@ class shopping_cart {
      */
     public static function add_item_to_cart(string $component, string $area, int $itemid, int $userid): array {
 
-        global $DB, $USER;
+        global $USER;
 
-        $buyforuser = false;
-
-        // If there is no user specified, we determine it automatically.
-        if ($userid < 0 || $userid == self::return_buy_for_userid()) {
-            $context = context_system::instance();
-            if (has_capability('local/shopping_cart:cashier', $context)) {
-                $userid = self::return_buy_for_userid();
-                $buyforuser = true;
-            }
-        } else {
-            // As we are not on cashier anymore, we delete buy for user.
-            self::buy_for_user(0);
-        }
-        if ($userid < 1) {
-            $userid = $USER->id;
-        }
+        list($userid, $buyforuser) = buyfor::get_user_id($userid);
 
         // Check the cache for items in cart.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
         $cachedrawdata = $cache->get($cachekey);
+
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
@@ -347,6 +319,7 @@ class shopping_cart {
                 $itemdata['price'] = 0;
                 break;
         }
+
         return $itemdata;
     }
 
@@ -379,10 +352,10 @@ class shopping_cart {
 
         global $USER;
 
-        $userid = $userid == 0 ? $USER->id : $userid;
+        list($userid) = buyfor::get_user_id($userid);
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
@@ -462,7 +435,7 @@ class shopping_cart {
     public static function delete_all_items_from_cart(int $userid): bool {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
@@ -626,7 +599,7 @@ class shopping_cart {
         }
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
         $cachedrawdata = $cache->get($cachekey);
 
         // If we have cachedrawdata, we need to check the expiration date.
@@ -713,7 +686,7 @@ class shopping_cart {
      */
     public static function get_saved_usecredit_state(int $userid): ?int {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
         $cachedrawdata = $cache->get($cachekey);
 
         if ($cachedrawdata && isset($cachedrawdata['usecredit'])) {
@@ -732,7 +705,7 @@ class shopping_cart {
      */
     public static function save_used_credit_state(int $userid, bool $usecredit) {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
         $cachedrawdata = $cache->get($cachekey);
         $cachedrawdata['usecredit'] = $usecredit;
         $cache->set($cachekey, $cachedrawdata);
@@ -749,7 +722,7 @@ class shopping_cart {
     public static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         // First thing, we set the new expiration date in the cache.
@@ -775,40 +748,6 @@ class shopping_cart {
             $deleteitemtask->set_custom_data($taskdata);
             \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
         }
-    }
-
-    /**
-     * Add the selected user to cache in chachiermode
-     *
-     * @param int $userid
-     * @return int
-     */
-    public static function buy_for_user(int $userid): int {
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-
-        if ($userid == 0) {
-            $cache->delete('buyforuser');
-        } else {
-            $cache->set('buyforuser', $userid);
-        }
-        return $userid;
-    }
-
-    /**
-     * Return userid from cache. global userid if not to be found.
-     *
-     * @return int
-     */
-    public static function return_buy_for_userid() {
-        global $USER;
-
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-        $userid = $cache->get('buyforuser');
-
-        if (!$userid) {
-            $userid = $USER->id;
-        }
-        return $userid;
     }
 
     /**
@@ -1315,7 +1254,7 @@ class shopping_cart {
         }
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = self::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
@@ -2066,5 +2005,18 @@ class shopping_cart {
         }
 
         return false;
+    }
+
+    /**
+     * Generate the cachekey.
+     * @param int $userid
+     * @return string
+     */
+    public static function generate_cachekey(int $userid) {
+        if ($userid < 0) {
+            return 'guest_' . - $userid . '_shopping_cart';
+        } else {
+            return $userid . '_shopping_cart';
+        }
     }
 }

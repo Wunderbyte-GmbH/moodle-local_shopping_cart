@@ -213,7 +213,7 @@ class modal_creditsmanager extends dynamic_form {
 
         // We always have to add the cache.
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = shopping_cart::generate_cachekey($userid);
         $cachedrawdata = $cache->get($cachekey);
         if ($cachedrawdata) {
             $cachedrawdata['credit'] = round($creditrecord->balance, 2);

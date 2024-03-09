@@ -24,6 +24,7 @@ require_once("$CFG->libdir/formslib.php");
 use context;
 use context_system;
 use core_form\dynamic_form;
+use local_shopping_cart\buyfor;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use moodle_url;
@@ -51,7 +52,7 @@ class modal_add_discount_to_item extends dynamic_form {
         // The userid ist -1 if we are on cashier site.
 
         if ($this->_ajaxformdata["userid"] == -1) {
-            $userid = shopping_cart::return_buy_for_userid();
+            $userid = buyfor::get_user_id();
         } else if ($this->_ajaxformdata["userid"] == 0) {
             $userid = $USER->id;
         } else {
@@ -141,7 +142,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $area = $this->_ajaxformdata["area"];
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cachekey = shopping_cart::generate_cachekey($userid);
 
         $cachedrawdata = $cache->get($cachekey);
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
