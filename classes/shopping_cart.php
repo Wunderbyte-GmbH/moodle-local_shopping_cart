@@ -1659,11 +1659,12 @@ class shopping_cart {
     public static function get_latest_currency_from_history(): string {
         global $DB;
 
-        if ($currency = $DB->get_field_sql("SELECT currency
-            FROM {local_shopping_cart_history}
-            ORDER BY id DESC
-            LIMIT 1")) {
-            return $currency;
+        // We can't use limit command in oracle dbs.
+        if ($records = $DB->get_records('local_shopping_cart_history', [], 'DESC', 0, 1)) {
+            $record = reset($records);
+            if (!empty($record->currency)) {
+                return $record->currency;
+            }
         }
         return "";
     }
