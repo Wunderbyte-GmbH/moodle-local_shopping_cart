@@ -181,4 +181,76 @@ class shopping_cart_rebookingcredit {
 
         return true;
     }
+
+    /**
+     * We need to make sure the price of the rebooking is corrected.
+     * @param array $data
+     * @return void
+     */
+    public static function correct_item_price_for_rebooking(array &$data) {
+
+        $totalprice = 0;
+        $keyofrebooking = null;
+        foreach ($data["items"] as $key => $item) {
+
+            // We handle items as arrays.
+            $item = (array)$item;
+            $data['items'][$key] = $item;
+
+            // We calculate the total price.
+            $totalprice += $item['price'];
+
+            if (($item['area'] === 'rebookitem')
+                && ($item['componentname'] === 'local_shopping_cart') ) {
+                $keyofrebooking = $key;
+            }
+
+            // If the totalprice is lower than 0, the rebooking must be corrected by the difference.
+            // So: Rebooking of -50 and new item of 30 will correct rebooking to -30.
+            if (($keyofrebooking !== null) && ($totalprice < 0)) {
+                $data['items'][$keyofrebooking]['price'] += -$totalprice;
+            }
+        }
+    }
+
+    /**
+     * Correct the price for rebooking, to make sure it's not lower than 0.
+     * @param array $data
+     * @return void
+     */
+    public static function correct_total_price_for_rebooking(array &$data) {
+        if ($data['price'] < 0) {
+            $data['price'] = 0;
+            $data['initialtotal'] = 0;
+            $balance = 0;
+            $data['credit'] = null;
+            $data['usecredit'] = 0;
+            if (isset($data['price_net'])) {
+                $data['price_net'] = 0;
+            }
+        }
+    }
+
+    /**
+     * Check if has currently a rebooking item in cart.
+     * @param int $userid
+     * @return bool
+     * @throws coding_exception
+     */
+    public static function is_rebooking(int $userid) {
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+
+        $items = $cachedrawdata['items'] ?? [];
+
+        foreach ($items as $item) {
+            if (($item['area'] === 'rebookitem')
+                && ($item['componentname'] === 'local_shopping_cart') ) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

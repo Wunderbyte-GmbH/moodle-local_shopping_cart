@@ -897,14 +897,18 @@ class shopping_cart {
         $success = true;
         $error = [];
 
+        // When we come from rebooking, we need to correct the price of the rebooking item.
+        // The total price can't be below 0.
+        shopping_cart_rebookingcredit::correct_item_price_for_rebooking($data);
+
         // When we use credits, we have to log this in the ledger so cash report will have the correct sums!
         if (isset($data["usecredit"]) && $data["usecredit"] && isset($data["credit"]) && $data["credit"] > 0) {
 
             // If we have no identifier, we look for it in items.
             if (empty($identifier)) {
                 foreach ($data["items"] as $item) {
-                    if (!empty($item->identifier)) {
-                        $identifier = $item->identifier;
+                    if (!empty($item['identifier'])) {
+                        $identifier = $item['identifier'];
                         break;
                     }
                 }
@@ -932,7 +936,6 @@ class shopping_cart {
         foreach ($data['items'] as $item) {
 
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
-
             $item = (array) $item;
 
             // If the item identifier is specified (this is only the case, when we get data from history)...
