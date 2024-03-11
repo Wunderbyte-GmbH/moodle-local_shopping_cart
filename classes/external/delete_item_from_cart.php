@@ -120,7 +120,7 @@ class delete_item_from_cart extends external_api {
         }
 
         if ($params['component'] == 'local_shopping_cart' && $params['area'] == 'rebookitem') {
-            shopping_cart_history::toggle_mark_for_rebooking($params['itemid'], $userid);
+            shopping_cart_history::toggle_mark_for_rebooking($params['itemid'], $userid, true);
             return ['success' => 1];
         }
 

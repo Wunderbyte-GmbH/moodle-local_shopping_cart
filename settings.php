@@ -143,6 +143,12 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/allowrebooking',
+                get_string('allowrebooking', 'local_shopping_cart'),
+                get_string('allowrebooking_desc', 'local_shopping_cart'), 0));
+
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/samecostcenter',

@@ -73,7 +73,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     );
                 }
 
-                $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
+                $imageurl = new \moodle_url('/local/shopping_cart/pix/rebook.png');
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('rebookingcredit', 'local_shopping_cart'),
@@ -97,10 +97,10 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     return [];
                 }
 
-                $imageurl = new \moodle_url('/local/shopping_cart/pix/rebookingcredit.png');
+                $imageurl = new \moodle_url('/local/shopping_cart/pix/rebook.png');
                 $cartitem = new cartitem(
                     $itemid,
-                    get_string('rebook', 'local_shopping_cart') . $record->itemname,
+                    get_string('rebooking', 'local_shopping_cart') . ': ' . $record->itemname,
                     - ((float)$record->price + (float)$record->tax),
                     $record->currency ?? 'EUR',
                     'local_shopping_cart',

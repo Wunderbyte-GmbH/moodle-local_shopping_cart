@@ -30,6 +30,11 @@ $string['modulename'] = 'Shopping Cart';
 
 // General strings.
 $string['addtocart'] = 'Add to cart';
+$string['allowrebooking'] = 'Allow rebooking';
+$string['allowrebooking_desc'] = 'Allow users to rebook already bought items.
+They can be marked for rebooking and will be added to the shopping cart with a negative price.
+When rebooking, they will be cancelled and another item will be bought at the same time.
+The overall price of the rebooking must not be negative.';
 $string['allowrebookingcredit'] = 'Rebooking credit';
 $string['allowrebookingcredit_desc'] = 'If you activate rebooking credit, a user will get refunded the cancelation and booking fee
 if (s)he cancels an item within the cancelation period and books another item.';
@@ -37,6 +42,7 @@ $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
 $string['mycart'] = 'My Cart';
 $string['optioncancelled'] = 'Booking option cancelled';
+$string['rebooking'] = 'Rebooking';
 $string['rebookingcredit'] = 'Rebooking credit';
 $string['sendpaymentbutton'] = 'Checkout';
 $string['showorderid'] = 'Show Order-ID...';

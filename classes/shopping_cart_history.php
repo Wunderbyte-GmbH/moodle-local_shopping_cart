@@ -775,9 +775,10 @@ class shopping_cart_history {
      * Marks an item for rebooking.
      * @param int $historyid
      * @param int $userid
+     * @param bool $remove can be set to true, if we already know that we remove
      * @return array
      */
-    public static function toggle_mark_for_rebooking(int $historyid, int $userid): array {
+    public static function toggle_mark_for_rebooking(int $historyid, int $userid, bool $remove = null): array {
 
         $userid = shopping_cart::set_user($userid);
 
@@ -803,10 +804,17 @@ class shopping_cart_history {
 
         $cache->set($cachekey, $itemstorebook);
 
-        if (!empty($marked)) {
+        if (!empty($marked) && empty($remove)) {
             shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
         }
 
+        if ($remove) {
+            // If we already know we remove...
+            // ... we can return 0.
+            return ['marked' => 0];
+        }
+
+        // Else we return the toggled value.
         return ['marked' => $marked];
     }
 
