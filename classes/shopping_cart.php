@@ -695,11 +695,6 @@ class shopping_cart {
         }
         $data['credit'] = $data['credit'] ?? 0.00;
 
-        // If total price is negative, credits have to be disabled.
-        if ($data['price'] < 0) {
-            unset($data['credit']);
-        }
-
         if ($cachedrawdata && count($data['items']) > 0) {
             // If there is credit for this user, we give her options.
             shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);

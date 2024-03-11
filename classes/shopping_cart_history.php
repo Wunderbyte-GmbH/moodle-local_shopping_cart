@@ -787,10 +787,10 @@ class shopping_cart_history {
 
         $marked = 1;
         // First, we see if we have sth in the cache.
-        if (($itemstorebook = $cache->get($cachekey))
-            && is_array($itemstorebook)) {
+        if ((($itemstorebook = $cache->get($cachekey))
+            && is_array($itemstorebook)) || $remove) {
 
-            if (in_array($historyid, $itemstorebook)) {
+            if (in_array($historyid, $itemstorebook) || $remove) {
                 $itemstorebook = array_filter($itemstorebook, fn($a) => $a != $historyid);
                 $marked = 0;
                 shopping_cart::delete_item_from_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
@@ -806,12 +806,6 @@ class shopping_cart_history {
 
         if (!empty($marked) && empty($remove)) {
             shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
-        }
-
-        if ($remove) {
-            // If we already know we remove...
-            // ... we can return 0.
-            return ['marked' => 0];
         }
 
         // Else we return the toggled value.
