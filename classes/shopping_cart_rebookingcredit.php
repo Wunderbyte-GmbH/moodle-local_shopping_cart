@@ -191,24 +191,37 @@ class shopping_cart_rebookingcredit {
 
         $totalprice = 0;
         $keyofrebooking = null;
+
+        // First, we calculate the total price.
+
+        foreach ($data["items"] as $key => $item) {
+            $totalprice += $item['price'];
+        }
+
+        // Now we need to correct the price of the single items.
         foreach ($data["items"] as $key => $item) {
 
             // We handle items as arrays.
             $item = (array)$item;
             $data['items'][$key] = $item;
 
-            // We calculate the total price.
-            $totalprice += $item['price'];
-
             if (($item['area'] === 'rebookitem')
                 && ($item['componentname'] === 'local_shopping_cart') ) {
                 $keyofrebooking = $key;
-            }
 
-            // If the totalprice is lower than 0, the rebooking must be corrected by the difference.
-            // So: Rebooking of -50 and new item of 30 will correct rebooking to -30.
-            if (($keyofrebooking !== null) && ($totalprice < 0)) {
-                $data['items'][$keyofrebooking]['price'] += -$totalprice;
+                // If the totalprice is lower than 0, the rebooking must be corrected by the difference.
+                // So: Rebooking of -50 and new item of 30 will correct rebooking to -30.
+                if ($totalprice < 0) {
+
+                    // There might be more than one rebooking.
+                    if ($data['items'][$keyofrebooking]['price'] > $totalprice) {
+                        $totalprice -= $data['items'][$keyofrebooking]['price'];
+                        $data['items'][$keyofrebooking]['price'] = 0;
+                    } else {
+                        $data['items'][$keyofrebooking]['price'] += -$totalprice;
+                        $totalprice = 0;
+                    }
+                }
             }
         }
     }
