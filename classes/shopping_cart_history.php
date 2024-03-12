@@ -737,16 +737,13 @@ class shopping_cart_history {
      * Return an item for shopping card history table via the historyid.
      *
      * @param int $historyid
-     * @param int $itemid
-     * @param string $area
-     * @param int $userid
      * @return bool|stdClass
      */
-    public static function return_item_from_history(int $historyid, int $itemid, string $area, int $userid) {
+    public static function return_item_from_history(int $historyid) {
         global $DB;
 
         return $DB->get_record('local_shopping_cart_history',
-            ['id' => $historyid, 'itemid' => $itemid, 'area' => $area, 'userid' => $userid]);
+            ['id' => $historyid]);
     }
 
     /**

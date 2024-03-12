@@ -31,6 +31,7 @@ use coding_exception;
 use context_system;
 use moodle_exception;
 use ddl_exception;
+use local_shopping_cart\event\item_canceled;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -296,5 +297,65 @@ class shopping_cart_rebookingcredit {
                     false);
             }
         }
+    }
+
+    /**
+     * Checkout rebooking item and cancel the connected original booking.
+     * This is partly the same as the shopping_cart::cancel_purchase function.
+     * It also calls the componentcallback and shopping_cart_history::cancel_purchase.
+     * But it does not add credits etc. as this is all handled via rebooking.
+     * @param mixed $component
+     * @param mixed $area
+     * @param mixed $itemid
+     * @param mixed $userid
+     * @return mixed
+     * @throws dml_exception
+     * @throws coding_exception
+     * @throws ddl_exception
+     */
+    public static function checkout_rebooking_item($component, $area, $itemid, $userid) {
+
+        global $USER;
+
+        $context = context_system::instance();
+
+        // If we are dealing with a rebooking item, we need to unsubscribe the user.
+        if (($component === 'local_shopping_cart')
+            && ($area === 'rebookitem')) {
+
+            // We need to correct $component, $area & $itemid.
+            // For the rebooking item, the itemid corresponds to id of the original entry in sch.
+            $historyitem = shopping_cart_history::return_item_from_history($itemid);
+
+            // Trigger item deleted event.
+            $event = item_canceled::create([
+                'context' => $context,
+                'userid' => $USER->id,
+                'relateduserid' => $userid,
+                'other' => [
+                    'itemid' => $historyitem->itemid,
+                    'component' => $historyitem->componentname,
+                ],
+            ]);
+            $event->trigger();
+
+            $providerclass = shopping_cart::get_service_provider_classname($historyitem->componentname);
+            component_class_callback($providerclass, 'cancel_purchase',
+                [$historyitem->area, $historyitem->itemid, $userid]);
+
+            list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase(
+                $historyitem->itemid,
+                $userid,
+                $historyitem->componentname,
+                $historyitem->area,
+                $itemid);
+
+            if ($success === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
     }
 }

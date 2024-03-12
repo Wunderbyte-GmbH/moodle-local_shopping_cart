@@ -550,6 +550,8 @@ class shopping_cart {
 
     /**
      * Confirms Payment and successful checkout for item.
+     * This method also deals with a successful checkout for rebooking item
+     * In this case, we don't book, but we cancel the original item.
      *
      * @param string $component
      * @param string $area
@@ -947,7 +949,16 @@ class shopping_cart {
                 $item['itemname'] = $item['itemid'];
             }
 
-            if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
+            if (($item['componentname'] === 'local_shopping_cart')
+                && ($item['area'] === 'rebookitem')) {
+
+                shopping_cart_rebookingcredit::checkout_rebooking_item(
+                    $item['componentname'],
+                    $item['area'],
+                    $item['itemid'],
+                    $userid,
+                );
+            } else if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
 
@@ -963,7 +974,9 @@ class shopping_cart {
                     ],
                 ]);
 
-            } else {
+            }
+
+            if ($success == true) {
                 // Delete Item from cache.
                 // Here, we don't need to unload the component, so the last parameter is false.
                 self::delete_item_from_cart($item['componentname'], $item['area'], $item['itemid'], $userid, false);
@@ -1015,7 +1028,6 @@ class shopping_cart {
                             $USER->id
                     );
                 }
-
             }
         }
 
@@ -1251,7 +1263,7 @@ class shopping_cart {
 
         $context = context_system::instance();
 
-        if (!$item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid)) {
+        if (!$item = shopping_cart_history::return_item_from_history($historyid)) {
             return false;
         }
 
@@ -1538,7 +1550,7 @@ class shopping_cart {
      */
     public static function get_quota_consumed(string $component, string $area, int $itemid, int $userid, int $historyid): array {
 
-        $item = shopping_cart_history::return_item_from_history($historyid, $itemid, $area, $userid);
+        $item = shopping_cart_history::return_item_from_history($historyid);
 
         self::add_quota_consumed_to_item($item, $userid);
         $quota = $item->quotaconsumed;
