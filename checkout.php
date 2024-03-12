@@ -27,6 +27,7 @@ use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_bookingfee;
+use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');

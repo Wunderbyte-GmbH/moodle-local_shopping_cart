@@ -230,19 +230,20 @@ class shopping_cart_rebookingcredit {
     /**
      * Correct the price for rebooking, to make sure it's not lower than 0.
      * @param array $data
-     * @return void
+     * @return bool
      */
     public static function correct_total_price_for_rebooking(array &$data) {
-        if ($data['price'] < 0) {
+        if ($data['price'] <= 0) {
             $data['price'] = 0;
             $data['initialtotal'] = 0;
-            $balance = 0;
             $data['credit'] = null;
             $data['usecredit'] = 0;
             if (isset($data['price_net'])) {
                 $data['price_net'] = 0;
             }
+            return true;
         }
+        return false;
     }
 
     /**
