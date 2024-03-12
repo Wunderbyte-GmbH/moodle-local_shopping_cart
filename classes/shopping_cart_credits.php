@@ -124,7 +124,7 @@ class shopping_cart_credits {
 
         $pricebelowzero = shopping_cart_rebookingcredit::correct_total_price_for_rebooking($data);
         $usecredit = $pricebelowzero ? 0 : $usecredit;
-        $balance = $pricebelowzero ? 0 : $pricebelowzero;
+        $balance = $pricebelowzero ? 0 : $balance;
 
         if (isset($data['price_net'])) {
             $data['initialtotal_net'] = $data['price_net'];
