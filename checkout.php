@@ -123,8 +123,15 @@ if (isset($success)) {
     // Here we are before checkout.
     $expirationtimestamp = shopping_cart::get_expirationdate();
 
-    // Make sure we have the fee (if we need it!).
-    shopping_cart_bookingfee::add_fee_to_cart($userid);
+    // Only if there are items in the cart, we check if we need to add booking fee.
+    $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+    $cachekey = $userid . '_shopping_cart';
+    $cachedrawdata = $cache->get($cachekey);
+    $items = $cachedrawdata['items'] ?? [];
+    if (!empty($items)) {
+        // Make sure we have the fee (if we need it!).
+        shopping_cart_bookingfee::add_fee_to_cart($userid);
+    }
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);

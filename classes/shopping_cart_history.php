@@ -805,6 +805,10 @@ class shopping_cart_history {
         $cache->set($cachekey, $itemstorebook);
 
         if (!empty($marked) && empty($remove)) {
+            // Before we add the item to the cart, let's make sure there is no booking fee currently applied.
+
+            shopping_cart_rebookingcredit::delete_booking_fee($userid);
+
             shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
         }
 

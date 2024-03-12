@@ -253,4 +253,35 @@ class shopping_cart_rebookingcredit {
         }
         return false;
     }
+
+    /**
+     * Delete any possible present booking fee from the cart.
+     * @param int $userid
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     * @throws ddl_exception
+     */
+    public static function delete_booking_fee(int $userid) {
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $userid . '_shopping_cart';
+        $cachedrawdata = $cache->get($cachekey);
+
+        $items = $cachedrawdata['items'] ?? [];
+
+        foreach ($items as $item) {
+            if (($item['area'] === 'bookingfee')
+                && ($item['componentname'] === 'local_shopping_cart') ) {
+
+                shopping_cart::delete_item_from_cart(
+                    'local_shopping_cart',
+                    'bookingfee',
+                    $item['itemid'],
+                    $userid,
+                    false);
+            }
+        }
+    }
 }

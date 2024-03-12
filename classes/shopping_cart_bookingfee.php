@@ -83,14 +83,6 @@ class shopping_cart_bookingfee {
             $itemid = LOCAL_SHOPPING_CART_BOOKINGFEE_EACHPURCHASE;
         }
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-        $items = $cachedrawdata['items'] ?? [];
-        if (empty($items)) {
-            return false;
-        }
-
         // See if we are about to rebook, we don't add the booking fee.
         if (($buyforuserid == 0) && shopping_cart_rebookingcredit::is_rebooking($userid)) {
             return false;
