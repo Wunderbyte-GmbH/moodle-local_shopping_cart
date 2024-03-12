@@ -395,15 +395,9 @@ div.shopping-cart-items-container div.item-description {
     color: rgb(29, 33, 37);
 }
 
-#page-local-shopping_cart-cashier li[data-area="rebookingcredit"] img {
-    width: 20px;
-}
-
-#page-local-shopping_cart-cashier li[data-area="rebookitem"] img {
-    width: 20px;
-}
-
-#page-local-shopping_cart-cashier li[data-area="bookingfee"] img {
+li[data-area="rebookingcredit"] img,
+li[data-area="rebookitem"] img,
+li[data-area="bookingfee"] img {
     width: 20px;
 }
 
@@ -411,4 +405,8 @@ div.shopping-cart-items-container div.item-description {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px dashed #ccc;
+}
+
+#page-local-shopping_cart-checkout .shopping-cart-items li[data-area="option"] img {
+    max-width: 200px;
 }
