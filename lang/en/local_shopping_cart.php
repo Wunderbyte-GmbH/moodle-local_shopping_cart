@@ -478,7 +478,7 @@ $string['history'] = "Purchases";
 $string['ledger'] = "Ledger";
 $string['credits'] = "Credits";
 
-// GDPR
+// GDPR.
 $string['privacy:metadata:local_shopping_cart_history'] = 'Shopping Cart History';
 $string['privacy:metadata:local_shopping_cart_history:userid'] = 'Userid of the user who optained something.';
 $string['privacy:metadata:local_shopping_cart_history:itemid'] = 'Id of the item bought.';
