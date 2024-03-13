@@ -201,11 +201,14 @@ class shoppingcart_history_list implements renderable, templatable {
 
             if (get_config('local_shopping_cart', 'allowrebooking')) {
                 // Get the marked information.
-                $item->showrebooking = true; // If it is shown at all.
                 $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, $userid);
 
-                if (in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem']) || $item->canceled) {
-                    unset($item->showrebooking); // So we can hide it in mustache template.
+                if (in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem'])
+                    || $item->canceled
+                    || ($item->serviceperiodend < time())) {
+                        $item->showrebooking = false;
+                } else {
+                    $item->showrebooking = true; // If it is shown at all.
                 }
             }
 
