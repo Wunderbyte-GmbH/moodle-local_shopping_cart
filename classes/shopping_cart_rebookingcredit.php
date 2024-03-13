@@ -196,6 +196,8 @@ class shopping_cart_rebookingcredit {
         // First, we calculate the total price.
 
         foreach ($data["items"] as $key => $item) {
+
+            $item = (array)$item;
             $totalprice += $item['price'];
         }
 
