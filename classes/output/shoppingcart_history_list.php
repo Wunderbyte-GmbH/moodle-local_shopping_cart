@@ -205,7 +205,8 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 if (in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem'])
                     || $item->canceled
-                    || ($item->serviceperiodend < time())) {
+                    || (!empty($item->serviceperiodend)
+                        && $item->serviceperiodend < time())) {
                         $item->showrebooking = false;
                 } else {
                     $item->showrebooking = true; // If it is shown at all.
