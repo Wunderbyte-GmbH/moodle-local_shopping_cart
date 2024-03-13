@@ -296,8 +296,8 @@ $string['confirmpaidbackbody'] =
  'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidback'] = 'Confirm';
 
-$string['confirmzeropricecheckouttitle'] = 'Pay with your credits';
-$string['confirmzeropricecheckoutbody'] = 'You have enough credits to pay fully for your purchase. Do you want to proceed?';
+$string['confirmzeropricecheckouttitle'] = 'Book now';
+$string['confirmzeropricecheckoutbody'] = 'You do not have to pay anything. Do you want to proceed and book?';
 $string['confirmzeropricecheckout'] = 'Confirm';
 
 $string['deletecreditcash'] = 'Refunded with cash';
