@@ -207,7 +207,7 @@ class shoppingcart_history_list implements renderable, templatable {
                     || $item->canceled
                     || (!empty($item->serviceperiodend)
                         && $item->serviceperiodend < time())) {
-                        $item->showrebooking = false;
+                        $item->showrebooking = null; // So we can hide it in mustache template.
                 } else {
                     $item->showrebooking = true; // If it is shown at all.
                 }
