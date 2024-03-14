@@ -152,18 +152,16 @@
             {{> local_shopping_cart/price_label }}
         </div>
         {{#termsandconditions}}
-        <div class="form_termsandconditions mt-2">
+        <div class="form_termsandconditions mt-2 d-flex justify-content-end">
             <div class="form-group">
-                <div class="col-6">
-                    <div class="text-muted border p-2 bg-light rounded">
-                        {{{termsandconditions}}}
-                    </div>
-                    <div class="mt-2 ml-4">
-                    <input class="form-check-input" id="accepttermsnandconditions" name="accepttermsnandconditions" type="checkbox" value="" required>
-                    <label class="form-check-label" for="accepttermsnandconditions">
-                        {{#str}} confirmterms, local_shopping_cart {{/str}}
-                    </label>
-                    </div>
+                <div class="text-muted border p-2 bg-light rounded">
+                    {{{termsandconditions}}}
+                </div>
+                <div class="mt-2 ml-4">
+                <input class="form-check-input" id="accepttermsnandconditions" name="accepttermsnandconditions" type="checkbox" value="" required>
+                <label class="form-check-label" for="accepttermsnandconditions">
+                    {{#str}} confirmterms, local_shopping_cart {{/str}}
+                </label>
                 </div>
             </div>
         </div>
