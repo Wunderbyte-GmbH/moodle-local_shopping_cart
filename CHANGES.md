@@ -1,3 +1,7 @@
+## Version 0.7.9 (2024031401)
+* Improvement: Show full terms and conditions.
+* Improvement: Better styling of checkout page.
+
 ## Version 0.7.8 (2024031400)
 * New feature: Booked items can now be marked for rebooking and be rebooked into other items.
 This feature can be turned on by activating the setting 'local_shopping_cart | allowrebooking'.
