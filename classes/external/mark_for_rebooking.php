@@ -65,9 +65,7 @@ class mark_for_rebooking extends external_api {
     /**
      * Webservice for shopping_cart_history class to mark history item for rebooking.
      *
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
+     * @param int $historyid
      * @param int $userid
      * @return array
      */
