@@ -1,3 +1,11 @@
+## Version 0.7.8 (2024031400)
+* New feature: Booked items can now be marked for rebooking and be rebooked into other items.
+This feature can be turned on by activating the setting 'local_shopping_cart | allowrebooking'.
+* Improvement: Add missing language strings.
+* Improvement: Better strings for free payments (when total price is 0).
+* Bugfix: Add missing cache definitions.
+* Bugfix: Fix some styles for images and icons.
+
 ## Version 0.7.7 (2024030600)
 * Bugfix: Don't fail on space in img url for item picture.
 * Bugfix: Set service period on null for booking option without date.
