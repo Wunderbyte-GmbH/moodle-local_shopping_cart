@@ -220,7 +220,8 @@ class shopping_cart {
             // If we have nothing in our cart and we are not about...
             // ... to add the booking fee...
             // ... we add the booking fee.
-            if (empty($cachedrawdata['items'])
+            if ((empty($cachedrawdata['items'])
+                || array_reduce($cachedrawdata['items'], fn($a, $b) => $a += $b['price']) == 0)
                 && !in_array($area, ['bookingfee', 'rebookingcredit', 'rebookitem'])) {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
@@ -241,9 +242,26 @@ class shopping_cart {
                     $itemdata = $cartitemarray['cartitem']->as_array();
                     $itemdata['price'] = $itemdata['price'];
 
+                    // At this point, we might have added the booking fee to the cart.
+                    // This is because we always add the fee first.
+                    // But if the price of the item we buy is 0, we don't want to demand a booking fee neither.
+                    // Therefore, we need to delete it again from the cart.
+                    if (($itemdata['price'] == 0)
+                        && count($cachedrawdata['items']) < 2) {
+
+                        $regexkey = '/^local_shopping_cart-bookingfee-/';
+                        // Before we add the other forms, we need to add the nosubmit in case of we just deleted an optiondate.
+                        $itemstodelete = preg_grep($regexkey, array_keys((array)$cachedrawdata['items']));
+
+                        foreach ($itemstodelete as $todelete) {
+                            unset($cachedrawdata['items'][$todelete]);
+                        }
+                    }
+
                     // Then we set item in Cache.
                     $cachedrawdata['items'][$cacheitemkey] = $itemdata;
                     $cachedrawdata['expirationdate'] = $expirationtimestamp;
+
                     $cache->set($cachekey, $cachedrawdata);
 
                     // If it applies, we add the rebookingcredit.
