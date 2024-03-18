@@ -1131,7 +1131,7 @@ class shopping_cart {
             }
         }
 
-        // Check if cancelation is still within the allowed periode set in shopping_cart_history.
+        // Check if cancelation is still within the allowed period set in shopping_cart_history.
         if (!self::allowed_to_cancel($historyid, $itemid, $area, $userid)) {
             return [
                     'success' => 0,
