@@ -112,6 +112,8 @@ class shoppingcart_history_list implements renderable, templatable {
 
         $this->taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
 
+        $now = time();
+
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
 
@@ -136,12 +138,20 @@ class shoppingcart_history_list implements renderable, templatable {
                 $item->canceluntilstring = date('Y-m-d', $item->canceluntil);
 
                 if (!$iscashier) {
-                    if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->area ?: "", $item->userid)) {
-                        if (!empty($item->canceluntil)) {
+                    // The allowed_to_cancel function only checks if cancelling is disabled, it does not check canceluntil!
+                    if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->area ?? "", $item->userid)) {
+                        if (empty($item->canceluntil)) {
+                            // There is no canceluntil, so we can cancel.
+                            $item->buttonclass = 'btn-primary';
+                        } else if ($now <= $item->canceluntil) {
+                            // There is a canceluntil, but it has not yet passed.
                             $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
                                 $item->canceluntilstring);
+                            $item->buttonclass = 'btn-primary';
+                        } else {
+                            $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart');
+                            $item->buttonclass = 'disabled hidden';
                         }
-                        $item->buttonclass = 'btn-primary';
                     } else {
                         $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart');
                         $item->buttonclass = 'disabled hidden';
