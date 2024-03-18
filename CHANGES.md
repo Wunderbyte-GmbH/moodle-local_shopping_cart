@@ -1,3 +1,7 @@
+## Version 0.8.0 (2024031800)
+* New feature: New setting to limit the cash report download file to a certain number of rows.
+* Improvement: don't add booking fee on items with price 0.
+
 ## Version 0.7.9 (2024031401)
 * Improvement: Show full terms and conditions.
 * Improvement: Better styling of checkout page.
