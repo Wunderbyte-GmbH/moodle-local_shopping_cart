@@ -41,6 +41,7 @@ if (s)he cancels an item within the cancelation period and books another item.';
 $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
 $string['mycart'] = 'My Cart';
+$string['nolimit'] = 'No limit';
 $string['optioncancelled'] = 'Booking option cancelled';
 $string['rebooking'] = 'Rebooking';
 $string['rebookingcredit'] = 'Rebooking credit';
@@ -346,6 +347,9 @@ $string['titledailysums:all'] = 'All revenues';
 $string['titledailysums:total'] = 'Total revenue';
 $string['titledailysums:current'] = 'Current cashier';
 $string['dailysums:downloadpdf'] = 'Download daily sums as PDF';
+$string['downloadcashreportlimit'] = 'Download limit';
+$string['downloadcashreportlimitdesc'] = 'Enter the max. number of rows for cash report download.
+By limiting, you can fix troubles with too large amounts of data.';
 
 // Report headers.
 $string['timecreated'] = 'Created';

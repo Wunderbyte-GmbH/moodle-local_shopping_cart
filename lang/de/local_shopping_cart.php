@@ -40,6 +40,7 @@ wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.'
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
 $string['mycart'] = 'Mein Warenkorb';
+$string['nolimit'] = 'Kein Limit';
 $string['optioncancelled'] = 'Buchungsoption storniert';
 $string['rebooking'] = 'Umbuchung';
 $string['rebookingcredit'] = 'Umbuchungsgutschrift';
@@ -340,6 +341,9 @@ $string['titledailysums:all'] = 'Gesamteinnahmen';
 $string['titledailysums:total'] = 'Saldo';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
 $string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
+$string['downloadcashreportlimit'] = 'Download-Limit festlegen';
+$string['downloadcashreportlimitdesc'] = 'Geben Sie die maximale Anzahl an Zeilen ein, die beim Download des Kassajournals heruntergeladen werden sollen.
+Dies kann Download-Problem bei zu großen Datenmengen beheben.';
 
 // Report headers.
 $string['timecreated'] = 'Erstellt';

@@ -334,6 +334,24 @@ if ($hassiteconfig) {
         new admin_setting_configcheckbox($componentname . '/showdailysumscurrentcashier',
                 get_string('showdailysumscurrentcashier', 'local_shopping_cart'),
                 '', 1));
+    $limitopts = [
+        '0' => get_string('nolimit', 'local_shopping_cart'),
+        '10' => '10',
+        '50' => '50',
+        '100' => '100',
+        '500' => '500',
+        '1000' => '1000',
+        '5000' => '5000',
+        '10000' => '10000',
+        '50000' => '50000',
+        '100000' => '100000',
+    ];
+    $cashreportsettings->add(new admin_setting_configselect('local_shopping_cart/downloadcashreportlimit',
+            get_string('downloadcashreportlimit', 'local_shopping_cart'),
+            get_string('downloadcashreportlimitdesc', 'local_shopping_cart'),
+            '10000', // Default value.
+            $limitopts
+    ));
     $ADMIN->add($componentname, $cashreportsettings);
 
     // Setting to enable taxes processing.

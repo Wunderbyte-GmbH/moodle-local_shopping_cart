@@ -95,6 +95,20 @@ $table->define_columns([
     'usermodified',
 ]);
 
+// In the shopping cart config settings, we can set a row limit for download.
+// This is needed, so download does not crash if the cash report is too big.
+$limitpart = '';
+if ($limit = get_config('local_shopping_cart', 'downloadcashreportlimit')) {
+    if (!empty($limit)) {
+        $limitpart = "LIMIT $limit";
+        $table->sql->from = str_replace(
+            ") s1",
+            " $limitpart ) s1", // We inject the LIMIT here.
+            $table->sql->from
+        );
+    }
+}
+
 // File name and sheet name.
 $fileandsheetname = "cash_report";
 $table->is_downloading($download, $fileandsheetname, $fileandsheetname);

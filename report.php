@@ -99,6 +99,7 @@ if (!empty($account)) {
 
 // If we have open orders tables select statements, we can now UNION them.
 if (!empty($openorderselects)) {
+    // Some clients do not need the default orderid but the custom orderid from the openorders table.
     $customorderid = "oo.tid AS customorderid, ";
     $openorderselectsstring = implode(' UNION ', $openorderselects);
     $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid AND oo.gateway = p.gateway";
@@ -132,8 +133,6 @@ if (!empty($colselects)) {
             "COALESCE(CAST(p.id AS VARCHAR),'X')");
 }
 
-// Some clients do not need the default order id but the custom order id from the openorders table.
-
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
 // ...unique in your call to get_records?" bug.
 $fields = "s1.*";
@@ -152,7 +151,9 @@ $from = "(SELECT DISTINCT " . $uniqueidpart .
         ON u.id = scl.userid
         LEFT JOIN {user} um
         ON um.id = scl.usermodified
-        $gatewayspart ) s1";
+        $gatewayspart
+        ORDER BY scl.id DESC
+        ) s1";
 $where = "1 = 1";
 $params = [];
 
