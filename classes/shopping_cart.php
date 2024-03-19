@@ -1653,23 +1653,6 @@ class shopping_cart {
     }
 
     /**
-     * Helper function to get the latest used currency from history.
-     * @return string the currency string, e.g. "EUR"
-     */
-    public static function get_latest_currency_from_history(): string {
-        global $DB;
-
-        // We can't use limit command in oracle dbs.
-        if ($records = $DB->get_records('local_shopping_cart_history', [], 'id DESC', '*', 0, 1)) {
-            $record = reset($records);
-            if (!empty($record->currency)) {
-                return $record->currency;
-            }
-        }
-        return "";
-    }
-
-    /**
      * Check for ongoing payment.
      *
      * @param int $userid

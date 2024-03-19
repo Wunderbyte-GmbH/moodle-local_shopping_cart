@@ -49,7 +49,7 @@ class shopping_cart_credits {
         global $CFG, $DB;
 
         // Just in case, we do not find it in credits table.
-        $currency = shopping_cart::get_latest_currency_from_history();
+        $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
 
         $currencies = self::credits_get_used_currencies($userid);
         if (empty($currencies)) {
