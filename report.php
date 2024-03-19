@@ -26,6 +26,7 @@
 use local_shopping_cart\form\daily_sums_date_selector_form;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\table\cash_report_table;
+use local_wunderbyte_table\filters\types\standardfilter;
 
 require_once(__DIR__ . '/../../config.php');
 
@@ -268,10 +269,8 @@ if ($debug != 2) {
         debugging("TABLE AFTER SORTABLE:<br>$encodedtable", DEBUG_ALL);
     }
 
-    // Filters.
-    $filtercolumns = [];
-    $filtercolumns['payment'] = [
-        'localizedname' => get_string('payment', 'local_shopping_cart'),
+    $standardfilter = new standardfilter('payment', get_string('payment', 'local_shopping_cart'));
+    $standardfilter->add_options([
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE =>
             get_string('paymentmethodonline', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER =>
@@ -292,15 +291,19 @@ if ($debug != 2) {
             get_string('paymentmethodcashier:debitcard', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL =>
             get_string('paymentmethodcashier:manual', 'local_shopping_cart'),
-    ];
-    $filtercolumns['paymentstatus'] = [
-        'localizedname' => get_string('paymentstatus', 'local_shopping_cart'),
+    ]);
+
+    $table->add_filter($standardfilter);
+
+    $standardfilter = new standardfilter('paymentstatus', get_string('paymentstatus', 'local_shopping_cart'));
+    $standardfilter->add_options([
         LOCAL_SHOPPING_CART_PAYMENT_PENDING => get_string('paymentpending', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_ABORTED => get_string('paymentaborted', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_SUCCESS => get_string('paymentsuccess', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
-    ];
-    $table->define_filtercolumns($filtercolumns);
+    ]);
+    $table->add_filter($standardfilter);
+
     if ($debug == 3) {
         $encodedtable = json_encode($table);
         debugging("TABLE AFTER FILTERCOLS:<br>$encodedtable", DEBUG_ALL);
