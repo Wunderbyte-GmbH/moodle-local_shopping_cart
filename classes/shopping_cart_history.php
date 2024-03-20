@@ -276,6 +276,8 @@ class shopping_cart_history {
 
                 if ($id = $DB->insert_record('local_shopping_cart_history', $data)) {
                     // We also need to insert the record into the ledger table.
+                    // We only write the old schistoryid, if we have it.
+                    $data->schistoryid = $data->schistoryid ?? $id;
                     shopping_cart::add_record_to_ledger_table($data);
                     $success = true;
 
@@ -350,7 +352,8 @@ class shopping_cart_history {
             string $taxcategory = null,
             string $costcenter = null,
             string $annotation = null,
-            int $usermodified = null
+            int $usermodified = null,
+            int $schistoryid = null
     ) {
 
         global $USER;
@@ -380,6 +383,7 @@ class shopping_cart_history {
         $data->taxcategory = $taxcategory;
         $data->costcenter = $costcenter;
         $data->annotation = $annotation;
+        $data->schistoryid = $schistoryid;
 
         return self::write_to_db($data);
     }
@@ -564,6 +568,17 @@ class shopping_cart_history {
             $identifier = $record->identifier;
             $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $record->timemodified = $now;
+
+            if ($record->componentname === 'local_shopping_cart'
+                && $record->area === 'rebookitem') {
+
+                $historyitem = self::return_item_from_history($record->itemid);
+                // We switch the id of the item at this latest possible moment.
+                $record->itemid = $historyitem->itemid;
+                $record->schistoryid = $historyitem->id;
+            } else {
+                $record->schistoryid = $record->id;
+            }
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;

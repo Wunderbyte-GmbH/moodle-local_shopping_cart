@@ -1023,6 +1023,15 @@ class shopping_cart {
                     // Make sure we can pass on a valid value.
                     $item['discount'] = $item['discount'] ?? 0;
 
+                    if (($item['componentname'] === 'local_shopping_cart')
+                        && ($item['area'] === 'rebookitem')) {
+
+                            $historyitem = shopping_cart_history::return_item_from_history($item['itemid']);
+
+                            $item['schistoryid'] = $item['itemid'];
+                            $item['itemid'] = $historyitem->itemid;
+                    }
+
                     shopping_cart_history::create_entry_in_history(
                             $userid,
                             $item['itemid'],
@@ -1043,7 +1052,8 @@ class shopping_cart {
                             $item['taxcategory'] ?? null,
                             $item['costcenter'] ?? null,
                             $annotation ?? '',
-                            $USER->id
+                            $USER->id,
+                            $item['schistoryid'] ?? null,
                     );
                 }
             }
@@ -1436,6 +1446,7 @@ class shopping_cart {
                     'accountid' => $record->accountid ?? null,
                     'usermodified' => $record->usermodified, // Not nullable.
                     'area' => $record->area ?? null,
+                    'schistoryid' => $record->schistoryid ?? null,
                 ]))) {
                     // We only insert if entry does not exist yet.
                     $id = $DB->insert_record('local_shopping_cart_ledger', $record);
@@ -1452,6 +1463,7 @@ class shopping_cart {
                 $record->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS;
                 $record->gateway = null;
                 $record->orderid = null;
+                $record->schistoryid = null;
                 $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                 cache_helper::purge_by_event('setbackcachedcashreport');
                 break;
