@@ -309,7 +309,6 @@ class shopping_cart_history {
     /**
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
-     *
      * @param int $userid
      * @param int $itemid
      * @param string $itemname
@@ -322,15 +321,18 @@ class shopping_cart_history {
      * @param string $payment
      * @param int $paymentstatus
      * @param int|null $canceluntil
-     * @param int|null $serviceperiodstart
-     * @param int|null $serviceperiodend
+     * @param int $serviceperiodstart
+     * @param int $serviceperiodend
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
      * @param string|null $costcenter
      * @param string|null $annotation
      * @param int|null $usermodified
-     * @return void
+     * @param int|null $schistoryid
+     * @return bool
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public static function create_entry_in_history(
             int $userid,
