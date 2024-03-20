@@ -121,6 +121,7 @@ class delete_item_from_cart extends external_api {
 
         if ($params['component'] == 'local_shopping_cart' && $params['area'] == 'rebookitem') {
             shopping_cart_history::toggle_mark_for_rebooking($params['itemid'], $userid, true);
+            shopping_cart_bookingfee::add_fee_to_cart($userid);
             return ['success' => 1];
         }
 
