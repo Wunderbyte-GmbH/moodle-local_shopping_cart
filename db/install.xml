@@ -98,6 +98,7 @@
                 <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
                 <FIELD NAME="annotation" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Annotation or OrderID."/>
+                <FIELD NAME="schistoryid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The id of the corresponding shopping cart history entry."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_shopping_cart';
-$plugin->release = '0.8.0';
-$plugin->version = 2024031800;
+$plugin->release = '0.8.1';
+$plugin->version = 2024032000;
 $plugin->requires = 2022041900; // Requires this Moodle version. Current: Moodle 4.0.0.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
