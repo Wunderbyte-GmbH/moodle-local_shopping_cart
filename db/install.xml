@@ -133,5 +133,23 @@
                 <INDEX NAME="identifier" UNIQUE="true" FIELDS="identifier"/>
             </INDEXES>
         </TABLE>
+        <TABLE NAME="local_shopping_cart_iteminfo" COMMENT="Plugins using the shopping cart api can include the sch handler to save information for their items, like possibility for installment payment.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="componentname" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="area" TYPE="char" LENGTH="120" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="json" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="itemid-componentname-area" UNIQUE="true" FIELDS="itemid, componentname, area"/>
+            </INDEXES>
+        </TABLE>
     </TABLES>
 </XMLDB>
