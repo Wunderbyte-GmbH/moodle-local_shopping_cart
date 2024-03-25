@@ -1,3 +1,14 @@
+## Version 0.8.2 (2024032500)
+* Improvement: Keep itemid in ledger on rebooking #65.
+
+## Version 0.8.1 (2024032000)
+* Improvement: Fix Filter for new wunderbyte table api.
+* Improvement: Add new schistorid column to ledger.
+* Bugfix: Avoid "Limit" for oracle support.
+* Bugfix: Fix for #63.
+* Bugfix: Second fix for #63 - we need to get currency from config!
+* Bugfix: Make sure we have booking fee when deleting rebooking item.
+
 ## Version 0.8.0 (2024031800)
 * New feature: New setting to limit the cash report download file to a certain number of rows.
 * Improvement: don't add booking fee on items with price 0.
