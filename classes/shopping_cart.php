@@ -258,6 +258,13 @@ class shopping_cart {
                         }
                     }
 
+                    // Now we check if we allow installments.
+                    // We don't check fo booking fee and other shopping cart related items.
+                    if (($component !== 'local_shopping_cart')
+                        && shopping_cart_handler::installment_exists($component, $area, $itemid)) {
+                        $itemdata['installment'] = true;
+                    }
+
                     // Then we set item in Cache.
                     $cachedrawdata['items'][$cacheitemkey] = $itemdata;
                     $cachedrawdata['expirationdate'] = $expirationtimestamp;
