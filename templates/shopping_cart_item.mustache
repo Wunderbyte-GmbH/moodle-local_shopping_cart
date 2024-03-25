@@ -67,6 +67,11 @@
     <span class="itemname">
         {{itemname}}
     </span>
+    <span>
+        {{#installment}}
+             ({{#str}} allowinstallment, local_shopping_cart {{/str}})
+        {{/installment}}
+    </span>
     {{#iscashier}}
         <span class="item-button pull-right">
             <i class="shoppingcart-discount-icon fa fa-fw fa-percent pl-2" aria-hidden="true"

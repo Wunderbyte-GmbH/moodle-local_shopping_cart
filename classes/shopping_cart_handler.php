@@ -269,6 +269,7 @@ class shopping_cart_handler {
         ];
 
         if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $data)) {
+            $data['allowinstallment'] = !empty($this->jsonobject->allowinstallment) ? 1 : 0;
             $data['json'] = json_encode($this->jsonobject);
             $data['timemodified'] = time();
             $data['usermodified'] = $USER->id;
@@ -277,14 +278,39 @@ class shopping_cart_handler {
         } else {
 
             // We never save a totally empty jsonobject but assume that we then would want to keep the current.
-            $json = !empty($this->jsonobject) ? json_encode($this->jsonobject) : $record->json;
+            if (empty($this->jsonobject)) {
+                $this->jsonobject = json_decode($record->json);
+            }
             $data['id'] = $record->id;
-            $data['json'] = $json;
+            $data['allowinstallment'] = !empty($this->jsonobject->allowinstallment) ? 1 : 0;
+            $data['json'] = json_encode($this->jsonobject);
             $data['timemodified'] = time();
             $data['timecreated'] = time();
             $data['usermodified'] = $USER->id;
 
             $DB->update_record('local_shopping_cart_iteminfo', $data);
         }
+    }
+
+    /**
+     * Function to for fast check if there is a possibility for installments.
+     * This still goes on the DB and can't be used for a list of items.
+     * If it's needed on a list, we would need to make a cached version of this.
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
+     * @return bool
+     * @throws dml_exception
+     */
+    public static function installment_exists(string $componentname, string $area, int $itemid) {
+        global $DB;
+
+        $data = [
+            'itemid' => $itemid,
+            'componentname' => $componentname,
+            'area' => $area,
+            'allowinstallment' => 1,
+        ];
+        return $DB->record_exists('local_shopping_cart_iteminfo', $data);
     }
 }
