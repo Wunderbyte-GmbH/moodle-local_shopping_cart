@@ -504,6 +504,21 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024032501, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2024032502) {
+
+        // Define field schistoryid to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_iteminfo');
+        $field = new xmldb_field('allowinstallment', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'area');
+
+        // Conditionally launch add field schistoryid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2024032502, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
