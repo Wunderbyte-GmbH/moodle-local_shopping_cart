@@ -490,3 +490,13 @@ $string['erpnext'] = 'ERPNext';
 $string['history'] = "Käufe";
 $string['ledger'] = "Zahlungsjournal";
 $string['credits'] = "Guthaben";
+
+// Handler.
+$string['allowinstallment'] = 'Erlaube Ratenzahlungen';
+$string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
+$string['firstamount'] = 'Erster Betrag';
+$string['firstamount_help'] = 'Dieser Betrag muss am Anfang überweisen werden. Die Restsumme erst später.';
+$string['numberofpayments'] = 'Anzahl der Zahlungen';
+$string['numberofpayments_help'] = 'Diese Zahl bezieht sich auf die notwendigen Zahlungen NACH der ersten Zahlung.';
+$string['duedate'] = 'Letztes Zahlungsdatum';
+$string['duedate_help'] = 'An diesem Datum muss der volle Betrag überwiesen werden. Liegt das Datum 100 Tage in der Zukunft und es sind zwei Teilzalungen eingestellt, muss nach der ersten Zahlung die Hälfte des offenen Betrags nach 50 Tagen, und der Rest nach 100 Tagen bezahlt werden.';
