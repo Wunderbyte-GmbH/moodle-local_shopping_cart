@@ -58,6 +58,11 @@ class shopping_cart_handler {
     private $area;
 
     /**
+     * @var stdClass
+     */
+    private $jsonobject;
+
+    /**
      * Handler constructor
      * @param string $componentname
      * @param string $area
@@ -92,8 +97,7 @@ class shopping_cart_handler {
         $mform->addElement(
             'text',
             'sch_firstamount',
-            get_string('firstamount', 'local_shopping_cart'),
-            get_string('firstamount_desc', 'local_shopping_cart')
+            get_string('firstamount', 'local_shopping_cart')
         );
         $mform->setType('sch_firstamount', PARAM_FLOAT);
         $mform->addHelpButton('sch_firstamount', 'firstamount', 'local_shopping_cart');
@@ -126,8 +130,7 @@ class shopping_cart_handler {
         $mform->addElement(
             'text',
             'sch_duedatevariable',
-            get_string('duedatevariable', 'local_shopping_cart'),
-            get_string('duedatevariable_desc', 'local_shopping_cart')
+            get_string('duedatevariable', 'local_shopping_cart')
         );
         $mform->setDefault('sch_duedatevariable', 0);
         $mform->setType('sch_duedatevariable', PARAM_INT);
@@ -154,6 +157,7 @@ class shopping_cart_handler {
      */
     public function validation(array $data, array &$errors) {
         // Validate.
+
     }
 
     /**
@@ -164,6 +168,21 @@ class shopping_cart_handler {
      */
     public function save_data(stdClass $formdata, stdClass $data) {
 
+        $this->itemid = $formdata->id ?? $data->id ?? 0;
+
+        if (empty($this->itemid)) {
+            // We can't save anything if we have no itemid.
+            throw new moodle_exception('noitemid', 'local_shoping_cart');
+        }
+
+        $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
+        $this->add_key_to_jsonobject('firstamount', $formdata->sch_firstamount);
+        $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
+        $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
+        $this->add_key_to_jsonobject('duedate', $formdata->sch_duedate);
+
+        $this->save_iteminfo();
+
     }
 
     /**
@@ -171,7 +190,101 @@ class shopping_cart_handler {
      * @param stdClass $data
      * @return void
      */
-    public function set_data(stdClass $data) {
+    public function set_data(stdClass $formdata) {
 
+        global $DB;
+
+        $this->itemid = $formdata->id ?? 0;
+
+        if (empty($this->itemid)) {
+            // We can't save anything if we have no itemid.
+            // Here we don't need an error. During creation, itemid can be 0.
+            return;
+        }
+        $data = [
+            'itemid' => $this->itemid,
+            'componentname' => $this->componentname,
+            'area' => $this->area,
+        ];
+
+        if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $data)) {
+            return;
+        }
+
+        $jsonobject = json_decode($record->json);
+
+        $formdata->sch_allowinstallment = $jsonobject->allowinstallment;
+        $formdata->sch_firstamount = $jsonobject->firstamount;
+        $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
+        $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
+        $formdata->sch_duedate = $jsonobject->duedate;
+
+    }
+
+    /**
+     * Fetches the json object from db and adds the value.
+     * This function does not save but only stores in the instance of the class.
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     * @throws dml_exception
+     */
+    private function add_key_to_jsonobject(string $key, mixed $value) {
+
+        global $DB;
+
+        // Make sure the class has a current version of the json object.
+        if ($this->jsonobject === null) {
+            $data = [
+                'itemid' => $this->itemid,
+                'componentname' => $this->componentname,
+                'area' => $this->area,
+            ];
+
+            if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $data)) {
+                $this->jsonobject = new stdClass();
+            } else {
+                $this->jsonobject = json_decode($record->json);
+            }
+        }
+
+        $this->jsonobject->{$key} = $value;
+
+    }
+
+
+    /**
+     * This function writes the current instance of the class to the db.
+     * @return void
+     * @throws dml_exception
+     */
+    private function save_iteminfo() {
+
+        global $DB, $USER;
+
+        $data = [
+            'itemid' => $this->itemid,
+            'componentname' => $this->componentname,
+            'area' => $this->area,
+        ];
+
+        if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $data)) {
+            $data['json'] = json_encode($this->jsonobject);
+            $data['timemodified'] = time();
+            $data['usermodified'] = $USER->id;
+
+            $DB->insert_record('local_shopping_cart_iteminfo', $data);
+        } else {
+
+            // We never save a totally empty jsonobject but assume that we then would want to keep the current.
+            $json = !empty($this->jsonobject) ? json_encode($this->jsonobject) : $record->json;
+            $data['id'] = $record->id;
+            $data['json'] = $json;
+            $data['timemodified'] = time();
+            $data['timecreated'] = time();
+            $data['usermodified'] = $USER->id;
+
+            $DB->update_record('local_shopping_cart_iteminfo', $data);
+        }
     }
 }
