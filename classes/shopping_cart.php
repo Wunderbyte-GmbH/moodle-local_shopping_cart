@@ -1289,8 +1289,6 @@ class shopping_cart {
      */
     public static function allowed_to_cancel(int $historyid, int $itemid, string $area, int $userid): bool {
 
-        $context = context_system::instance();
-
         if (!$item = shopping_cart_history::return_item_from_history($historyid)) {
             return false;
         }
@@ -1300,12 +1298,25 @@ class shopping_cart {
             return false;
         }
 
+        return self::allowed_to_cancel_for_item($item, $area);
+    }
+
+    /**
+     * This function does not need the historyid but justs the component relevant settings.
+     * @param stdClass $item
+     * @return bool
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function allowed_to_cancel_for_item(stdClass $item, string $area) {
+        $context = context_system::instance();
+
         // Cashier can always cancel but if it's no cashier...
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             // ...then we have to check, if the item itself allows cancellation.
             $providerclass = static::get_service_provider_classname($item->componentname);
             try {
-                $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $itemid]);
+                $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $item->itemid]);
             } catch (Exception $e) {
                 $itemallowedtocancel = false;
             }
@@ -1329,6 +1340,8 @@ class shopping_cart {
 
         return true;
     }
+
+
 
     /**
      *
