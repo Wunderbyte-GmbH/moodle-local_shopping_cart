@@ -333,7 +333,7 @@ class shoppingcart_history_list implements renderable, templatable {
      *
      * @return [type]
      */
-    private static function add_round_config(stdClass &$item) {
+    public static function add_round_config(stdClass &$item) {
 
         if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
             $item->round = $round == 1 ? true : false;

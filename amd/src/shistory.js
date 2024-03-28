@@ -138,7 +138,7 @@ export const init = (cancelationFee = null) => {
  * @param {string} credit
  * @param {type} button
  */
-function cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, credit, button) {
+export function cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, credit, button) {
 
     Ajax.call([{
         methodname: "local_shopping_cart_cancel_purchase",
@@ -164,6 +164,19 @@ function cancelPurchase(itemid, area, userid, componentname, historyid, currency
                     console.log(e);
                 });
 
+                if (!button) {
+                    import('local_wunderbyte_table/reload')
+                    // eslint-disable-next-line promise/always-return
+                    .then(wbt => {
+                        wbt.reloadAllTables();
+                    })
+                    .catch(err => {
+                            // Handle any errors, including if the module doesn't exist
+                            // eslint-disable-next-line no-console
+                            console.log(err);
+                    });
+                    return;
+                }
                 setButtonToCanceled(button);
 
                 showCredit(data.credit, currency, userid);
@@ -340,7 +353,75 @@ function confirmPaidBack(element) {
  * @param {*} button
  * @param {*} cancelationFee
  */
-function confirmCancelModal(button, cancelationFee) {
+export async function confirmCancelModal(button, cancelationFee) {
+
+    // eslint-disable-next-line no-console
+    console.log(button);
+
+    // If we have no price, but there are all the other values on the button...
+    // ... we first fetch the necessary data.
+    if (!button.dataset.hasOwnProperty('price')) {
+
+        // eslint-disable-next-line no-console
+        console.log('beforeajax');
+        await new Promise(function(resolve, reject) {
+
+            Ajax.call([{
+                methodname: 'local_shopping_cart_get_history_item',
+                args: {
+                    'itemid': button.dataset.itemid,
+                    'componentname': button.dataset.componentname,
+                    'area': button.dataset.area,
+                    'userid': button.dataset.userid,
+                },
+                done: function(data) {
+
+                    // eslint-disable-next-line no-console
+                    console.log(data);
+
+                    if (!data.success == 1) {
+                        resolve(data);
+                        return;
+                    }
+
+                    button.dataset.price = data.price;
+                    button.dataset.credit = 0;
+                    button.dataset.currency = data.currency;
+                    button.dataset.quotaconsumed = data.quotaconsumed;
+                    button.dataset.round = data.round;
+                    cancelationFee = data.cancelationfee;
+
+                    resolve(data);
+                },
+                fail: ex => {
+                    // eslint-disable-next-line no-console
+                    console.log("failed to load information for modal: " + JSON.stringify(ex));
+                    reject(ex);
+                }
+            }]);
+
+
+        });
+
+
+    }
+    if (!button.dataset.hasOwnProperty('price')) {
+        getString('canceldidntwork', 'local_shopping_cart').then(message => {
+
+            showNotification(message, "danger");
+
+            return;
+        }).catch(e => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+        // eslint-disable-next-line no-console
+        console.log('break');
+        return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.log('afterajax');
 
     // Before showing the cancel modal, we need to gather some information and pass it to the string.
     if (cancelationFee === null) {

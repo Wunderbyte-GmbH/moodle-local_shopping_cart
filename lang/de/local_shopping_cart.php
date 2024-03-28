@@ -228,7 +228,7 @@ $string['manualrebookingisallowed_desc'] = 'Mit dieser Einstellung kann die Kass
  Aktivieren Sie dieses Feature nur, wenn Sie sicher sind, dass Sie es wirklich benötigen. Falsche Handhabung kann
  zu fehlerhaften Einträgen in der Datenbank führen!</span>)';
 
-$string['cancelpurchase'] = 'Stornieren';
+$string['cancelpurchase'] = 'Kauf stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';

@@ -1,0 +1,81 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template message_output_popup/shopping_cart_popover
+
+    This template will render the shopping_cart popover for the navigation bar.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+      "id":"2",
+      "userid":"2309",
+      "itemid":"1",
+      "itemname":"my test item 1",
+      "price":"10.00",
+      "tax":"2.00",
+      "discount":"0.00",
+      "currency":"EUR",
+      "componentname":"local_shopping_cart",
+      "identifier":"1668028796",
+      "payment":"3",
+      "paymentstatus":"2",
+      "usermodified":"2",
+      "timecreated":"1668028796",
+      "timemodified":"1668028796",
+      "canceluntil":"1669238377",
+      "serviceperiodstart":"0",
+      "serviceperiodend":"0",
+      "gateway":null,
+      "date":"2022-11-09",
+      "canceled":false,
+      "canceluntilstring":"2022-11-23",
+      "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+      "buttonclass":"disabled hidden",
+      "paymentstring":"in bar an der Kassa",
+      "receipturl":"https://www.wunderbyte.at/"
+   }
+
+}}
+
+<button type="button" class="shopping_cart_history_cancel_button btn btn-sm pull-left {{buttonclass}}"
+    data-historyid="{{id}}"
+    data-componentname="{{componentname}}"
+    data-area="{{area}}"
+    data-itemid="{{itemid}}"
+    data-userid="{{userid}}"
+    data-canceled="{{canceled}}"
+    data-currency="{{currency}}"
+    data-price="{{price}}"
+    data-round="{{round}}"
+    data-quotaconsumed="{{quotaconsumed}}">
+    {{#canceled}}
+        {{#str}} canceled, local_shopping_cart {{/str}}
+    {{/canceled}}
+    {{^canceled}}
+        <i class="fa fa-ban" aria-hidden="true"></i>&nbsp;{{#str}} cancelpurchase, local_shopping_cart {{/str}}
+    {{/canceled}}
+</button>

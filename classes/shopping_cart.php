@@ -1141,6 +1141,18 @@ class shopping_cart {
             }
         }
 
+        // At this point, we need a fallback when the historyid is empty.
+        // This happens typically when the cancel comes from outside shopping.
+        // We then just take the newest matching purchase.
+        if (empty($historyid)) {
+            $record = shopping_cart_history::get_most_recent_historyitem(
+                $componentname,
+                $area,
+                $itemid,
+                $userid);
+            $historyid = empty($record) ? 0 : $record->id;
+        }
+
         // Check if cancelation is still within the allowed period set in shopping_cart_history.
         if (!self::allowed_to_cancel($historyid, $itemid, $area, $userid)) {
             return [

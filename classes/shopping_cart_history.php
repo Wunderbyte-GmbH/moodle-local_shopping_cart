@@ -24,6 +24,10 @@
 
 namespace local_shopping_cart;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__ . '/../lib.php');
+
 use coding_exception;
 use context_system;
 use dml_exception;
@@ -761,6 +765,34 @@ class shopping_cart_history {
 
         return $DB->get_record('local_shopping_cart_history',
             ['id' => $historyid]);
+    }
+
+    /**
+     * Returns the most recent uncancelled history item.
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @return stdClass
+     * @throws dml_exception
+     */
+    public static function get_most_recent_historyitem(string $componentname, string $area, int $itemid, int $userid) {
+        global $DB;
+
+        $record = $DB->get_record('local_shopping_cart_history',
+            [
+                'componentname' => $componentname,
+                'area' => $area,
+                'itemid' => $itemid,
+                'userid' => $userid,
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            ]);
+
+        if (!empty($record)) {
+            return $record;
+        }
+
+        return (object)[];
     }
 
     /**
