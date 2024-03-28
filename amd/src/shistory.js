@@ -361,11 +361,7 @@ export async function confirmCancelModal(button, cancelationFee) {
     // If we have no price, but there are all the other values on the button...
     // ... we first fetch the necessary data.
     if (!button.dataset.hasOwnProperty('price')) {
-
-        // eslint-disable-next-line no-console
-        console.log('beforeajax');
         await new Promise(function(resolve, reject) {
-
             Ajax.call([{
                 methodname: 'local_shopping_cart_get_history_item',
                 args: {
@@ -384,12 +380,14 @@ export async function confirmCancelModal(button, cancelationFee) {
                         return;
                     }
 
+                    button.dataset.historyid = data.id;
                     button.dataset.price = data.price;
                     button.dataset.credit = 0;
                     button.dataset.currency = data.currency;
                     button.dataset.quotaconsumed = data.quotaconsumed;
                     button.dataset.round = data.round;
                     cancelationFee = data.cancelationfee;
+                    button.dataset.buttontonull = true;
 
                     resolve(data);
                 },
@@ -399,11 +397,7 @@ export async function confirmCancelModal(button, cancelationFee) {
                     reject(ex);
                 }
             }]);
-
-
         });
-
-
     }
     if (!button.dataset.hasOwnProperty('price')) {
         getString('canceldidntwork', 'local_shopping_cart').then(message => {
@@ -415,13 +409,8 @@ export async function confirmCancelModal(button, cancelationFee) {
             // eslint-disable-next-line no-console
             console.log(e);
         });
-        // eslint-disable-next-line no-console
-        console.log('break');
         return;
     }
-
-    // eslint-disable-next-line no-console
-    console.log('afterajax');
 
     // Before showing the cancel modal, we need to gather some information and pass it to the string.
     if (cancelationFee === null) {
@@ -495,6 +484,10 @@ export async function confirmCancelModal(button, cancelationFee) {
                 const componentname = button.dataset.componentname;
                 const area = button.dataset.area;
                 const price = button.dataset.price;
+
+                if (button.dataset.buttontonull) {
+                    button = null;
+                }
 
                 cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button);
             });

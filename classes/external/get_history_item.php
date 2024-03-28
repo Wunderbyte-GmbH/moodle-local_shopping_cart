@@ -118,6 +118,7 @@ class get_history_item extends external_api {
         if (empty($item->id)) {
             return [
                 'success' => 0,
+                'id' => 0,
                 'price' => 0,
                 'currency' => '',
                 'quotaconsumed' => 0,
@@ -131,6 +132,7 @@ class get_history_item extends external_api {
 
         return [
             'success' => 1,
+            'id' => $item->id,
             'price' => $item->price,
             'currency' => $item->currency,
             'quotaconsumed' => $item->quotaconsumed,
@@ -148,6 +150,7 @@ class get_history_item extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
+            'id' => new external_value(PARAM_INT, 'History id'),
             'price' => new external_value(PARAM_FLOAT, 'Price'),
             'currency' => new external_value(PARAM_ALPHA, 'Currency'),
             'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quotaconsumed'),
