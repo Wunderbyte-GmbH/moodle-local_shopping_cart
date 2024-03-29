@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use core\plugininfo\cachestore;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
@@ -125,11 +126,8 @@ if (isset($success)) {
     $expirationtimestamp = shopping_cart::get_expirationdate();
 
     // Only if there are items in the cart, we check if we need to add booking fee.
-    $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-    $cachekey = $userid . '_shopping_cart';
-    $cachedrawdata = $cache->get($cachekey);
-    $items = $cachedrawdata['items'] ?? [];
-    if (!empty($items)) {
+    $cartstore = cartstore::instance($userid);
+    if ($cartstore->has_items()) {
         // Make sure we have the fee (if we need it!).
         shopping_cart_bookingfee::add_fee_to_cart($userid);
     }
