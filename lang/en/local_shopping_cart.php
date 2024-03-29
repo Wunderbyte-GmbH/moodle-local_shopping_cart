@@ -347,6 +347,11 @@ $string['titledailysums:all'] = 'All revenues';
 $string['titledailysums:total'] = 'Total revenue';
 $string['titledailysums:current'] = 'Current cashier';
 $string['dailysums:downloadpdf'] = 'Download daily sums as PDF';
+$string['dailysumspdfhtml'] = 'HTML template for the daily sums PDF';
+$string['dailysumspdfhtml:description'] = 'Enter HTML to create the daily sums PDF. You can use the following placeholders:
+[[title]], [[date]], [[totalsum]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+[[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
+Leave this empty to use the default template.';
 $string['downloadcashreportlimit'] = 'Download limit';
 $string['downloadcashreportlimitdesc'] = 'Enter the max. number of rows for cash report download.
 By limiting, you can fix troubles with too large amounts of data.';

@@ -53,8 +53,33 @@ $PAGE->set_url('/daily_sums_pdf.php');
 $PAGE->set_title('Daily sums');
 $PAGE->set_heading('Daily sums');
 
-$html = $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums_pdf',
-    shopping_cart::get_daily_sums_data($date));
+// TODO: Get HTML from shopping cart settings instead of template.
+// TODO: Get individual placeholder data.
+// TODO: Replace placeholders in HTML with placeholder data.
+// TODO: Only then, add HTML to output.
+
+$data = shopping_cart::get_daily_sums_data($date);
+$html = get_config('local_shopping_cart', 'dailysumspdfhtml');
+if (empty($html)) {
+    // No template defined, so use default mustache template.
+    $html = $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums_pdf', $data);
+} else {
+    // Only if HTML template is defined in settings, we use it.
+    // At first, replace all placeholders.
+    $html = str_replace("[[title]]", $data['title'] ?? '', $html);
+    $html = str_replace("[[date]]", $data['date'] ?? '', $html);
+    $html = str_replace("[[printdate]]", $data['printdate'] ?? '', $html);
+    $html = str_replace("[[totalsum]]", $data['totalsum'] ?? '', $html);
+    $html = str_replace("[[currency]]", $data['currency'] ?? '', $html);
+    $html = str_replace("[[online]]", $data['online'] ?? '', $html);
+    $html = str_replace("[[cash]]", $data['cash'] ?? '', $html);
+    $html = str_replace("[[creditcard]]", $data['creditcard'] ?? '', $html);
+    $html = str_replace("[[debitcard]]", $data['debitcard'] ?? '', $html);
+    $html = str_replace("[[manual]]", $data['manual'] ?? '', $html);
+    $html = str_replace("[[creditspaidbackcash]]", $data['creditspaidbackcash'] ?? '', $html);
+    $html = str_replace("[[creditspaidbacktransfer]]", $data['creditspaidbacktransfer'] ?? '', $html);
+}
+
 
 // Set document information.
 $pdf->SetCreator(PDF_CREATOR);

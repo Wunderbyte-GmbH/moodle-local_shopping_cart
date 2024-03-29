@@ -334,6 +334,16 @@ if ($hassiteconfig) {
         new admin_setting_configcheckbox($componentname . '/showdailysumscurrentcashier',
                 get_string('showdailysumscurrentcashier', 'local_shopping_cart'),
                 '', 1));
+
+    $cashreportsettings->add(
+        new admin_setting_configtextarea(
+                $componentname . '/dailysumspdfhtml',
+                get_string('dailysumspdfhtml', $componentname),
+                get_string('dailysumspdfhtml:description', $componentname),
+                '', PARAM_RAW
+        )
+    );
+
     $limitopts = [
         '0' => get_string('nolimit', 'local_shopping_cart'),
         '10' => '10',

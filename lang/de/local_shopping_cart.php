@@ -341,6 +341,11 @@ $string['titledailysums:all'] = 'Gesamteinnahmen';
 $string['titledailysums:total'] = 'Saldo';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
 $string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
+$string['dailysumspdfhtml'] = 'HTML-Vorlage für die Erstellung des Tagessumen-PDFs';
+$string['dailysumspdfhtml:description'] = 'Geben Sie HTML-Code ein, der als Vorlage für die Erstellung des Tagessumen-PDFs verwendet werden soll.
+Sie können die folgenden Platzhalter verwenden: [[title]], [[date]], [[totalsum]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+[[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
+Lassen Sie das Feld leer, um die Standard-Vorlage zu verwenden.';
 $string['downloadcashreportlimit'] = 'Download-Limit festlegen';
 $string['downloadcashreportlimitdesc'] = 'Geben Sie die maximale Anzahl an Zeilen ein, die beim Download des Kassajournals heruntergeladen werden sollen.
 Dies kann Download-Problem bei zu großen Datenmengen beheben.';
