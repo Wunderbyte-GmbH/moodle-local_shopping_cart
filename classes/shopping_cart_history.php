@@ -616,8 +616,7 @@ class shopping_cart_history {
 
         $userfromid = $USER->id;
         $userid = $USER->id;
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
         $dataarr = [];
 
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
@@ -630,14 +629,11 @@ class shopping_cart_history {
             $taxcategories = null;
         }
 
-        if (!$cachedrawdata = $cache->get($cachekey)) {
+        if (!$cachedrawdata = $cartstore->get_cache()) {
             return ['identifier' => ''];
         }
 
         $currency = '';
-        if (!isset($cachedrawdata["items"])) {
-            $cachedrawdata["items"] = [];
-        }
 
         if (empty($identifier)) {
             $identifier = self::create_unique_cart_identifier($userid);
