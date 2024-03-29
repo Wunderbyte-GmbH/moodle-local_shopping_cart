@@ -1316,6 +1316,7 @@ class shopping_cart {
     /**
      * This function does not need the historyid but justs the component relevant settings.
      * @param stdClass $item
+     * @param string $area
      * @return bool
      * @throws coding_exception
      * @throws dml_exception

@@ -26,7 +26,9 @@ declare(strict_types=1);
 
 namespace local_shopping_cart\external;
 
+use coding_exception;
 use context_system;
+use dml_exception;
 use external_api;
 use external_function_parameters;
 use external_value;
@@ -35,6 +37,7 @@ use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use local_shopping_cart\output\shoppingcart_history_list;
 use moodle_exception;
+use require_login_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -72,9 +75,11 @@ class get_history_item extends external_api {
      * @param string $area
      * @param int $itemid
      * @param int $userid
-     * @param int $historyid
-     * @param float $credit
      * @return array
+     * @throws coding_exception
+     * @throws require_login_exception
+     * @throws moodle_exception
+     * @throws dml_exception
      */
     public static function execute(
             string $componentname,
