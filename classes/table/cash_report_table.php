@@ -27,7 +27,11 @@ use local_wunderbyte_table\wunderbyte_table;
 
 /**
  * Report table to show the cash report.
- * @package local_shopping_cart
+ *
+ * @package     local_shopping_cart
+ * @copyright   2022 Wunderbyte GmbH <info@wunderbyte.at>
+ * @author      Bernhard Fischer
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cash_report_table extends wunderbyte_table {
 
