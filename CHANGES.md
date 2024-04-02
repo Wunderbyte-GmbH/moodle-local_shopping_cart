@@ -1,3 +1,9 @@
+## Version 0.8.3 (2024040200)
+* New feature: Define your own HTML template for the daily sums PDF download.
+* Improvement: Add function to check allowedcancel without db call.
+* Improvement: Add possibility to fetch last historyitem information when no historyid is given.
+* Improvement: Make add to cart button accessible via TAB.
+
 ## Version 0.8.2 (2024032500)
 * Improvement: Keep itemid in ledger on rebooking #65.
 
