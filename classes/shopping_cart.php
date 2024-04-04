@@ -1642,7 +1642,7 @@ class shopping_cart {
         global $DB;
         $params = [];
         $values = explode(' ', $query);
-        $fullsql = $DB->sql_concat('u.firstname', '\'\'', 'u.lastname', '\'\'', 'u.email');
+        $fullsql = $DB->sql_concat('u.id', '\'\'', 'u.firstname', '\'\'', 'u.lastname', '\'\'', 'u.email');
         $sql = "SELECT * FROM (
                     SELECT u.id, u.firstname, u.lastname, u.email, $fullsql AS fulltextstring
                     FROM {user} u
