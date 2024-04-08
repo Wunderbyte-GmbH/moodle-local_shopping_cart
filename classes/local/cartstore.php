@@ -27,10 +27,11 @@ namespace local_shopping_cart\local;
 
 use coding_exception;
 use local_shopping_cart\local\entities\cartitem;
+use local_shopping_cart\local\pricemodifier\modifier_info;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../lib.php');
+require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 /**
  * Class cartstore
@@ -42,7 +43,7 @@ require_once(__DIR__ . '/../lib.php');
 class cartstore {
 
     /** @var array */
-    protected $instance = [];
+    protected static $instance = [];
 
     /** @var int */
     protected $userid = 0;
@@ -74,7 +75,51 @@ class cartstore {
      */
     public function add_item(cartitem $item) {
 
+    }
 
+    /**
+     * Returns 0|1 fore the saved usecredit state, null if no such state exists.
+     *
+     * @param int $userid
+     * @return ?int
+     */
+    public static function get_saved_usecredit_state(): ?int {
+        $data = self::get_cache();
+
+        if ($data && isset($data['usecredit'])) {
+            return $data['usecredit'];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Sets the usecredit value in Cache for the user.
+     *
+     * @param int $userid
+     * @param bool $usecredit
+     * @return void
+     */
+    public function save_used_credit_state(bool $usecredit) {
+        $data = self::get_cache();
+        $data['usecredit'] = $usecredit;
+        self::set_cache($data);
+    }
+
+    /**
+     * Deletes all items from the cache.
+     * @return void
+     * @throws coding_exception
+     */
+    public function delete_all_items() {
+        $cachedrawdata = self::get_cache();
+        if ($cachedrawdata) {
+
+            unset($cachedrawdata['items']);
+            unset($cachedrawdata['expirationdate']);
+
+            sef::set_cache($cachedrawdata);
+        }
     }
 
     /**
@@ -97,12 +142,45 @@ class cartstore {
      * @return mixed
      * @throws coding_exception
      */
-    private function get_cache() {
+    public function get_cache() {
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $this->get_cachekey();
 
         return $cache->get($cachekey);
+    }
+
+    /**
+     * Returns data and applies modifiers.
+     * @return mixed cachedata
+     */
+    public function get_data() {
+        $data = self::get_cache();
+
+        // If we have cachedrawdata, we need to check the expiration date.
+        if ($data) {
+            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
+                    && $cachedrawdata['expirationdate'] < time()) {
+                self::delete_all_items();
+                $data = self::get_cache();
+            }
+        }
+
+        modifier_info::apply_modfiers($data);
+        return $data;
+    }
+
+    /**
+     * Gets the current entries of the cache.
+     * @param mixed cachedata
+     * @return mixed
+     * @throws coding_exception
+     */
+    private function set_cache($cachedata) {
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = $this->get_cachekey();
+
+        $cache->set($cachekey, $cachedata);
     }
 
     /**

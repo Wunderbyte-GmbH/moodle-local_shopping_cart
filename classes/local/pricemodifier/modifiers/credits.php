@@ -37,6 +37,11 @@ use local_shopping_cart\local\pricemodifier\modifier_base;
 abstract class credits extends modifier_base {
 
     /** @var int */
-    public $id = ;
+    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_CREDITS;
+
+    public static function apply(array &$data): array {
+        $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
+        return $data;
+    }
 
 }

@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use context_system;
+use local_shopping_cart\local\cartstore;
 use moodle_exception;
 use stdClass;
 
@@ -353,7 +354,8 @@ class shopping_cart_credits {
         // If usecredit is null, we know we got the data from history.
         // Therefore, we need to get the information from cache, if we want to use the credit.
         if ($usecredit === null) {
-            $tempusecredit = shopping_cart::get_saved_usecredit_state($userid);
+            $cartstore = cartstore::instance($userid);
+            $tempusecredit = $cartstore->get_saved_usecredit_state();
             if ($tempusecredit === null) {
                 // If nothing is saved, we fall back to true.
                 $usecredit = true;

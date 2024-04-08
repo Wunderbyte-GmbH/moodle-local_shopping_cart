@@ -36,4 +36,20 @@ use local_shopping_cart\local\pricemodifier\modifier_base;
  */
 abstract class taxes extends modifier_base {
 
+    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_TAXES;
+
+    public static function apply(array &$data): array {
+        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+        if ($taxesenabled) {
+            $taxcategories = taxcategories::from_raw_string(
+                    get_config('local_shopping_cart', 'defaulttaxcategory'),
+                    get_config('local_shopping_cart', 'taxcategories')
+            );
+        } else {
+            $taxcategories = null;
+        }
+        $data['taxesenabled'] = '$taxesenabled';
+
+        return $data;
+    }
 }

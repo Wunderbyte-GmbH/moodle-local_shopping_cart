@@ -34,4 +34,9 @@ namespace local_shopping_cart\local\pricemodifier;
  */
 abstract class modifier_base {
 
+
+
+    public static function apply(array &$data): array {
+    }
+
 }

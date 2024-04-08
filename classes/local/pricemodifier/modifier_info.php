@@ -37,15 +37,19 @@ use core_component;
 class modifier_info {
 
 
-    public function apply_modfiers(array $data) {
+    public static function apply_modfiers(array &$data) {
 
         $modifiers = core_component::get_component_classes_in_namespace(
             'local_shopping_cart',
             'local\pricemodifier\modifiers'
         );
 
+        $modifiers = array_keys($modifiers);
+        usort($modifiers, fn($a, $b) => ($a::$id > $b::$id ? 1 : -1 ));
         foreach ($modifiers as $modifier) {
-            $modifier->apply($data);
+            // $class = new $modifier();
+            // get ids from modifier and sort 
+            $modifier::apply($data);
         }
     }
 

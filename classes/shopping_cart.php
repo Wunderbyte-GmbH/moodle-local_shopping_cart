@@ -45,6 +45,7 @@ use moodle_exception;
 use Exception;
 use local_shopping_cart\event\item_notbought;
 use local_shopping_cart\interfaces\interface_transaction_complete;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\payment\service_provider;
 use moodle_url;
 use stdClass;
@@ -85,10 +86,9 @@ class shopping_cart {
 
         // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
+        $cachedrawdata = $cartstore->get_cache();
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Check if maxitems is exceeded.
@@ -104,7 +104,7 @@ class shopping_cart {
         // ... we add the booking fee.
         if (empty($cachedrawdata['items'])
             && $area != 'bookingfee') {
-            $cachedrawdata = $cache->get($cachekey);
+                $cachedrawdata = $cartstore->get_cache();
         }
 
         // Todo: Admin setting could allow for more than one item. Right now, only one.
@@ -208,9 +208,9 @@ class shopping_cart {
         $userid = self::set_user($userid);
 
         // Check the cache for items in cart.
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        $cartstore = cartstore::instance($userid);
+
+        $cachedrawdata = $cartstore->get_cache();
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
@@ -226,7 +226,7 @@ class shopping_cart {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
                 shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
-                $cachedrawdata = $cache->get($cachekey);
+                $cachedrawdata = $cartstore->get_cache();
             }
         }
 
@@ -407,15 +407,14 @@ class shopping_cart {
 
         $userid = $userid == 0 ? $USER->id : $userid;
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
+        $cachedrawdata = $cartstore->get_cache();
         if ($cachedrawdata) {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($cachedrawdata['items'][$cacheitemkey])) {
                 unset($cachedrawdata['items'][$cacheitemkey]);
-                $cache->set($cachekey, $cachedrawdata);
+                $cachedrawdata = $cartstore->get_cache();
             }
         }
 
@@ -487,17 +486,9 @@ class shopping_cart {
      */
     public static function delete_all_items_from_cart(int $userid): bool {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
-        if ($cachedrawdata) {
-
-            unset($cachedrawdata['items']);
-            unset($cachedrawdata['expirationdate']);
-
-            $cache->set($cachekey, $cachedrawdata);
-        }
+        $cartstore->delete_all_items();
         return true;
     }
 
@@ -642,128 +633,97 @@ class shopping_cart {
             $userid = $USER->id;
         }
 
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
         $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
-        if ($taxesenabled) {
-            $taxcategories = taxcategories::from_raw_string(
-                    get_config('local_shopping_cart', 'defaulttaxcategory'),
-                    get_config('local_shopping_cart', 'taxcategories')
-            );
-        } else {
-            $taxcategories = null;
-        }
+        // $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+        // if ($taxesenabled) {
+        //     $taxcategories = taxcategories::from_raw_string(
+        //             get_config('local_shopping_cart', 'defaulttaxcategory'),
+        //             get_config('local_shopping_cart', 'taxcategories')
+        //     );
+        // } else {
+        //     $taxcategories = null;
+        // }
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        // $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        // $cachekey = $userid . '_shopping_cart';
+        // $cachedrawdata = $cache->get($cachekey);
 
         // If we have cachedrawdata, we need to check the expiration date.
-        if ($cachedrawdata) {
-            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                    && $cachedrawdata['expirationdate'] < time()) {
-                self::delete_all_items_from_cart($userid);
-                $cachedrawdata = $cache->get($cachekey);
-            }
-        }
+        // if ($cachedrawdata) {
+        //     if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
+        //             && $cachedrawdata['expirationdate'] < time()) {
+        //         self::delete_all_items_from_cart($userid);
+        //         $cachedrawdata = $cache->get($cachekey);
+        //     }
+        // }
 
-        // We create a new item to pass on in any case.
-        $data = [];
-        $data['userid'] = $userid;
-        $data['count'] = 0;
+        // // We create a new item to pass on in any case.
+        // $data = [];
+        // $data['userid'] = $userid;
+        // $data['count'] = 0;
 
-        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-        $data['items'] = [];
-        $data['price'] = 0.00;
-        $data['taxesenabled'] = $taxesenabled;
-        $data['initialtotal'] = 0.00;
-        $data['deductible'] = 0.00;
-        $data['checkboxid'] = bin2hex(random_bytes(3));
-        $data['usecredit'] = $usecredit;
-        $data['expirationdate'] = time();
-        $data['nowdate'] = time();
-        $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
+        // $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
+        // $data['items'] = [];
+        // $data['price'] = 0.00;
+        // $data['taxesenabled'] = $taxesenabled;
+        // $data['initialtotal'] = 0.00;
+        // $data['deductible'] = 0.00;
+        // $data['checkboxid'] = bin2hex(random_bytes(3));
+        // $data['usecredit'] = $usecredit;
+        // $data['expirationdate'] = time();
+        // $data['nowdate'] = time();
+        // $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
 
-        if (!$cachedrawdata) {
-            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
-            $data['items'] = [];
-            $data['remainingcredit'] = $data['credit'];
+        // if (!$cachedrawdata) {
+        //     list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
+        //     $data['items'] = [];
+        //     $data['remainingcredit'] = $data['credit'];
 
-        } else if ($cachedrawdata) {
-            $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
-            $data['count'] = $count;
+        // } else if ($cachedrawdata) {
+        //     $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
+        //     $data['count'] = $count;
 
-            $data['currency'] = $cachedrawdata['currency'] ?? null;
-            $data['credit'] = $cachedrawdata['credit'] ?? null;
-            $data['remainingcredit'] = $data['credit'];
+        //     $data['currency'] = $cachedrawdata['currency'] ?? null;
+        //     $data['credit'] = $cachedrawdata['credit'] ?? null;
+        //     $data['remainingcredit'] = $data['credit'];
 
-            if ($count > 0) {
-                // We need the userid in every item.
-                $items = array_map(function($item) use ($USER, $userid) {
-                    $item['userid'] = $userid != $USER->id ? -1 : 0;
-                    return $item;
-                }, $cachedrawdata['items']);
+        //     if ($count > 0) {
+        //         // We need the userid in every item.
+        //         $items = array_map(function($item) use ($USER, $userid) {
+        //             $item['userid'] = $userid != $USER->id ? -1 : 0;
+        //             return $item;
+        //         }, $cachedrawdata['items']);
 
-                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
+        //         $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
 
-                $data['price'] = self::calculate_total_price($data["items"]);
-                if ($taxesenabled) {
-                    $data['price_net'] = self::calculate_total_price($data["items"], true);
-                }
-                $data['discount'] = array_sum(array_column($data['items'], 'discount'));
-                $data['expirationdate'] = $cachedrawdata['expirationdate'];
-            }
-        }
+        //         $data['price'] = self::calculate_total_price($data["items"]);
+        //         if ($taxesenabled) {
+        //             $data['price_net'] = self::calculate_total_price($data["items"], true);
+        //         }
+        //         $data['discount'] = array_sum(array_column($data['items'], 'discount'));
+        //         $data['expirationdate'] = $cachedrawdata['expirationdate'];
+        //     }
+        // }
 
-        // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
-        if (empty($data['currency']) && (count($data['items']) > 0)) {
-            $data['currency'] = end($data['items'])['currency'];
-        } else if (empty($data['currency'])) {
-            $data['currency'] = '';
-        }
-        $data['credit'] = $data['credit'] ?? 0.00;
+        // // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
+        // if (empty($data['currency']) && (count($data['items']) > 0)) {
+        //     $data['currency'] = end($data['items'])['currency'];
+        // } else if (empty($data['currency'])) {
+        //     $data['currency'] = '';
+        // }
+        // $data['credit'] = $data['credit'] ?? 0.00;
 
-        if ($cachedrawdata && count($data['items']) > 0) {
-            // If there is credit for this user, we give her options.
-            shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
-        } else if (count($data['items']) == 0) {
-            // If not, we save the cache right away.
-            $cache->set($cachekey, $data);
-        }
+        // if ($cachedrawdata && count($data['items']) > 0) {
+        //     // If there is credit for this user, we give her options.
+        //     shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
+        // } else if (count($data['items']) == 0) {
+        //     // If not, we save the cache right away.
+        //     $cache->set($cachekey, $data);
+        // }
 
         return $data;
-    }
-
-    /**
-     * Returns 0|1 fore the saved usecredit state, null if no such state exists.
-     *
-     * @param int $userid
-     * @return ?int
-     */
-    public static function get_saved_usecredit_state(int $userid): ?int {
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-
-        if ($cachedrawdata && isset($cachedrawdata['usecredit'])) {
-            return $cachedrawdata['usecredit'];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Sets the usecredit value in Cache for the user.
-     *
-     * @param int $userid
-     * @param bool $usecredit
-     * @return void
-     */
-    public static function save_used_credit_state(int $userid, bool $usecredit) {
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-        $cachedrawdata['usecredit'] = $usecredit;
-        $cache->set($cachekey, $cachedrawdata);
     }
 
     /**
