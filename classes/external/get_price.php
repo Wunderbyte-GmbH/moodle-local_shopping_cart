@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -102,7 +103,9 @@ class get_price extends external_api {
         }
 
         // Add the state to the cache.
-        shopping_cart::save_used_credit_state($userid, $usecredit);
+        // shopping_cart::save_used_credit_state($userid, $usecredit);
+        $cartstore = cartstore::instance($userid);
+        $cartstore->save_used_credit_state($usecredit);
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
         $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);

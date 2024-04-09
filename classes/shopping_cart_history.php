@@ -33,6 +33,7 @@ use context_system;
 use dml_exception;
 use Exception;
 use local_shopping_cart\event\payment_added;
+use local_shopping_cart\local\cartstore;
 use moodle_exception;
 use moodle_url;
 use stdClass;
@@ -619,30 +620,11 @@ class shopping_cart_history {
         $cartstore = cartstore::instance($userid);
         $dataarr = [];
 
-        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
-        if ($taxesenabled) {
-            $taxcategories = taxcategories::from_raw_string(
-                    get_config('local_shopping_cart', 'defaulttaxcategory'),
-                    get_config('local_shopping_cart', 'taxcategories')
-            );
-        } else {
-            $taxcategories = null;
-        }
-
-        if (!$cachedrawdata = $cartstore->get_cache()) {
-            return ['identifier' => ''];
-        }
-
-        $currency = '';
-
-        if (empty($identifier)) {
-            $identifier = self::create_unique_cart_identifier($userid);
-        }
-
-        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories);
+        $cartstore = cartstore::instance($userid);
+        $cachedrawdata = $cartstore->get_data();
+        $items = $cachedrawdata['items'];
         foreach ($items as $item) {
             $data = $item;
-            $currency = $item['currency'];
             $data['expirationtime'] = $cachedrawdata["expirationdate"];
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
@@ -650,21 +632,12 @@ class shopping_cart_history {
             $data['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
             $data['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_PENDING;
             $data['discount'] = $item['discount'] ?? null;
-            $dataarr['items'][] = $data;
+            $cachedrawdata['items'][] = $data;
         }
 
         // As the identifier will always stay the same, we pass it here for easy acces.
-        $dataarr['identifier'] = $identifier;
-        if (!empty($items)) {
-            $dataarr['price'] = shopping_cart::calculate_total_price($dataarr["items"]);
-            if ($taxesenabled) {
-                $dataarr['price_net'] = shopping_cart::calculate_total_price($dataarr["items"], true);
-            }
-        } else {
-            $dataarr['price'] = 0.00;
-        }
-        $dataarr['currency'] = $currency;
-        return $dataarr;
+        $cachedrawdata['identifier'] = $identifier;
+        return $cachedrawdata;
     }
 
 

@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\shopping_cart_credits;
 
 /**
  * Class taxes
@@ -40,7 +41,20 @@ abstract class credits extends modifier_base {
     public static $id = LOCAL_SHOPPING_CART_PRICEMOD_CREDITS;
 
     public static function apply(array &$data): array {
-        $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
+        // $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
+
+        if (!isset($data['items'])) {
+            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($data['userid']);
+            $data['items'] = [];
+            $data['remainingcredit'] = $data['credit'];
+        } else {
+            $count = isset($data['items']) ? count($data['items']) : 0;
+            $data['count'] = $count;
+
+            $data['currency'] = $data['currency'] ?? null;
+            $data['credit'] = $data['credit'] ?? null;
+            $data['remainingcredit'] = $data['credit'];
+        }
         return $data;
     }
 

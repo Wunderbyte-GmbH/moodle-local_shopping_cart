@@ -37,6 +37,7 @@ abstract class modifier_base {
 
 
     public static function apply(array &$data): array {
+
     }
 
 }
