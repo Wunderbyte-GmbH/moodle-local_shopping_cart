@@ -485,11 +485,41 @@ function addZeroPriceListener(data) {
 
             paymentbutton.addEventListener('click', dealWithZeroPrice);
         } else {
-
+            paymentbutton.addEventListener('click', checkOngoingClickHandler);
             paymentbutton.removeEventListener('click', dealWithZeroPrice);
         }
     }
 }
+
+
+const checkOngoingClickHandler = (e) => {
+    checkOngoing()
+        .then(() => {
+            return import('core_payment/gateways_modal');
+        })
+        .then((gm) => {
+            const gatewayTrigger = e.target.closest('[data-action="core_payment/triggerPayment"]');
+            if (gatewayTrigger) {
+                gm.show(gatewayTrigger, {focusOnClose: e.target});
+            }
+            return 'a';
+        })
+        .catch(err => {
+            console.error(err); // eslint-disable-line no-console
+            return '';
+        });
+};
+
+const checkOngoing = async () => {
+    return import('local_shopping_cart/check_for_ongoing_payments')
+    .then(async shoppingCart => {
+        return shoppingCart.init();
+    })
+    .catch(err => {
+        console.error(err); // eslint-disable-line no-console
+        return '';
+    });
+};
 
 /**
  * Function to show notifications when items are added.

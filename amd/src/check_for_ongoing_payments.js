@@ -12,6 +12,8 @@ export const init = async (userid) => {
         body: await Templates.render('local_shopping_cart/checkongoing', {})
   });
 
+  modal.show();
+
   return Ajax.call([{
     methodname: "local_shopping_cart_check_for_ongoing_payment",
     args: {
@@ -19,7 +21,7 @@ export const init = async (userid) => {
     },
     done: function(data) {
         modal.hide();
-        if (data.success !== true) {
+        if (data.success === true) {
             window.href = data.url;
         }
     }

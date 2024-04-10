@@ -80,7 +80,7 @@ class check_for_ongoing_payment extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::check_for_ongoing_payment($USER->id, false);
+        return shopping_cart::check_for_ongoing_payment((int)$USER->id, false);
     }
 
     /**
