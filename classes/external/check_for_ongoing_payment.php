@@ -54,10 +54,7 @@ class check_for_ongoing_payment extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters([
-            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            ]
-        );
+        return new external_function_parameters([]);
     }
 
     /**
@@ -67,11 +64,10 @@ class check_for_ongoing_payment extends external_api {
      *
      * @return array
      */
-    public static function execute(int $userid): array {
-        $params = self::validate_parameters(self::execute_parameters(), [
-                'userid' => $userid,
-        ]);
+    public static function execute(): array {
 
+        $params = [];
+        self::validate_parameters(self::execute_parameters(), $params);
         global $USER;
 
         require_login();
@@ -84,7 +80,7 @@ class check_for_ongoing_payment extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::check_for_ongoing_payment($params['userid'], false);
+        return shopping_cart::check_for_ongoing_payment($USER->id, false);
     }
 
     /**

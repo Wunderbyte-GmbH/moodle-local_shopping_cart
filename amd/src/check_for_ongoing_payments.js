@@ -12,8 +12,8 @@ export const init = async (userid) => {
         body: await Templates.render('local_shopping_cart/checkongoing', {})
   });
 
-  Ajax.call([{
-    methodname: "local_shopping_card_check_for_ongoing_payment",
+  return Ajax.call([{
+    methodname: "local_shopping_cart_check_for_ongoing_payment",
     args: {
         userid,
     },
@@ -23,6 +23,6 @@ export const init = async (userid) => {
             window.href = data.url;
         }
     }
-    }]);
+    }])[0];
 
 };
