@@ -1433,9 +1433,10 @@ class shopping_cart {
      * Check for ongoing payment.
      *
      * @param int $userid
-     * @return void
+     * @param bool $redirect
+     * @return mixed
      */
-    public static function check_for_ongoing_payment(int $userid) {
+    public static function check_for_ongoing_payment(int $userid, $redirect = true) {
 
         global $DB;
 
@@ -1536,13 +1537,29 @@ class shopping_cart {
                             }
 
                             if (!empty($response['url'])) {
-                                redirect($response['url']);
+
+                                if ($redirect) {
+                                    redirect($response['url']);
+                                } else {
+                                    return [
+                                        'success' => 1,
+                                        'url' => $response['url'],
+                                    ];
+                                }
+
+
+
                             }
                         }
                     }
                 }
             }
         }
+
+        return [
+            'success' => 0,
+            'url' => '',
+        ];
 
         /*
             - run through installed gateways

@@ -136,4 +136,11 @@ $functions = [
                 'capabilities' => '',
                 'ajax' => 1,
         ],
+        'local_shopping_cart_check_for_ongoing_payment' => [
+                'classname' => 'local_shopping_cart\external\check_for_ongoing_payment',
+                'description' => 'Checks for ongoing payment',
+                'type' => 'write',
+                'capabilities' => '',
+                'ajax' => 1,
+        ],
 ];
