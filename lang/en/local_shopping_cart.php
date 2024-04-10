@@ -51,6 +51,10 @@ $string['showorderid'] = 'Show Order-ID...';
 $string['testing:title'] = 'Shopping cart demo';
 $string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
 $string['testing:item'] = 'Test item';
+$string['checkongoing'] = 'Please wait, we are checking open orders...';
+$string['testing:title'] = 'Shopping cart demo';
+$string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
+$string['testing:item'] = 'Test item';
 
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';

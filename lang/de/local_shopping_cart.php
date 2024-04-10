@@ -47,6 +47,7 @@ $string['rebooking'] = 'Umbuchung';
 $string['rebookingcredit'] = 'Umbuchungsgutschrift';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
+$string['checkongoing'] = 'Ausstehende Einkäufe werden überprüft...';
 
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';

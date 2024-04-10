@@ -493,15 +493,15 @@ function addZeroPriceListener(data) {
 
 
 const checkOngoingClickHandler = (e) => {
+    const paymentbutton = e.target;
     checkOngoing()
         .then(() => {
             return import('core_payment/gateways_modal');
         })
         .then((gm) => {
-            const gatewayTrigger = e.target.closest('[data-action="core_payment/triggerPayment"]');
-            if (gatewayTrigger) {
-                gm.show(gatewayTrigger, {focusOnClose: e.target});
-            }
+            gm.init();
+            paymentbutton.removeEventListener('click', checkOngoingClickHandler);
+            paymentbutton.click();
             return 'a';
         })
         .catch(err => {
