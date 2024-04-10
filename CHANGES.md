@@ -1,3 +1,7 @@
+## Version 0.8.4 (2024041000)
+* Improvement: Users in cashier can now be searched by ID also.
+* Improvement: Allow search for full user ID on cashier's page.
+
 ## Version 0.8.3 (2024040200)
 * New feature: Define your own HTML template for the daily sums PDF download.
 * Improvement: Add function to check allowedcancel without db call.
