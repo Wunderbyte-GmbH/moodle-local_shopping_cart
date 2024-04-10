@@ -39,6 +39,7 @@ $string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivi
 wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
+$string['loading'] = 'Wird geladen...';
 $string['mycart'] = 'Mein Warenkorb';
 $string['nolimit'] = 'Kein Limit';
 $string['optioncancelled'] = 'Buchungsoption storniert';

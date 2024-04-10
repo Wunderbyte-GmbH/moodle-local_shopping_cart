@@ -40,6 +40,7 @@ $string['allowrebookingcredit_desc'] = 'If you activate rebooking credit, a user
 if (s)he cancels an item within the cancelation period and books another item.';
 $string['cash'] = 'Cash';
 $string['choose...'] = 'Choose...';
+$string['loading'] = 'Loading...';
 $string['mycart'] = 'My Cart';
 $string['nolimit'] = 'No limit';
 $string['optioncancelled'] = 'Booking option cancelled';
