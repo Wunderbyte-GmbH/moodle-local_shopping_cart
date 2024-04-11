@@ -44,31 +44,31 @@ abstract class taxes extends modifier_base {
         global $USER;
         $userid = $data['userid'];
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+        if (!isset($data['items'])) {
+            $data['items'] = [];
+        }
+        $items = array_map(function($item) use ($USER, $userid) {
+                $item['userid'] = $userid != $USER->id ? -1 : 0;
+                return $item;
+        }, $data['items']);
         if ($taxesenabled) {
             $taxcategories = taxcategories::from_raw_string(
                     get_config('local_shopping_cart', 'defaulttaxcategory'),
                     get_config('local_shopping_cart', 'taxcategories')
             );
+            $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
         } else {
             $taxcategories = null;
         }
         $data['taxesenabled'] = $taxesenabled;
-        $count = isset($dataa['items']) ? count($data['items']) : 0;
-        $items = array_map(function($item) use ($USER, $userid) {
-            $item['userid'] = $userid != $USER->id ? -1 : 0;
-            return $item;
-        }, $data['items']);
+        $count = isset($data['items']) ? count($data['items']) : 0;
+        $data['count'] = $count;
         $data['items'] = shopping_cart::update_item_price_data(array_values($items), $taxcategories);
-
-        $data['price'] = shopping_cart::calculate_total_price($data["items"]);
-        if ($taxesenabled) {
-            $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
+        if ($data['usecredit'] !== true) {
+            $data['price'] = shopping_cart::calculate_total_price($data["items"]);
+            $data['initialtotal'] = $data['price'];
         }
         $data['discount'] = array_sum(array_column($data['items'], 'discount'));
-
-        // if (count($data['items']) > 0) {
-        //     shopping_cart_credits::prepare_checkout($data, $data['userid'], $data['usecredit']);
-        // }
 
         return $data;
     }

@@ -26,6 +26,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use core_user;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use moodle_exception;
@@ -212,13 +213,13 @@ class modal_creditsmanager extends dynamic_form {
         }
 
         // We always have to add the cache.
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        $cartstore = cartstore::instance($userid);
+
+        $cachedrawdata = $cartstore->get_cache();
         if ($cachedrawdata) {
             $cachedrawdata['credit'] = round($creditrecord->balance, 2);
             $cachedrawdata['currency'] = $creditrecord->currency;
-            $cache->set($cachekey, $cachedrawdata);
+            $cartstore->set_cache($cachedrawdata);
         }
 
         // At last, we log it to ledger.

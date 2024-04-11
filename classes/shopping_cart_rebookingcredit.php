@@ -32,6 +32,7 @@ use context_system;
 use moodle_exception;
 use ddl_exception;
 use local_shopping_cart\event\item_canceled;
+use local_shopping_cart\local\cartstore;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -71,8 +72,7 @@ class shopping_cart_rebookingcredit {
             $userid = shopping_cart::return_buy_for_userid();
         }
 
-        $cache = cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
         $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
 
@@ -96,7 +96,7 @@ class shopping_cart_rebookingcredit {
 
                 // Add the rebookingcredit to the shopping cart.
                 self::add_rebookingcredit_item_to_cart($userid, $itemcount);
-                $cachedrawdata = $cache->get($cachekey);
+                $cachedrawdata = $cartstore->get_cache();
             }
         }
     }
@@ -256,9 +256,9 @@ class shopping_cart_rebookingcredit {
      */
     public static function is_rebooking(int $userid) {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        $cartstore = cartstore::instance($userid);
+
+        $cachedrawdata = $cartstore->get_cache();
 
         $items = $cachedrawdata['items'] ?? [];
 
@@ -282,9 +282,9 @@ class shopping_cart_rebookingcredit {
      */
     public static function delete_booking_fee(int $userid) {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        $cartstore = cartstore::instance($userid);
+
+        $cachedrawdata = $cartstore->get_cache();
 
         $items = $cachedrawdata['items'] ?? [];
 

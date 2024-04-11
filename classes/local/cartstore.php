@@ -33,6 +33,7 @@ use local_shopping_cart\shopping_cart_bookingfee;
 use local_shopping_cart\shopping_cart_rebookingcredit;
 use context_system;
 use local_shopping_cart\event\item_added;
+use local_shopping_cart\shopping_cart_handler;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -92,7 +93,10 @@ class cartstore {
         $userid = $this->userid;
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
         $cartparam = $response['success'];
-
+        $cachedrawdata = $this->get_cache();
+        if (!$cachedrawdata) {
+            $cachedrawdata = [];
+        }
         if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
             // If we have nothing in our cart and we are not about...
             // ... to add the booking fee...
@@ -140,6 +144,9 @@ class cartstore {
                     if (($component !== 'local_shopping_cart')
                         && shopping_cart_handler::installment_exists($component, $area, $itemid)) {
                         $itemdata['installment'] = true;
+                    }
+                    if (!$cachedrawdata) {
+                        $cachedrawdata = [];
                     }
 
                     // Then we set item in Cache.
@@ -228,12 +235,80 @@ class cartstore {
 
     /**
      * Deletes an item from the shopping cart cache store.
-     * @param cartitem $item
+     * @param string componentname
+     * @param string area
+     * @param int itemid
+     * @param bool $unload
      * @return void
      * @throws coding_exception
      */
-    public function delete_item(cartitem $item) {
-        // TODO 
+    public function delete_item(string $component, string $area, int $itemid, $unload) {
+        global $USER;
+        $cachedrawdata = $this->get_cache();
+        $cachekey = $this->get_cachekey();
+        if ($cachedrawdata) {
+            $cacheitemkey = $component . '-' . $area . '-' . $itemid;
+            if (isset($cachedrawdata['items'][$cacheitemkey])) {
+                unset($cachedrawdata['items'][$cacheitemkey]);
+                $this->set_cache($cachedrawdata);
+            }
+        }
+
+        if ($unload) {
+            // This treats the related component side.
+
+            // This function can return an array of items to unload as well.
+            $response = shopping_cart::unload_cartitem($component, $area, $itemid, $this->userid);
+            foreach ($response['itemstounload'] as $cartitem) {
+                shopping_cart::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $this->userid);
+            }
+        }
+
+        if (isset($response) && isset($response['success']) && $response['success'] == 1) {
+
+            $context = context_system::instance();
+            // Trigger item deleted event.
+            $event = item_deleted::create([
+                'context' => $context,
+                'userid' => $USER->id,
+                'relateduserid' => $this->userid,
+                'other' => [
+                    'itemid' => $itemid,
+                    'component' => $component,
+                ],
+            ]);
+
+            $event->trigger();
+        }
+
+        // If there are only fees and/or rebookingcredits left, we delete them.
+        if (!empty($cachedrawdata['items'])) {
+
+            // At first, check we can delete.
+            $letsdelete = true;
+            foreach ($cachedrawdata['items'] as $remainingitem) {
+                if ($remainingitem['area'] === 'bookingfee' ||
+                    $remainingitem['area'] === 'rebookingcredit') {
+                    continue;
+                } else {
+                    // If we still have bookable items, we cannot delete fees and credits from cart.
+                    $letsdelete = false;
+
+                    // Also check, if we need to adjust rebookingcredit.
+                    shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $this->userid);
+                }
+            }
+
+            if ($letsdelete) {
+                foreach ($cachedrawdata['items'] as $item) {
+                    if (($item['area'] == 'bookingfee' ||
+                        $item['area'] == 'rebookingcredit')
+                        && $item['componentname'] == 'local_shopping_cart') {
+                        shopping_cart::delete_all_items_from_cart($this->userid);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -272,7 +347,12 @@ class cartstore {
     public function save_used_credit_state(bool $usecredit) {
         $data = self::get_cache();
         $this->usecredit = $usecredit;
-        $data['usecredit'] = $usecredit;
+        if ($data) {
+            $data['usecredit'] = $usecredit;
+        } else {
+            $data = [];
+            $data['usecredit'] = $usecredit;
+        }
         self::set_cache($data);
     }
 
@@ -332,8 +412,8 @@ class cartstore {
 
         // If we have cachedrawdata, we need to check the expiration date.
         if ($data && isset($data['items'])) {
-            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                    && $cachedrawdata['expirationdate'] < time()) {
+            if (isset($data['expirationdate']) && !is_null($data['expirationdate'])
+                    && $data['expirationdate'] < time()) {
                 self::delete_all_items();
                 $data = self::get_cache();
             }
@@ -341,6 +421,8 @@ class cartstore {
         } else {
             $data = [];
             $data['count'] = 0;
+            $data['currency'] = null;
+            $data['remainingcredit'] = null;
         }
         // General.
         $data['userid'] = $this->userid;
@@ -348,11 +430,16 @@ class cartstore {
         $data['price'] = 0.00;
         $data['initialtotal'] = 0.00;
         $data['deductible'] = 0.00;
+        // Default val.
+        $data['taxesenabled'] = false;
         // $data['checkboxid'] = bin2hex(random_bytes(3));
         $data['usecredit'] = $this->get_saved_usecredit_state();
         $data['expirationdate'] = time();
         $data['nowdate'] = time();
         $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
+        $data['credit'] = null;
+        $data['currency'] = $cachedrawdata['currency'] ?? null;
+        $data['remainingcredit'] = $data['credit'];
 
         modifier_info::apply_modfiers($data);
         return $data;

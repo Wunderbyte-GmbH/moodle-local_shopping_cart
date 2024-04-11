@@ -140,10 +140,9 @@ class modal_add_discount_to_item extends dynamic_form {
         $component = $this->_ajaxformdata["componentname"];
         $area = $this->_ajaxformdata["area"];
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
+        $cachedrawdata = $cartstore->get_cache();
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Item has to be there.

@@ -271,72 +271,7 @@ class shopping_cart {
         $userid = $userid == 0 ? $USER->id : $userid;
 
         $cartstore = cartstore::instance($userid);
-
-        $cachedrawdata = $cartstore->get_cache();
-        $cachekey = $cartstore->get_cachekey();
-        if ($cachedrawdata) {
-            $cacheitemkey = $component . '-' . $area . '-' . $itemid;
-            if (isset($cachedrawdata['items'][$cacheitemkey])) {
-                unset($cachedrawdata['items'][$cacheitemkey]);
-                $cartstore->set_cache($cachedrawdata);
-            }
-        }
-
-        if ($unload) {
-            // This treats the related component side.
-
-            // This function can return an array of items to unload as well.
-            $response = self::unload_cartitem($component, $area, $itemid, $userid);
-            foreach ($response['itemstounload'] as $cartitem) {
-                self::delete_item_from_cart($component, $cartitem->area, $cartitem->itemid, $userid);
-            }
-        }
-
-        if (isset($response) && isset($response['success']) && $response['success'] == 1) {
-
-            $context = context_system::instance();
-            // Trigger item deleted event.
-            $event = item_deleted::create([
-                'context' => $context,
-                'userid' => $USER->id,
-                'relateduserid' => $userid,
-                'other' => [
-                    'itemid' => $itemid,
-                    'component' => $component,
-                ],
-            ]);
-
-            $event->trigger();
-        }
-
-        // If there are only fees and/or rebookingcredits left, we delete them.
-        if (!empty($cachedrawdata['items'])) {
-
-            // At first, check we can delete.
-            $letsdelete = true;
-            foreach ($cachedrawdata['items'] as $remainingitem) {
-                if ($remainingitem['area'] === 'bookingfee' ||
-                    $remainingitem['area'] === 'rebookingcredit') {
-                    continue;
-                } else {
-                    // If we still have bookable items, we cannot delete fees and credits from cart.
-                    $letsdelete = false;
-
-                    // Also check, if we need to adjust rebookingcredit.
-                    shopping_cart_rebookingcredit::add_rebookingcredit($cachedrawdata, $area, $userid);
-                }
-            }
-
-            if ($letsdelete) {
-                foreach ($cachedrawdata['items'] as $item) {
-                    if (($item['area'] == 'bookingfee' ||
-                        $item['area'] == 'rebookingcredit')
-                        && $item['componentname'] == 'local_shopping_cart') {
-                        self::delete_all_items_from_cart($userid);
-                    }
-                }
-            }
-        }
+        $cartstore->delete_item($component, $area, $itemid, $unload);
 
         return true;
     }
@@ -503,10 +438,6 @@ class shopping_cart {
         }
         $data = $cartstore->get_data();
 
-        if (count($data['items']) > 0) {
-            shopping_cart_credits::prepare_checkout($data, $data['userid'], $data['usecredit']);
-        }
-
         return $data;
     }
 
@@ -520,13 +451,12 @@ class shopping_cart {
      */
     public static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
+        $cachedrawdata = $cartstore->get_cache();
         // First thing, we set the new expiration date in the cache.
         $cachedrawdata["expirationdate"] = $expirationtimestamp;
-        $cache->set($cachekey, $cachedrawdata);
+        $cartstore->set_cache($cachedrawdata);
 
         if (!$cachedrawdata
                 || !isset($cachedrawdata['items'])
@@ -1135,10 +1065,9 @@ class shopping_cart {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = cartstore::instance($userid);
 
-        $cachedrawdata = $cache->get($cachekey);
+        $cachedrawdata = $cartstore->get_cache();
         $cacheitemkey = $component . '-' . $area . '-' . $itemid;
 
         // Item has to be there.
@@ -1189,7 +1118,7 @@ class shopping_cart {
         }
 
         // We write the modified data back to cache.
-        $cache->set($cachekey, $cachedrawdata);
+        $cartstore->set_cache($cachedrawdata);
 
         return ['success' => 1];
     }
