@@ -255,4 +255,13 @@ class cartitem {
     public function imageurl(): ?string {
         return $this->imageurl;
     }
+
+    /**
+     *  Returns itemkey
+     *
+     * @return string|null
+     */
+    public function itemkey(): ?string {
+        return $this->componentname . '-' . $this->area . '-' . $this->itemid;
+    }
 }

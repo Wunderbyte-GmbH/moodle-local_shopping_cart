@@ -32,6 +32,7 @@ use context_system;
 use moodle_exception;
 use ddl_exception;
 use local_shopping_cart\event\item_canceled;
+use local_shopping_cart\local\cartstore;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,15 +65,15 @@ class shopping_cart_rebookingcredit {
      * @throws moodle_exception
      * @throws ddl_exception
      */
-    public static function add_rebookingcredit(array &$cachedrawdata, string $area, int $userid) {
+    public static function add_rebookingcredit(string $area, int $userid) {
 
         // If we are on cashier and have a user to buy for.
         if ($userid == -1) {
             $userid = shopping_cart::return_buy_for_userid();
         }
 
-        $cache = cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
+        $cartstore = new cartstore($userid);
+        $items = $cartstore->get_items();
 
         $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
 
@@ -80,13 +81,13 @@ class shopping_cart_rebookingcredit {
             && $area != 'bookingfee'
             && $area != 'rebookingcredit') {
 
-            $normalitemsonly = array_filter($cachedrawdata["items"],
+            $normalitemsonly = array_filter($items,
                 fn($a) => ($a["area"] != 'bookingfee' && $a["area"] != 'rebookingcredit'));
             $itemcount = count($normalitemsonly);
 
             // We can only add as many rebookingcredits as we have canceled records.
             if ($itemcount <= count($canceledrecords)) {
-                $rebookingcreditrecords = array_filter($cachedrawdata["items"],
+                $rebookingcreditrecords = array_filter($items,
                     fn($a) => ($a["area"] == 'rebookingcredit'));
                 if (!empty($rebookingcreditrecords)) {
                     $rebookingcredititem = reset($rebookingcreditrecords);
@@ -96,7 +97,6 @@ class shopping_cart_rebookingcredit {
 
                 // Add the rebookingcredit to the shopping cart.
                 self::add_rebookingcredit_item_to_cart($userid, $itemcount);
-                $cachedrawdata = $cache->get($cachekey);
             }
         }
     }
@@ -256,19 +256,8 @@ class shopping_cart_rebookingcredit {
      */
     public static function is_rebooking(int $userid) {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-
-        $items = $cachedrawdata['items'] ?? [];
-
-        foreach ($items as $item) {
-            if (($item['area'] === 'rebookitem')
-                && ($item['componentname'] === 'local_shopping_cart') ) {
-                return true;
-            }
-        }
-        return false;
+        $cartstore = new cartstore($userid);
+        return $cartstore->is_rebooking();
     }
 
     /**
@@ -282,11 +271,9 @@ class shopping_cart_rebookingcredit {
      */
     public static function delete_booking_fee(int $userid) {
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
+        $cartstore = new cartstore($userid);
 
-        $items = $cachedrawdata['items'] ?? [];
+        $items = $cartstore->get_items();
 
         foreach ($items as $item) {
             if (($item['area'] === 'bookingfee')

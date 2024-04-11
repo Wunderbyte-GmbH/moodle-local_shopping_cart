@@ -107,11 +107,12 @@ class modal_add_discount_to_item extends dynamic_form {
         $userid = empty($data->userid)
             ? $USER->id : $data->userid;
 
-        shopping_cart::add_discount_to_item(
+        $cartstore = new cartstore($userid);
+
+        $cartstore->add_discount_to_item(
             $data->componentname,
             $data->area,
             $data->itemid,
-            $data->userid,
             $data->discountpercent,
             $data->discountabsolute);
 
@@ -143,15 +144,17 @@ class modal_add_discount_to_item extends dynamic_form {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
-        $cachedrawdata = $cache->get($cachekey);
-        $cacheitemkey = $component . '-' . $area . '-' . $itemid;
+        $cartstore = new cartstore($userid);
+        $item = $cartstore->get_item(
+            $component,
+            $area,
+            $itemid
+        );
 
         // Item has to be there.
-        if (!isset($cachedrawdata['items'][$cacheitemkey])) {
+        if (empty($item)) {
             throw new moodle_exception('itemnotfound', 'local_shopping_cart');
         }
-
-        $item = $cachedrawdata['items'][$cacheitemkey];
 
         $discount = $item['discount'] ?? 0;
 
