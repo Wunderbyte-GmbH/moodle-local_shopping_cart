@@ -580,15 +580,7 @@ class shopping_cart {
 
         return $cartstore->get_data();
 
-        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
-        if ($taxesenabled) {
-            $taxcategories = taxcategories::from_raw_string(
-                    get_config('local_shopping_cart', 'defaulttaxcategory'),
-                    get_config('local_shopping_cart', 'taxcategories')
-            );
-        } else {
-            $taxcategories = null;
-        }
+
 
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
