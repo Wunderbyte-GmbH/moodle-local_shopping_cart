@@ -27,22 +27,27 @@ namespace local_shopping_cart\local;
 
 use coding_exception;
 use local_shopping_cart\local\entities\cartitem;
+use local_shopping_cart\local\pricemodifier\modifier_info;
+use local_shopping_cart\shopping_cart;
+use moodle_exception;
+use context_system;
+use local_shopping_cart\shopping_cart_credits;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../lib.php');
+require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 /**
  * Class cartstore
  *
- * @author Thomas Winkler
- * @copyright 2021 Wunderbyte GmbH
+ * @author Georg Maißer
+ * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cartstore {
 
     /** @var array */
-    protected $instance = [];
+    protected static $instance = [];
 
     /** @var int */
     protected $userid = 0;
@@ -78,16 +83,18 @@ class cartstore {
     public function add_item(cartitem $item) {
 
         $data = $this->get_cache();
-        $expirationtimestamp = shopping_cart::get_expirationdate();
+        $expirationdate = shopping_cart::get_expirationdate();
 
         $itemdata = $item->as_array();
-        $itemdata['expirationdate'] = $expirationtimestamp;
+        $itemdata['expirationdate'] = $expirationdate;
 
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
-        $data['expirationdate'] = $expirationtimestamp;
+        $data['expirationdate'] = $expirationdate;
 
         $this->set_cache($data);
+
+        return $itemdata;
     }
 
     /**
@@ -277,15 +284,15 @@ class cartstore {
 
     /**
      * Expirationtime.
-     * @param int $expirationtimestamp
+     * @param int $expirationdate
      * @return void
      * @throws coding_exception
      */
-    public function set_expiration(int $expirationtimestamp) {
+    public function set_expiration(int $expirationdate) {
 
         $data = $this->get_cache();
 
-        $data['expirationtimestamp'] = $expirationtimestamp;
+        $data['expirationdate'] = $expirationdate;
 
         $this->set_cache($data);
     }
@@ -345,12 +352,10 @@ class cartstore {
         $data = self::get_cache();
 
         // If we have cachedrawdata, we need to check the expiration date.
-        if ($data) {
-            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                    && $cachedrawdata['expirationdate'] < time()) {
+        if (isset($data['expirationdate']) && !is_null($data['expirationdate'])
+                    && $data['expirationdate'] < time()) {
                 self::delete_all_items();
                 $data = self::get_cache();
-            }
         }
 
         modifier_info::apply_modfiers($data);
@@ -477,14 +482,43 @@ class cartstore {
      */
     private function get_cache() {
 
+        global $CFG;
+
         // To improve performance we keep the cache alive.
-        if ($this->cachedata !== 0) {
+        if ($this->cachedata !== null) {
             return $this->cachedata;
         }
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $this->get_cachekey();
 
         $cachedata = $cache->get($cachekey);
+
+        if (empty($cachedata)) {
+
+            $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+            $usecredit = 1;
+            list($credit, $currency) = shopping_cart_credits::get_balance($this->userid);
+            $cachedata = [
+                'userid' => $this->userid,
+                'credit' => $credit,
+                'remainingcredit' => $credit,
+                'currency' => $currency,
+                'count' => 0,
+                'maxitems' => get_config('local_shopping_cart', 'maxitems'),
+                'items' => [],
+                'price' => 0.00,
+                'taxesenabled' => $taxesenabled,
+                'initialtotal' => 0.00,
+                'deductible' => 0.00,
+                'checkboxid' => bin2hex(random_bytes(3)),
+                'usecredit' => $usecredit,
+                'expirationdate' => shopping_cart::get_expirationdate(),
+                'nowdate' => time(),
+                'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
+            ];
+            $this->set_cache($cachedata);
+
+        }
         $this->cachedata = $cachedata;
         return $cachedata;
     }

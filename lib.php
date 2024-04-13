@@ -59,7 +59,8 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED', 4); // Item could not be add
 define('LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED', 5); // Item could not be added because it was already booked before.
 
 // Price modifiers.
-define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 10); // Apply Installments.
+define('LOCAL_SHOPPING_CART_PRICEMOD_STANDARD', 10); // Apply Installments.
+define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 30); // Apply Installments.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 50); // Apply Credits on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 100); // Apply Taxes on cart.
 

@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\shopping_cart;
 
 /**
  * Class taxes
@@ -49,28 +50,12 @@ abstract class taxes extends modifier_base {
                     get_config('local_shopping_cart', 'defaulttaxcategory'),
                     get_config('local_shopping_cart', 'taxcategories')
             );
-        } else {
-            $taxcategories = null;
+            $data['items'] = shopping_cart::update_item_price_data(array_values($data['items']), $taxcategories);
+            $data['price'] = shopping_cart::calculate_total_price($data["items"]);
+            $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
         }
 
         $data['taxesenabled'] = $taxesenabled;
-        $count = isset($dataa['items']) ? count($data['items']) : 0;
-        $items = array_map(function($item) use ($USER, $userid) {
-            $item['userid'] = $userid != $USER->id ? -1 : 0;
-            return $item;
-        }, $data['items']);
-
-        $data['items'] = shopping_cart::update_item_price_data(array_values($items), $taxcategories);
-
-        $data['price'] = shopping_cart::calculate_total_price($data["items"]);
-        if ($taxesenabled) {
-            $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
-        }
-        $data['discount'] = array_sum(array_column($data['items'], 'discount'));
-
-        // if (count($data['items']) > 0) {
-        //     shopping_cart_credits::prepare_checkout($data, $data['userid'], $data['usecredit']);
-        // }
 
         return $data;
     }

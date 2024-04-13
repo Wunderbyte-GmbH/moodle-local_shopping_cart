@@ -91,7 +91,7 @@ class shopping_cart {
         // Check the cache for items in cart.
         $maxitems = get_config('local_shopping_cart', 'maxitems');
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $numberofitems = count($cartstore->get_items());
 
         // Check if maxitems is exceeded.
@@ -194,7 +194,7 @@ class shopping_cart {
         $response = self::allow_add_item_to_cart($component, $area, $itemid, $userid);
         $cartparam = $response['success'];
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
 
         if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
             // If we have nothing in our cart and we are not about...
@@ -237,7 +237,9 @@ class shopping_cart {
                     $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
 
                     // Add or reschedule all delete_item_tasks for all the items in the cart.
-                    self::add_or_reschedule_addhoc_tasks($itemdata['expirationtimestamp'], $userid);
+                    self::add_or_reschedule_addhoc_tasks(
+                        $itemdata['expirationdate'],
+                        $userid);
 
                     $context = context_system::instance();
                     // Trigger item deleted event.
@@ -356,7 +358,7 @@ class shopping_cart {
 
         $userid = $userid == 0 ? $USER->id : $userid;
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $cartstore->delete_item($component, $area, $itemid);
 
         if ($unload) {
@@ -428,7 +430,7 @@ class shopping_cart {
      */
     public static function delete_all_items_from_cart(int $userid): bool {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $cartstore->delete_all_items();
         return true;
     }
@@ -576,7 +578,7 @@ class shopping_cart {
 
         $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
 
         return $cartstore->get_data();
 
@@ -670,7 +672,7 @@ class shopping_cart {
      */
     public static function get_saved_usecredit_state(int $userid): ?int {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         return $cartstore->get_usecredit_state();
     }
 
@@ -683,7 +685,7 @@ class shopping_cart {
      */
     public static function save_used_credit_state(int $userid, bool $usecredit) {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         return $cartstore->save_usecredit_state($usecredit);
     }
 
@@ -691,15 +693,15 @@ class shopping_cart {
      * To add or reschedule addhoc tasks to delete all the items once the shopping cart is expired.
      * As the expiration date is always calculated by the cart, not the item, this always updates the whole cart.
      *
-     * @param int $expirationtimestamp
+     * @param int $expirationdate
      * @param int $userid
      * @return void
      */
-    public static function add_or_reschedule_addhoc_tasks(int $expirationtimestamp, int $userid) {
+    public static function add_or_reschedule_addhoc_tasks(int $expirationdate, int $userid) {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $items = $cartstore->get_items();
-        $cartstore->set_expiration($expirationtimestamp);
+        $cartstore->set_expiration($expirationdate);
 
         foreach ($items as $taskdata) {
             // We don't touch booking fee.
@@ -709,7 +711,7 @@ class shopping_cart {
             }
             $deleteitemtask = new delete_item_task();
             $deleteitemtask->set_userid($userid);
-            $deleteitemtask->set_next_run_time($expirationtimestamp);
+            $deleteitemtask->set_next_run_time($expirationdate);
             $deleteitemtask->set_custom_data($taskdata);
             \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
         }
@@ -1717,6 +1719,7 @@ class shopping_cart {
                     $item['price_gross'] = number_format(round((float) $item['price_gross'], 2), 2, '.', '');
                 }
             }
+            $data['items'] = array_values($data['items']);
         }
     }
 

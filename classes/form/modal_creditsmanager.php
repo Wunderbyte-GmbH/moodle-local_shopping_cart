@@ -213,7 +213,7 @@ class modal_creditsmanager extends dynamic_form {
         }
 
         // We always have to add the cache.
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $cartstore->set_credit($creditrecord->balance, $creditrecord->currency);
 
         // At last, we log it to ledger.

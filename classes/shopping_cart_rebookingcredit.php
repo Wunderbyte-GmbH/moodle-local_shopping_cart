@@ -72,7 +72,7 @@ class shopping_cart_rebookingcredit {
             $userid = shopping_cart::return_buy_for_userid();
         }
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $items = $cartstore->get_items();
 
         $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
@@ -256,7 +256,7 @@ class shopping_cart_rebookingcredit {
      */
     public static function is_rebooking(int $userid) {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         return $cartstore->is_rebooking();
     }
 
@@ -271,7 +271,7 @@ class shopping_cart_rebookingcredit {
      */
     public static function delete_booking_fee(int $userid) {
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
 
         $items = $cartstore->get_items();
 

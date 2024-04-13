@@ -36,16 +36,27 @@ use core_component;
  */
 class modifier_info {
 
+    /**
+     * Applies the given price modifiers on the cached data.
+     * @param array $data
+     * @return void
+     */
+    public static function apply_modfiers(array &$data) {
 
-    public function apply_modfiers(array $data) {
+        if (empty($data)) {
+            return;
+        }
 
         $modifiers = core_component::get_component_classes_in_namespace(
             'local_shopping_cart',
             'local\pricemodifier\modifiers'
         );
 
+        $modifiers = array_keys($modifiers);
+        usort($modifiers, fn($a, $b) => ($a::$id > $b::$id ? 1 : -1 ));
+
         foreach ($modifiers as $modifier) {
-            $modifier->apply($data);
+            $modifier::apply($data);
         }
     }
 

@@ -221,7 +221,7 @@ class shopping_cart_credits {
         if ($newbalance > 0) {
             // We add the right cache.
 
-            $cartstore = new cartstore($userid);
+            $cartstore = cartstore::instance($userid);
             $cartstore->set_credit($newbalance, $currency);
 
         }
@@ -254,7 +254,7 @@ class shopping_cart_credits {
 
         $DB->insert_record('local_shopping_cart_credits', $data);
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $cartstore->set_credit($data->balance, $data->currency);
     }
 

@@ -107,7 +107,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $userid = empty($data->userid)
             ? $USER->id : $data->userid;
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
 
         $cartstore->add_discount_to_item(
             $data->componentname,
@@ -144,7 +144,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $cache = \cache::make('local_shopping_cart', 'cacheshopping');
         $cachekey = $userid . '_shopping_cart';
 
-        $cartstore = new cartstore($userid);
+        $cartstore = cartstore::instance($userid);
         $item = $cartstore->get_item(
             $component,
             $area,

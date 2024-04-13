@@ -29,7 +29,6 @@ use local_shopping_cart\shopping_cart_history;
 require_once(__DIR__ . '/../../config.php');
 require_login();
 
-$syscontext = context_system::instance();
 global $PAGE, $OUTPUT, $CFG;
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -38,7 +37,6 @@ $PAGE->set_url('/test.php');
 $PAGE->set_title('Testing');
 $PAGE->set_heading('Testing local_shopping_cart');
 $PAGE->navbar->add('Testing local_shopping_cart', new moodle_url('/test.php'));
-echo $OUTPUT->header();
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
@@ -63,6 +61,7 @@ $item = new cartitem(
         $serviceperiodeend,
         'A');
 $button = new button($item->as_array());
+echo $OUTPUT->header();
 echo $renderer->render_button($button);
 
 $item = new cartitem(

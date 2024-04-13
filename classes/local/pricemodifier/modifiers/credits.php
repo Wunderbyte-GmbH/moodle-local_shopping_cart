@@ -26,6 +26,10 @@
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_credits;
+use local_shopping_cart\shopping_cart_rebookingcredit;
+use context_system;
 
 /**
  * Class taxes
@@ -44,42 +48,10 @@ abstract class credits extends modifier_base {
 
         $userid = $data['userid'];
         $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
-        if (!isset($data['items'])) {
-            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($data['userid']);
-            $data['items'] = [];
-            $data['remainingcredit'] = $data['credit'];
-            $items = array_map(function($item) use ($USER, $userid) {
-                $item['userid'] = $userid != $USER->id ? -1 : 0;
-                return $item;
-            }, $data['items']);
-            // $data['items'] = shopping_cart::update_item_price_data(array_values($items));
-            // $data['price'] = shopping_cart::calculate_total_price($data["items"]);
-        } else {
-            $count = isset($data['items']) ? count($data['items']) : 0;
-            $data['count'] = $count;
-
-            $data['currency'] = $data['currency'] ?? null;
-            $data['credit'] = $data['credit'] ?? null;
-            $data['remainingcredit'] = $data['credit'];
-        }
-        $data['price'] = shopping_cart::calculate_total_price($data["items"]);
-
-        list($balance, $currency) = shopping_cart_credits::get_balance($userid);
-        $data['initialtotal'] = $data['price'];
-        // If there is no price key, we need to calculate it from items.
-        if (!isset($data['price']) && isset($data['items'])) {
-            $price = 0;
-            foreach ($data['items'] as $item) {
-                $price += $item->price;
-            }
-            $data['price'] = $price;
-        }
 
         $pricebelowzero = shopping_cart_rebookingcredit::correct_total_price_for_rebooking($data);
         $usecredit = $pricebelowzero ? 0 : $usecredit;
-        $balance = $pricebelowzero ? 0 : $balance;
-
-        $data['currency'] = $currency ?: $data['currency'];
+        $balance = $pricebelowzero ? 0 : $data['credit'];
 
         // Now we account for discounts.
         if (isset($data['discount'])) {

@@ -25,7 +25,9 @@
 
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\shopping_cart;
 
 /**
  * Class taxes
@@ -34,12 +36,17 @@ use local_shopping_cart\local\pricemodifier\modifier_base;
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class installments extends modifier_base {
+abstract class standard extends modifier_base {
 
-    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS;
+    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_STANDARD;
 
     public static function apply(array &$data): array {
-        // $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-        return  $data;
+
+        $cartstore = cartstore::instance($data['userid']);
+        $items = $cartstore->get_items();
+        $data['count'] = count($items);
+        $data['price'] = shopping_cart::calculate_total_price($items);
+        $data['initialtotal'] = $data['price'];
+        return $data;
     }
 }

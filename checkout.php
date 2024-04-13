@@ -123,7 +123,7 @@ if (isset($success)) {
     $historylist->insert_list($data);
 
     // Here we are before checkout.
-    $expirationtimestamp = shopping_cart::get_expirationdate();
+    $expirationdate = shopping_cart::get_expirationdate();
 
     // Only if there are items in the cart, we check if we need to add booking fee.
     $cartstore = cartstore::instance($userid);
@@ -133,7 +133,7 @@ if (isset($success)) {
     }
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.
-    shopping_cart::add_or_reschedule_addhoc_tasks($expirationtimestamp, $userid);
+    shopping_cart::add_or_reschedule_addhoc_tasks($expirationdate, $userid);
 
     $history = new shopping_cart_history();
     $scdata = $history->prepare_data_from_cache($userid);
