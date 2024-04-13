@@ -33,6 +33,7 @@ use context_system;
 use dml_exception;
 use Exception;
 use local_shopping_cart\event\payment_added;
+use local_shopping_cart\local\cartstore;
 use moodle_exception;
 use moodle_url;
 use stdClass;
@@ -629,7 +630,7 @@ class shopping_cart_history {
             $taxcategories = null;
         }
 
-        if (!$cachedrawdata = $cartstore->get_cache()) {
+        if (!$cachedrawdata = $cartstore->get_data()) {
             return ['identifier' => ''];
         }
 

@@ -49,9 +49,10 @@ abstract class credits extends modifier_base {
         $userid = $data['userid'];
         $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
 
-        $pricebelowzero = shopping_cart_rebookingcredit::correct_total_price_for_rebooking($data);
-        $usecredit = $pricebelowzero ? 0 : $usecredit;
-        $balance = $pricebelowzero ? 0 : $data['credit'];
+        // $pricebelowzero = shopping_cart_rebookingcredit::correct_total_price_for_rebooking($data);
+        // $usecredit = $pricebelowzero ? 0 : $usecredit;
+        $balance = $data['credit'];
+        // $balance = $pricebelowzero ? 0 : $data['credit'];
 
         // Now we account for discounts.
         if (isset($data['discount'])) {

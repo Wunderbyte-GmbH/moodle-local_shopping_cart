@@ -111,7 +111,7 @@ class get_price extends external_api {
 
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
-        $data['usecredit'] = $data['usecredit'] ?? 0;
+        $data['usecredit'] = $data['usecredit'] ? 1 : 0;
 
         return $data;
     }

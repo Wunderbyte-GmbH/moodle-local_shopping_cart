@@ -87,6 +87,7 @@ class cartstore {
 
         $itemdata = $item->as_array();
         $itemdata['expirationdate'] = $expirationdate;
+        $itemdata['userid'] = $this->userid;
 
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
@@ -236,9 +237,10 @@ class cartstore {
         $data = $this->get_cache();
 
         if ($data) {
-            $cacheitemkey = $item['component'] . '-' . $item['area'] . '-' . $item['itemid'];
+            $cacheitemkey = $item['componentname'] . '-' . $item['area'] . '-' . $item['itemid'];
             if (isset($data['items'][$cacheitemkey])) {
                 $data['items'][$cacheitemkey] = $item;
+                $this->set_cache($data);
                 return true;
             }
         }

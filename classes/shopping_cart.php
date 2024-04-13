@@ -298,6 +298,7 @@ class shopping_cart {
         $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
         $itemdata['expirationdate'] = self::get_expirationdate();
         $itemdata['price'] = 0;
+        return $itemdata;
     }
 
     /**

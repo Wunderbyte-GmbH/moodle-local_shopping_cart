@@ -24,6 +24,7 @@ require_once("$CFG->libdir/formslib.php");
 use context;
 use context_system;
 use core_form\dynamic_form;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use moodle_url;
@@ -107,7 +108,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $userid = empty($data->userid)
             ? $USER->id : $data->userid;
 
-        $cartstore = cartstore::instance($userid);
+        $cartstore = cartstore::instance((int)$userid);
 
         $cartstore->add_discount_to_item(
             $data->componentname,
@@ -141,10 +142,7 @@ class modal_add_discount_to_item extends dynamic_form {
         $component = $this->_ajaxformdata["componentname"];
         $area = $this->_ajaxformdata["area"];
 
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-
-        $cartstore = cartstore::instance($userid);
+        $cartstore = cartstore::instance((int)$userid);
         $item = $cartstore->get_item(
             $component,
             $area,

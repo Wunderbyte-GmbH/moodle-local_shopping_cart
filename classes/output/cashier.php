@@ -54,7 +54,7 @@ class cashier implements renderable, templatable {
      */
     public function __construct(int $userid = null, bool $usecredit = false) {
 
-        if (isset($userid) && $userid > 0 ) {
+        if (!empty($userid)) {
             $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
             $data['buyforuserid'] = $userid;
             $user = core_user::get_user($userid, 'id, lastname, firstname, email');

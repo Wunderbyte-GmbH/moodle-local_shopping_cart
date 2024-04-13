@@ -47,6 +47,7 @@ abstract class standard extends modifier_base {
         $data['count'] = count($items);
         $data['price'] = shopping_cart::calculate_total_price($items);
         $data['initialtotal'] = $data['price'];
+        $data['items'] = $data['items'] ?? [];
         return $data;
     }
 }

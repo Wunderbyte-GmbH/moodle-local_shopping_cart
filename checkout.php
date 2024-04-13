@@ -24,6 +24,7 @@
  */
 
 use core\plugininfo\cachestore;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
