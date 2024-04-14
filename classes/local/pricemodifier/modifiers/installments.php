@@ -48,7 +48,6 @@ abstract class installments extends modifier_base {
      * @return array
      */
     public static function apply(array &$data): array {
-        // $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
         return  $data;
     }
 }
