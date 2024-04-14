@@ -620,7 +620,7 @@ function openCreditsManagerModal(button) {
             console.log('credits-manager-modal response: ', response);
             showNotification(creditsmanagersuccess, 'info');
             setTimeout(function() {
-                window.location.reload();
+                reload(e.detail.userid);
             }, 1500);
         }
     });
@@ -659,4 +659,16 @@ function markforrebooking(button) {
             console.log("local_shopping_cart_mark_item_for_rebooking failed: " + JSON.stringify(ex));
         },
     }]);
+}
+
+/**
+ * Function to reload current page with get param userid.
+ * @param {*} userid
+ */
+function reload(userid) {
+    const url = new URL(window.location.href);
+
+    url.searchParams.delete('userid');
+    url.searchParams.append('userid', userid);
+    window.location.href = url.toString();
 }

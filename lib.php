@@ -61,8 +61,8 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED', 5); // Item could not be a
 // Price modifiers.
 define('LOCAL_SHOPPING_CART_PRICEMOD_STANDARD', 10); // Apply Installments.
 define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 30); // Apply Installments.
-define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 50); // Apply Credits on cart.
-define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 100); // Apply Taxes on cart.
+define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 50); // Apply Taxes on cart.
+define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 100); // Apply Credits on cart.
 
 /**
  * Adds module specific settings to the settings block

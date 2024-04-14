@@ -27,6 +27,7 @@ namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\taxcategories;
 
 /**
  * Class taxes
@@ -53,6 +54,8 @@ abstract class taxes extends modifier_base {
             $data['items'] = shopping_cart::update_item_price_data(array_values($data['items']), $taxcategories);
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);
             $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
+            $data['initialtotal'] = $data['price'];
+            $data['initialtotal_net'] = $data['price_net'];
         }
 
         $data['taxesenabled'] = $taxesenabled;
