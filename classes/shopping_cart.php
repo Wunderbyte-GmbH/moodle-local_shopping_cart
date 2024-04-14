@@ -1619,7 +1619,7 @@ class shopping_cart {
             $data['deductible'] = number_format(round((float) $data['deductible'], 2), 2, '.', '');
         }
         if (!empty($data['credit'])) {
-            $data['credit'] = number_fo©rmat(round((float) $data['credit'], 2), 2, '.', '');
+            $data['credit'] = number_format(round((float) $data['credit'], 2), 2, '.', '');
         }
         if (!empty($data['remainingcredit'])) {
             $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'], 2), 2, '.', '');
