@@ -55,8 +55,6 @@ class shopping_cart_rebookingcredit {
 
     /**
      * Performs checks and adds the rebookingcredit if it should be applied.
-     *
-     * @param array $cachedrawdata
      * @param string $area
      * @param int $userid
      * @return void

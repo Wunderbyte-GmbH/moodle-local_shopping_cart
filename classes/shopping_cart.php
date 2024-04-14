@@ -287,7 +287,9 @@ class shopping_cart {
     /**
      * Returns a dummy array with the correct success param.
      * @param int $success
-     * @return void
+     * @param int $userid
+     * @return int[]
+     * @throws dml_exception
      */
     private static function get_dummy_item(int $success, int $userid) {
 
@@ -582,87 +584,6 @@ class shopping_cart {
         $cartstore = cartstore::instance($userid);
 
         return $cartstore->get_data();
-
-
-
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-        $cachedrawdata = $cache->get($cachekey);
-
-        // If we have cachedrawdata, we need to check the expiration date.
-        if ($cachedrawdata) {
-            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                    && $cachedrawdata['expirationdate'] < time()) {
-                self::delete_all_items_from_cart($userid);
-                $cachedrawdata = $cache->get($cachekey);
-            }
-        }
-
-        // We create a new item to pass on in any case.
-        $data = [];
-        $data['userid'] = $userid;
-        $data['count'] = 0;
-
-        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-        $data['items'] = [];
-        $data['price'] = 0.00;
-        $data['taxesenabled'] = $taxesenabled;
-        $data['initialtotal'] = 0.00;
-        $data['deductible'] = 0.00;
-        $data['checkboxid'] = bin2hex(random_bytes(3));
-        $data['usecredit'] = $usecredit;
-        $data['expirationdate'] = time();
-        $data['nowdate'] = time();
-        $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
-
-        if (!$cachedrawdata) {
-            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
-            $data['items'] = [];
-            $data['remainingcredit'] = $data['credit'];
-
-        } else if ($cachedrawdata) {
-            $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
-            $data['count'] = $count;
-
-            $data['currency'] = $cachedrawdata['currency'] ?? null;
-            $data['credit'] = $cachedrawdata['credit'] ?? null;
-            $data['remainingcredit'] = $data['credit'];
-
-            if ($count > 0) {
-                // We need the userid in every item.
-                $items = array_map(function($item) use ($USER, $userid) {
-                    $item['userid'] = $userid != $USER->id ? -1 : 0;
-                    return $item;
-                }, $cachedrawdata['items']);
-
-                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories);
-
-                $data['price'] = self::calculate_total_price($data["items"]);
-                if ($taxesenabled) {
-                    $data['price_net'] = self::calculate_total_price($data["items"], true);
-                }
-                $data['discount'] = array_sum(array_column($data['items'], 'discount'));
-                $data['expirationdate'] = $cachedrawdata['expirationdate'];
-            }
-        }
-
-        // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
-        if (empty($data['currency']) && (count($data['items']) > 0)) {
-            $data['currency'] = end($data['items'])['currency'];
-        } else if (empty($data['currency'])) {
-            $data['currency'] = '';
-        }
-        $data['credit'] = $data['credit'] ?? 0.00;
-
-        if ($cachedrawdata && count($data['items']) > 0) {
-            // If there is credit for this user, we give her options.
-            shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
-        } else if (count($data['items']) == 0) {
-            // If not, we save the cache right away.
-            $cache->set($cachekey, $data);
-        }
-
-        return $data;
     }
 
     /**
@@ -1698,7 +1619,7 @@ class shopping_cart {
             $data['deductible'] = number_format(round((float) $data['deductible'], 2), 2, '.', '');
         }
         if (!empty($data['credit'])) {
-            $data['credit'] = number_format(round((float) $data['credit'], 2), 2, '.', '');
+            $data['credit'] = number_fo©rmat(round((float) $data['credit'], 2), 2, '.', '');
         }
         if (!empty($data['remainingcredit'])) {
             $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'], 2), 2, '.', '');

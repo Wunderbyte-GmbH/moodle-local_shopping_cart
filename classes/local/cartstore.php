@@ -56,7 +56,9 @@ class cartstore {
     private $cachedata = null;
 
     /**
-     * entities constructor.
+     * Cartstore constructor.
+     * @param int $userid
+     * @return void
      */
     private function __construct(int $userid) {
         $this->userid = $userid;
@@ -225,9 +227,7 @@ class cartstore {
 
     /**
      * Saves one specific item (not add!).
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
+     * @param array $item
      * @return bool
      * @throws coding_exception
      */
@@ -249,9 +249,6 @@ class cartstore {
 
     /**
      * Delete items.
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
      * @return void
      * @throws coding_exception
      */
@@ -332,7 +329,7 @@ class cartstore {
 
     /**
      * Gets the current entries of the cache.
-     * @param mixed
+     * @param mixed $cachedata
      * @return void
      * @throws coding_exception
      */

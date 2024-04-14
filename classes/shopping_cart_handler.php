@@ -187,8 +187,9 @@ class shopping_cart_handler {
 
     /**
      * To set data for the form.
-     * @param stdClass $data
+     * @param stdClass $formdata
      * @return void
+     * @throws dml_exception
      */
     public function set_data(stdClass $formdata) {
 

@@ -36,8 +36,17 @@ use local_shopping_cart\local\pricemodifier\modifier_base;
  */
 abstract class installments extends modifier_base {
 
+    /**
+     * The id is nedessary for the hierarchie of modifiers.
+     * @var int
+     */
     public static $id = LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS;
 
+    /**
+     * Applies the given price modifiers on the cached data.
+     * @param array $data
+     * @return array
+     */
     public static function apply(array &$data): array {
         // $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
         return  $data;

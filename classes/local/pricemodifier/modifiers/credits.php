@@ -25,11 +25,14 @@
 
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
+use coding_exception;
 use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_rebookingcredit;
 use context_system;
+use dml_exception;
+use Random\RandomException;
 
 /**
  * Class taxes
@@ -40,19 +43,27 @@ use context_system;
  */
 abstract class credits extends modifier_base {
 
-    /** @var int */
+    /**
+     * The id is nedessary for the hierarchie of modifiers.
+     * @var int
+     */
     public static $id = LOCAL_SHOPPING_CART_PRICEMOD_CREDITS;
 
+    /**
+     * Applies the given price modifiers on the cached data.
+     * @param array $data
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws RandomException
+     */
     public static function apply(array &$data): array {
         global $USER;
 
         $userid = $data['userid'];
         $usecredit = shopping_cart_credits::use_credit_fallback(null, $userid);
 
-        // $pricebelowzero = shopping_cart_rebookingcredit::correct_total_price_for_rebooking($data);
-        // $usecredit = $pricebelowzero ? 0 : $usecredit;
         $balance = $data['credit'];
-        // $balance = $pricebelowzero ? 0 : $data['credit'];
 
         // Now we account for discounts.
         if (isset($data['discount'])) {

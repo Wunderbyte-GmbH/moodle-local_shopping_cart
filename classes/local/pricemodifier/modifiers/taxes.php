@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
+use dml_exception;
+use coding_exception;
 use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\taxcategories;
@@ -38,12 +40,20 @@ use local_shopping_cart\taxcategories;
  */
 abstract class taxes extends modifier_base {
 
+    /**
+     * The id is nedessary for the hierarchie of modifiers.
+     * @var int
+     */
     public static $id = LOCAL_SHOPPING_CART_PRICEMOD_TAXES;
 
+    /**
+     * Applies the given price modifiers on the cached data.
+     * @param array $data
+     * @return array
+     * @throws dml_exception
+     * @throws coding_exception
+     */
     public static function apply(array &$data): array {
-
-        global $USER;
-        $userid = $data['userid'];
 
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
         if ($taxesenabled) {
