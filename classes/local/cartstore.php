@@ -361,11 +361,11 @@ class cartstore {
         return $data;
     }
 
-    
+
     /**
      * Reset the singleton to force new build from cache and price modifiers.
      * @param int $userid
-     * 
+     *
      * @return void
      */
     public function reset_instance(int $userid) {
