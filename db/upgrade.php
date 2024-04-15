@@ -504,7 +504,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024032501, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2024032502) {
+    if ($oldversion < 2024041500) {
 
         // Define field schistoryid to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
@@ -516,7 +516,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2024032502, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2024041500, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
