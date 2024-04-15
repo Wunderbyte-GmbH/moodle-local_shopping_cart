@@ -26,11 +26,8 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\local\entities\cartitem;
-use local_shopping_cart\shopping_cart\service_provider;
 use PHPUnit\Framework\TestCase;
 use phpunit_util;
-use ReflectionClass;
 
 /**
  * Test for cartitem
@@ -43,7 +40,7 @@ class cartstore_test extends TestCase {
      * @covers \cartstore
      * @param string $property
      *
-     * @dataProvider test_cartstore_get_data_provider
+     * @dataProvider cartstore_get_data_provider
      */
     public function test_cartstore_get_data(string $property) {
 
@@ -61,7 +58,7 @@ class cartstore_test extends TestCase {
      */
     public function test_cartstore_add_items() {
 
-        $user1 = $this->getDataGenerator()->create_user();
+        $user1 = $this->get_data_generator()->create_user();
 
         $cartstore = cartstore::instance((int)$user1->id);
 
@@ -70,7 +67,7 @@ class cartstore_test extends TestCase {
             'testitem',
             1,
             $user1->id);
-        
+
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
@@ -82,7 +79,7 @@ class cartstore_test extends TestCase {
             'testitem',
             3,
             $user1->id);
-        
+
         $data = $cartstore->get_data();
 
         // Check total price.
@@ -121,7 +118,7 @@ class cartstore_test extends TestCase {
             'testitem',
             1,
             $user1->id);
-        
+
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
@@ -135,7 +132,7 @@ class cartstore_test extends TestCase {
             $user1->id);
 
         $data = $cartstore->get_data();
-        
+
         // Check total price.
         $this->assertEquals($data['price'], 33.53);
         $this->assertEquals($data["price_net"], 44.1);
@@ -148,7 +145,7 @@ class cartstore_test extends TestCase {
      *
      * @return array
      */
-    public static function test_cartstore_get_data_provider(): array {
+    public static function cartstore_get_data_provider(): array {
         return [
             ['items'],
             ['expirationdate'],
@@ -172,7 +169,7 @@ class cartstore_test extends TestCase {
      * @static
      * @return testing_data_generator
      */
-    public static function getDataGenerator() {
+    public static function get_data_generator() {
         return phpunit_util::get_data_generator();
     }
 }
