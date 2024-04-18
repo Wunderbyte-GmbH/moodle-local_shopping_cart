@@ -58,6 +58,10 @@ abstract class installments extends modifier_base {
                 $itemdata['area'],
                 $itemdata['itemid'])) {
 
+                // If we just need to show the installment checkbox, we set it here.
+                $data['installmentscheckboxid'] = $data['installmentscheckboxid'] ?? bin2hex(random_bytes(3));
+                $data['installments'] = $data['installments'] ?? [];
+
                 if ($data['useinstallments']) {
                     $searchdata = [
                         'itemid' => $itemdata['itemid'],
@@ -73,11 +77,37 @@ abstract class installments extends modifier_base {
                     // If this is a further payment, price is installment rate.
 
                     $data['items'][$key]['price'] -= $jsonobject->firstamount;
+
+                    $now = time();
+                    $duedate = $now + ($jsonobject->duedatevariable * 86400);
+                    $delta = $duedate - $now;
+
+                    $interval = round($delta / ($jsonobject->numberofpayments + 1));
+                    $payment = ($itemdata['price'] - $jsonobject->firstamount) / $jsonobject->numberofpayments;
+
+                    // if there is nothing left to pay, we don't add payments.
+                    if ($payment <= 0) {
+                        continue;
+                    }
+
+                    $installmentpayments = [];
+
+                    $counter = 1;
+                    while ($counter <= $jsonobject->numberofpayments) {
+                        $counter++;
+                        $timestamp = $now + ($interval * $counter);
+                        $installmentpayments['initialpayment'] = $jsonobject->firstamount;
+                        $installmentpayments['currency'] = $itemdata['currency'];
+                        $installmentpayments['payments'][] = [
+                            'date' => userdate($timestamp, get_string('strftimedate', 'langconfig')),
+                            'amount' => round($payment, 2),
+                            'currency' => $itemdata['currency'],
+                        ];
+                    }
+                    $data['installments'][] = $installmentpayments;
                 }
-                $data['installments'] = true;
             }
         }
-
         return  $data;
     }
 }

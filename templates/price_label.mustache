@@ -50,7 +50,7 @@
 
 
 <div>
-    {{#installments}}
+    {{#installmentscheckboxid}}
         <div class="text-right mr-3 sc_installments">
             <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input useinstallments-checkbox" id="{{installmentscheckboxid}}" xxx {{#useinstallments}} checked {{/useinstallments}}>
@@ -58,8 +58,19 @@
                     {{#str}} useinstallments, local_shopping_cart {{/str}}
                 </label>
             </div>
+            {{#installments}}
+                <div class="firstpayment">
+                    {{currency}} {{initialpayment}}
+                </div>
+                <div class="furtherpayments">
+                    {{#str}} furtherpayments, local_shopping_cart {{/str}}:
+                    {{#payments}}
+                        <div>{{currency}} {{amount}} {{#str}} on, local_shopping_cart {{/str}} {{date}} </div>
+                    {{/payments}}
+                </div>
+            {{/installments}}
         </div>
-    {{/installments}}
+    {{/installmentscheckboxid}}
     {{#credit}}
         <div class="text-right mr-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
         {{#discount}}

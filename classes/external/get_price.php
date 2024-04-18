@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace local_shopping_cart\external;
 
 use context_system;
+use external_multiple_structure;
 use external_api;
 use external_function_parameters;
 use external_value;
@@ -118,7 +119,6 @@ class get_price extends external_api {
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
         $data['usecredit'] = $data['usecredit'] ? 1 : 0;
-        $data['installments'] = $data['installments'] ? 1 : 0;
         $data['useinstallments'] = $data['useinstallments'] ? 1 : 0;
 
         return $data;
@@ -146,8 +146,20 @@ class get_price extends external_api {
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
-                        'installments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
+                        'installments' => new external_multiple_structure(
+                            new external_single_structure([
+                                'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),
+                                'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
+                                'payments' => new external_multiple_structure(
+                                    new external_single_structure([
+                                        'amount' => new external_value(PARAM_FLOAT, 'Amount to pay', VALUE_REQUIRED),
+                                        'date' => new external_value(PARAM_TEXT, 'Date as string', VALUE_REQUIRED),
+                                        'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
+                                    ]
+                                ))
+                            ])
+                        ),
                 ]
         );
     }

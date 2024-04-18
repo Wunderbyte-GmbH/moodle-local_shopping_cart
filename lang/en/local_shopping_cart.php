@@ -578,3 +578,5 @@ $string['duedate'] = 'Final Payment Date';
 $string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future and two installment payments are set, half of the remaining amount must be paid after 50 days following the first payment, and the rest after 100 days.';
 $string['duedatevariable'] = 'Days after initial purchase';
 $string['duedatevariable_help'] = 'Enter the number of days after initial purchase';
+$string['on'] = "on";
+$string['furtherpayments'] = 'Futher payments';

@@ -138,17 +138,6 @@ class shopping_cart_handler {
         $mform->setType('sch_duedatevariable', PARAM_INT);
         $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
         $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
-
-        $mform->addElement(
-            'date_selector',
-            'sch_duedate',
-            get_string('duedate', 'local_shopping_cart'),
-            '',
-            $options
-        );
-        $mform->addHelpButton('sch_duedate', 'duedate', 'local_shopping_cart');
-        $mform->hideIf('sch_duedate', 'sch_allowinstallment', 'neq', "1");
-        $mform->disabledIf('sch_duedate', 'sch_duedatevariable', '>', 0);
     }
 
     /**
@@ -182,7 +171,6 @@ class shopping_cart_handler {
             $this->add_key_to_jsonobject('firstamount', $formdata->sch_firstamount);
             $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
             $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
-            $this->add_key_to_jsonobject('duedate', $formdata->sch_duedate);
 
             $this->save_iteminfo();
         }
@@ -221,7 +209,6 @@ class shopping_cart_handler {
         $formdata->sch_firstamount = $jsonobject->firstamount;
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
-        $formdata->sch_duedate = $jsonobject->duedate;
 
     }
 
