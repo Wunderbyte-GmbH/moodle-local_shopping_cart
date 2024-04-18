@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\shopping_cart_handler;
 
 /**
  * Class taxes
@@ -48,6 +49,35 @@ abstract class installments extends modifier_base {
      * @return array
      */
     public static function apply(array &$data): array {
+
+        global $DB;
+
+        foreach ($data['items'] as $key => $itemdata) {
+            if (shopping_cart_handler::installment_exists(
+                $itemdata['componentname'],
+                $itemdata['area'],
+                $itemdata['itemid'])) {
+
+                if ($data['useinstallments']) {
+                    $searchdata = [
+                        'itemid' => $itemdata['itemid'],
+                        'componentname' => $itemdata['componentname'],
+                        'area' => $itemdata['area'],
+                    ];
+
+                    $record = $DB->get_record('local_shopping_cart_iteminfo', $searchdata);
+                    $jsonobject = json_decode($record->json);
+
+                    // Check which payment it is.
+                    // If this is the first payment, price is price - firstamount.
+                    // If this is a further payment, price is installment rate.
+
+                    $data['items'][$key]['price'] -= $jsonobject->firstamount;
+                }
+                $data['installments'] = true;
+            }
+        }
+
         return  $data;
     }
 }

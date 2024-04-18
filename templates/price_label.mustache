@@ -32,15 +32,34 @@
     Example context (json):
     {
         "userid": 3,
-        "urls": {
-            "preferences": "http://www.moodle.com"
-        }
+        "credit": 10,
+        "initialtotal": 44.4,
+        "currency": "EUR",
+        "discount": 10,
+        "checkboxid": "cbid",
+        "usecredit": 1,
+        "installmentscheckboxid": "ichk",
+        "useinstallments": 0,
+        "deductible": 10,
+        "discount": 1,
+        "initialtotal": 10,
+        "price_net": 10,
+        "taxesenabled": 1,
     }
-
 }}
 
 
 <div>
+    {{#installments}}
+        <div class="text-right mr-3 sc_installments">
+            <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input useinstallments-checkbox" id="{{installmentscheckboxid}}" xxx {{#useinstallments}} checked {{/useinstallments}}>
+                <label class="custom-control-label" for="{{installmentscheckboxid}}">
+                    {{#str}} useinstallments, local_shopping_cart {{/str}}
+                </label>
+            </div>
+        </div>
+    {{/installments}}
     {{#credit}}
         <div class="text-right mr-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
         {{#discount}}

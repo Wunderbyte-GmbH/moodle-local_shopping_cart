@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -57,6 +58,7 @@ class get_price extends external_api {
         return new external_function_parameters([
                         'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                         'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
+                        'useinstallments' => new external_value(PARAM_INT, 'use installments', VALUE_DEFAULT, 0),
                 ]
         );
     }
@@ -66,13 +68,15 @@ class get_price extends external_api {
      *
      * @param int $userid
      * @param int $usecredit
+     * @param int $useinstallments
      *
      * @return array
      */
-    public static function execute(int $userid, int $usecredit): array {
+    public static function execute(int $userid, int $usecredit, int $useinstallments): array {
         $params = self::validate_parameters(self::execute_parameters(), [
                 'userid' => $userid,
                 'usecredit' => $usecredit,
+                'useinstallments' => $useinstallments,
         ]);
 
         global $USER;
@@ -103,6 +107,8 @@ class get_price extends external_api {
 
         // Add the state to the cache.
         shopping_cart::save_used_credit_state($userid, $usecredit);
+        $cartstore = cartstore::instance($userid);
+        $cartstore->save_useinstallments_state(!empty($params['useinstallments']) ? true : false);
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
         $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
@@ -112,6 +118,8 @@ class get_price extends external_api {
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
         $data['usecredit'] = $data['usecredit'] ? 1 : 0;
+        $data['installments'] = $data['installments'] ? 1 : 0;
+        $data['useinstallments'] = $data['useinstallments'] ? 1 : 0;
 
         return $data;
     }
@@ -137,6 +145,8 @@ class get_price extends external_api {
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
+                        'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
+                        'installments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                 ]
         );

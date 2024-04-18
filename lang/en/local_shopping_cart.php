@@ -569,6 +569,7 @@ $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID
 // Handler.
 $string['allowinstallment'] = 'Allow Installments';
 $string['allowinstallment_help'] = 'With installments, only a portion of the total amount needs to be paid initially.';
+$string['useinstallments'] = "Use installment payments";
 $string['firstamount'] = 'First Amount';
 $string['firstamount_help'] = 'This amount must be paid initially. The remaining sum later.';
 $string['numberofpayments'] = 'Number of Payments';

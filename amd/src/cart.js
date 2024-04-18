@@ -55,6 +55,7 @@ const SELECTORS = {
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
+    INSTALLMENTSCHECKBOX: '.sc_price_label input.useinstallments-checkbox',
     PRICELABELAREA: '.sc_price_label',
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
@@ -373,8 +374,9 @@ export const addItem = (itemid, component, area) => {
  *
  * @param {*} userid
  * @param {*} usecredit
+ * @param {*} useinstallments
  */
-export const updateTotalPrice = (userid = 0, usecredit = true) => {
+export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments = false) => {
 
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
@@ -390,12 +392,14 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
     // We must make sure the checkbox is only once visible on the site.
     // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
     usecredit = usecredit ? 1 : 0;
+    useinstallments = useinstallments ? 1 : 0;
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
         args: {
             userid,
-            usecredit
+            usecredit,
+            useinstallments
         },
         done: function(data) {
 
@@ -407,6 +411,7 @@ export const updateTotalPrice = (userid = 0, usecredit = true) => {
             }
 
             data.checkboxid = Math.random().toString(36).slice(2, 5);
+            data.installmentscheckboxid = 'i' + data.checkboxid;
 
             data.userid = userid;
 
@@ -842,19 +847,44 @@ function toggleActiveButtonState(button = null) {
  */
 export function initPriceLabel(userid) {
 
+    // eslint-disable-next-line no-console
+    console.log('initpricelabel');
+
     if (userid < 1) {
         userid = 0;
     }
 
     const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+    const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
 
-    if (checkbox) {
+    if (checkbox && !checkbox.initialized) {
+        checkbox.initialized = true;
         checkbox.addEventListener('change', event => {
 
             if (event.currentTarget.checked) {
-                updateTotalPrice(userid, true);
+                updateTotalPrice(userid, true, installmentscheckbox.checked);
             } else {
-                updateTotalPrice(userid, false);
+                updateTotalPrice(userid, false, installmentscheckbox.checked);
+            }
+        });
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(installmentscheckbox, installmentscheckbox.initialized);
+    if (installmentscheckbox && !installmentscheckbox.initialized) {
+        installmentscheckbox.initialized = true;
+
+        // eslint-disable-next-line no-console
+        console.log('add event listener to installment');
+        installmentscheckbox.addEventListener('change', event => {
+
+            // eslint-disable-next-line no-console
+            console.log(event.currentTarget, event.currentTarget.checked);
+
+            if (event.currentTarget.checked) {
+                updateTotalPrice(userid, checkbox.checked, true);
+            } else {
+                updateTotalPrice(userid, checkbox.checked, false);
             }
         });
     }

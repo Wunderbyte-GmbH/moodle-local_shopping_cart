@@ -328,6 +328,18 @@ class cartstore {
     }
 
     /**
+     * Saves the current use credit state.
+     * @param bool $usecredit
+     * @return void
+     * @throws coding_exception
+     */
+    public function save_useinstallments_state(bool $useinstallments) {
+        $data = self::get_cache();
+        $data['useinstallments'] = $useinstallments;
+        $this->set_cache($data);
+    }
+
+    /**
      * Gets the current entries of the cache.
      * @param mixed $cachedata
      * @return void
@@ -523,6 +535,7 @@ class cartstore {
                 'deductible' => 0.00,
                 'checkboxid' => bin2hex(random_bytes(3)),
                 'usecredit' => $usecredit,
+                'useinstallments' => 0,
                 'expirationdate' => shopping_cart::get_expirationdate(),
                 'nowdate' => time(),
                 'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",

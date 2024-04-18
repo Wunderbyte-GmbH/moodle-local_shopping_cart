@@ -494,6 +494,7 @@ $string['credits'] = "Guthaben";
 // Handler.
 $string['allowinstallment'] = 'Erlaube Ratenzahlungen';
 $string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
+$string['useinstallments'] = "Nutze Ratenzahlung";
 $string['firstamount'] = 'Erster Betrag';
 $string['firstamount_help'] = 'Dieser Betrag muss am Anfang überweisen werden. Die Restsumme erst später.';
 $string['numberofpayments'] = 'Anzahl der Zahlungen';

@@ -86,7 +86,9 @@ class shopping_cart_handler {
      */
     public function definition(MoodleQuickForm &$mform, array $formdata) {
 
-        $mform->addElement('header', 'sch_shoppingcartheader', get_string('pluginname', 'local_shopping_cart'));
+        $mform->addElement('header',
+            'sch_shoppingcartheader',
+            '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;' . get_string('pluginname', 'local_shopping_cart'));
         $mform->addElement(
             'advcheckbox',
             'sch_allowinstallment',
@@ -175,14 +177,15 @@ class shopping_cart_handler {
             throw new moodle_exception('noitemid', 'local_shoping_cart');
         }
 
-        $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
-        $this->add_key_to_jsonobject('firstamount', $formdata->sch_firstamount);
-        $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
-        $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
-        $this->add_key_to_jsonobject('duedate', $formdata->sch_duedate);
+        if (!empty($formdata->sch_allowinstallment)) {
+            $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
+            $this->add_key_to_jsonobject('firstamount', $formdata->sch_firstamount);
+            $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
+            $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
+            $this->add_key_to_jsonobject('duedate', $formdata->sch_duedate);
 
-        $this->save_iteminfo();
-
+            $this->save_iteminfo();
+        }
     }
 
     /**
