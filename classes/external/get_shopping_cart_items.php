@@ -162,6 +162,7 @@ class get_shopping_cart_items extends external_api {
                                                 'imageurl' => new external_value(PARAM_RAW, 'Image url', VALUE_OPTIONAL),
                                                 'canceluntil' => new external_value(PARAM_INT,
                                                         'Timestamp until when cancel is possible', VALUE_OPTIONAL),
+                                                'nodelete' => new external_value(PARAM_INT, 'Marker for no delete', VALUE_OPTIONAL),
                                         ]
                                 )
                         ),
