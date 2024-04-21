@@ -503,4 +503,8 @@ $string['duedate'] = 'Letztes Zahlungsdatum';
 $string['duedate_help'] = 'An diesem Datum muss der volle Betrag überwiesen werden. Liegt das Datum 100 Tage in der Zukunft und es sind zwei Teilzalungen eingestellt, muss nach der ersten Zahlung die Hälfte des offenen Betrags nach 50 Tagen, und der Rest nach 100 Tagen bezahlt werden.';
 $string['on'] = "am";
 $string['furtherpayments'] = 'Weitere Zahlungen';
+$string['insteadof'] = "anstatt";
+
+$string['downpayment'] = "Down payment";
+$string['installment'] = "Installment";
 

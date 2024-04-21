@@ -344,7 +344,7 @@ class shopping_cart_credits {
             $tempusecredit = shopping_cart::get_saved_usecredit_state($userid);
             if ($tempusecredit === null) {
                 // If nothing is saved, we fall back to true.
-                $usecredit = true;
+                $usecredit = 1;
             } else {
                 $usecredit = $tempusecredit;
             }

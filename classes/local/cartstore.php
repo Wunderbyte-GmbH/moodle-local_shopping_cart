@@ -31,6 +31,7 @@ use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use context_system;
+use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\shopping_cart_credits;
 
 defined('MOODLE_INTERNAL') || die();
@@ -85,15 +86,15 @@ class cartstore {
     public function add_item(cartitem $item) {
 
         $data = $this->get_cache();
-        $expirationdate = shopping_cart::get_expirationdate();
+        $expirationtime = shopping_cart::get_expirationtime();
 
         $itemdata = $item->as_array();
-        $itemdata['expirationdate'] = $expirationdate;
+        $itemdata['expirationtime'] = $expirationtime;
         $itemdata['userid'] = $this->userid;
 
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
-        $data['expirationdate'] = $expirationdate;
+        $data['expirationtime'] = $expirationtime;
 
         $this->set_cache($data);
 
@@ -254,11 +255,17 @@ class cartstore {
      */
     public function delete_all_items() {
 
+        // We check if we were already on checkout page.
+        $cache = \cache::make('local_shopping_cart', 'schistory');
+        $cache->delete('schistorycache');
+
         $data = $this->get_cache();
 
         if ($data) {
             if (isset($data['items'])) {
                 $data['items'] = [];
+
+
                 $this->set_cache($data);
             }
         }
@@ -283,15 +290,15 @@ class cartstore {
 
     /**
      * Expirationtime.
-     * @param int $expirationdate
+     * @param int $expirationtime
      * @return void
      * @throws coding_exception
      */
-    public function set_expiration(int $expirationdate) {
+    public function set_expiration(int $expirationtime) {
 
         $data = $this->get_cache();
 
-        $data['expirationdate'] = $expirationdate;
+        $data['expirationtime'] = $expirationtime;
 
         $this->set_cache($data);
     }
@@ -317,11 +324,11 @@ class cartstore {
 
     /**
      * Saves the current use credit state.
-     * @param bool $usecredit
+     * @param int $usecredit
      * @return void
      * @throws coding_exception
      */
-    public function save_usecredit_state(bool $usecredit) {
+    public function save_usecredit_state(int $usecredit) {
         $data = self::get_cache();
         $data['usecredit'] = $usecredit;
         $this->set_cache($data);
@@ -329,14 +336,34 @@ class cartstore {
 
     /**
      * Saves the current use credit state.
-     * @param bool $usecredit
+     * @param int $useinstallments
      * @return void
      * @throws coding_exception
      */
-    public function save_useinstallments_state(bool $useinstallments) {
+    public function save_useinstallments_state(int $useinstallments) {
         $data = self::get_cache();
         $data['useinstallments'] = $useinstallments;
         $this->set_cache($data);
+    }
+
+    /**
+     * This function checks if there is a schistory cache. If so, we replace it with newly calculated values.
+     * We need this after eg. having called set_cache.
+     * @return void
+     */
+    private function renew_schistory_cache_if_necessary() {
+        // We check if we were already on checkout page.
+        $cache = \cache::make('local_shopping_cart', 'schistory');
+        // If there is a schistory cache...
+        if ($data = $cache->get('schistorycache')) {
+
+            $identifier = $data['identifier'];
+            // We need to replace it.
+            $data = $this->get_data();
+
+            // In prepare checkout, schistory cache is set.
+            checkout::prepare_checkout($data, $identifier);
+        }
     }
 
     /**
@@ -353,6 +380,8 @@ class cartstore {
         $cachekey = $this->get_cachekey();
 
         $cache->set($cachekey, $cachedata);
+
+        $this->renew_schistory_cache_if_necessary();
     }
 
     /**
@@ -363,8 +392,8 @@ class cartstore {
         $data = self::get_cache();
 
         // If we have cachedrawdata, we need to check the expiration date.
-        if (isset($data['expirationdate']) && !is_null($data['expirationdate'])
-                    && $data['expirationdate'] < time()) {
+        if (isset($data['expirationtime']) && !is_null($data['expirationtime'])
+                    && $data['expirationtime'] < time()) {
                 self::delete_all_items();
                 $data = self::get_cache();
         }
@@ -536,7 +565,7 @@ class cartstore {
                 'checkboxid' => bin2hex(random_bytes(3)),
                 'usecredit' => $usecredit,
                 'useinstallments' => 0,
-                'expirationdate' => shopping_cart::get_expirationdate(),
+                'expirationtime' => shopping_cart::get_expirationtime(),
                 'nowdate' => time(),
                 'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
             ];

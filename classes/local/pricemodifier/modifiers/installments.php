@@ -62,7 +62,7 @@ abstract class installments extends modifier_base {
                 $data['installmentscheckboxid'] = $data['installmentscheckboxid'] ?? bin2hex(random_bytes(3));
                 $data['installments'] = $data['installments'] ?? [];
 
-                if ($data['useinstallments']) {
+                if (!empty($data['useinstallments'])) {
                     $searchdata = [
                         'itemid' => $itemdata['itemid'],
                         'componentname' => $itemdata['componentname'],
@@ -73,10 +73,8 @@ abstract class installments extends modifier_base {
                     $jsonobject = json_decode($record->json);
 
                     // Check which payment it is.
-                    // If this is the first payment, price is price - firstamount.
-                    // If this is a further payment, price is installment rate.
-
-                    $data['items'][$key]['price'] -= $jsonobject->firstamount;
+                    // If this is the first payment, price is firstamount.
+                    $data['items'][$key]['price'] = $jsonobject->firstamount;
 
                     $now = time();
                     $duedate = $now + ($jsonobject->duedatevariable * 86400);
@@ -96,18 +94,30 @@ abstract class installments extends modifier_base {
                     while ($counter <= $jsonobject->numberofpayments) {
                         $counter++;
                         $timestamp = $now + ($interval * $counter);
+                        $installmentpayments['originalprice'] = $itemdata['price'];
+                        $installmentpayments['itemname'] = $itemdata["itemname"];
                         $installmentpayments['initialpayment'] = $jsonobject->firstamount;
                         $installmentpayments['currency'] = $itemdata['currency'];
                         $installmentpayments['payments'][] = [
                             'date' => userdate($timestamp, get_string('strftimedate', 'langconfig')),
                             'amount' => round($payment, 2),
                             'currency' => $itemdata['currency'],
+                            'paid' => 0,
                         ];
+                        $installmentpayments['installments'] = $jsonobject->numberofpayments;
                     }
                     $data['installments'][] = $installmentpayments;
+                    $data['items'][$key]['installments'] = $jsonobject->numberofpayments;
+
+                    $installments = (object)[
+                        'installments' => json_encode($installmentpayments),
+                    ];
+                    $data['items'][$key]['json'] = json_encode($installments);
                 }
             }
         }
+
+        $data['installmentscheckboxid'] = $data['installmentscheckboxid'] ?? '';
         return  $data;
     }
 }

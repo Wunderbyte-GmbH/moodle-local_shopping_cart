@@ -606,7 +606,7 @@ class shopping_cart_history {
     }
 
     /**
-     * Function prepare_data_from_cache
+     * Function prepare_data_from_cache and store it in the session cache of the user.
      *
      * @param int $userid
      * @param int $identifier optional identifier
@@ -618,33 +618,17 @@ class shopping_cart_history {
         $userfromid = $USER->id;
         $userid = $USER->id;
         $cartstore = cartstore::instance($userid);
+        $cachedrawdata = $cartstore->get_data();
         $dataarr = [];
-
-        $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
-        if ($taxesenabled) {
-            $taxcategories = taxcategories::from_raw_string(
-                    get_config('local_shopping_cart', 'defaulttaxcategory'),
-                    get_config('local_shopping_cart', 'taxcategories')
-            );
-        } else {
-            $taxcategories = null;
-        }
-
-        if (!$cachedrawdata = $cartstore->get_data()) {
-            return ['identifier' => ''];
-        }
-
-        $currency = '';
 
         if (empty($identifier)) {
             $identifier = self::create_unique_cart_identifier($userid);
         }
 
-        $items = shopping_cart::update_item_price_data(array_values($cachedrawdata['items']), $taxcategories);
-        foreach ($items as $item) {
+        foreach ($cachedrawdata['items'] as $item) {
             $data = $item;
-            $currency = $item['currency'];
-            $data['expirationtime'] = $cachedrawdata["expirationdate"];
+            $data['currency'] = $item['currency'];
+            $data['expirationtime'] = $cachedrawdata["expirationtime"];
             $data['identifier'] = $identifier; // The identifier of the cart session.
             $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
             $data['userid'] = $userid; // The user for which the item was bought.
@@ -654,17 +638,16 @@ class shopping_cart_history {
             $dataarr['items'][] = $data;
         }
 
+        $dataarr['price'] = $cachedrawdata['price'];
+        $dataarr['price_net'] = $cachedrawdata['price_net'];
+        $dataarr['currency'] = $cachedrawdata['currency'];
+
         // As the identifier will always stay the same, we pass it here for easy acces.
         $dataarr['identifier'] = $identifier;
-        if (!empty($items)) {
-            $dataarr['price'] = shopping_cart::calculate_total_price($dataarr["items"]);
-            if ($taxesenabled) {
-                $dataarr['price_net'] = shopping_cart::calculate_total_price($dataarr["items"], true);
-            }
-        } else {
-            $dataarr['price'] = 0.00;
-        }
-        $dataarr['currency'] = $currency;
+
+
+        $this->store_in_schistory_cache($dataarr);
+
         return $dataarr;
     }
 
@@ -909,5 +892,26 @@ class shopping_cart_history {
             return [];
         }
 
+    }
+
+    /**
+     * Check for successful checkout via identifier.
+     * @param int $identifier
+     * @return bool
+     */
+    public static function has_successful_checkout(int $identifier) {
+        // Make sure we actually have a success.
+        $success = false;
+        if ($records = self::return_data_via_identifier($identifier)) {
+            foreach ($records as $record) {
+                if (LOCAL_SHOPPING_CART_PAYMENT_SUCCESS == $record->paymentstatus) {
+                    $success = true;
+                } else {
+                    $success = false;
+                }
+
+            }
+        }
+        return $success;
     }
 }

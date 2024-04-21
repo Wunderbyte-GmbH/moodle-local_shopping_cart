@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/checkout
+
+    This template will render the shopping cart checkout pate.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+    }
+}}
+
+{{hiersollwasstehen}}
+
+<ul class="shopping-cart-items">
+    {{#items}}
+        {{> local_shopping_cart/shopping_cart_item }}
+    {{/items}}
+    {{^items}}
+        <div class="text-center">{{#str}} cartisempty, local_shopping_cart {{/str}}</div>
+    {{/items}}
+</ul>
+
+<div class="card mt-4">
+        <div class="card-header text-center bg-primary text-white">
+            <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+            <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
+        </div>
+        <div class="card-body">
+            <div class="history">
+                <ul class="list-group cashier-history-items">
+                    {{#historyitems}}
+                        {{> local_shopping_cart/history_item }}
+                    {{/historyitems}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#installments}}
+    <div class="itemname font-weight-bold">
+        {{itemname}}
+    </div>
+    <div class="firstpayment">
+        {{currency}} {{initialpayment}} {{#str}} insteadof, local_shopping_cart {{/str}} {{currency}} {{originalprice}}
+    </div>
+    <div class="furtherpayments">
+        {{#str}} furtherpayments, local_shopping_cart {{/str}}:
+        {{#payments}}
+            <div>{{currency}} {{amount}} {{#str}} on, local_shopping_cart {{/str}} {{date}} </div>
+        {{/payments}}
+    </div>
+{{/installments}}

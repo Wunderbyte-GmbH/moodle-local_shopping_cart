@@ -238,7 +238,7 @@ class shopping_cart {
 
                     // Add or reschedule all delete_item_tasks for all the items in the cart.
                     self::add_or_reschedule_addhoc_tasks(
-                        $itemdata['expirationdate'],
+                        $itemdata['expirationtime'],
                         $userid);
 
                     $context = context_system::instance();
@@ -298,7 +298,7 @@ class shopping_cart {
         $itemdata = [];
         $itemdata['success'] = $success;
         $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
-        $itemdata['expirationdate'] = self::get_expirationdate();
+        $itemdata['expirationtime'] = self::get_expirationtime();
         $itemdata['price'] = 0;
         return $itemdata;
     }
@@ -335,7 +335,7 @@ class shopping_cart {
      *
      * @return int
      */
-    public static function get_expirationdate(): int {
+    public static function get_expirationtime(): int {
         return time() + get_config('local_shopping_cart', 'expirationtime') * 60;
     }
 
@@ -468,18 +468,6 @@ class shopping_cart {
      */
     public static function load_cartitem(string $component, string $area, int $itemid, int $userid): array {
 
-        // We need to set back shistory cache in case of loading and unloading item.
-        $cache = \cache::make('local_shopping_cart', 'schistory');
-        $result = $cache->get('schistorycache');
-
-        if (!empty($result)) {
-            $result = $result;
-            $identifier = (int) $result['identifier'];
-            $history = new shopping_cart_history();
-            $scdata = $history->prepare_data_from_cache($userid, $identifier ?? 0);
-            $history->store_in_schistory_cache($scdata);
-        }
-
         $providerclass = static::get_service_provider_classname($component);
         return component_class_callback($providerclass, 'load_cartitem', [$area, $itemid, $userid]);
     }
@@ -494,17 +482,6 @@ class shopping_cart {
      * @return array
      */
     public static function unload_cartitem(string $component, string $area, int $itemid, int $userid): array {
-
-        // We need to set back shistory cache in case of loading and unloading item.
-        $cache = \cache::make('local_shopping_cart', 'schistory');
-        $result = $cache->get('schistorycache');
-
-        if (!empty($result)) {
-            $identifier = (int) $result['identifier'];
-            $history = new shopping_cart_history();
-            $scdata = $history->prepare_data_from_cache($userid, $identifier ?? 0);
-            $history->store_in_schistory_cache($scdata);
-        }
 
         $providerclass = static::get_service_provider_classname($component);
         return component_class_callback($providerclass, 'unload_cartitem', [$area, $itemid, $userid]);
@@ -568,11 +545,11 @@ class shopping_cart {
      * If usecredit is true, the credit of the user is substracted from price...
      * ... and supplementary information about the subtraction is returned.
      *
-     * @param int $userid
+     * @param int|null $userid
      * @param bool $usecredit
      * @return array
      */
-    public static function local_shopping_cart_get_cache_data(int $userid, bool $usecredit = null): array {
+    public static function local_shopping_cart_get_cache_data(int $userid, $usecredit = null): array {
         global $USER, $CFG;
 
         if (empty($userid)) {
@@ -602,10 +579,10 @@ class shopping_cart {
      * Sets the usecredit value in Cache for the user.
      *
      * @param int $userid
-     * @param bool $usecredit
+     * @param int $usecredit
      * @return void
      */
-    public static function save_used_credit_state(int $userid, bool $usecredit) {
+    public static function save_used_credit_state(int $userid, int $usecredit) {
 
         $cartstore = cartstore::instance($userid);
         return $cartstore->save_usecredit_state($usecredit);
@@ -615,15 +592,15 @@ class shopping_cart {
      * To add or reschedule addhoc tasks to delete all the items once the shopping cart is expired.
      * As the expiration date is always calculated by the cart, not the item, this always updates the whole cart.
      *
-     * @param int $expirationdate
+     * @param int $expirationtime
      * @param int $userid
      * @return void
      */
-    public static function add_or_reschedule_addhoc_tasks(int $expirationdate, int $userid) {
+    public static function add_or_reschedule_addhoc_tasks(int $expirationtime, int $userid) {
 
         $cartstore = cartstore::instance($userid);
         $items = $cartstore->get_items();
-        $cartstore->set_expiration($expirationdate);
+        $cartstore->set_expiration($expirationtime);
 
         foreach ($items as $taskdata) {
             // We don't touch booking fee.
@@ -633,7 +610,7 @@ class shopping_cart {
             }
             $deleteitemtask = new delete_item_task();
             $deleteitemtask->set_userid($userid);
-            $deleteitemtask->set_next_run_time($expirationdate);
+            $deleteitemtask->set_next_run_time($expirationtime);
             $deleteitemtask->set_custom_data($taskdata);
             \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
         }
@@ -1280,12 +1257,6 @@ class shopping_cart {
         $context = context_system::instance();
 
         foreach ($items as $key => $item) {
-
-            // As a cashier, I always want to be able to delete the booking fee.
-            if ($items[$key]['nodelete'] === 1 &&
-                has_capability('local/shopping_cart:cashier', $context)) {
-                $items[$key]['nodelete'] = 0;
-            }
 
             if ($taxcategories) {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);

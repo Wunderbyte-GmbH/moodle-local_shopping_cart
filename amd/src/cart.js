@@ -51,7 +51,7 @@ const SELECTORS = {
     TRASHCLASS: 'fa-trash-o',
     DISCOUNTCLASS: 'shoppingcart-discount-icon',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
-    COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationdate',
+    COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationtime',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
     PRICELABELCHECKBOX: '.sc_price_label input.usecredit-checkbox',
@@ -63,12 +63,12 @@ const SELECTORS = {
 };
 /**
  *
- * @param {*} expirationdate
+ * @param {*} expirationtime
  */
 
- export const init = (expirationdate, nowdate) => {
+ export const init = (expirationtime, nowdate) => {
 
-    initTimer(expirationdate, nowdate);
+    initTimer(expirationtime, nowdate);
 
     // We might have more than one container.
     let containers = [];
@@ -252,7 +252,7 @@ export const reinit = (userid = 0) => {
                 // If we are on the cashier page, we add the possibility to add a discount to the cart items.
                 if (!(userid != 0 && data.iscashier)) {
                     clearInterval(interval);
-                    initTimer(data.expirationdate, data.nowdate);
+                    initTimer(data.expirationtime, data.nowdate);
 
                     updateBadge(data.count);
                 }
@@ -319,7 +319,7 @@ export const deleteItem = (itemid, component, area, userid) => {
                 console.log(e);
             });
 
-            window.location.reload();
+            reinit(userid);
 
             import('local_wunderbyte_table/reload')
                 // eslint-disable-next-line promise/always-return
@@ -411,7 +411,10 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
             }
 
             data.checkboxid = Math.random().toString(36).slice(2, 5);
-            data.installmentscheckboxid = 'i' + data.checkboxid;
+
+            if (data.installments.length > 0) {
+                data.installmentscheckboxid = 'i' + data.checkboxid;
+            }
 
             data.userid = userid;
 
@@ -693,11 +696,11 @@ function startTimer(duration, display) {
 /**
  * Initialize Timer.
  *
- * @param {integer} expirationdate
+ * @param {integer} expirationtime
  * @param {integer} nowdate
  *
  */
-function initTimer(expirationdate = null, nowdate = null) {
+function initTimer(expirationtime = null, nowdate = null) {
 
     const countdownelement = document.querySelector(SELECTORS.COUNTDOWN);
 
@@ -710,8 +713,8 @@ function initTimer(expirationdate = null, nowdate = null) {
     }
     let delta = 0;
     let now = nowdate;
-    if (expirationdate) {
-        delta = (expirationdate - now);
+    if (expirationtime) {
+        delta = (expirationtime - now);
     }
     if (delta <= 0) {
         delta = 0;
@@ -861,16 +864,19 @@ export function initPriceLabel(userid) {
         checkbox.initialized = true;
         checkbox.addEventListener('change', event => {
 
+            var installementsvalue = false;
+            if (installmentscheckbox) {
+                installementsvalue = installmentscheckbox.checked;
+            }
+
             if (event.currentTarget.checked) {
-                updateTotalPrice(userid, true, installmentscheckbox.checked);
+                updateTotalPrice(userid, true, installementsvalue);
             } else {
-                updateTotalPrice(userid, false, installmentscheckbox.checked);
+                updateTotalPrice(userid, false, installementsvalue);
             }
         });
     }
 
-    // eslint-disable-next-line no-console
-    console.log(installmentscheckbox, installmentscheckbox.initialized);
     if (installmentscheckbox && !installmentscheckbox.initialized) {
         installmentscheckbox.initialized = true;
 

@@ -148,7 +148,7 @@ class cartstore_test extends TestCase {
     public static function cartstore_get_data_provider(): array {
         return [
             ['items'],
-            ['expirationdate'],
+            ['expirationtime'],
             ['userid'],
             ['credit'],
             ['remainingcredit'],

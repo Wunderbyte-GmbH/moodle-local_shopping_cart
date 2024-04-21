@@ -40,7 +40,7 @@
                 "componentname": "mod_booking",
                 "area": "main",
                 "price": 133,
-                "expirationdate": 1642155164,
+                "expirationtime": 1642155164,
                 "itemname": "Tenniscourse",
                 "currency": "EUR",
                 "iscashier": false,
@@ -52,7 +52,7 @@
        "deductible":0,
        "checkboxid":"af7a6b",
        "usecredit":1,
-       "expirationdate":1667988637,
+       "expirationtime":1667988637,
        "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
        "currency":"EUR",
        "credit":0,
@@ -251,6 +251,9 @@
                     </div>
                     <div class="shopping-cart-cashier-items-container">
                         {{> local_shopping_cart/shopping_cart_items }}
+                    </div>
+                    <div class="sc_price_label" data-userid="{{userid}}">
+                        {{> local_shopping_cart/price_label }}
                     </div>
                 </div>
 

@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $definitions = [
-    'cacheshopping' => [
+    'cacheshopping' => [ // This is the store which is used for nomrmal shopping, see cartstore class.
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,
@@ -37,7 +37,7 @@ $definitions = [
         'staticacceleration' => true,
         'staticaccelerationsize' => 1,
     ],
-    'schistory' => [ // Say: Shopping Cart history.
+    'schistory' => [ // Say: Shopping Cart history. Only used during the actual checkout.
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,
         'staticacceleration' => true,

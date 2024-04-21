@@ -59,8 +59,11 @@
                 </label>
             </div>
             {{#installments}}
+                <div class="itemname font-weight-bold">
+                    {{itemname}}
+                </div>
                 <div class="firstpayment">
-                    {{currency}} {{initialpayment}}
+                    {{currency}} {{initialpayment}} {{#str}} insteadof, local_shopping_cart {{/str}} {{currency}} {{originalprice}}
                 </div>
                 <div class="furtherpayments">
                     {{#str}} furtherpayments, local_shopping_cart {{/str}}:

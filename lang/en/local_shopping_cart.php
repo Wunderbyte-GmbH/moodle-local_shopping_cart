@@ -580,3 +580,8 @@ $string['duedatevariable'] = 'Days after initial purchase';
 $string['duedatevariable_help'] = 'Enter the number of days after initial purchase';
 $string['on'] = "on";
 $string['furtherpayments'] = 'Futher payments';
+$string['insteadof'] = "instead of";
+
+$string['downpayment'] = "Anzahlung";
+$string['installment'] = "Rate";
+

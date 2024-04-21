@@ -92,8 +92,6 @@ class get_price extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        $usecredit = $params['usecredit'] == 1 ? true : false;
-
         // As we need the userid in two functions below, we have this logic here.
         $context = context_system::instance();
         if ($params['userid'] == 0) {
@@ -109,17 +107,15 @@ class get_price extends external_api {
         // Add the state to the cache.
         shopping_cart::save_used_credit_state($userid, $usecredit);
         $cartstore = cartstore::instance($userid);
-        $cartstore->save_useinstallments_state(!empty($params['useinstallments']) ? true : false);
+        $cartstore->save_useinstallments_state($params['useinstallments']);
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
-        $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
+        $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $params['usecredit']);
 
         // For the webservice, we must make sure that the keys exist.
 
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
-        $data['usecredit'] = $data['usecredit'] ? 1 : 0;
-        $data['useinstallments'] = $data['useinstallments'] ? 1 : 0;
 
         return $data;
     }
@@ -147,6 +143,7 @@ class get_price extends external_api {
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
+                        'installmentscheckboxid' => new external_value(PARAM_TEXT, 'As indicator if installements are used at all.', VALUE_REQUIRED),
                         'installments' => new external_multiple_structure(
                             new external_single_structure([
                                 'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),

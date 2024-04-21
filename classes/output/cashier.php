@@ -50,9 +50,9 @@ class cashier implements renderable, templatable {
     /**
      * Constructor
      * @param int|null $userid
-     * @param bool $usecredit
+     * @param int|null $usecredit
      */
-    public function __construct(int $userid = null, bool $usecredit = false) {
+    public function __construct(int $userid = null, $usecredit = 0) {
 
         if (!empty($userid)) {
             $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);

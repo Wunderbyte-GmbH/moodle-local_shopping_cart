@@ -111,7 +111,7 @@ class add_item_to_cart extends external_api {
             'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
             'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_DEFAULT, ''),
             'area' => new external_value(PARAM_ALPHANUM, 'Area', VALUE_DEFAULT, ''),
-            'expirationdate' => new external_value(PARAM_INT, 'Expiration timestamp'),
+            'expirationtime' => new external_value(PARAM_INT, 'Expiration timestamp'),
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),

@@ -63,6 +63,8 @@ define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 10); // Apply Installments.
 define('LOCAL_SHOPPING_CART_PRICEMOD_STANDARD', 30); // Apply Standard calculation.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 50); // Apply Taxes on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 100); // Apply Credits on cart.
+define('LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS', 150); // Applies Terms and conditions, normally for checkout.
+define('LOCAL_SHOPPING_CART_PRICEMOD_CHECKOUT', 200); // Checkout is a price modifier, but only applied manually.
 
 /**
  * Adds module specific settings to the settings block
@@ -102,18 +104,18 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     }
 
     $output = '';
-    $cache = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+    $data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
 
     // If we have the capability, we show a link to cashier's desk.
     if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
-        $cache['showcashier'] = true;
-        $cache['cashierurl'] = new moodle_url('/local/shopping_cart/cashier.php');
+        $data['showcashier'] = true;
+        $data['cashierurl'] = new moodle_url('/local/shopping_cart/cashier.php');
     }
 
     // Convert numbers to strings with 2 fixed decimals right before rendering.
-    shopping_cart::convert_prices_to_number_format($cache);
+    shopping_cart::convert_prices_to_number_format($data);
 
-    $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $cache);
+    $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;
 }
 
