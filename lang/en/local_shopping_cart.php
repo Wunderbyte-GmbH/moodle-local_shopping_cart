@@ -570,8 +570,6 @@ $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID
 $string['allowinstallment'] = 'Allow Installments';
 $string['allowinstallment_help'] = 'With installments, only a portion of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
-$string['firstamount'] = 'First Amount';
-$string['firstamount_help'] = 'This amount must be paid initially. The remaining sum later.';
 $string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = 'This number refers to the required payments AFTER the first payment.';
 $string['duedate'] = 'Final Payment Date';
@@ -582,6 +580,8 @@ $string['on'] = "on";
 $string['furtherpayments'] = 'Futher payments';
 $string['insteadof'] = "instead of";
 
-$string['downpayment'] = "Anzahlung";
-$string['installment'] = "Rate";
+$string['downpayment'] = "Down payment";
+$string['downpayment_help'] = 'This amount must be paid initially. The remaining sum later.';
 
+$string['installment'] = "Installment";
+$string['incorrectnumberofpayments'] = 'Price needs to be divisble by number of payments without a remainder';

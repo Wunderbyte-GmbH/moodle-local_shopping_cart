@@ -224,6 +224,7 @@ class cartstore {
                 return $data['items'][$cacheitemkey];
             }
         }
+        return [];
     }
 
     /**

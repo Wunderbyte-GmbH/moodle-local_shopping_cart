@@ -73,15 +73,15 @@ abstract class installments extends modifier_base {
                     $jsonobject = json_decode($record->json);
 
                     // Check which payment it is.
-                    // If this is the first payment, price is firstamount.
-                    $data['items'][$key]['price'] = $jsonobject->firstamount;
+                    // If this is the first payment, price is downpayment.
+                    $data['items'][$key]['price'] = $jsonobject->downpayment;
 
                     $now = time();
                     $duedate = $now + ($jsonobject->duedatevariable * 86400);
                     $delta = $duedate - $now;
 
                     $interval = round($delta / ($jsonobject->numberofpayments + 1));
-                    $payment = ($itemdata['price'] - $jsonobject->firstamount) / $jsonobject->numberofpayments;
+                    $payment = ($itemdata['price'] - $jsonobject->downpayment) / $jsonobject->numberofpayments;
 
                     // if there is nothing left to pay, we don't add payments.
                     if ($payment <= 0) {
@@ -96,11 +96,11 @@ abstract class installments extends modifier_base {
                         $timestamp = $now + ($interval * $counter);
                         $installmentpayments['originalprice'] = $itemdata['price'];
                         $installmentpayments['itemname'] = $itemdata["itemname"];
-                        $installmentpayments['initialpayment'] = $jsonobject->firstamount;
+                        $installmentpayments['initialpayment'] = $jsonobject->downpayment;
                         $installmentpayments['currency'] = $itemdata['currency'];
                         $installmentpayments['payments'][] = [
                             'date' => userdate($timestamp, get_string('strftimedate', 'langconfig')),
-                            'amount' => round($payment, 2),
+                            'price' => round($payment, 2),
                             'currency' => $itemdata['currency'],
                             'paid' => 0,
                         ];
@@ -110,7 +110,7 @@ abstract class installments extends modifier_base {
                     $data['items'][$key]['installments'] = $jsonobject->numberofpayments;
 
                     $installments = (object)[
-                        'installments' => json_encode($installmentpayments),
+                        'installments' => $installmentpayments,
                     ];
                     $data['items'][$key]['json'] = json_encode($installments);
                 }

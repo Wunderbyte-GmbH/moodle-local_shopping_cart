@@ -17,8 +17,10 @@
 namespace local_shopping_cart\shopping_cart;
 
 use context_system;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart_history;
+use moodle_exception;
 
 /**
  * Shopping_cart subsystem callback implementation for local_shopping_cart, for testing, does not have any use for production.
@@ -114,6 +116,95 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     0, // Rebook items can be deleted again.
                 );
                 return ['cartitem' => $cartitem];
+            case 'installments':
+
+                // First step: We have the itemid which refers to the shopping cart history id.
+                // Now we have itemid etc. of the original item.
+                // Now, we need to understand if this is the first item in the cart.
+                // For installments, we first just have the id of the original item.
+
+                // For installments, we get the original history record.
+                $record = $DB->get_record('local_shopping_cart_history', ['id' => $itemid]);
+
+                if ($record->componentname === 'local_shopping_cart') {
+                    return [];
+                }
+
+                // Now, we check if a payment was already made.
+                // Or how many installments there are still to pay.
+                $jsonobject = json_decode($record->json);
+
+                // Now we run through all the payments and check...
+                // ... if they are open or already in the cart.
+
+                $cartstore = cartstore::instance($userid);
+                $itemincart = $cartstore->get_item(
+                    $record->componentname,
+                    $record->area,
+                    $record->itemid);
+
+                // Number of installments still to pay.
+                $stilltopay = (int)$jsonobject->installments->installments;
+
+                foreach ($jsonobject->installments->payments as $payment) {
+
+                    // We might have the payment item already in the cart.
+                    if (!empty($itemincart)) {
+
+                        // Check if the price of the item is correct.
+                        $remainder = $itemincart['price'] % $payment->price;
+                        if (!empty($remainder)) {
+                            throw new moodle_exception('wronginstallmentprice', 'local_shopping_cart');
+                        }
+
+                        // We only change the price if it is below the due amount.
+                        if ($itemincart['price'] <= ($payment->price * ($stilltopay - 1))) {
+                            $itemincart['price'] += $payment->price;
+                        }
+
+                        // Return the updated item.
+                        return ['cartitem' => new cartitem(
+                            $itemincart['itemid'],
+                            $itemincart['itemname'],
+                            $itemincart['price'],
+                            $itemincart['currency'],
+                            $itemincart['componentname'],
+                            $itemincart['area'],
+                            $itemincart['description'],
+                            $itemincart['imageurl'],
+                            $itemincart['canceluntil'],
+                            $itemincart['serviceperiodstart'],
+                            $itemincart['serviceperiodend'],
+                            $itemincart['taxcategory'],
+                            $itemincart['nodelete'],
+                            $itemincart['costcenter'],
+                        )];
+                    }
+
+                    // Now check if this particular installement is already paid in DB.
+
+
+                    // If not, we just add this payment and abort the loop.
+                    $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
+                    $cartitem = new cartitem(
+                        $record->itemid,
+                        "installment payment for " . $record->itemname,
+                        $payment->price,
+                        $record->currency,
+                        $record->componentname,
+                        $record->area,
+                        "installment",
+                        '',
+                        $record->canceluntil,
+                        $record->serviceperiodstart,
+                        $record->serviceperiodend,
+                        $record->taxcategory,
+                        0,
+                        $record->costcenter
+                    );
+                    return ['cartitem' => $cartitem];
+
+                }
         }
 
         $now = time();

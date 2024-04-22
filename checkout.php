@@ -119,7 +119,7 @@ if (isset($success)) {
     $cartstore = cartstore::instance($userid);
     if ($cartstore->has_items()) {
         // Make sure we have the fee (if we need it!).
-        shopping_cart_bookingfee::add_fee_to_cart($userid);
+        // shopping_cart_bookingfee::add_fee_to_cart($userid);
     }
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.

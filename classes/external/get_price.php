@@ -150,7 +150,7 @@ class get_price extends external_api {
                                 'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
                                 'payments' => new external_multiple_structure(
                                     new external_single_structure([
-                                        'amount' => new external_value(PARAM_FLOAT, 'Amount to pay', VALUE_REQUIRED),
+                                        'price' => new external_value(PARAM_FLOAT, 'Amount to pay', VALUE_REQUIRED),
                                         'date' => new external_value(PARAM_TEXT, 'Date as string', VALUE_REQUIRED),
                                         'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
                                     ]

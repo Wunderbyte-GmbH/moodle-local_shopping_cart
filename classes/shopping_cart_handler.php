@@ -98,12 +98,12 @@ class shopping_cart_handler {
 
         $mform->addElement(
             'text',
-            'sch_firstamount',
-            get_string('firstamount', 'local_shopping_cart')
+            'sch_downpayment',
+            get_string('downpayment', 'local_shopping_cart')
         );
-        $mform->setType('sch_firstamount', PARAM_FLOAT);
-        $mform->addHelpButton('sch_firstamount', 'firstamount', 'local_shopping_cart');
-        $mform->hideIf('sch_firstamount', 'sch_allowinstallment', 'neq', "1");
+        $mform->setType('sch_downpayment', PARAM_FLOAT);
+        $mform->addHelpButton('sch_downpayment', 'downpayment', 'local_shopping_cart');
+        $mform->hideIf('sch_downpayment', 'sch_allowinstallment', 'neq', "1");
 
         $select = [
             1 => 1,
@@ -168,7 +168,7 @@ class shopping_cart_handler {
 
         if (!empty($formdata->sch_allowinstallment)) {
             $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
-            $this->add_key_to_jsonobject('firstamount', $formdata->sch_firstamount);
+            $this->add_key_to_jsonobject('downpayment', $formdata->sch_downpayment);
             $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
             $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
 
@@ -206,7 +206,7 @@ class shopping_cart_handler {
         $jsonobject = json_decode($record->json);
 
         $formdata->sch_allowinstallment = $jsonobject->allowinstallment;
-        $formdata->sch_firstamount = $jsonobject->firstamount;
+        $formdata->sch_downpayment = $jsonobject->downpayment;
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
 

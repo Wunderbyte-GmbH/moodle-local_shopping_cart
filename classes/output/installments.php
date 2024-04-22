@@ -34,6 +34,8 @@ use renderable;
 use renderer_base;
 use templatable;
 use context_system;
+use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\entities\cartitem;
 
 /**
  * viewtable class to display view.php
@@ -43,11 +45,18 @@ use context_system;
 class installments implements renderable, templatable {
 
     /**
-     * data is the array used for output.
+     * Data is the array used for output.
      *
      * @var array
      */
     private $items = [];
+
+    /**
+     * Installmentstable.
+     *
+     * @var string
+     */
+    private $installmentstable = '';
 
     /**
      * Constructor
@@ -56,7 +65,7 @@ class installments implements renderable, templatable {
      */
     public function __construct(int $userid = 0) {
 
-        global $DB;
+        global $DB, $OUTPUT;
 
         $context = context_system::instance();
 
@@ -103,7 +112,7 @@ class installments implements renderable, templatable {
 
             $html = $table->outhtml(20, true);
 
-            $this->data['installmentstable'] = $html;
+            $this->installmentstable = $html;
 
         } else {
             // This is the user view.
@@ -117,14 +126,59 @@ class installments implements renderable, templatable {
             $records = $DB->get_records_sql($sql, $params);
 
             foreach ($records as $record) {
-                $this->items[] = [
-                    'itemid' => $record->itemid,
-                    'itemname' => $record->itemname,
-                    'price' => $record->price,
-                    'currency' => $record->currency,
-                    'componentname' => $record->componentname,
-                    'area' => $record->area,
-                ];
+
+                // First, we add the down payment.
+                $item = new cartitem(
+                    $record->itemid,
+                    $record->itemname,
+                    $record->price,
+                    $record->currency,
+                    $record->componentname,
+                    $record->area,
+                    "down payment",
+                    '',
+                    $record->canceluntil,
+                    $record->serviceperiodstart,
+                    $record->serviceperiodend,
+                    $record->taxcategory,
+                    1,
+                    $record->costcenter
+                );
+
+                $jsonobject = json_decode($record->json);
+                $payments = $jsonobject->installments->payments;
+
+                $this->items[] = $item->as_array();
+
+                foreach ($payments as $payment) {
+
+                    $item = new cartitem(
+                        $record->id, // We use the historyid.
+                        $record->itemname,
+                        $payment->price,
+                        $payment->currency,
+                        'local_shopping_cart',
+                        'installments',
+                        'installment payment, ' . $payment->date,
+                        '',
+                        null,
+                        null,
+                        null,
+                        null,
+                        1
+                    );
+
+                    $item = $item->as_array();
+
+                    $button = new button($item);
+                    $html = $OUTPUT->render_from_template(
+                        'local_shopping_cart/addtocartdb',
+                        $button->export_for_template($OUTPUT)
+                    );
+
+                    $item['button'] = $html;
+                    $this->items[] = $item;
+                }
             }
         }
     }

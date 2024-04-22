@@ -495,8 +495,7 @@ $string['credits'] = "Guthaben";
 $string['allowinstallment'] = 'Erlaube Ratenzahlungen';
 $string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
 $string['useinstallments'] = "Nutze Ratenzahlung";
-$string['firstamount'] = 'Erster Betrag';
-$string['firstamount_help'] = 'Dieser Betrag muss am Anfang überweisen werden. Die Restsumme erst später.';
+
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
 $string['numberofpayments_help'] = 'Diese Zahl bezieht sich auf die notwendigen Zahlungen NACH der ersten Zahlung.';
 $string['duedate'] = 'Letztes Zahlungsdatum';
@@ -505,6 +504,8 @@ $string['on'] = "am";
 $string['furtherpayments'] = 'Weitere Zahlungen';
 $string['insteadof'] = "anstatt";
 
-$string['downpayment'] = "Down payment";
-$string['installment'] = "Installment";
+$string['downpayment'] = "Anzahlung";
+$string['downpayment_help'] = 'Dieser Betrag muss am Anfang überweisen werden. Die Restsumme erst später.';
+
+$string['installment'] = "Rate";
 
