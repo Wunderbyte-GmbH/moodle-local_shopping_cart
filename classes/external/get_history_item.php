@@ -61,7 +61,7 @@ class get_history_item extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'componentname'  => new external_value(PARAM_COMPONENT, 'componentname', VALUE_REQUIRED),
-            'area'  => new external_value(PARAM_ALPHANUM, 'area', VALUE_REQUIRED),
+            'area'  => new external_value(PARAM_TEXT, 'area', VALUE_REQUIRED),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
             ]

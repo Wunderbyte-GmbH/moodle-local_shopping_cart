@@ -158,14 +158,16 @@ class installments implements renderable, templatable {
                         $payment->price,
                         $payment->currency,
                         'local_shopping_cart',
-                        'installments',
+                        'installments-' . $payment->id,
                         'installment payment, ' . $payment->date,
                         '',
                         null,
                         null,
                         null,
                         null,
-                        1
+                        1,
+                        null,
+                        $payment->timestamp
                     );
 
                     $item = $item->as_array();

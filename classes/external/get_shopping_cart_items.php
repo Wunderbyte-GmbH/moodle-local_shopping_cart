@@ -157,7 +157,7 @@ class get_shopping_cart_items extends external_api {
                                                     PARAM_TEXT,
                                                     'Cost center for item',
                                                     VALUE_OPTIONAL),
-                                                'area' => new external_value(PARAM_ALPHANUM, 'Area', VALUE_OPTIONAL),
+                                                'area' => new external_value(PARAM_TEXT, 'Area', VALUE_OPTIONAL),
                                                 'description' => new external_value(PARAM_RAW, 'Item description', VALUE_OPTIONAL),
                                                 'imageurl' => new external_value(PARAM_RAW, 'Image url', VALUE_OPTIONAL),
                                                 'canceluntil' => new external_value(PARAM_INT,

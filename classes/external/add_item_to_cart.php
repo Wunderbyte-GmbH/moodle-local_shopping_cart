@@ -56,7 +56,7 @@ class add_item_to_cart extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'component'  => new external_value(PARAM_COMPONENT, 'component', VALUE_DEFAULT, ''),
-            'area'  => new external_value(PARAM_ALPHANUM, 'area', VALUE_DEFAULT, ''),
+            'area'  => new external_value(PARAM_TEXT, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             ]
@@ -110,7 +110,7 @@ class add_item_to_cart extends external_api {
             'price' => new external_value(PARAM_FLOAT, 'Item price', VALUE_DEFAULT, ''),
             'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
             'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_DEFAULT, ''),
-            'area' => new external_value(PARAM_ALPHANUM, 'Area', VALUE_DEFAULT, ''),
+            'area' => new external_value(PARAM_TEXT, 'Area', VALUE_DEFAULT, ''),
             'expirationtime' => new external_value(PARAM_INT, 'Expiration timestamp'),
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),

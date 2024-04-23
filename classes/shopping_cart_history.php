@@ -576,25 +576,60 @@ class shopping_cart_history {
             $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $record->timemodified = $now;
 
+            list($area, $addinfo) = explode('-', $record->area);
+
             if ($record->componentname === 'local_shopping_cart'
-                && $record->area === 'rebookitem') {
+                && $area === 'rebookitem') {
 
                 $historyitem = self::return_item_from_history($record->itemid);
                 // We switch the id of the item at this latest possible moment.
                 $record->itemid = $historyitem->itemid;
                 $record->schistoryid = $historyitem->id;
-            } else {
+            } else if ($record->componentname === 'local_shopping_cart'
+            && $area === 'installments') {
+
+                // We retrieve the item from history and update it for the installments.
+                $historyitem = self::return_item_from_history($record->itemid);
+                // Now we manipulate our entry to have a correct ledger.
+                $ledgerrecord = $record;
+                $ledgerrecord->itemid = $historyitem->itemid;
+                $ledgerrecord->area = $historyitem->area;
+                $ledgerrecord->componentname = $historyitem->componentname;
+
+                // Now we manipulate the orignal entry.
+
+                $jsonobject = json_decode($record->json);
+                foreach ($jsonobject->installments->payments as $key => $payment) {
+                    if ($payment->id == $addinfo) {
+                        $jsonobject->installments->payments->{$key}->paid = 1;
+                    }
+                }
+
+                $newrecord = $historyitem;
+                $newrecord->price += $record->price;
+                $newrecord->tax += $record->tax;
+                $newrecord->timemodified = $record->timemodified;
+                $newrecord->installments--;
+                $newrecord->json = json_encode($jsonobject);
+
+            }
+            else {
                 $record->schistoryid = $record->id;
+            }
+
+            // If until now we have no ledger record, we duplicate from record.
+            if (empty($ledgerrecord)) {
+                $ledgerrecord = $record;
             }
 
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;
             } else {
                 // Only on payment success, we add a new record to the ledger table!
-                unset($record->id);
+                unset($ledgerrecord->id);
 
                 // We always use this function to add a new record to the ledger table!
-                shopping_cart::add_record_to_ledger_table($record);
+                shopping_cart::add_record_to_ledger_table($ledgerrecord);
             }
         }
 

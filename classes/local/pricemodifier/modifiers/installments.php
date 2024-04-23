@@ -53,7 +53,22 @@ abstract class installments extends modifier_base {
         global $DB;
 
         foreach ($data['items'] as $key => $itemdata) {
-            if (shopping_cart_handler::installment_exists(
+
+            // We treat an installment payment differently.
+
+            if (!empty($itemdata['installmentpayment'])) {
+
+                $installments = (object)[
+                    'installments' => [
+                        'payments' => $itemdata['installmentpayment'],
+                        'price' => $itemdata['price'],
+                    ]
+                ];
+
+                $data['items'][$key]['json'] = json_encode($installments);
+
+
+            } else if (shopping_cart_handler::installment_exists(
                 $itemdata['componentname'],
                 $itemdata['area'],
                 $itemdata['itemid'])) {
@@ -99,10 +114,12 @@ abstract class installments extends modifier_base {
                         $installmentpayments['initialpayment'] = $jsonobject->downpayment;
                         $installmentpayments['currency'] = $itemdata['currency'];
                         $installmentpayments['payments'][] = [
+                            'id' => ($counter -1),
                             'date' => userdate($timestamp, get_string('strftimedate', 'langconfig')),
                             'price' => round($payment, 2),
                             'currency' => $itemdata['currency'],
                             'paid' => 0,
+                            'timestamp' => $timestamp,
                         ];
                         $installmentpayments['installments'] = $jsonobject->numberofpayments;
                     }

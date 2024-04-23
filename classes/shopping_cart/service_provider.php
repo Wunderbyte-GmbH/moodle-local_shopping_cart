@@ -43,6 +43,10 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         global $DB;
 
+        // We might need to add additional information to the area.
+        // Therefore, we split it here.
+        list($area, $addinfo) = explode('-', $area);
+
         switch ($area) {
             case 'bookingfee':
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
@@ -164,12 +168,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
                         // Return the updated item.
                         return ['cartitem' => new cartitem(
-                            $itemincart['itemid'],
+                            $itemid,
                             $itemincart['itemname'],
                             $itemincart['price'],
                             $itemincart['currency'],
-                            $itemincart['componentname'],
-                            $itemincart['area'],
+                            'local_shopping_cart',
+                            'installments-' . $addinfo,
                             $itemincart['description'],
                             $itemincart['imageurl'],
                             $itemincart['canceluntil'],
@@ -187,12 +191,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     // If not, we just add this payment and abort the loop.
                     $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                     $cartitem = new cartitem(
-                        $record->itemid,
+                        $itemid,
                         "installment payment for " . $record->itemname,
                         $payment->price,
                         $record->currency,
-                        $record->componentname,
-                        $record->area,
+                        'local_shopping_cart',
+                        'installments-' . $addinfo,
                         "installment",
                         '',
                         $record->canceluntil,

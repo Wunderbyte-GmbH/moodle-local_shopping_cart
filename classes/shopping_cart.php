@@ -200,9 +200,10 @@ class shopping_cart {
             // If we have nothing in our cart and we are not about...
             // ... to add the booking fee...
             // ... we add the booking fee.
+            list($areatocheck) = explode('-', $area);
             if ((!$cartstore->has_items()
                 || $cartstore->get_total_price_of_items() === 0)
-                && !in_array($area, ['bookingfee', 'rebookingcredit', 'rebookitem', 'installments'])) {
+                && !in_array($areatocheck, ['bookingfee', 'rebookingcredit', 'rebookitem', 'installments'])) {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
                 shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
@@ -709,6 +710,8 @@ class shopping_cart {
             $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
 
         } else {
+
+            // TODO: Migrate everything to the cartstore & pricemodifiers.
 
             // Even if we get the data from history, we still need to look in cache.
             // With this, we will know how much the user actually paid and how much comes from her credits.

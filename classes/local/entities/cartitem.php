@@ -131,6 +131,13 @@ class cartitem {
     public $costcenter; // Needs to be public!
 
     /**
+     * Installment.
+     *
+     * @var ?string
+     */
+    private $installment; // Needs to be public!
+
+    /**
      * Constructor for creating a cartitem.
      *
      * @param int $itemid id of cartitem
@@ -147,6 +154,7 @@ class cartitem {
      * @param string|null $taxcategory the tax category of this item
      * @param int $nodelete if item can't bedeleted from cart by user.
      * @param string|null $costcenter The cost center of this item.
+     * @param string|null $installment The identifier (unixtimestamp) of the installment.
      */
     public function __construct(int $itemid,
             string $itemname,
@@ -161,7 +169,8 @@ class cartitem {
             ?int $serviceperiodend = null,
             ?string $taxcategory = null,
             int $nodelete = 0,
-            ?string $costcenter = null) {
+            ?string $costcenter = null,
+            ?string $installment = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -176,6 +185,7 @@ class cartitem {
         $this->taxcategory = $taxcategory;
         $this->nodelete = $nodelete;
         $this->costcenter = $costcenter;
+        $this->installment = $installment;
     }
 
     /**
@@ -199,6 +209,7 @@ class cartitem {
         $item['taxcategory'] = $this->taxcategory;
         $item['nodelete'] = $this->nodelete;
         $item['costcenter'] = $this->costcenter;
+        $item['installment'] = $this->installment;
         return $item;
     }
 
