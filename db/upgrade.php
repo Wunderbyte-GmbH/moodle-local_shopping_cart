@@ -504,7 +504,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024032501, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2024041500) {
+    if ($oldversion < 2024042300) {
 
         // Define field schistoryid to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
@@ -514,12 +514,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2024041500, 'local', 'shopping_cart');
-    }
-
-    if ($oldversion < 2024042000) {
 
         // Define field installments to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
@@ -538,7 +532,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2024042000, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2024042300, 'local', 'shopping_cart');
     }
 
 
