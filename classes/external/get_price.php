@@ -148,6 +148,8 @@ class get_price extends external_api {
                         'installments' => new external_multiple_structure(
                             new external_single_structure([
                                 'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),
+                                'originalprice' => new external_value(PARAM_FLOAT, 'Original price', VALUE_REQUIRED),
+                                'itemname' => new external_value(PARAM_TEXT, 'Item name', VALUE_REQUIRED),
                                 'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
                                 'payments' => new external_multiple_structure(
                                     new external_single_structure([

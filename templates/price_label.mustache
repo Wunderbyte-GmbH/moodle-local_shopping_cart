@@ -60,15 +60,15 @@
             </div>
             {{#installments}}
                 <div class="itemname font-weight-bold">
-                    {{itemname}}
+                    {{#str}} downpayment, local_shopping_cart {{/str}} {{#str}}for, local_shopping_cart{{/str}} {{itemname}}:
                 </div>
                 <div class="firstpayment">
-                    {{currency}} {{initialpayment}} {{#str}} insteadof, local_shopping_cart {{/str}} {{currency}} {{originalprice}}
+                    {{initialpayment}} {{currency}} {{#str}} insteadof, local_shopping_cart {{/str}} {{originalprice}} {{currency}}
                 </div>
-                <div class="furtherpayments">
-                    {{#str}} furtherpayments, local_shopping_cart {{/str}}:
+                <div class="furtherpayments mt-1">
+                    <i>{{#str}} furtherpayments, local_shopping_cart {{/str}}</i>:
                     {{#payments}}
-                        <div>{{currency}} {{price}} {{#str}} on, local_shopping_cart {{/str}} {{date}} </div>
+                        <div>{{price}} {{currency}} {{#str}} on, local_shopping_cart {{/str}} {{date}} </div>
                     {{/payments}}
                 </div>
             {{/installments}}

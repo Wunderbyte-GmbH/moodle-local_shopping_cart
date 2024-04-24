@@ -412,3 +412,21 @@ div.shopping-cart-items-container div.item-description {
 #page-local-shopping_cart-checkout .shopping-cart-items .shopping-cart-item[data-area="option"] img {
     max-width: 200px;
 }
+
+#page-local-shopping_cart-installments .sc-cart-item-image {
+    width: 25px;
+}
+
+#page-local-shopping_cart-installments .shopping_cart-paymentbutton {
+    width: 250px;
+}
+
+
+#page-local-shopping_cart-installments .shopping-cart-item {
+    margin-top: 25px;
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    border: 2px solid black;
+    padding: 10px;
+}

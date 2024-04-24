@@ -566,22 +566,24 @@ $string['privacy:metadata:local_shopping_cart_invoices:identifier'] = 'Reference
 $string['privacy:metadata:local_shopping_cart_invoices:timecreated'] = 'Timestamp when the record was created';
 $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID from the invoicing platform';
 
-// Handler.
-$string['allowinstallment'] = 'Allow Installments';
+// Shopping cart handler.
+$string['allowinstallment'] = 'Allow installments';
 $string['allowinstallment_help'] = 'With installments, only a portion of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
-$string['numberofpayments'] = 'Number of Payments';
+$string['numberofpayments'] = 'Number of payments';
 $string['numberofpayments_help'] = 'This number refers to the required payments AFTER the first payment.';
-$string['duedate'] = 'Final Payment Date';
-$string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future and two installment payments are set, half of the remaining amount must be paid after 50 days following the first payment, and the rest after 100 days.';
+$string['duedate'] = 'Final payment date';
+$string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future
+and two installment payments are set, half of the remaining amount must be paid after 50 days following the
+first payment, and the rest after 100 days.';
 $string['duedatevariable'] = 'Days after initial purchase';
 $string['duedatevariable_help'] = 'Enter the number of days after initial purchase';
 $string['on'] = "on";
-$string['furtherpayments'] = 'Futher payments';
+$string['furtherpayments'] = 'Further payments';
 $string['insteadof'] = "instead of";
-
+$string['for'] = "for";
 $string['downpayment'] = "Down payment";
-$string['downpayment_help'] = 'This amount must be paid initially. The remaining sum later.';
-
+$string['downpayment_help'] = 'This amount must be paid initially. The remaining sum can be paid later.';
+$string['installments'] = "Installments";
 $string['installment'] = "Installment";
 $string['incorrectnumberofpayments'] = 'Price needs to be divisble by number of payments without a remainder';

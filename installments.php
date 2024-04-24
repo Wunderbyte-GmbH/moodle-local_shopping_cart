@@ -35,16 +35,20 @@ global $USER, $PAGE, $OUTPUT, $CFG, $ME;
 // Get the id of the page to be displayed.
 $userid = optional_param('userid', null, PARAM_INT);
 
+if (empty($userid)) {
+    $userid = $USER->id;
+}
+
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/checkout.php");
-$PAGE->set_title(get_string('yourcart', 'local_shopping_cart'));
-$PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
+$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/installments.php");
+$PAGE->set_title(get_string('installments', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('installments', 'local_shopping_cart'));
 // Set the page layout.
 $PAGE->set_pagelayout('base');
 
 echo $OUTPUT->header();
 // Convert numbers to strings with 2 fixed decimals right before rendering.
-$installments = new installments();
+$installments = new installments($userid);
 $data = $installments->returnaslist();
 
 echo $OUTPUT->render_from_template('local_shopping_cart/pages/installments', $data);
