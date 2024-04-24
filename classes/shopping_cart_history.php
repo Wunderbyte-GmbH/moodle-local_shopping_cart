@@ -643,11 +643,6 @@ class shopping_cart_history {
                 $success = false;
             } else {
 
-                // This is for installment payments.
-                if (!empty($deleterecordid)) {
-                    $DB->delete_records('local_shopping_cart_history', ['id' => $deleterecordid]);
-                }
-
                 // Only on payment success, we add a new record to the ledger table!
                 unset($ledgerrecord->id);
 
