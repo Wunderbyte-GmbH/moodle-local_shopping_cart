@@ -187,7 +187,6 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
                     // Now check if this particular installement is already paid in DB.
 
-
                     // If not, we just add this payment and abort the loop.
                     $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                     $cartitem = new cartitem(

@@ -62,11 +62,10 @@ abstract class installments extends modifier_base {
                     'installments' => [
                         'payments' => $itemdata['installmentpayment'],
                         'price' => $itemdata['price'],
-                    ]
+                    ],
                 ];
 
                 $data['items'][$key]['json'] = json_encode($installments);
-
 
             } else if (shopping_cart_handler::installment_exists(
                 $itemdata['componentname'],
@@ -98,7 +97,7 @@ abstract class installments extends modifier_base {
                     $interval = round($delta / ($jsonobject->numberofpayments + 1));
                     $payment = ($itemdata['price'] - $jsonobject->downpayment) / $jsonobject->numberofpayments;
 
-                    // if there is nothing left to pay, we don't add payments.
+                    // If there is nothing left to pay, we don't add payments.
                     if ($payment <= 0) {
                         continue;
                     }
@@ -114,7 +113,7 @@ abstract class installments extends modifier_base {
                         $installmentpayments['initialpayment'] = $jsonobject->downpayment;
                         $installmentpayments['currency'] = $itemdata['currency'];
                         $installmentpayments['payments'][] = [
-                            'id' => ($counter -1),
+                            'id' => ($counter - 1),
                             'date' => userdate($timestamp, get_string('strftimedate', 'langconfig')),
                             'price' => round($payment, 2),
                             'currency' => $itemdata['currency'],

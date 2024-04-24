@@ -47,7 +47,7 @@
 .shopping-cart .shopping-cart-items {
     padding-top: 20px;
 }
-.shopping-cart .shopping-cart-items li {
+.shopping-cart .shopping-cart-items .shopping-cart-item {
     margin-bottom: 10px;
 }
 .shopping-cart .shopping-cart-items img {
@@ -94,7 +94,7 @@
     padding-left: 5px;
 }
 
-#nav-shopping_cart-popover-container li {
+#nav-shopping_cart-popover-container .shopping-cart-item {
     padding: 5px 10px;
     border-bottom: 1px #333 dashed;
     list-style-type: none;
@@ -102,11 +102,11 @@
     margin: auto;
 }
 
-#nav-shopping_cart-popover-container li:last-child {
+#nav-shopping_cart-popover-container .shopping-cart-item:last-child {
     border: none;
 }
 
-#nav-shopping_cart-popover-container ul {
+#nav-shopping_cart-popover-container .shopping-cart-items {
     /* stylelint-disable-next-line declaration-no-important */
     padding: 5px !important;
 }
@@ -126,7 +126,7 @@
     display: none;
 }
 
-.checkout .shopping-cart-items li {
+.checkout .shopping-cart-items .shopping-cart-item {
     padding-bottom: 5px;
     list-style-type: none;
     max-width: 90%;
@@ -299,24 +299,26 @@
 
 /* The booking fee coins icon should be smaller. */
 #page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items
-li[data-area=bookingfee] .sc-cart-item-image {
+.shopping-cart-item[data-area=bookingfee] .sc-cart-item-image {
     width: 25px;
 }
 
 /* The booking fee coins icon should be smaller. */
 #page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items
-li[data-area=rebookingcredit] .sc-cart-item-image {
+.shopping-cart-item[data-area=rebookingcredit] .sc-cart-item-image {
     width: 25px;
 }
 
 /* The images in the checkout page should be larger than in the navbar popup.
 We exclude the booking fee image from the selector. */
 #page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items
-li:not(li[data-area=bookingfee]) li:not(li[data-area=rebookingcredit]) .sc-cart-item-image {
+.shopping-cart-item:not(.shopping-cart-item[data-area=bookingfee])
+.shopping-cart-item:not(.shopping-cart-item[data-area=rebookingcredit])
+.sc-cart-item-image {
     width: 100px;
 }
 
-#page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items li {
+#page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items .shopping-cart-item {
     padding: 20px;
     margin: 20px;
     border: 1px dashed black;
@@ -395,18 +397,18 @@ div.shopping-cart-items-container div.item-description {
     color: rgb(29, 33, 37);
 }
 
-li[data-area="rebookingcredit"] img,
-li[data-area="rebookitem"] img,
-li[data-area="bookingfee"] img {
+.shopping-cart-item[data-area="rebookingcredit"] img,
+.shopping-cart-item[data-area="rebookitem"] img,
+.shopping-cart-item[data-area="bookingfee"] img {
     width: 20px;
 }
 
-#page-local-shopping_cart-cashier #shopping_cart-cashiers-section #checkout .shopping-cart-items li {
+#page-local-shopping_cart-cashier #shopping_cart-cashiers-section #checkout .shopping-cart-items .shopping-cart-item {
     padding: 10px;
     margin-bottom: 10px;
     border: 1px dashed #ccc;
 }
 
-#page-local-shopping_cart-checkout .shopping-cart-items li[data-area="option"] img {
+#page-local-shopping_cart-checkout .shopping-cart-items .shopping-cart-item[data-area="option"] img {
     max-width: 200px;
 }

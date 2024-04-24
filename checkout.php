@@ -117,10 +117,14 @@ if (isset($success)) {
 
     // Only if there are items in the cart, we check if we need to add booking fee.
     $cartstore = cartstore::instance($userid);
-    if ($cartstore->has_items()) {
+
+    // TODO: @georgmaisser Empty if statement, so I had to comment this out.
+    // Is this still needed?
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+    /* if ($cartstore->has_items()) {
         // Make sure we have the fee (if we need it!).
         // shopping_cart_bookingfee::add_fee_to_cart($userid);
-    }
+    } */
 
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $userid);

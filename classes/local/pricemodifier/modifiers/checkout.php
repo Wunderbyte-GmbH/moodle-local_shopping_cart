@@ -67,22 +67,24 @@ abstract class checkout extends modifier_base {
      * This adds a few necessary keys for checkout.
      * It also adds the identifier, if it is not yet there.
      * @param array $data
+     * @param string $identifier
      * @return array
      * @throws dml_exception
      * @throws coding_exception
      */
-    public static function prepare_checkout(array &$data, $identifier = ''): array {
+    public static function prepare_checkout(array &$data, string $identifier = ''): array {
 
         global $USER, $CFG;
 
         $userid = $data['userid'];
 
         if (empty($identifier)) {
-            $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
+            $identifier = (string)shopping_cart_history::create_unique_cart_identifier($userid);
         }
 
         foreach ($data['items'] as $key => $item) {
-            $data['items'][$key]['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
+            // This function is only used for online payment.
+            $data['items'][$key]['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE;
             $data['items'][$key]['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_PENDING;
             $data['items'][$key]['identifier'] = $identifier;
             $data['items'][$key]['usermodified'] = $USER->id; // The user who actually effected the transaction.

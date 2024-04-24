@@ -265,8 +265,6 @@ class cartstore {
         if ($data) {
             if (isset($data['items'])) {
                 $data['items'] = [];
-
-
                 $this->set_cache($data);
             }
         }

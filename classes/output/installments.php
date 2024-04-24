@@ -61,7 +61,6 @@ class installments implements renderable, templatable {
     /**
      * Constructor
      * @param int $userid
-     * @param bool $usecredit
      */
     public function __construct(int $userid = 0) {
 
@@ -69,7 +68,7 @@ class installments implements renderable, templatable {
 
         $context = context_system::instance();
 
-        // Here we create the data object with
+        // Here we create the data object.
         if (empty($userid) && has_capability('local/shopping_cart:cashier', $context)) {
 
             // In this case, we create a wb table for the cashier to overview payments.
@@ -97,7 +96,7 @@ class installments implements renderable, templatable {
                 'gateway' => get_string('gateway', 'local_shopping_cart'),
                 'orderid' => get_string('orderid', 'local_shopping_cart'),
                 'annotation' => get_string('annotation', 'local_shopping_cart'),
-                'cashier' => get_string('cashier', 'local_shopping_cart')
+                'cashier' => get_string('cashier', 'local_shopping_cart'),
             ];
 
             $table->define_columns(array_keys($columns));

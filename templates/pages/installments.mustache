@@ -34,7 +34,7 @@
     }
 }}
 
-<ul class="shopping-cart-items">
+<div class="shopping-cart-items">
     {{#items}}
         {{> local_shopping_cart/shopping_cart_item }}
         <div class="shopping_cart-paymentbutton">{{{button}}}</div>
@@ -42,7 +42,7 @@
     {{^items}}
         <div class="text-center">{{#str}} cartisempty, local_shopping_cart {{/str}}</div>
     {{/items}}
-</ul>
+</div>
 
 {{#installments}}
     <div class="itemname font-weight-bold">

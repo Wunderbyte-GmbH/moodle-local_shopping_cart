@@ -143,7 +143,8 @@ class get_price extends external_api {
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
-                        'installmentscheckboxid' => new external_value(PARAM_TEXT, 'As indicator if installements are used at all.', VALUE_REQUIRED),
+                        'installmentscheckboxid' => new external_value(PARAM_TEXT,
+                            'As indicator if installments are used at all.', VALUE_REQUIRED),
                         'installments' => new external_multiple_structure(
                             new external_single_structure([
                                 'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),
@@ -153,8 +154,8 @@ class get_price extends external_api {
                                         'price' => new external_value(PARAM_FLOAT, 'Amount to pay', VALUE_REQUIRED),
                                         'date' => new external_value(PARAM_TEXT, 'Date as string', VALUE_REQUIRED),
                                         'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
-                                    ]
-                                ))
+                                    ])
+                                ),
                             ])
                         ),
                 ]
