@@ -570,7 +570,9 @@ $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID
 $string['allowinstallment'] = 'Allow installments';
 $string['allowinstallment_help'] = 'With installments, only a portion of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
-$string['numberofpayments'] = 'Number of payments';
+$string['ledgerinstallment'] = 'The following installment payment as registered: Number {$a->id}, due date {$a->date}';
+
+$string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = 'This number refers to the required payments AFTER the first payment.';
 $string['duedate'] = 'Final payment date';
 $string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future

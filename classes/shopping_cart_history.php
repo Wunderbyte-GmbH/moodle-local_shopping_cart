@@ -588,6 +588,8 @@ class shopping_cart_history {
             } else if ($record->componentname === 'local_shopping_cart'
             && $area === 'installments') {
 
+                $deleterecordid = $record->id;
+
                 // We retrieve the item from history and update it for the installments.
                 $historyitem = self::return_item_from_history($record->itemid);
                 // Now we manipulate our entry to have a correct ledger.
@@ -596,15 +598,22 @@ class shopping_cart_history {
                 $ledgerrecord->area = $historyitem->area;
                 $ledgerrecord->componentname = $historyitem->componentname;
 
-                // Now we manipulate the orignal entry.
 
-                $jsonobject = json_decode($record->json);
+                // Get Information about the current payment.
+                $jsonobject = json_decode($historyitem->json);
                 foreach ($jsonobject->installments->payments as $key => $payment) {
                     if ($payment->id == $addinfo) {
-                        $jsonobject->installments->payments->{$key}->paid = 1;
+                        $jsonobject->installments->payments[$key]->paid = 1;
+                        $a = $payment; // This is the payment which is currently treated.
                     }
                 }
 
+                // Still some additional Info for the ledger.
+                    $ledgerrecord->schistoryid = $historyitem->id;
+                    $ledgerrecord->annotation =
+                        get_string('ledgerinstallment', 'local_shopping_cart', $a);
+
+                // Now we manipulate the orignal entry.
                 $newrecord = $historyitem;
                 $newrecord->price += $record->price;
                 $newrecord->tax += $record->tax;
@@ -612,7 +621,9 @@ class shopping_cart_history {
                 $newrecord->installments--;
                 $newrecord->json = json_encode($jsonobject);
 
-            } else {
+                $record = $newrecord;
+            }
+            else {
                 $record->schistoryid = $record->id;
             }
 
@@ -624,6 +635,12 @@ class shopping_cart_history {
             if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;
             } else {
+
+                // This is for installment payments.
+                if (!empty($deleterecordid)) {
+                    $DB->delete_records('local_shopping_cart_history', ['id' => $deleterecordid]);
+                }
+
                 // Only on payment success, we add a new record to the ledger table!
                 unset($ledgerrecord->id);
 

@@ -33,7 +33,7 @@ require_login();
 global $USER, $PAGE, $OUTPUT, $CFG, $ME;
 
 // Get the id of the page to be displayed.
-$userid = optional_param('userid', null, PARAM_INT);
+$userid = optional_param('userid', 0, PARAM_INT);
 
 if (empty($userid)) {
     $userid = $USER->id;

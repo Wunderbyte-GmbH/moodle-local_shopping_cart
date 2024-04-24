@@ -117,7 +117,7 @@ class installments implements renderable, templatable {
             // This is the user view.
             $sql = "SELECT *
                     FROM {local_shopping_cart_history}
-                    WHERE installments IS NOT NULL
+                    WHERE installments > 0
                     AND paymentstatus = :paymentstatus";
             $params = [
                 'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
@@ -150,6 +150,11 @@ class installments implements renderable, templatable {
                 $this->items[] = $item->as_array();
 
                 foreach ($payments as $payment) {
+
+                    // If this is already paid, we don't show the button.
+                    if (!empty($payment->paid)) {
+                        continue;
+                    }
 
                     $item = new cartitem(
                         $record->id, // We use the historyid.

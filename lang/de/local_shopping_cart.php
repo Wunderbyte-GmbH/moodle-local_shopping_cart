@@ -495,6 +495,8 @@ $string['credits'] = "Guthaben";
 $string['allowinstallment'] = 'Erlaube Ratenzahlungen';
 $string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
 $string['useinstallments'] = "Ratenzahlungen aktivieren";
+$string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
+
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
 $string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung.';
 $string['duedate'] = 'Letztes Zahlungsdatum';
