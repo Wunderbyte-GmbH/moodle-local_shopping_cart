@@ -249,19 +249,19 @@ class shopping_cart_history {
      * write_to_db.
      *
      * @param stdClass $data
-     * @return bool true if the history was written to the database, false otherwise
+     * @return int true if the history was written to the database, false otherwise
      *  (e.g. if record already exists)
      */
-    private static function write_to_db(stdClass $data): bool {
+    private static function write_to_db(stdClass $data): int {
         global $DB, $USER;
 
         $now = time();
 
-        $success = true;
+        $returnid = 0;
         if (isset($data->items)) {
             foreach ($data->items as $item) {
-                if (!self::write_to_db((object)$item)) {
-                    $success = false;
+                if (self::write_to_db((object)$item) == 0) {
+                    $returnid = 0;
                 }
             }
         } else if ($data->itemid === 0) {
@@ -301,14 +301,16 @@ class shopping_cart_history {
                     ]);
 
                     $event->trigger();
+
+                    $returnid = $id;
                 } else {
-                    $success = false;
+                    $returnid = 0;
                 }
             } else {
-                $success = false;
+                $returnid = 0;
             }
         }
-        return $success;
+        return $returnid;
     }
 
     /**
@@ -335,7 +337,7 @@ class shopping_cart_history {
      * @param string|null $annotation
      * @param int|null $usermodified
      * @param int|null $schistoryid
-     * @return bool
+     * @return int
      * @throws dml_exception
      * @throws coding_exception
      */
@@ -360,7 +362,9 @@ class shopping_cart_history {
             string $costcenter = null,
             string $annotation = null,
             int $usermodified = null,
-            int $schistoryid = null
+            int $schistoryid = null,
+            int $installments = null,
+            string $json = null,
     ) {
 
         global $USER;
@@ -391,6 +395,8 @@ class shopping_cart_history {
         $data->costcenter = $costcenter;
         $data->annotation = $annotation;
         $data->schistoryid = $schistoryid;
+        $data->installments = $installments;
+        $data->json = $json;
 
         return self::write_to_db($data);
     }
@@ -565,7 +571,7 @@ class shopping_cart_history {
      */
     public static function set_success_in_db(array $records): bool {
 
-        global $DB;
+        global $DB, $USER;
 
         $success = true;
         $identifier = null;
@@ -597,6 +603,7 @@ class shopping_cart_history {
                 $ledgerrecord->itemid = $historyitem->itemid;
                 $ledgerrecord->area = $historyitem->area;
                 $ledgerrecord->componentname = $historyitem->componentname;
+                $ledgerrecord->usermodified = $USER->id;
 
 
                 // Get Information about the current payment.

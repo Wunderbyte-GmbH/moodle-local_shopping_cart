@@ -853,7 +853,7 @@ class shopping_cart {
                             $item['itemid'] = $historyitem->itemid;
                     }
 
-                    shopping_cart_history::create_entry_in_history(
+                    $id = shopping_cart_history::create_entry_in_history(
                             $userid,
                             $item['itemid'],
                             $item['itemname'],
@@ -875,7 +875,17 @@ class shopping_cart {
                             $annotation ?? '',
                             $USER->id,
                             $item['schistoryid'] ?? null,
+                            $item['installments'],
+                            $item['json']
                     );
+
+                    // If we just paid for an installment, we need a very special treatment.
+                    if ($item['componentname'] === 'local_shopping_cart'
+                        && strpos($item['area'], 'installment') !== false) {
+
+                        $item['id'] = $id;
+                        shopping_cart_history::set_success_in_db([(object)$item]);
+                    }
                 }
             }
         }
