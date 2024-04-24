@@ -612,8 +612,7 @@ class shopping_cart_history {
                 $newrecord->installments--;
                 $newrecord->json = json_encode($jsonobject);
 
-            }
-            else {
+            } else {
                 $record->schistoryid = $record->id;
             }
 
@@ -679,7 +678,6 @@ class shopping_cart_history {
 
         // As the identifier will always stay the same, we pass it here for easy acces.
         $dataarr['identifier'] = $identifier;
-
 
         $this->store_in_schistory_cache($dataarr);
 
