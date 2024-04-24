@@ -53,7 +53,7 @@
     {{#installmentscheckboxid}}
         <div class="text-right mr-3 sc_installments">
             <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input useinstallments-checkbox" id="{{installmentscheckboxid}}" xxx {{#useinstallments}} checked {{/useinstallments}}>
+            <input type="checkbox" class="custom-control-input useinstallments-checkbox" id="{{installmentscheckboxid}}" {{#useinstallments}} checked {{/useinstallments}}>
                 <label class="custom-control-label" for="{{installmentscheckboxid}}">
                     {{#str}} useinstallments, local_shopping_cart {{/str}}
                 </label>
@@ -81,7 +81,7 @@
         {{/discount}}
         <div class="text-right mr-3 sc_credit">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" xxx {{#usecredit}} checked {{/usecredit}}>
+                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" {{#usecredit}} checked {{/usecredit}}>
                 <label class="custom-control-label" for="{{checkboxid}}">
                     {{#str}} usecredit, local_shopping_cart {{/str}} {{credit}} {{currency}}
                 </label>
@@ -100,12 +100,11 @@
 
     {{! prices have tax info}}
     {{#taxesenabled}}
-
         <div class="text-right mr-3">
             {{#price_net}}
                 <span>{{#str}} total_net, local_shopping_cart {{/str}}</span>
                 <span class="sc_totalprice_net">{{price_net}} {{currency}}</span>
-                <br/>
+                <br>
             {{/price_net}}
             <span>{{#str}} total, local_shopping_cart {{/str}}</span>
             <span class="sc_totalprice"><b>{{price}} {{currency}}</b></span>
@@ -114,7 +113,6 @@
 
     {{! prices without tax information }}
     {{^taxesenabled}}
-
         <div class="text-right mt-1 mr-3">
             <span><b>{{#str}} total, local_shopping_cart {{/str}}</b></span>
             <span class="sc_totalprice text-success"><b>{{price}} {{currency}}</b></span>

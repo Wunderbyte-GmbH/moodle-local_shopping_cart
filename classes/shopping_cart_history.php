@@ -337,6 +337,8 @@ class shopping_cart_history {
      * @param string|null $annotation
      * @param int|null $usermodified
      * @param int|null $schistoryid
+     * @param int|null $installments
+     * @param string|null $json
      * @return int
      * @throws dml_exception
      * @throws coding_exception
@@ -605,7 +607,6 @@ class shopping_cart_history {
                 $ledgerrecord->componentname = $historyitem->componentname;
                 $ledgerrecord->usermodified = $USER->id;
 
-
                 // Get Information about the current payment.
                 $jsonobject = json_decode($historyitem->json);
                 foreach ($jsonobject->installments->payments as $key => $payment) {
@@ -629,8 +630,7 @@ class shopping_cart_history {
                 $newrecord->json = json_encode($jsonobject);
 
                 $record = $newrecord;
-            }
-            else {
+            } else {
                 $record->schistoryid = $record->id;
             }
 
