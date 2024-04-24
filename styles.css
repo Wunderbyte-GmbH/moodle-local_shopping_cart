@@ -413,20 +413,20 @@ div.shopping-cart-items-container div.item-description {
     max-width: 200px;
 }
 
-#page-local-shopping_cart-installments .sc-cart-item-image {
+#page-local-shopping_cart-installments #region-main-box .sc-cart-item-image {
     width: 25px;
 }
 
-#page-local-shopping_cart-installments .shopping_cart-paymentbutton {
+#page-local-shopping_cart-installments #region-main-box .shopping_cart-paymentbutton {
     width: 250px;
 }
 
 
-#page-local-shopping_cart-installments .shopping-cart-item {
+#page-local-shopping_cart-installments #region-main-box .shopping-cart-item {
+    width: 500px;
     margin-top: 25px;
-    background-color: #F5F5F5;
     border-radius: 10px;
     margin-bottom: 5px;
-    border: 2px solid black;
+    border: 1px dotted black;
     padding: 10px;
 }
