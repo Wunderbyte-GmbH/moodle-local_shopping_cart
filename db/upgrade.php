@@ -466,7 +466,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024032000, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2024032501) {
+    if ($oldversion < 2024042400) {
 
         // Define table local_shopping_cart_iteminfo to be created.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
@@ -501,10 +501,10 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2024032501, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2024042400, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2024042300) {
+    if ($oldversion < 2024042401) {
 
         // Define field schistoryid to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
@@ -532,9 +532,8 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2024042300, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2024042401, 'local', 'shopping_cart');
     }
-
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
