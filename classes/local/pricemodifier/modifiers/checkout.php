@@ -106,7 +106,6 @@ abstract class checkout extends modifier_base {
         $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$identifier)->out(false);
         $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
-
         $users = user_get_users_by_id([$userid]);
         $user = reset($users);
 
