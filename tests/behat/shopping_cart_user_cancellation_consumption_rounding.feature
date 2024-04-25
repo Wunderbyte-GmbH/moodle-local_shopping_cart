@@ -40,7 +40,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | user1 | 2          |
       | user1 | 3          |
     When I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+    And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
     And I should see "my test item 1" in the ".cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the ".cashier-history-items" "css_element"
@@ -88,7 +88,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | user1 | 2          |
       | user1 | 3          |
     When I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+    And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
     And I should see "my test item 1" in the ".cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the ".cashier-history-items" "css_element"

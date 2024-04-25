@@ -37,7 +37,7 @@ Feature: Admin tax actions with simple taxin shopping cart.
   @javascript
   Scenario: Add single item to the shopping cart as user when tax without categories enabled
     Given I log in as "user1"
-    And I visit "/local/shopping_cart/test.php"
+    And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-4" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"

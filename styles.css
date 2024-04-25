@@ -430,3 +430,7 @@ div.shopping-cart-items-container div.item-description {
     border: 1px dotted black;
     padding: 10px;
 }
+
+#page-local-shopping_cart-demo .testitem-container {
+    width: 500px;
+}

@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checkout page.
+ * Installments page.
  *
  * @package         local_shopping_cart
- * @author          Thomas Winkler
- * @copyright       2021 Wunderbyte GmbH
+ * @author          Georg Maißer
+ * @copyright       2024 Wunderbyte GmbH
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 

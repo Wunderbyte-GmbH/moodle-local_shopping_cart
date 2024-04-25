@@ -32,11 +32,11 @@ require_login();
 global $PAGE, $OUTPUT, $CFG;
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_url('/test.php');
+$PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/demo.php");
 
-$PAGE->set_title('Testing');
-$PAGE->set_heading('Testing local_shopping_cart');
-$PAGE->navbar->add('Testing local_shopping_cart', new moodle_url('/test.php'));
+$PAGE->set_title(get_string('testing:title', 'local_shopping_cart'));
+$PAGE->set_heading(get_string('testing:title', 'local_shopping_cart'));
+$PAGE->navbar->add(get_string('testing:title', 'local_shopping_cart'), new moodle_url('/local/shopping_cart/demo.php'));
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
@@ -61,8 +61,17 @@ $item = new cartitem(
         $serviceperiodeend,
         'A');
 $button = new button($item->as_array());
+
 echo $OUTPUT->header();
-echo $renderer->render_button($button);
+echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 'alert alert-info',
+        ['style' => 'width: 500px;']);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 1', 'h4');
+echo html_writer::div("10.00 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
 
 $item = new cartitem(
         2,
@@ -78,7 +87,13 @@ $item = new cartitem(
         $serviceperiodeend,
         'B');
 $button = new button($item->as_array());
-echo $renderer->render_button($button);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 2', 'h4');
+echo html_writer::div("20.30 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
 
 $item = new cartitem(
         3,
@@ -94,7 +109,13 @@ $item = new cartitem(
         $serviceperiodeend,
         'C');
 $button = new button($item->as_array());
-echo $renderer->render_button($button);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 3', 'h4');
+echo html_writer::div("13.80 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
 
 $item = new cartitem(
     4,
@@ -110,7 +131,13 @@ $item = new cartitem(
     $serviceperiodeend,
     '');
 $button = new button($item->as_array());
-echo $renderer->render_button($button);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 4', 'h4');
+echo html_writer::div("12.12 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
 
 echo '<div style="width: 300px" class="mt-3">';
 $data = [

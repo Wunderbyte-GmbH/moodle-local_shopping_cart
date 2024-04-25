@@ -36,7 +36,7 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     And I log out
     When I log in as "user1"
     And I wait until the page is ready
-    And I visit "/local/shopping_cart/test.php"
+    And I visit "/local/shopping_cart/demo.php"
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     And I click on "Proceed to checkout" "link"

@@ -367,6 +367,9 @@ $string['paymentstatus'] = 'Status';
 $string['gateway'] = 'Gateway';
 $string['orderid'] = 'OrderID';
 $string['usermodified'] = 'Bearbeitet von';
+$string['testing:title'] = 'Warenkorb-Demo';
+$string['testing:description'] = 'Hier können Sie Test-Items zum Warenkorb hinzufügen, um das Warenkorb-Plugin zu testen.';
+$string['testing:item'] = 'Test-Item';
 
 // Payment methods.
 $string['paymentmethod'] = 'Bezahlmethode';

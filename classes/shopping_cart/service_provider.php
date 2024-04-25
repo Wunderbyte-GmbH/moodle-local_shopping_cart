@@ -256,7 +256,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
     /**
      * Callback function that unloads a cart item and thus frees
-     * Used only in test.php for test purchases.
+     * Used only in demo.php for test purchases.
      *
      * @param string $area
      * @param int $itemid An identifier that is known to the plugin
