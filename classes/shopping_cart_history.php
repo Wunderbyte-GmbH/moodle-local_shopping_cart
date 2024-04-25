@@ -366,8 +366,7 @@ class shopping_cart_history {
             int $usermodified = null,
             int $schistoryid = null,
             int $installments = null,
-            string $json = null,
-    ) {
+            string $json = null) {
 
         global $USER;
 
