@@ -31,8 +31,12 @@ use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
-use local_shopping_cart\taxcategories;
-use mod_booking\singleton_service;
+
+defined('MOODLE_INTERNAL') || die;
+
+global $CFG;
+
+require_once($CFG->dirroot.'/user/lib.php');
 
 /**
  * Class checkout
@@ -102,7 +106,9 @@ abstract class checkout extends modifier_base {
         $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$identifier)->out(false);
         $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
-        $user = singleton_service::get_instance_of_user($userid);
+
+        $users = user_get_users_by_id([$userid]);
+        $user = reset($users);
 
         $data['name'] = "$user->firstname $user->lastname";
         $data['mail'] = $user->email;

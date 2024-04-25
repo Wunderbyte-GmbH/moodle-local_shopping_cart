@@ -124,8 +124,6 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $componentname = $data->componentname;
         $area = $data->area;
 
-        booking_option::cancelbookingoption($data->itemid, get_string('optioncancelled', 'local_shopping_cart'));
-
         foreach ($bookedusers as $buser) {
 
             $credit = $buser->price - $cancelationfee;

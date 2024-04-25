@@ -875,8 +875,8 @@ class shopping_cart {
                             $annotation ?? '',
                             $USER->id,
                             $item['schistoryid'] ?? null,
-                            $item['installments'],
-                            $item['json']
+                            $item['installments'] ?? 0,
+                            $item['json'] ?? ''
                     );
 
                     // If we just paid for an installment, we need a very special treatment.
