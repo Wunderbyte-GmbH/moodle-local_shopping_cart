@@ -45,7 +45,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         // We might need to add additional information to the area.
         // Therefore, we split it here.
-        list($area, $addinfo) = explode('-', $area);
+        if (strpos($area, '-') !== false) {
+            list($area, $addinfo) = explode('-', $area);
+        } else {
+            // Handle the case where "-" doesn't exist in $area
+            $addinfo = $area;
+        }
 
         switch ($area) {
             case 'bookingfee':

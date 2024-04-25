@@ -155,7 +155,7 @@ export const addPrintIdentifier = (identifier, userid) => {
 export function discountModal(event) {
 
     // We two parents up, we find the right element with the necessary information.
-    const element = event.target.closest('li');
+    const element = event.target.closest('.shopping-cart-item');
 
     /* Console.log('closest', element); */
 

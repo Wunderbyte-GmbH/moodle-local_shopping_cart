@@ -43,10 +43,10 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "ul.shopping-cart-items" "css_element"
+    Then I should see "my test item 1" in the "div.shopping-cart-items" "css_element"
     And I should see "11.50 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
-    And I should see "11.50" in the "li.sc_initialtotal" "css_element"
+    And I should see "11.50" in the "div.sc_initialtotal" "css_element"
 
   @javascript
   Scenario: Add two items to the shopping cart as user when tax categories enabled
@@ -62,10 +62,10 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I should see "my test item 2" in the "#item-local_shopping_cart-main-2" "css_element"
     And I should see "22.33 EUR" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
     And I should see "(20.30 EUR + 10%)" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
-    And I should see "Total Net:" in the "li.sc_initialtotal" "css_element"
-    And I should see "30.30" in the "li.sc_initialtotal" "css_element"
-    And I should see "Total:" in the "li.sc_initialtotal" "css_element"
-    And I should see "33.83" in the "li.sc_initialtotal" "css_element"
+    And I should see "Total Net:" in the "div.sc_initialtotal" "css_element"
+    And I should see "30.30" in the "div.sc_initialtotal" "css_element"
+    And I should see "Total:" in the "div.sc_initialtotal" "css_element"
+    And I should see "33.83" in the "div.sc_initialtotal" "css_element"
 
   @javascript
   Scenario: Add three items to the shopping cart when tax categories enabled and goto checkout
