@@ -53,12 +53,15 @@ $PAGE->set_url('/daily_sums_pdf.php');
 $PAGE->set_title('Daily sums');
 $PAGE->set_heading('Daily sums');
 
-// TODO: Get HTML from shopping cart settings instead of template.
-// TODO: Get individual placeholder data.
-// TODO: Replace placeholders in HTML with placeholder data.
-// TODO: Only then, add HTML to output.
-
+// Get the daily sums data.
 $data = shopping_cart::get_daily_sums_data($date);
+
+// Calculate the sum of all not-online payments.
+$creditpart = (float) $data['creditcard'] ?? 0.0;
+$debitpart = (float) $data['debitcard'] ?? 0.0;
+$cashpart = (float) $data['cash'] ?? 0.0;
+$cashandcards = number_format($creditpart + $debitpart + $cashpart, 2, $commaseparator, '');
+
 $html = get_config('local_shopping_cart', 'dailysumspdfhtml');
 if (empty($html)) {
     // No template defined, so use default mustache template.
@@ -78,6 +81,7 @@ if (empty($html)) {
     $html = str_replace("[[manual]]", $data['manual'] ?? '', $html);
     $html = str_replace("[[creditspaidbackcash]]", $data['creditspaidbackcash'] ?? '', $html);
     $html = str_replace("[[creditspaidbacktransfer]]", $data['creditspaidbacktransfer'] ?? '', $html);
+    $html = str_replace("[[cashandcards]]", $cashandcards ?? '', $html);
 }
 
 
