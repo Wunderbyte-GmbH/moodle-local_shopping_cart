@@ -1,3 +1,11 @@
+## Version 0.8.5 (2024042600)
+* New feature: Unfinished new feature for installment payments (do not use yet!).
+It has been added for testing purposes.
+* Improvement: Big design change - we switched to new price modifiers to manipulate prices if needed.
+* Improvement: Nice styling of installments page.
+* Improvement: Better styling of testing page which has been renamed to demo.php.
+* Improvement: Lots of new tests and improvements to overall code quality.
+
 ## Version 0.8.4 (2024041000)
 * Improvement: Users in cashier can now be searched by ID also.
 * Improvement: Allow search for full user ID on cashier's page.
