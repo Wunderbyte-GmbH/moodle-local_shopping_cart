@@ -220,7 +220,7 @@ class shopping_cart_handler {
      * @return void
      * @throws dml_exception
      */
-    private function add_key_to_jsonobject(string $key, mixed $value) {
+    private function add_key_to_jsonobject(string $key, $value) {
 
         global $DB;
 
