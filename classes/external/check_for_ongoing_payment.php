@@ -90,7 +90,7 @@ class check_for_ongoing_payment extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-                        'success' => new external_value(PARAM_INT, 'Success', VALUE_REQUIRED),
+                        'success' => new external_value(PARAM_BOOL, 'Success', VALUE_REQUIRED),
                         'url' => new external_value(PARAM_URL, 'Redirect url', VALUE_DEFAULT, ''),
                 ]
         );

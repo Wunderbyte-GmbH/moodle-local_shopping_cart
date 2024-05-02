@@ -8,21 +8,21 @@ import Ajax from 'core/ajax';
  */
 export const init = async (userid) => {
 
-  const modal = await ModalFactory.create({
+const modal = await ModalFactory.create({
         body: await Templates.render('local_shopping_cart/checkongoing', {})
-  });
+});
 
-  modal.show();
+modal.show();
 
-  return Ajax.call([{
+return Ajax.call([{
     methodname: "local_shopping_cart_check_for_ongoing_payment",
     args: {
         userid,
     },
     done: function(data) {
         modal.hide();
-        if (data.success === true) {
-            window.href = data.url;
+        if (data.success == true) {
+            window.location = data.url;
         }
     }
     }])[0];

@@ -1546,9 +1546,6 @@ class shopping_cart {
                                         'url' => $response['url'],
                                     ];
                                 }
-
-
-
                             }
                         }
                     }
