@@ -139,7 +139,7 @@ foreach ($user->profile as $profilefieldkey => $profilefieldvalue) {
                 $profilefieldvalue = date($dateformat, $profilefieldvalue);
             }
         }
-        $cfghtml = str_replace("[[" . $profilefieldkey . "]]", $profilefieldvalue, $cfghtml);
+        $cfghtml = str_replace("[[" . $profilefieldkey . "]]", "$profilefieldvalue", $cfghtml);
     }
 }
 
