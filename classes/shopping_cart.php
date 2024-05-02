@@ -1326,7 +1326,7 @@ class shopping_cart {
                     $sum += $item['price']; // This is the gross price.
                 }
             }
-            return $sum;
+            return $sum >= 0 ? $sum : 0;
         }, 0.0), 2);
     }
 

@@ -114,6 +114,14 @@ $string['privacyheadingdescription'] = "Set behaviour related to the privacy set
 $string['deleteledger'] = "Delete ledger on deletion request of user";
 $string['deleteledgerdescription'] = "The ledger will hold payment information which you might need to keep for legal reasons, even when a user is deleted.";
 
+$string['rebookingheading'] = "Rebookings";
+$string['rebookingheadingdescription'] = "Purchases can be rebooked under certain circumstances. This means that, for example, a purchased course is canceled. Instead of a credit, it is immediately rebooked to another course. No additional booking fee is charged. Any overpayments will be forfeited.";
+$string['rebookingperiod'] = "Rebooking Period";
+$string['rebookingperioddesc'] = "The time during which the maximum number of rebookings can be restricted. Typically the duration of a semester.";
+$string['rebookingmaxnumber'] = "Maximum Number of Rebookings";
+$string['rebookingmaxnumberdesc'] = "For example, only 3 rebookings are allowed within 100 days";
+$string['rebookingalert'] = "To rebook, add another course to your cart";
+
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';

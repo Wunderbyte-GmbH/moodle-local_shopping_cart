@@ -113,13 +113,6 @@ class get_history_item extends external_api {
             $params['userid'],
         );
 
-        // Users can, unless the are cashier, only fetch information about their own items.
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
-            if ($USER->id != $item->userid) {
-                throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
-            }
-        }
-
         if (empty($item->id)) {
             return [
                 'success' => 0,
@@ -130,6 +123,13 @@ class get_history_item extends external_api {
                 'round' => 0,
                 'cancelationfee' => 0,
             ];
+        }
+
+        // Users can, unless the are cashier, only fetch information about their own items.
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
+            if ($USER->id != $item->userid) {
+                throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+            }
         }
 
         shopping_cart::add_quota_consumed_to_item($item, $userid);
