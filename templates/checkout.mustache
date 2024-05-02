@@ -135,6 +135,14 @@
 
 {{^finished}}
 <div class="checkoutgrid checkout">
+{{#onlyrebooking}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{#str}} rebookingalert, local_shopping_cart {{/str}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{{/onlyrebooking}}
     <ul class="shopping-cart-items">
         <li class="user-card mb-2">
             <h2>{{name}}</h2>

@@ -26,6 +26,7 @@
 namespace local_shopping_cart\output;
 
 use context_system;
+use local_shopping_cart\local\rebookings;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
@@ -214,13 +215,10 @@ class shoppingcart_history_list implements renderable, templatable {
                 // Get the marked information.
                 $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, $userid);
 
-                if (in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem'])
-                    || $item->canceled
-                    || (!empty($item->serviceperiodend)
-                        && $item->serviceperiodend < time())) {
-                        $item->showrebooking = null; // So we can hide it in mustache template.
-                } else {
+                if (rebookings::allow_rebooking($item, $userid)) {
                     $item->showrebooking = true; // If it is shown at all.
+                } else {
+                    $item->showrebooking = null; // So we can hide it in mustache template.
                 }
             }
 

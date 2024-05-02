@@ -63,12 +63,23 @@ abstract class standard extends modifier_base {
 
         $context = context_system::instance();
 
+        // A few modifications.
+        $rebooking = 0;
         foreach ($items as $key => $item) {
             // As a cashier, I always want to be able to delete the booking fee.
             if ($items[$key]['nodelete'] === 1 &&
                 has_capability('local/shopping_cart:cashier', $context)) {
                     unset($data['items'][$key]['nodelete']);
             }
+
+            if ($item['componentname'] === 'local_shopping_cart'
+                && $item['area'] === 'rebookitem') {
+                    $rebooking++;
+            }
+        }
+
+        if ($rebooking > 0 && $rebooking === count($items)) {
+            $data['onlyrebooking'] = true;
         }
         return $data;
     }

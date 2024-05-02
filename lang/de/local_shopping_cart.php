@@ -30,13 +30,6 @@ $string['modulename'] = 'Warenkorb';
 
 // General strings.
 $string['addtocart'] = 'In den Warenkorb';
-$string['allowrebooking'] = 'Umbuchen erlauben';
-$string['allowrebooking_desc'] = 'Dies ermöglicht es den Nutzer:innen, bereits gekaufte Items umzubuchen.
-Die gekauften Items können mit negativem Preis in den Warenkorb gelegt werden und werden bei Umbuchung storniert,
-gleichzeitig wird ein neues Item gebucht. Eine Umbuchung mit negativem Gesamtpreis ist nicht möglich.';
-$string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
-$string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
-wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
 $string['mycart'] = 'Mein Warenkorb';
@@ -112,6 +105,21 @@ $string['privacyheading'] = "Privatsphäreneinstellungen";
 $string['privacyheadingdescription'] = "Einstellungen in Verbindung mit den Moodle Privatsphäreneinstellugnen";
 $string['deleteledger'] = "Lösche das Zahlungsjournal wenn ein/e NutzerIn das Löschen ihrer Daten verlangt";
 $string['deleteledgerdescription'] = "Das Zahlungsjournal enthält Zahlungsinformationen, die aus rechtlichen Gründen womöglich erhalten bleiben müssen.";
+
+$string['rebookingheading'] = "Umbuchungen";
+$string['rebookingheadingdescription'] = "Käufe können unter gewissen Umständen umgebucht werden. Das bedeutet, dass z.B. ein gekaufter Kurs storniert wird. Anstatt eines Guthabens wird sofort auf einen anderen Kurs umgebucht. Dabei fällt keine neuerliche Buchungsgebühr an. Eventuelle Überzahlungen verfallen.";
+$string['rebookingperiod'] = "Umbuchungsperiode";
+$string['rebookingperioddesc'] = "Die Zeit, in der die maximale Anzahl von Umbuchungen beschränkt werden kann. Typischerweise die Dauer eines Semesters.";
+$string['rebookingmaxnumber'] = "Maximale Anzahl an Umbuchungen";
+$string['rebookingmaxnumberdesc'] = "Es werden zum Beispiel nur 3 Umbuchungen innerhalb von 100 Tagen erlaubt";
+$string['allowrebooking'] = 'Umbuchen erlauben';
+$string['allowrebooking_desc'] = 'Dies ermöglicht es den Nutzer:innen, bereits gekaufte Items umzubuchen.
+Die gekauften Items können mit negativem Preis in den Warenkorb gelegt werden und werden bei Umbuchung storniert,
+gleichzeitig wird ein neues Item gebucht. Eine Umbuchung mit negativem Gesamtpreis ist nicht möglich.';
+$string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
+$string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
+wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
+$string['rebookingalert'] = "Um umzubuchen fügen Sie bitte noch einen weiteren Kurs in Ihrem Einkaufswagen hinzu";
 
 // Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';

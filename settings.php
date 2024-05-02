@@ -143,12 +143,6 @@ if ($hassiteconfig) {
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
-    // Setting to round percentage discounts to full integers.
-    $settings->add(
-        new admin_setting_configcheckbox($componentname . '/allowrebooking',
-                get_string('allowrebooking', 'local_shopping_cart'),
-                get_string('allowrebooking_desc', 'local_shopping_cart'), 0));
-
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/samecostcenter',
@@ -505,6 +499,34 @@ if ($hassiteconfig) {
             get_string('choosedefaultcountrydesc', 'local_shopping_cart'),
             'Austria', // Default value (empty for none selected).
             $newcountries
+    ));
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading($componentname . '/rebookingheading',
+            get_string('rebookingheading', 'local_shopping_cart'),
+            get_string('rebookingheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/allowrebooking',
+                get_string('allowrebooking', 'local_shopping_cart'),
+                get_string('allowrebooking_desc', 'local_shopping_cart'), 0));
+
+    // Add a text field for the Token.
+    $settings->add(new admin_setting_configtext($componentname . '/rebookingperiod',
+            get_string('rebookingperiod', 'local_shopping_cart'),
+            get_string('rebookingperioddesc', 'local_shopping_cart'),
+            '',
+            PARAM_INT
+    ));
+
+    // Add a text field for the Token.
+    $settings->add(new admin_setting_configtext('local_shopping_cart/rebookingmaxnumber',
+            get_string('rebookingmaxnumber', 'local_shopping_cart'),
+            get_string('rebookingmaxnumberdesc', 'local_shopping_cart'),
+            '',
+            PARAM_INT
     ));
 
     // Add a heading for the section.
