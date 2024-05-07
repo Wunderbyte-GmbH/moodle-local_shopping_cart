@@ -68,6 +68,9 @@ const SELECTORS = {
 
  export const init = (expirationtime, nowdate) => {
 
+    // eslint-disable-next-line no-console
+    console.log(expirationtime, nowdate);
+
     initTimer(expirationtime, nowdate);
 
     // We might have more than one container.

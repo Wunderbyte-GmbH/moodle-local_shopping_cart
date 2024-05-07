@@ -120,6 +120,11 @@ class cartstore {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($data['items'][$cacheitemkey])) {
                 unset($data['items'][$cacheitemkey]);
+
+                if (empty($data['items'])) {
+                    $data['expirationtime'] = 0;
+                }
+
                 $this->set_cache($data);
             }
         }
@@ -265,6 +270,8 @@ class cartstore {
         if ($data) {
             if (isset($data['items'])) {
                 $data['items'] = [];
+                // When there are no items anymore, there is no expiration date.
+                $data['expirationtime'] = 0;
                 $this->set_cache($data);
             }
         }
@@ -396,6 +403,8 @@ class cartstore {
                 self::delete_all_items();
                 $data = self::get_cache();
         }
+
+        $data['nowdate'] = time();
 
         modifier_info::apply_modfiers($data);
         return $data;
@@ -564,7 +573,7 @@ class cartstore {
                 'checkboxid' => bin2hex(random_bytes(3)),
                 'usecredit' => $usecredit,
                 'useinstallments' => 0,
-                'expirationtime' => shopping_cart::get_expirationtime(),
+                'expirationtime' => 0,
                 'nowdate' => time(),
                 'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
             ];
