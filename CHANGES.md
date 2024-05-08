@@ -1,3 +1,10 @@
+## Version 0.8.7 (2024050800)
+* Bugfix: Show expirationdate correctly.
+* Bugfix: Make sure we correctly replace placeholter numbers.
+
+## Version 0.8.6 (2024043000)
+* New Feature: Add placeholder [[cashandcards]] for sum of non-online payments to daily sum.
+
 ## Version 0.8.5 (2024042600)
 * New feature: Unfinished new feature for installment payments (do not use yet!).
 It has been added for testing purposes.
