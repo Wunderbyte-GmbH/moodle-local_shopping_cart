@@ -21,6 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 
 // Define constants.
@@ -104,7 +105,25 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     }
 
     $output = '';
-    $data = shopping_cart::local_shopping_cart_get_cache_data($USER->id);
+
+    $cartstore = cartstore::instance($USER->id);
+    $data = $cartstore->get_data();
+
+    $dueinstallments = $cartstore->get_due_installments();
+
+    if (!empty($dueinstallments)) {
+        foreach($dueinstallments as $dueinstallement) {
+
+            if ($dueinstallement['installment'] > time()) {
+                $message = get_string('installmentpaymentisdue', 'local_shopping_cart', $dueinstallement);
+                $type = \core\notification::INFO;
+            } else {
+                $message = get_string('installmentpaymentwasdue', 'local_shopping_cart', $dueinstallement);
+                $type = \core\notification::ERROR;
+            }
+            \core\notification::add($message, $type);
+        }
+    }
 
     // If we have the capability, we show a link to cashier's desk.
     if (has_capability('local/shopping_cart:cashier', context_system::instance())) {

@@ -196,12 +196,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                     $cartitem = new cartitem(
                         $itemid,
-                        "installment payment for " . $record->itemname,
+                        get_string('installment', 'local_shopping_cart'). ': ' . $record->itemname,
                         $payment->price,
                         $record->currency,
                         'local_shopping_cart',
                         'installments-' . $addinfo,
-                        "installment",
+                        get_string('installment', 'local_shopping_cart'),
                         '',
                         $record->canceluntil,
                         $record->serviceperiodstart,
