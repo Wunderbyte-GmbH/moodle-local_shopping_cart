@@ -114,78 +114,26 @@ class installments implements renderable, templatable {
             $this->installmentstable = $html;
 
         } else {
-            // This is the user view.
-            $sql = "SELECT *
-                    FROM {local_shopping_cart_history}
-                    WHERE installments > 0
-                    AND paymentstatus = :paymentstatus";
-            $params = [
-                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-            ];
-            $records = $DB->get_records_sql($sql, $params);
 
-            foreach ($records as $record) {
+            $cartstore = cartstore::instance($userid);
+            $items = $cartstore->get_open_installments();
 
-                // First, we add the down payment.
-                $item = new cartitem(
-                    $record->itemid,
-                    $record->itemname,
-                    $record->price,
-                    $record->currency,
-                    $record->componentname,
-                    $record->area,
-                    "down payment",
-                    '',
-                    $record->canceluntil,
-                    $record->serviceperiodstart,
-                    $record->serviceperiodend,
-                    $record->taxcategory,
-                    1,
-                    $record->costcenter
+            foreach ($items as $key => $item) {
+
+                if (strpos($item['area'], 'installment') === false) {
+                    continue;
+                }
+
+                $button = new button($item);
+                $html = $OUTPUT->render_from_template(
+                    'local_shopping_cart/addtocartdb',
+                    $button->export_for_template($OUTPUT)
                 );
 
-                $jsonobject = json_decode($record->json);
-                $payments = $jsonobject->installments->payments;
-
-                $this->items[] = $item->as_array();
-
-                foreach ($payments as $payment) {
-
-                    // If this is already paid, we don't show the button.
-                    if (!empty($payment->paid)) {
-                        continue;
-                    }
-
-                    $item = new cartitem(
-                        $record->id, // We use the historyid.
-                        $record->itemname,
-                        $payment->price,
-                        $payment->currency,
-                        'local_shopping_cart',
-                        'installments-' . $payment->id,
-                        'installment payment, ' . $payment->date,
-                        '',
-                        null,
-                        null,
-                        null,
-                        null,
-                        1,
-                        null,
-                        $payment->timestamp
-                    );
-
-                    $item = $item->as_array();
-
-                    $button = new button($item);
-                    $html = $OUTPUT->render_from_template(
-                        'local_shopping_cart/addtocartdb',
-                        $button->export_for_template($OUTPUT)
-                    );
-
-                    $item['button'] = $html;
-                    $this->items[] = $item;
-                }
+                $items[$key]['button'] = $html;
+                unset($items[$key]['installment']);
             }
+            $this->items = $items;
         }
     }
 

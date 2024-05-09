@@ -17,8 +17,8 @@
 /**
  * Shopping_cart_history class for local shopping cart.
  * @package     local_shopping_cart
- * @author      Thomas Winkler
- * @copyright   2021 Wunderbyte GmbH
+ * @author      Georg Maißer
+ * @copyright   2024 Wunderbyte GmbH
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -86,6 +86,10 @@ class shopping_cart_handler {
      */
     public function definition(MoodleQuickForm &$mform, array $formdata) {
 
+        if (!get_config('local_shopping_cart', 'enableinstallments')) {
+            return;
+        }
+
         $mform->addElement('header',
             'sch_shoppingcartheader',
             '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;' . get_string('pluginname', 'local_shopping_cart'));
@@ -105,13 +109,11 @@ class shopping_cart_handler {
         $mform->addHelpButton('sch_downpayment', 'downpayment', 'local_shopping_cart');
         $mform->hideIf('sch_downpayment', 'sch_allowinstallment', 'neq', "1");
 
-        $select = [
-            1 => 1,
-            2 => 2,
-            3 => 3,
-            4 => 4,
-            5 => 5,
-        ];
+        $i = 1;
+        while ($i <= 30) {
+            $select[$i] = $i;
+            $i++;
+        }
 
         $mform->addElement(
             'select',
@@ -138,6 +140,18 @@ class shopping_cart_handler {
         $mform->setType('sch_duedatevariable', PARAM_INT);
         $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
         $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
+        // $mform->hideIf('sch_duedatevariable', 'sch_duedaysbeforecoursestart', 'neq', "0");
+
+        $mform->addElement(
+            'text',
+            'sch_duedaysbeforecoursestart',
+            get_string('duedaysbeforecoursestart', 'local_shopping_cart')
+        );
+        $mform->setDefault('sch_duedaysbeforecoursestart', 0);
+        $mform->setType('sch_duedaysbeforecoursestart', PARAM_INT);
+        $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
+        $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
+        // $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_duedatevariable', 'neq', "0");
     }
 
     /**
@@ -148,6 +162,13 @@ class shopping_cart_handler {
      */
     public function validation(array $data, array &$errors) {
         // Validate.
+
+        if (!empty($data['sch_duedatevariable'])
+            && !empty($data['sch_duedaysbeforecoursestart'])) {
+
+            $errors['sch_duedatevariable'] = get_string('onlyone', 'local_shopping_cart');
+            $errors['sch_duedaysbeforecoursestart'] = get_string('onlyone', 'local_shopping_cart');
+        }
 
     }
 
@@ -170,7 +191,15 @@ class shopping_cart_handler {
             $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
             $this->add_key_to_jsonobject('downpayment', $formdata->sch_downpayment);
             $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
-            $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable);
+
+            // Make sure only one of these values can be not null.
+            if (empty($formdata->sch_duedatevariable)) {
+                $this->add_key_to_jsonobject('duedaysbeforecoursestart', $formdata->sch_duedaysbeforecoursestart ?? 0);
+                $this->add_key_to_jsonobject('duedatevariable', 0);
+            } else {
+                $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable ?? 0);
+                $this->add_key_to_jsonobject('duedaysbeforecoursestart', 0);
+            }
 
             $this->save_iteminfo();
         }
@@ -209,6 +238,7 @@ class shopping_cart_handler {
         $formdata->sch_downpayment = $jsonobject->downpayment;
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
+        $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart;
 
     }
 

@@ -120,6 +120,7 @@ class cartstore {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($data['items'][$cacheitemkey])) {
                 unset($data['items'][$cacheitemkey]);
+                unset($data['openinstallments']);
 
                 if (empty($data['items'])) {
                     $data['expirationtime'] = 0;
@@ -270,6 +271,7 @@ class cartstore {
         if ($data) {
             if (isset($data['items'])) {
                 $data['items'] = [];
+                unset($data['openinstallments']);
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 $this->set_cache($data);
@@ -586,7 +588,7 @@ class cartstore {
 
     /**
      * Gets the currently cached items.
-     * @return mixed
+     * @return array
      * @throws coding_exception
      */
     public function get_items() {
@@ -594,6 +596,67 @@ class cartstore {
         $data = $this->get_cache();
 
         return $data['items'] ?? [];
+    }
+
+    /**
+     * Gets the openinstallments.
+     * @return array
+     * @throws coding_exception
+     */
+    public function get_open_installments() {
+
+        $data = $this->get_cache();
+
+        return $data['openinstallments'] ?? [];
+    }
+
+    /**
+     * Gets the openinstallments.
+     * @return array
+     * @throws coding_exception
+     */
+    public function get_due_installments() {
+
+        $openinstallements = $this->get_open_installments();
+
+        $returnarray = [];
+        if (!empty($openinstallements)) {
+            $now = time();
+
+            foreach ($openinstallements as $openinstallment) {
+
+                if (strpos($openinstallment['area'], 'installment') === false) {
+                    continue;
+                }
+
+                $duedate = $openinstallment['installment'];
+                $warningperiod = get_config('local_shopping_cart', 'reminderdaysbefore');
+
+                // If the duedate minus warning period is bigger than time, we do nothing.
+                if (($duedate - $warningperiod * 86400) < $now) {
+                    $returnarray[] = $openinstallment;
+                }
+            }
+        }
+        return $returnarray;
+    }
+
+
+
+    /**
+     * Gets the openinstallments.
+     * @param array|bool $openinstallments
+     * @return bool
+     * @throws coding_exception
+     */
+    public function set_open_installments($openinstallments) {
+
+        $data = $this->get_cache();
+
+        $data['openinstallments'] = $openinstallments;
+        $this->set_cache($data);
+
+        return true;
     }
 
     /**

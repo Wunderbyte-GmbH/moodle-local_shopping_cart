@@ -573,7 +573,7 @@ $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID
 $string['allowinstallment'] = 'Allow installments';
 $string['allowinstallment_help'] = 'With installments, only a portion of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
-$string['ledgerinstallment'] = 'The following installment payment as registered: Number {$a->id}, due date {$a->date}';
+$string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
 
 $string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = 'This number refers to the required payments AFTER the first payment.';
@@ -581,8 +581,10 @@ $string['duedate'] = 'Final payment date';
 $string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future
 and two installment payments are set, half of the remaining amount must be paid after 50 days following the
 first payment, and the rest after 100 days.';
-$string['duedatevariable'] = 'Days after initial purchase';
-$string['duedatevariable_help'] = 'Enter the number of days after initial purchase';
+$string['duedatevariable'] = 'Due nr. of days after initial purchase';
+$string['duedatevariable_help'] = 'Enter the number of days after initial purchase when last payment is due';
+$string['duedaysbeforecoursestart'] = 'Due nr. of days before coursestart';
+$string['duedaysbeforecoursestart_help'] = 'Enter the number of days before course start when last payment is due';
 $string['on'] = "on";
 $string['furtherpayments'] = 'Further payments';
 $string['insteadof'] = "instead of";
@@ -592,3 +594,14 @@ $string['downpayment_help'] = 'This amount must be paid initially. The remaining
 $string['installments'] = "Installments";
 $string['installment'] = "Installment";
 $string['incorrectnumberofpayments'] = 'Price needs to be divisble by number of payments without a remainder';
+$string['installmentsettings'] = 'Installments settings';
+$string['enableinstallments'] = 'Enable Installments';
+$string['enableinstallments_desc'] = 'For each item sold, it can be set whether installments are possible and under what conditions.';
+$string['timebetweenpayments'] = 'Time Between Payments';
+$string['timebetweenpayments_desc'] = 'The time between payments, usually 30 days.';
+$string['onlyone'] = 'Only one of these values can be more than 0';
+$string['reminderdaysbefore'] = "Reminder x days before";
+$string['reminderdaysbefore_desc'] = "X days before a payment is due, a reminder is shown to the concerned user on your site";
+$string['installmentpaymentisdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
+$string['installmentpaymentwasdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
+$string['noinstallments'] = "Currently there are no open installment payments";

@@ -419,6 +419,39 @@ if ($hassiteconfig) {
         );
     }
     $ADMIN->add($componentname, $taxsettings);
+
+    // Setting to enable taxes processing.
+    $installmentsettings = new admin_settingpage('local_shopping_cart_installment_settings', get_string('installmentsettings', 'local_shopping_cart'));
+    $installmentsettings->add(
+            new admin_setting_configcheckbox($componentname . '/enableinstallments',
+                    get_string('enableinstallments', 'local_shopping_cart'),
+                    get_string('enableinstallments_desc', 'local_shopping_cart'), 0));
+
+    $installmentsenabled = get_config('local_shopping_cart', 'enableinstallments') == 1;
+    if ($installmentsenabled) {
+
+        $installmentsettings->add(
+                new admin_setting_configtext(
+                        $componentname . '/timebetweenpayments',
+                        get_string('timebetweenpayments', $componentname),
+                        get_string('timebetweenpayments_desc', $componentname),
+                        30,
+                        PARAM_INT
+                )
+            );
+
+        $installmentsettings->add(
+        new admin_setting_configtext(
+                $componentname . '/reminderdaysbefore',
+                get_string('reminderdaysbefore', $componentname),
+                get_string('reminderdaysbefore_desc', $componentname),
+                3,
+                PARAM_INT
+        )
+        );
+    }
+    $ADMIN->add($componentname, $installmentsettings);
+
     defined('MOODLE_INTERNAL') || die;
 
     // Add a heading for the section.

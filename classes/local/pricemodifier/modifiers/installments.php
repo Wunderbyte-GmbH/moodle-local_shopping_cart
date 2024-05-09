@@ -25,7 +25,10 @@
 
 namespace local_shopping_cart\local\pricemodifier\modifiers;
 
+use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\output\button;
 use local_shopping_cart\shopping_cart_handler;
 
 /**
@@ -52,6 +55,17 @@ abstract class installments extends modifier_base {
 
         global $DB;
 
+        if (!get_config('local_shopping_cart', 'enableinstallments')) {
+            return $data;
+        }
+
+        if (!isset($data['openinstallments'])) {
+            $data['openinstallments'] = self::get_installments_from_db($data['userid']);
+
+            $cartstore = cartstore::instance($data['userid']);
+            $cartstore->set_open_installments($data['openinstallments']);
+        }
+
         foreach ($data['items'] as $key => $itemdata) {
 
             // We treat an installment payment differently.
@@ -72,19 +86,42 @@ abstract class installments extends modifier_base {
                 $itemdata['area'],
                 $itemdata['itemid'])) {
 
+                // Next step, we check if there is enough time for this particular installement.
+                $searchdata = [
+                    'itemid' => $itemdata['itemid'],
+                    'componentname' => $itemdata['componentname'],
+                    'area' => $itemdata['area'],
+                ];
+
+                $record = $DB->get_record('local_shopping_cart_iteminfo', $searchdata);
+                $jsonobject = json_decode($record->json);
+
+                // If a value before coursestart is set, we need to check if it's not too late.
+                if (!empty($jsonobject->duedaysbeforecoursestart)
+                    && get_config('local_shopping_cart', 'timebetweenpayments') > 0) {
+                    if (!empty($itemdata['serviceperiodstart'])) {
+
+                        // Calculate the date of last payment.
+                        $dateoflastpayment =
+                            strtotime(" - $jsonobject->duedaysbeforecoursestart days", $itemdata['serviceperiodstart']);
+
+                        // Calculate the minimal time of payments.
+                        $timebetweenpayments = get_config('local_shopping_cart', 'timebetweenpayments');
+                        $timeuntilpayment = $jsonobject->numberofpayments * $timebetweenpayments * 86400;
+                        if ($dateoflastpayment - $timeuntilpayment < time()) {
+                            // Installments are not possible anymore, as there is no time left.
+                            continue;
+                        } else {
+                            $jsonobject->duedatevariable = round(($dateoflastpayment - time()) / 86400);
+                        }
+                    }
+                }
+
                 // If we just need to show the installment checkbox, we set it here.
                 $data['installmentscheckboxid'] = $data['installmentscheckboxid'] ?? bin2hex(random_bytes(3));
                 $data['installments'] = $data['installments'] ?? [];
 
                 if (!empty($data['useinstallments'])) {
-                    $searchdata = [
-                        'itemid' => $itemdata['itemid'],
-                        'componentname' => $itemdata['componentname'],
-                        'area' => $itemdata['area'],
-                    ];
-
-                    $record = $DB->get_record('local_shopping_cart_iteminfo', $searchdata);
-                    $jsonobject = json_decode($record->json);
 
                     // Check which payment it is.
                     // If this is the first payment, price is downpayment.
@@ -135,5 +172,91 @@ abstract class installments extends modifier_base {
 
         $data['installmentscheckboxid'] = $data['installmentscheckboxid'] ?? '';
         return  $data;
+    }
+
+    /**
+     * Fetches the open installment payments from DB.
+     * @param int $userid
+     * @return array
+     */
+    private static function get_installments_from_db(int $userid) {
+
+        global $DB, $OUTPUT;
+
+         // This is the user view.
+         $sql = "SELECT *
+                FROM {local_shopping_cart_history}
+                WHERE installments > 0
+                AND paymentstatus = :paymentstatus";
+        $params = [
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ];
+
+        if (!empty($userid)) {
+            $params['userid'] = $userid;
+            $sql .= " AND userid=:userid ";
+        }
+
+        $records = $DB->get_records_sql($sql, $params);
+
+        $items = [];
+
+        foreach ($records as $record) {
+
+            // First, we add the down payment.
+            $item = new cartitem(
+                $record->itemid,
+                $record->itemname,
+                $record->price,
+                $record->currency,
+                $record->componentname,
+                $record->area,
+                get_string('downpayment', 'local_shopping_cart'),
+                '',
+                $record->canceluntil,
+                $record->serviceperiodstart,
+                $record->serviceperiodend,
+                $record->taxcategory,
+                1,
+                $record->costcenter
+            );
+
+            $jsonobject = json_decode($record->json);
+            $payments = $jsonobject->installments->payments;
+
+            $items[] = $item->as_array();
+
+            foreach ($payments as $payment) {
+
+                // If this is already paid, we don't show the button.
+                if (!empty($payment->paid)) {
+                    continue;
+                }
+
+                $item = new cartitem(
+                    $record->id, // We use the historyid.
+                    $record->itemname,
+                    $payment->price,
+                    $payment->currency,
+                    'local_shopping_cart',
+                    'installments-' . $payment->id,
+                    get_string('installment', 'local_shopping_cart') . ', ' . $payment->date,
+                    '',
+                    null,
+                    null,
+                    null,
+                    null,
+                    1,
+                    null,
+                    $payment->timestamp
+                );
+
+                $item = $item->as_array();
+
+                $items[] = $item;
+            }
+        }
+
+        return $items ?? [];
     }
 }

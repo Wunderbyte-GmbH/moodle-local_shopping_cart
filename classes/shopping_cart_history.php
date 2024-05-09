@@ -200,7 +200,9 @@ class shopping_cart_history {
                 ON p.itemid = sch.identifier AND p.userid=sch.userid
                 $customorderidpart
                 $gatewayspart
-                WHERE sch.userid = :userid AND sch.paymentstatus >= :paymentstatus
+                WHERE sch.userid = :userid
+                AND sch.paymentstatus >= :paymentstatus
+                AND NOT (sch.componentname LIKE 'local_shopping_cart' AND sch.area LIKE 'installments%' )
                 ORDER BY sch.timemodified DESC";
 
         $records = $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]);
@@ -616,9 +618,9 @@ class shopping_cart_history {
                 }
 
                 // Still some additional Info for the ledger.
-                    $ledgerrecord->schistoryid = $historyitem->id;
-                    $ledgerrecord->annotation =
-                        get_string('ledgerinstallment', 'local_shopping_cart', $a);
+                $ledgerrecord->schistoryid = $historyitem->id;
+                $ledgerrecord->annotation =
+                    get_string('ledgerinstallment', 'local_shopping_cart', $a);
 
                 // Now we manipulate the orignal entry.
                 $newrecord = $historyitem;
