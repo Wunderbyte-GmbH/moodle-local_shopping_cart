@@ -593,7 +593,9 @@ class shopping_cart_history {
             $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $record->timemodified = $now;
 
-            list($area, $addinfo) = explode('-', $record->area);
+            $areaarray = explode('-', $record->area);
+            $area = $areaarray[0];
+            $addinfo = $areaarray[1] ?? null;
 
             if ($record->componentname === 'local_shopping_cart'
                 && $area === 'rebookitem') {

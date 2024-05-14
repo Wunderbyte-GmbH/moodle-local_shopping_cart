@@ -43,7 +43,7 @@ class payment_added extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'local_shpping_cart_history';
+        $this->data['objecttable'] = 'local_shopping_cart_history';
     }
 
     /**
