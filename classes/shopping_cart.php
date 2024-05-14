@@ -655,6 +655,10 @@ class shopping_cart {
      * This function confirms that a user has paid for the items which are currently in her shopping cart...
      * .. or the items passed by shopping cart history. The second option is the case when we use the payment module of moodle.
      *
+     * 1. Check if price is 0. If so, user can pay for herself, or cashier can pay for others.
+     * 2. Create an identifier if there is none.
+     * 3. If we were paying by card, we need to use credits.
+     *
      * @param int $userid
      * @param int $paymenttype
      * @param array $datafromhistory
@@ -670,41 +674,37 @@ class shopping_cart {
         // We use this flag to keep track if we have already used the credits or not.
         $creditsalreadyused = false;
 
+
+        // We deal with two separate cases.
+        // If we receive the data via the callback from a payment provider...
+        // ... we will have an identifier and $datafromhistory will actually hold the records retrieved...
+        // ... from shopping_cart_history table via this identifier.
+        // If not, we need to create the identifier first, because we checkout via cashier or pay with credits.
+
+
+        $context = context_system::instance();
+
         // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
-            // Retrieve items from cache.
-            $data = self::local_shopping_cart_get_cache_data($userid);
 
-            // Now, this can happen in two cases. Either, a user wants to pay with his credits for his item.
-            // This can only go through, when price is 0.
+            $cartstore = cartstore::instance($userid);
+            $data = $cartstore->get_data();
 
-            $context = context_system::instance();
+            // If the price is not null, user has to have cashier rights to proceed here.
+            if (($data['price'] != 0)
+                && !has_capability('local/shopping_cart:cashier', $context)) {
 
-            if ($userid == $USER->id) {
-                if ($data['price'] == 0) {
-                    // The user wants to pay for herself with her credits and she has enough.
-                    // We actually don't need to do anything here.
-                    $data['price'] = 0;
-
-                } else if (!has_capability('local/shopping_cart:cashier', $context)) {
-                    // The cashier could call this to pay for herself, therefore only for non cashiers, we return here.
-                    return [
-                            'status' => 0,
-                            'error' => get_string('notenoughcredit', 'local_shopping_cart'),
-                            'credit' => (float)$data['remainingcredit'],
-                            'identifier' => $identifier,
-                    ];
-                }
-            } else {
-                if (!has_capability('local/shopping_cart:cashier', $context)) {
-                    return [
-                            'status' => 0,
-                            'error' => get_string('nopermission', 'local_shopping_cart'),
-                            'credit' => 0.0,
-                            'identifier' => $identifier,
-                    ];
-                }
+                return [
+                    'status' => 0,
+                    'error' => get_string('nopermission', 'local_shopping_cart'),
+                    'credit' => (float)$data['remainingcredit'] ?? 0.0,
+                    'identifier' => $identifier,
+                ];
             }
+
+            // Retrieve items from cache.
+            $cartstore = cartstore::instance($userid);
+            $data = $cartstore->get_data();
 
             // Now the user either has enough credit to pay for herself, or she is a cashier.
             $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
@@ -788,6 +788,8 @@ class shopping_cart {
                 $item['itemname'] = $item['itemid'];
             }
 
+            // Here, we have two different ways to call the component callback.
+            // And for rebooking, there is quite some change going, as we actually replace the item.
             if (($item['componentname'] === 'local_shopping_cart')
                 && ($item['area'] === 'rebookitem')) {
 
@@ -823,26 +825,14 @@ class shopping_cart {
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
 
-                    // In cash report we have to sum up cash sums, so we cannot use LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS.
-                    // So do not do this anymore but use the actual payment method.
-                    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-                    /* $paymentmethod = $data['price'] == 0 ? LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS :
-                        LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER;
-                    if ($paymentmethod === LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER) {
-                        // We now need to specify the actual payment method (cash, debit or credit card).
-                        switch ($paymenttype) {
-                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
-                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD:
-                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD:
-                            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL:
-                                $paymentmethod = $paymenttype;
-                                break;
-                        }
-                    } */
                     $paymentmethod = $paymenttype;
 
                     // Make sure we can pass on a valid value.
                     $item['discount'] = $item['discount'] ?? 0;
+                    $item['identifier'] = $identifier;
+                    $item['annotation'] = $annotation ?? '';
+                    $item['payment'] = $paymentmethod;
+                    $item['usermodified'] = $USER->id;
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -862,8 +852,8 @@ class shopping_cart {
                             $item['currency'],
                             $item['componentname'],
                             $item['area'],
-                            $identifier,
-                            $paymentmethod,
+                            $item['identifier'],
+                            $item['payment'],
                             LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
                             $item['canceluntil'] ?? null,
                             $item['serviceperiodstart'] ?? 0,
@@ -872,21 +862,23 @@ class shopping_cart {
                             $item['taxpercentage'] ?? null,
                             $item['taxcategory'] ?? null,
                             $item['costcenter'] ?? null,
-                            $annotation ?? '',
-                            $USER->id,
+                            $item['annotation'],
+                            $item['usermodified'],
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
                             $item['json'] ?? ''
                     );
 
+                    $item['id'] = $id;
                     // If we just paid for an installment, we need a very special treatment.
                     if ($item['componentname'] === 'local_shopping_cart'
                         && strpos($item['area'], 'installment') !== false) {
 
                         $item['id'] = $id;
-                        shopping_cart_history::set_success_in_db([(object)$item]);
                     }
                 }
+
+                shopping_cart_history::set_success_in_db([(object)$item]);
             }
         }
 
@@ -1214,6 +1206,7 @@ class shopping_cart {
                     'accountid' => $record->accountid ?? null,
                     'usermodified' => $record->usermodified, // Not nullable.
                     'area' => $record->area ?? null,
+                    'annotation' => $record->annotation ?? null,
                     'schistoryid' => $record->schistoryid ?? null,
                 ]))) {
                     // We only insert if entry does not exist yet.

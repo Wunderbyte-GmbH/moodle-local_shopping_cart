@@ -23,6 +23,7 @@
  */
 
 use Behat\Behat\Context\Step\Given;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart;
 
@@ -48,7 +49,9 @@ class behat_local_shopping_cart extends behat_base {
         $userid = $this->get_user_id_by_identifier($username);
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
-        shopping_cart::local_shopping_cart_get_cache_data($userid);
+
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
         shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
     }
 
@@ -65,7 +68,6 @@ class behat_local_shopping_cart extends behat_base {
         shopping_cart::delete_all_items_from_cart($userid);
         // Put item in cart.
         shopping_cart::buy_for_user($userid);
-        shopping_cart::local_shopping_cart_get_cache_data($userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
         // Confirm purchase.
         shopping_cart::confirm_payment($userid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH);

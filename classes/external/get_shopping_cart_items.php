@@ -32,6 +32,7 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 
@@ -89,7 +90,10 @@ class get_shopping_cart_items extends external_api {
             $userid = (int) $params['userid'];
         }
 
-        return shopping_cart::local_shopping_cart_get_cache_data($userid, true);
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
+
+        return $data;
     }
 
     /**

@@ -25,6 +25,7 @@
 
 use local_shopping_cart\shopping_cart;
 use core_user_external;
+use local_shopping_cart\local\cartstore;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
@@ -49,7 +50,9 @@ $PAGE->set_pagelayout('standard');
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;
-$data = shopping_cart::local_shopping_cart_get_cache_data($userid);
+
+$cartstore = cartstore::instance($userid);
+$data = $cartstore->get_data();
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
 if (isset($success)) {

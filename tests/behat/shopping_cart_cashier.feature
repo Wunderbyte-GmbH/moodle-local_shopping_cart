@@ -115,6 +115,7 @@ Feature: Cashier actions in shopping cart.
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
+    And I wait "40" seconds
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
 
   @javascript

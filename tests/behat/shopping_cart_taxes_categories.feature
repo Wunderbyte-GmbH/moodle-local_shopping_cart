@@ -76,7 +76,6 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
     And I should see "Your shopping cart"
-    And I wait "40" seconds
     Then I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"

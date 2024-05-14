@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 
 /**
@@ -141,7 +142,7 @@ class local_shopping_cart_generator extends testing_module_generator {
         // Set user to buy in behalf of.
         shopping_cart::buy_for_user($record['userid']);
         // Get cached data or setup defaults.
-        shopping_cart::local_shopping_cart_get_cache_data($record['userid']);
+        $cartstore = cartstore::instance($record['userid']);
         // Put in a test item with given ID (or default if ID > 4).
         shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $record['testitemid'], -1);
         // Confirm cash payment.

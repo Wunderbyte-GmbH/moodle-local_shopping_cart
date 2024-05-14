@@ -26,6 +26,7 @@
 namespace local_shopping_cart\output;
 
 use core_user;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use moodle_url;
@@ -55,7 +56,8 @@ class cashier implements renderable, templatable {
     public function __construct(int $userid = null, $usecredit = 0) {
 
         if (!empty($userid)) {
-            $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $usecredit);
+            $cartstore = cartstore::instance($userid);
+            $data = $cartstore->get_data();
             $data['buyforuserid'] = $userid;
             $user = core_user::get_user($userid, 'id, lastname, firstname, email');
             $data['userid'] = $user->id;

@@ -26,6 +26,7 @@
 namespace local_shopping_cart\output;
 
 use context_system;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use moodle_url;
@@ -234,7 +235,8 @@ class shoppingcart_history_list implements renderable, templatable {
             }
         }
 
-        $data = shopping_cart::local_shopping_cart_get_cache_data($userid);
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
         $this->credit = $data['credit'];
     }
 

@@ -110,10 +110,10 @@ class get_price extends external_api {
         $cartstore->save_useinstallments_state($params['useinstallments']);
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
-        $data = shopping_cart::local_shopping_cart_get_cache_data($userid, $params['usecredit']);
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
 
         // For the webservice, we must make sure that the keys exist.
-
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
 
@@ -144,7 +144,7 @@ class get_price extends external_api {
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
                         'installmentscheckboxid' => new external_value(PARAM_TEXT,
-                            'As indicator if installments are used at all.', VALUE_REQUIRED),
+                            'As indicator if installments are used at all.', VALUE_DEFAULT, ''),
                         'installments' => new external_multiple_structure(
                             new external_single_structure([
                                 'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),

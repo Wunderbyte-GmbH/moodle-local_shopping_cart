@@ -69,7 +69,10 @@ if (empty($jsononly)) {
 }
 
 $userid = $USER->id;
-$data = shopping_cart::local_shopping_cart_get_cache_data($userid);
+
+$cartstore = cartstore::instance($userid);
+$data = $cartstore->get_data();
+
 $data["mail"] = $USER->email;
 $data["name"] = $USER->firstname . $USER->lastname;
 $data["userid"] = $USER->id;
