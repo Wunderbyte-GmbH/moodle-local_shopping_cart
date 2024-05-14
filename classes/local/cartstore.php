@@ -630,7 +630,7 @@ class cartstore {
                 }
 
                 $duedate = $openinstallment['installment'];
-                $warningperiod = get_config('local_shopping_cart', 'reminderdaysbefore');
+                $warningperiod = get_config('local_shopping_cart', 'reminderdaysbefore') ?: 3;
 
                 // If the duedate minus warning period is bigger than time, we do nothing.
                 if (($duedate - $warningperiod * 86400) < $now) {

@@ -112,7 +112,7 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     $dueinstallments = $cartstore->get_due_installments();
 
     if (!empty($dueinstallments)) {
-        foreach($dueinstallments as $dueinstallement) {
+        foreach ($dueinstallments as $dueinstallement) {
 
             if ($dueinstallement['installment'] > time()) {
                 $message = get_string('installmentpaymentisdue', 'local_shopping_cart', $dueinstallement);

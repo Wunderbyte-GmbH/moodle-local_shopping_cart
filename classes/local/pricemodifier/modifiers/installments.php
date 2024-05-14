@@ -96,9 +96,10 @@ abstract class installments extends modifier_base {
                 $record = $DB->get_record('local_shopping_cart_iteminfo', $searchdata);
                 $jsonobject = json_decode($record->json);
 
+                $timebetweenpayments = get_config('local_shopping_cart', 'timebetweenpayments') ?: 30;
                 // If a value before coursestart is set, we need to check if it's not too late.
                 if (!empty($jsonobject->duedaysbeforecoursestart)
-                    && get_config('local_shopping_cart', 'timebetweenpayments') > 0) {
+                    && $timebetweenpayments > 0) {
                     if (!empty($itemdata['serviceperiodstart'])) {
 
                         // Calculate the date of last payment.
@@ -106,7 +107,6 @@ abstract class installments extends modifier_base {
                             strtotime(" - $jsonobject->duedaysbeforecoursestart days", $itemdata['serviceperiodstart']);
 
                         // Calculate the minimal time of payments.
-                        $timebetweenpayments = get_config('local_shopping_cart', 'timebetweenpayments');
                         $timeuntilpayment = $jsonobject->numberofpayments * $timebetweenpayments * 86400;
                         if ($dateoflastpayment - $timeuntilpayment < time()) {
                             // Installments are not possible anymore, as there is no time left.
@@ -128,10 +128,9 @@ abstract class installments extends modifier_base {
                     $data['items'][$key]['price'] = $jsonobject->downpayment;
 
                     $now = time();
-                    $duedate = $now + ($jsonobject->duedatevariable * 86400);
-                    $delta = $duedate - $now;
+                    $delta = $jsonobject->duedatevariable * 86400;
 
-                    $interval = round($delta / ($jsonobject->numberofpayments + 1));
+                    $interval = round($delta / ($jsonobject->numberofpayments));
                     $payment = ($itemdata['price'] - $jsonobject->downpayment) / $jsonobject->numberofpayments;
 
                     // If there is nothing left to pay, we don't add payments.
@@ -141,8 +140,8 @@ abstract class installments extends modifier_base {
 
                     $installmentpayments = [];
 
-                    $counter = 1;
-                    while ($counter <= $jsonobject->numberofpayments) {
+                    $counter = 0;
+                    while ($counter < $jsonobject->numberofpayments) {
                         $counter++;
                         $timestamp = $now + ($interval * $counter);
                         $installmentpayments['originalprice'] = $itemdata['price'];
