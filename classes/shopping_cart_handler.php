@@ -90,7 +90,8 @@ class shopping_cart_handler {
             || get_config('local_shopping_cart', 'allowrebooking')) {
             $mform->addElement('header',
                 'sch_shoppingcartheader',
-                '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;' . get_string('pluginname', 'local_shopping_cart'));
+                '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;'
+                . get_string('pluginname', 'local_shopping_cart'));
         }
 
         // Fields for Rebooking.
@@ -152,6 +153,7 @@ class shopping_cart_handler {
             $mform->setType('sch_duedatevariable', PARAM_INT);
             $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
             $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
+            // phpcs:ignore
             // $mform->hideIf('sch_duedatevariable', 'sch_duedaysbeforecoursestart', 'neq', "0");
 
             $mform->addElement(
