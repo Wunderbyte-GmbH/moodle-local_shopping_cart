@@ -331,6 +331,25 @@ class cartstore {
     }
 
     /**
+     * Gets the currently cached items.
+     * @return void
+     * @throws coding_exception
+     */
+    public function delete_rebookingfee() {
+
+        $data = $this->get_cache();
+
+        $regexkey = '/^local_shopping_cart-rebookingfee-/';
+
+        // Before we add the other forms, we need to add the nosubmit in case of we just deleted an optiondate.
+        $itemstodelete = preg_grep($regexkey, array_keys((array)$data['items']));
+        foreach ($itemstodelete as $todelete) {
+            unset($data['items'][$todelete]);
+        }
+        $this->set_cache($data);
+    }
+
+    /**
      * Saves the current use credit state.
      * @param int $usecredit
      * @return void

@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_bookingfee;
 use local_shopping_cart\shopping_cart_history;
@@ -121,7 +122,11 @@ class delete_item_from_cart extends external_api {
 
         if ($params['component'] == 'local_shopping_cart' && $params['area'] == 'rebookitem') {
             shopping_cart_history::toggle_mark_for_rebooking($params['itemid'], $userid, true);
-            shopping_cart_bookingfee::add_fee_to_cart($userid);
+
+            $cartstore = cartstore::instance($userid);
+            if ($cartstore->has_items()) {
+                shopping_cart_bookingfee::add_fee_to_cart($userid);
+            }
             return ['success' => 1];
         }
 

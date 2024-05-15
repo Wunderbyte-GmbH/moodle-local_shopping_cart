@@ -213,6 +213,25 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     return ['cartitem' => $cartitem];
 
                 }
+            case 'rebookingfee':
+                $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
+                $cartitem = new cartitem(
+                    $itemid,
+                    get_string('rebookingfee', 'local_shopping_cart'),
+                    get_config('local_shopping_cart', 'rebookingfee'),
+                    get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+                    'local_shopping_cart',
+                    'rebookingfee',
+                    '',  // No item description for booking fee.
+                    $imageurl->out(), // Fee image.
+                    time(),
+                    0,
+                    0,
+                    'A',
+                    1, // Booking fee cannot be deleted.
+                );
+                return ['cartitem' => $cartitem];
+                break;
         }
 
         $now = time();

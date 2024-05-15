@@ -891,6 +891,13 @@ class shopping_cart_history {
                 $itemstorebook = array_filter($itemstorebook, fn($a) => $a != $historyid);
                 $marked = 0;
                 shopping_cart::delete_item_from_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
+
+                $cartstore = cartstore::instance($userid);
+
+                if (!$cartstore->is_rebooking()) {
+                    $cartstore->delete_rebookingfee();
+                }
+
             } else {
                 // If so, decide if a add or remove.
                 $itemstorebook[] = $historyid;
@@ -906,6 +913,16 @@ class shopping_cart_history {
             shopping_cart_rebookingcredit::delete_booking_fee($userid);
 
             shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
+
+            if (get_config('local_shopping_cart', 'rebookingfee') > 0) {
+                // We check if we need to add the rebookingfee.
+                $record = self::return_item_from_history($historyid);
+                $now = time();
+
+                if ($record->canceluntil <= $now) {
+                    shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingfee', 1, $userid);
+                }
+            }
         }
 
         // Else we return the toggled value.

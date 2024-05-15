@@ -529,6 +529,16 @@ if ($hassiteconfig) {
             PARAM_INT
     ));
 
+    $settings->add(
+        new admin_setting_configtext(
+                $componentname . '/rebookingfee',
+                get_string('rebookingfee', $componentname),
+                get_string('rebookingfee_desc', $componentname),
+                0,
+                PARAM_FLOAT
+        )
+        );
+
     // Add a heading for the section.
     $settings->add(new admin_setting_heading('local_shopping_cart/privacyheading',
             get_string('privacyheading', 'local_shopping_cart'),

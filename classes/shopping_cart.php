@@ -203,7 +203,12 @@ class shopping_cart {
             list($areatocheck) = explode('-', $area);
             if ((!$cartstore->has_items()
                 || $cartstore->get_total_price_of_items() === 0)
-                && !in_array($areatocheck, ['bookingfee', 'rebookingcredit', 'rebookitem', 'installments'])) {
+                && !in_array($areatocheck, [
+                    'bookingfee',
+                    'rebookingfee',
+                    'rebookingcredit',
+                    'rebookitem',
+                    'installments'])) {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
                 shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
