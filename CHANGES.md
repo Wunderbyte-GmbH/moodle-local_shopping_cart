@@ -1,3 +1,7 @@
+## Version 0.8.9 (2024051501)
+* Improvement: Add rebookingfee.
+* Bugfixes: A couple of rebooking bugs.
+
 ## Version 0.8.8 (2024051500)
 * Improvement: Add Installments.
 * Bugfix: Missing ledger.
