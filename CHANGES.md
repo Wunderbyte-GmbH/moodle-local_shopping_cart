@@ -1,3 +1,7 @@
+## Version 0.8.8 (2024051500)
+* Improvement: Add Installments.
+* Bugfix: Missing ledger.
+
 ## Version 0.8.7 (2024050800)
 * Bugfix: Show expirationdate correctly.
 * Bugfix: Make sure we correctly replace placeholter numbers.
