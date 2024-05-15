@@ -74,19 +74,43 @@ class rebookings {
 
             $maxnumberofrebookings = get_config('local_shopping_cart', 'rebookingmaxnumber');
 
-            $numberrebookings = $DB->count_records('local_shopping_cart_history', [
-                'componentname' => 'local_shopping_cart',
-                'area' => 'rebookitem',
-                'userid' => $userid,
-            ]);
+            $rebookingperiod = get_config('local_shopping_cart', 'rebookingperiod');
+            $limitdate = strtotime(" - $rebookingperiod days ");
 
-            if ($maxnumberofrebookings >= $numberrebookings) {
+            $sql = "SELECT COUNT(id)
+                    FROM {local_shopping_cart_history}
+                    WHERE componentname = :componentname
+                    AND area = :area
+                    AND userid = :userid
+                    AND timecreated > :limitdate";
+
+            $params = [
+                'componentname' => $item->componentname,
+                'area' => $item->area,
+                'userid' => $item->userid,
+                'limitdate' => $limitdate,
+            ];
+
+            $numberrebookings = $DB->count_records_sql($sql, $params);
+
+            if ($maxnumberofrebookings <= $numberrebookings) {
                 return false;
             }
 
         }
 
+        // Finally, we have a look if allowrebooking is turned off for this particular item.
+        if ($record = $DB->get_record('local_shopping_cart_iteminfo', [
+            'componentname' => $item->componentname,
+            'area' => $item->area,
+            'itemid' => $item->itemid])) {
 
+            $jsonobject = json_decode($record->json);
+
+            if ($jsonobject && empty($jsonobject->allowrebooking)) {
+                return false;
+            }
+        }
 
         return true;
     }
