@@ -86,70 +86,85 @@ class shopping_cart_handler {
      */
     public function definition(MoodleQuickForm &$mform, array $formdata) {
 
-        if (!get_config('local_shopping_cart', 'enableinstallments')) {
-            return;
+        if (get_config('local_shopping_cart', 'enableinstallments')
+            || get_config('local_shopping_cart', 'allowrebooking')) {
+            $mform->addElement('header',
+                'sch_shoppingcartheader',
+                '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;' . get_string('pluginname', 'local_shopping_cart'));
         }
 
-        $mform->addElement('header',
-            'sch_shoppingcartheader',
-            '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;' . get_string('pluginname', 'local_shopping_cart'));
-        $mform->addElement(
-            'advcheckbox',
-            'sch_allowinstallment',
-            get_string('allowinstallment', 'local_shopping_cart'),
-            get_string('allowinstallment_help', 'local_shopping_cart')
-        );
+        // Fields for Rebooking.
+        if (get_config('local_shopping_cart', 'allowrebooking')) {
 
-        $mform->addElement(
-            'text',
-            'sch_downpayment',
-            get_string('downpayment', 'local_shopping_cart')
-        );
-        $mform->setType('sch_downpayment', PARAM_FLOAT);
-        $mform->addHelpButton('sch_downpayment', 'downpayment', 'local_shopping_cart');
-        $mform->hideIf('sch_downpayment', 'sch_allowinstallment', 'neq', "1");
-
-        $i = 1;
-        while ($i <= 30) {
-            $select[$i] = $i;
-            $i++;
+            $mform->addElement(
+                'advcheckbox',
+                'sch_allowrebooking',
+                get_string('allowrebooking', 'local_shopping_cart'),
+                get_string('allowrebooking_desc', 'local_shopping_cart')
+            );
         }
 
-        $mform->addElement(
-            'select',
-            'sch_numberofpayments',
-            get_string('numberofpayments', 'local_shopping_cart'),
-            $select
-        );
-        $mform->setType('sch_numberofpayments', PARAM_INT);
-        $mform->addHelpButton('sch_numberofpayments', 'numberofpayments', 'local_shopping_cart');
-        $mform->hideIf('sch_numberofpayments', 'sch_allowinstallment', 'neq', "1");
+        // Fields for Installments.
+        if (get_config('local_shopping_cart', 'enableinstallments')) {
+            $mform->addElement(
+                'advcheckbox',
+                'sch_allowinstallment',
+                get_string('allowinstallment', 'local_shopping_cart'),
+                get_string('allowinstallment_help', 'local_shopping_cart')
+            );
 
-        $options = [
-            'startyear' => date('Y', time()),
-            'stopyear'  => date('Y', strtotime('now + 1 year')),
-            'timezone'  => 99,
-        ];
+            $mform->addElement(
+                'text',
+                'sch_downpayment',
+                get_string('downpayment', 'local_shopping_cart')
+            );
+            $mform->setType('sch_downpayment', PARAM_FLOAT);
+            $mform->addHelpButton('sch_downpayment', 'downpayment', 'local_shopping_cart');
+            $mform->hideIf('sch_downpayment', 'sch_allowinstallment', 'neq', "1");
 
-        $mform->addElement(
-            'text',
-            'sch_duedatevariable',
-            get_string('duedatevariable', 'local_shopping_cart')
-        );
-        $mform->setDefault('sch_duedatevariable', 0);
-        $mform->setType('sch_duedatevariable', PARAM_INT);
-        $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
-        $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
+            $i = 1;
+            while ($i <= 30) {
+                $select[$i] = $i;
+                $i++;
+            }
+            $mform->addElement(
+                'select',
+                'sch_numberofpayments',
+                get_string('numberofpayments', 'local_shopping_cart'),
+                $select
+            );
+            $mform->setType('sch_numberofpayments', PARAM_INT);
+            $mform->addHelpButton('sch_numberofpayments', 'numberofpayments', 'local_shopping_cart');
+            $mform->hideIf('sch_numberofpayments', 'sch_allowinstallment', 'neq', "1");
 
-        $mform->addElement(
-            'text',
-            'sch_duedaysbeforecoursestart',
-            get_string('duedaysbeforecoursestart', 'local_shopping_cart')
-        );
-        $mform->setDefault('sch_duedaysbeforecoursestart', 0);
-        $mform->setType('sch_duedaysbeforecoursestart', PARAM_INT);
-        $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
-        $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
+            $options = [
+                'startyear' => date('Y', time()),
+                'stopyear'  => date('Y', strtotime('now + 1 year')),
+                'timezone'  => 99,
+            ];
+
+            $mform->addElement(
+                'text',
+                'sch_duedatevariable',
+                get_string('duedatevariable', 'local_shopping_cart')
+            );
+            $mform->setDefault('sch_duedatevariable', 0);
+            $mform->setType('sch_duedatevariable', PARAM_INT);
+            $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
+            $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
+            // $mform->hideIf('sch_duedatevariable', 'sch_duedaysbeforecoursestart', 'neq', "0");
+
+            $mform->addElement(
+                'text',
+                'sch_duedaysbeforecoursestart',
+                get_string('duedaysbeforecoursestart', 'local_shopping_cart')
+            );
+            $mform->setDefault('sch_duedaysbeforecoursestart', 0);
+            $mform->setType('sch_duedaysbeforecoursestart', PARAM_INT);
+            $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
+            $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
+        }
+
     }
 
     /**
@@ -185,7 +200,7 @@ class shopping_cart_handler {
             throw new moodle_exception('noitemid', 'local_shoping_cart');
         }
 
-        if (!empty($formdata->sch_allowinstallment)) {
+        if (isset($formdata->sch_allowinstallment)) {
             $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
             $this->add_key_to_jsonobject('downpayment', $formdata->sch_downpayment);
             $this->add_key_to_jsonobject('numberofpayments', $formdata->sch_numberofpayments);
@@ -198,9 +213,14 @@ class shopping_cart_handler {
                 $this->add_key_to_jsonobject('duedatevariable', $formdata->sch_duedatevariable ?? 0);
                 $this->add_key_to_jsonobject('duedaysbeforecoursestart', 0);
             }
-
-            $this->save_iteminfo();
         }
+
+        if (isset($formdata->sch_allowrebooking)) {
+
+            $this->add_key_to_jsonobject('allowrebooking', $formdata->sch_allowrebooking);
+        }
+
+        $this->save_iteminfo();
     }
 
     /**
@@ -237,6 +257,10 @@ class shopping_cart_handler {
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
         $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart;
+
+        // Rebooking.
+        $formdata->sch_allowrebooking = $jsonobject->allowrebooking
+            ?? get_config('local_shopping_cart', 'allowrebooking') ?: 0;
 
     }
 
@@ -293,6 +317,8 @@ class shopping_cart_handler {
             $data['timemodified'] = time();
             $data['usermodified'] = $USER->id;
 
+            $data['allowrebooking'] = !empty($this->jsonobject->allowrebooking) ? 1 : 0;
+
             $DB->insert_record('local_shopping_cart_iteminfo', $data);
         } else {
 
@@ -306,6 +332,8 @@ class shopping_cart_handler {
             $data['timemodified'] = time();
             $data['timecreated'] = time();
             $data['usermodified'] = $USER->id;
+
+            $data['allowrebooking'] = !empty($this->jsonobject->allowrebooking) ? 1 : 0;
 
             $DB->update_record('local_shopping_cart_iteminfo', $data);
         }
