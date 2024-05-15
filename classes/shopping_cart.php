@@ -674,13 +674,11 @@ class shopping_cart {
         // We use this flag to keep track if we have already used the credits or not.
         $creditsalreadyused = false;
 
-
         // We deal with two separate cases.
         // If we receive the data via the callback from a payment provider...
         // ... we will have an identifier and $datafromhistory will actually hold the records retrieved...
         // ... from shopping_cart_history table via this identifier.
         // If not, we need to create the identifier first, because we checkout via cashier or pay with credits.
-
 
         $context = context_system::instance();
 

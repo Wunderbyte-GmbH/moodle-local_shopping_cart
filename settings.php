@@ -421,7 +421,10 @@ if ($hassiteconfig) {
     $ADMIN->add($componentname, $taxsettings);
 
     // Setting to enable taxes processing.
-    $installmentsettings = new admin_settingpage('local_shopping_cart_installment_settings', get_string('installmentsettings', 'local_shopping_cart'));
+    $installmentsettings = new admin_settingpage(
+        'local_shopping_cart_installment_settings',
+        get_string('installmentsettings', 'local_shopping_cart')
+        );
     $installmentsettings->add(
             new admin_setting_configcheckbox($componentname . '/enableinstallments',
                     get_string('enableinstallments', 'local_shopping_cart'),

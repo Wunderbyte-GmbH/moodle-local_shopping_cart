@@ -286,14 +286,14 @@ class shopping_cart_history {
                     // We only write the old schistoryid, if we have it.
                     $data->schistoryid = $data->schistoryid ?? $id;
 
-                    // There is one exception, when we don't write to ledger.
-                    // The reason is that we want to write installments in a separate process.
-                    // if (!($data->componentname === 'local_shopping_cart'
-                    //     && strpos($data->area, 'installments') !== false)) {
+                    /* There is one exception, when we don't write to ledger.
+                     The reason is that we want to write installments in a separate process.
+                     if (!($data->componentname === 'local_shopping_cart'
+                         && strpos($data->area, 'installments') !== false)) {
 
-                    //     shopping_cart::add_record_to_ledger_table($data);
-                    // }
-
+                         shopping_cart::add_record_to_ledger_table($data);
+                     }
+                    */
                     $success = true;
 
                     $context = context_system::instance();

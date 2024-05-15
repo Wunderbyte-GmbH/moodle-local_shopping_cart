@@ -140,7 +140,6 @@ class shopping_cart_handler {
         $mform->setType('sch_duedatevariable', PARAM_INT);
         $mform->addHelpButton('sch_duedatevariable', 'duedatevariable', 'local_shopping_cart');
         $mform->hideIf('sch_duedatevariable', 'sch_allowinstallment', 'neq', "1");
-        // $mform->hideIf('sch_duedatevariable', 'sch_duedaysbeforecoursestart', 'neq', "0");
 
         $mform->addElement(
             'text',
@@ -151,7 +150,6 @@ class shopping_cart_handler {
         $mform->setType('sch_duedaysbeforecoursestart', PARAM_INT);
         $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
         $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
-        // $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_duedatevariable', 'neq', "0");
     }
 
     /**
