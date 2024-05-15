@@ -85,8 +85,8 @@ class rebookings {
                     AND timecreated > :limitdate";
 
             $params = [
-                'componentname' => $item->componentname,
-                'area' => $item->area,
+                'componentname' => 'local_shopping_cart',
+                'area' => 'rebookitem',
                 'userid' => $item->userid,
                 'limitdate' => $limitdate,
             ];
