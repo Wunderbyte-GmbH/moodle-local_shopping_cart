@@ -1306,7 +1306,8 @@ class shopping_cart {
      * @return float the total price (net or gross) of all items rounded to two decimal places
      */
     public static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
-        return round(array_reduce($items, function($sum, $item) use ($calculatenetprice) {
+
+        $price = round(array_reduce($items, function($sum, $item) use ($calculatenetprice) {
             if ($calculatenetprice) {
                 // Calculate net price.
                 if (key_exists('price_net', $item)) {
@@ -1322,8 +1323,10 @@ class shopping_cart {
                     $sum += $item['price']; // This is the gross price.
                 }
             }
-            return $sum >= 0 ? $sum : 0;
+            return $sum;
         }, 0.0), 2);
+
+        return $price >= 0 ? $price : 0;
     }
 
     /**
