@@ -600,10 +600,8 @@ class shopping_cart_history {
             if ($record->componentname === 'local_shopping_cart'
                 && $area === 'rebookitem') {
 
-                $historyitem = self::return_item_from_history($record->itemid);
-                // We switch the id of the item at this latest possible moment.
-                $record->itemid = $historyitem->itemid;
-                $record->schistoryid = $historyitem->id;
+                // We have done this before now, we don't need to do it again.
+
             } else if ($record->componentname === 'local_shopping_cart'
             && $area === 'installments') {
 
