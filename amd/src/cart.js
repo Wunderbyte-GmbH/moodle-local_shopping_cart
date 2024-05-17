@@ -890,11 +890,16 @@ export function initPriceLabel(userid) {
             // eslint-disable-next-line no-console
             console.log(event.currentTarget, event.currentTarget.checked);
 
-            if (event.currentTarget.checked) {
-                updateTotalPrice(userid, checkbox.checked, true);
-            } else {
-                updateTotalPrice(userid, checkbox.checked, false);
+            // eslint-disable-next-line no-console
+            console.log(checkbox);
+
+            let checkboxchecked = null;
+            if (checkbox) {
+                checkboxchecked = checkbox.checked;
             }
+
+            updateTotalPrice(userid, checkboxchecked, event.currentTarget.checked);
+
         });
     }
 }
