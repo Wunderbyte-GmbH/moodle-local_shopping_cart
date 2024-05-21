@@ -598,14 +598,7 @@ class shopping_cart_history {
             $addinfo = $areaarray[1] ?? null;
 
             if ($record->componentname === 'local_shopping_cart'
-                && $area === 'rebookitem') {
-
-                // We have done this before now, we don't need to do it again.
-
-            } else if ($record->componentname === 'local_shopping_cart'
             && $area === 'installments') {
-
-                $deleterecordid = $record->id;
 
                 // We retrieve the item from history and update it for the installments.
                 $historyitem = self::return_item_from_history($record->itemid);
