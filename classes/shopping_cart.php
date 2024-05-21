@@ -1213,6 +1213,8 @@ class shopping_cart {
                     'schistoryid' => $record->schistoryid ?? null,
                 ]))) {
                     // We only insert if entry does not exist yet.
+
+                    $record->timecreated = $record->timecreated ?? time();
                     $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                     cache_helper::purge_by_event('setbackcachedcashreport');
                 }
