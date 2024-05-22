@@ -254,11 +254,11 @@ class shopping_cart_handler {
 
         $jsonobject = json_decode($record->json);
 
-        $formdata->sch_allowinstallment = $jsonobject->allowinstallment;
-        $formdata->sch_downpayment = $jsonobject->downpayment;
-        $formdata->sch_numberofpayments = $jsonobject->numberofpayments;
-        $formdata->sch_duedatevariable = $jsonobject->duedatevariable;
-        $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart;
+        $formdata->sch_allowinstallment = $jsonobject->allowinstallment ?? 0;
+        $formdata->sch_downpayment = $jsonobject->downpayment ?? 0;
+        $formdata->sch_numberofpayments = $jsonobject->numberofpayments ?? 0;
+        $formdata->sch_duedatevariable = $jsonobject->duedatevariable ?? 0;
+        $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart ?? 0;
 
         // Rebooking.
         $formdata->sch_allowrebooking = $jsonobject->allowrebooking
