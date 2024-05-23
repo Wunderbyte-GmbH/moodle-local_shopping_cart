@@ -293,7 +293,7 @@ class shopping_cart_handler {
             }
         }
 
-        if (empty( $this->jsonobject)) {
+        if (!isset($this->jsonobject)) {
             $this->jsonobject = new stdClass();
         }
 
