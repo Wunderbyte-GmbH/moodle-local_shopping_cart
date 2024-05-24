@@ -511,7 +511,7 @@ $string['useinstallments'] = "Ratenzahlungen aktivieren";
 $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
 
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
-$string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung.';
+$string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung. Bitte beachten Sie, dass Ratenzahlungen nicht möglich sind, wenn nicht genügend Zeit bis zum Kursbeginn verbleibt, unter Berücksichtigung der Anzahl der Zahlungen und der Zeit zwischen den Zahlungen (Admin-Plugin-Einstellung).';
 $string['duedate'] = 'Letztes Zahlungsdatum';
 $string['duedate_help'] = 'An diesem Datum muss der volle Betrag überwiesen werden.
 Liegt das Datum 100 Tage in der Zukunft und es sind zwei Teilzalungen eingestellt,

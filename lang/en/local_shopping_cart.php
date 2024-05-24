@@ -586,13 +586,13 @@ $string['useinstallments'] = "Use installment payments";
 $string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
 
 $string['numberofpayments'] = 'Number of Payments';
-$string['numberofpayments_help'] = 'This number refers to the required payments AFTER the first payment.';
+$string['numberofpayments_help'] = "This number refers to the required payments AFTER the first payment. Please note that installments will not be possible if there isn't enough time until coursestart, considering number of payments and time between payments (admin plugin setting).";
 $string['duedate'] = 'Final payment date';
 $string['duedate_help'] = 'The full amount must be paid by this date. If the date is 100 days in the future
 and two installment payments are set, half of the remaining amount must be paid after 50 days following the
 first payment, and the rest after 100 days.';
 $string['duedatevariable'] = 'Due nr. of days after initial purchase';
-$string['duedatevariable_help'] = 'Enter the number of days after initial purchase when last payment is due';
+$string['duedatevariable_help'] = 'Enter the number of days after initial purchase when last payment is due. ';
 $string['duedaysbeforecoursestart'] = 'Due nr. of days before coursestart';
 $string['duedaysbeforecoursestart_help'] = 'Enter the number of days before course start when last payment is due';
 $string['on'] = "on";
