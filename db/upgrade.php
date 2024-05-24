@@ -30,7 +30,9 @@
  * @return bool
  */
 function xmldb_local_shopping_cart_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
+
+    require_once($CFG->dirroot . '/local/shopping_cart/db/upgradelib.php');
 
     $dbman = $DB->get_manager();
 
@@ -533,6 +535,14 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2024042401, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2024042402) {
+
+        // This is just to fix some erronous entries in the ledger, due to minor previous bugs.
+        fix_ledger_bug();
+
+        upgrade_plugin_savepoint(true, 2024042402, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
