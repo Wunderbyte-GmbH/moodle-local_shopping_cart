@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\admin_setting_taxcategories;
+use local_shopping_cart\local\uidchecker;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -538,6 +539,35 @@ if ($hassiteconfig) {
                 PARAM_FLOAT
         )
         );
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading('local_shopping_cart/uidcheckerheading',
+            get_string('uidcheckerheading', 'local_shopping_cart'),
+            get_string('uidcheckerheadingdescription', 'local_shopping_cart')
+            ));
+
+    // Checkbox to show uid check on checkout.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/showuidchecker',
+                get_string('showuidchecker', 'local_shopping_cart'),
+                get_string('showuidcheckerdescription', 'local_shopping_cart'), 0));
+
+
+    $settings->add(
+        new admin_setting_configselect($componentname . '/owncountrycode',
+                get_string('owncountrycode', $componentname),
+                get_string('owncountrycode_desc', $componentname),
+                null,
+                uidchecker::return_countrycodes_array()
+    ));
+
+     // Add a text field for the Token.
+     $settings->add(new admin_setting_configtext('local_shopping_cart/ownuidnumber',
+            get_string('ownuidnumber', 'local_shopping_cart'),
+            get_string('ownuidnumber_desc', 'local_shopping_cart'),
+            '',
+            PARAM_ALPHANUM
+    ));
 
     // Add a heading for the section.
     $settings->add(new admin_setting_heading('local_shopping_cart/privacyheading',

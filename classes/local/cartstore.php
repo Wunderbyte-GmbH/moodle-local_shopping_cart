@@ -679,6 +679,64 @@ class cartstore {
     }
 
     /**
+     * Gets the openinstallments.
+     * @param string $country
+     * @param string $uidnumber
+     * @param string $companyname
+     * @param string $street
+     * @param string $place
+     * @return bool
+     * @throws coding_exception
+     */
+    public function set_uid_data($country, $uidnumber, $companyname, $street, $place) {
+
+        $data = $this->get_cache();
+
+        $data['uidcountry'] = $country;
+        $data['uidnumber'] = $uidnumber;
+        $data['companyname'] = $companyname;
+        $data['street'] = $street;
+        $data['place'] = $place;
+
+        $this->set_cache($data);
+
+        return true;
+    }
+
+    /**
+     * Returns cached data only if uid is set.
+     * UID data has the keys uidcountry, uidnumber, companyname, street & place.
+     * @return array
+     * @throws coding_exception
+     */
+    public function get_uid_data() {
+
+        $data = $this->get_cache();
+
+        if (!$this->has_uid_data()) {
+            return [];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check if uid data is there.
+     * @return bool
+     * @throws coding_exception
+     */
+    public function has_uid_data() {
+
+        $data = $this->get_cache();
+
+        if (!empty($data['uidnumber'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns the cachekey for this user as string.
      * @return string
      */

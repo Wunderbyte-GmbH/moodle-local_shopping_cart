@@ -29,6 +29,8 @@ import {confirmPayment} from 'local_shopping_cart/cashier';
 import {discountModal} from 'local_shopping_cart/cashier';
 import {showNotification} from 'local_shopping_cart/notifications';
 
+import DynamicForm from 'core_form/dynamicform';
+
 import {
     get_strings as getStrings,
     get_string as getString
@@ -60,6 +62,7 @@ const SELECTORS = {
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
     ACCEPTTERMS: '#accepttermsnandconditions',
+    CHECKUIDFORM: 'div.form_uidchecker',
 };
 /**
  *
@@ -131,6 +134,32 @@ const SELECTORS = {
     if (accepttermsbutton && paymentbutton) {
         addAcceptTermsListener(accepttermsbutton, paymentbutton);
     }
+
+    initUidChecker();
+};
+
+const initUidChecker = () => {
+
+    const uidchecker = document.querySelector(SELECTORS.CHECKUIDFORM);
+
+    if (uidchecker) {
+        const uidcheckerform = new DynamicForm(
+            uidchecker,
+            'local_shopping_cart\\form\\dynamicuidchecker'
+        );
+
+        // After submitting we want to reload the window to update the rule list.
+        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, () => {
+
+
+            reinit();
+            // eslint-disable-next-line no-console
+            console.log('form submitted');
+
+            confirmZeroPriceCheckoutModal();
+        });
+    }
+
 };
 
 export const buttoninit = (itemid, component, area) => {
@@ -651,12 +680,28 @@ export function addItemShowNotification(data) {
  *
  * @param {*} event
  */
-function dealWithZeroPrice(event) {
+async function dealWithZeroPrice(event) {
 
     event.stopPropagation();
     event.preventDefault();
 
-    confirmZeroPriceCheckoutModal(event.target);
+    const uidchecker = document.querySelector(SELECTORS.CHECKUIDFORM);
+
+    const uidcheckerform = new DynamicForm(
+        uidchecker,
+        'local_shopping_cart\\form\\dynamicuidchecker'
+    );
+
+    if (uidcheckerform) {
+        const result = await uidcheckerform.submitFormAjax();
+        // eslint-disable-next-line no-console
+        console.log('afterformsubmitted', result);
+    } else {
+        // eslint-disable-next-line no-console
+        console.log('afterformsubmitted');
+
+        confirmZeroPriceCheckoutModal(event.target);
+    }
 }
 
 /**

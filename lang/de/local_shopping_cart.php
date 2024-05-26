@@ -539,3 +539,55 @@ $string['reminderdaysbefore_desc'] = "Die eingestellte Anzahl Tage vor fälliger
 $string['installmentpaymentisdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['installmentpaymentwasdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
+
+// Uid checker.
+$string['uidcheckerheading'] = "UID überprüfen";
+$string['uidcheckerheadingdescription'] = "Vor dem Zahlen kann eine UID eingegeben und überprüft werden";
+$string['showuidchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls auf Umsatzsteuer";
+$string['showuidcheckerdescription'] = "Bei erfolgreicher Überprüfung kann auf die Einhebung der Umsatzsteuer verzichtet werden";
+
+$string['checkuidcountrycode'] = "Wählen Sie Ihr Land";
+$string['checkuidnumber'] = "Geben Sie Ihre UID Nummer";
+$string['owncountrycode'] = "Land der eigenen Firma";
+$string['owncountrycode_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
+$string['ownuidnumber'] = "UID Nummer der eigenen Firma";
+$string['ownuidnumber_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
+
+$string['useuid'] = "UID eingeben";
+$string['nouid'] = "Keine UID verwenden";
+$string['verify'] = "UID prüfen";
+$string['enteruid'] = 'Sie können Ihre Umsatzsteuer-ID eingeben, wenn Sie für ein Unternehmen einkaufen.';
+
+$string['errorselectcountry'] = 'Bitte Land auswählen';
+$string['errorinvaliduid'] = 'Die übermittelte UID {$a} ist ungültig';
+
+$string['at'] = "Österreich";
+$string['be'] = "Belgien";
+$string['bg'] = "Bulgarien";
+$string['cy'] = "Zypern";
+$string['cz'] = "Tschechien";
+$string['de'] = "Deutschland";
+$string['dk'] = "Dänemark";
+$string['ee'] = "Estland";
+$string['el'] = "Griechenland";
+$string['es'] = "Spanien";
+$string['fi'] = "Finnland";
+$string['fr'] = "Frankreich";
+$string['hr'] = "Kroatien";
+$string['hu'] = "Ungarn";
+$string['ie'] = "Irland";
+$string['it'] = "Italien";
+$string['lu'] = "Luxemburg";
+$string['lv'] = "Lettland";
+$string['lt'] = "Litauen";
+$string['mt'] = "Malta";
+$string['nl'] = "Niederlande";
+$string['pl'] = "Polen";
+$string['pt'] = "Portugal";
+$string['ro'] = "Rumänien";
+$string['se'] = "Schweden";
+$string['si'] = "Slowenien";
+$string['sk'] = "Slowakei";
+$string['gb'] = "Vereinigtes Königreich";
+$string['xi'] = "Nordirland";
+$string['eu'] = "Europäische Union";

@@ -24,6 +24,7 @@
  */
 
 use core\plugininfo\cachestore;
+use local_shopping_cart\form\dynamicuidchecker;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -121,14 +122,6 @@ if (isset($success)) {
     // Only if there are items in the cart, we check if we need to add booking fee.
     $cartstore = cartstore::instance($userid);
 
-    // TODO: @georgmaisser Empty if statement, so I had to comment this out.
-    // Is this still needed?
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* if ($cartstore->has_items()) {
-        // Make sure we have the fee (if we need it!).
-        // shopping_cart_bookingfee::add_fee_to_cart($userid);
-    } */
-
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $userid);
 
@@ -137,6 +130,15 @@ if (isset($success)) {
     // The modifier "checkout" prepares our data for the checkout page.
     // During this process,the new identifier is created, if necessary.
     checkout::prepare_checkout($data);
+
+    // We add the uidcheckerform here, if necessary.
+    if (get_config('local_shopping_cart', 'showuidchecker')
+        && !empty(get_config('local_shopping_cart', 'owncountrycode')
+        && !empty(get_config('local_shopping_cart', 'ownuidnumber')))) {
+        $uidchecker = new dynamicuidchecker();
+        $uidchecker->set_data_for_dynamic_submission();
+        $data['showuidchecker'] = $uidchecker->render();
+    }
 }
 
 if (empty($jsononly)) {

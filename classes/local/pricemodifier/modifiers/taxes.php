@@ -27,6 +27,8 @@ namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use dml_exception;
 use coding_exception;
+use context_system;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\taxcategories;
@@ -61,7 +63,7 @@ abstract class taxes extends modifier_base {
                     get_config('local_shopping_cart', 'defaulttaxcategory'),
                     get_config('local_shopping_cart', 'taxcategories')
             );
-            $data['items'] = shopping_cart::update_item_price_data(array_values($data['items']), $taxcategories);
+            $data['items'] = self::update_item_price_data(array_values($data['items']), $taxcategories, $data['userid']);
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);
             $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
             $data['initialtotal'] = $data['price'];
@@ -71,5 +73,70 @@ abstract class taxes extends modifier_base {
         $data['taxesenabled'] = $taxesenabled;
 
         return $data;
+    }
+
+    /**
+     * Enriches the cart item with tax information if given
+     *
+     * @param array $items array of cart items
+     * @param taxcategories|null $taxcategories
+     * @return array
+     */
+    public static function update_item_price_data(
+            array $items,
+            ?taxcategories $taxcategories,
+            int $userid): array {
+
+        $countrycode = null; // TODO get countrycode from user info.
+
+        $context = context_system::instance();
+
+        $cartstore = cartstore::instance($userid);
+
+        foreach ($items as $key => $item) {
+
+            if ($taxcategories) {
+
+                $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
+                if ($taxpercent >= 0) {
+                    $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
+                    if ($itemisnet) {
+                        $netprice = $items[$key]['price']; // Price is now considered a net price.
+
+                        if ($cartstore->has_uid_data()) {
+                            $grossprice = $netprice;
+                            $taxpercent = 0;
+                        } else {
+                            $grossprice = round($netprice * (1 + $taxpercent), 2);
+                        }
+                        $items[$key]['price_net'] = $netprice;
+                        $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    } else {
+                        $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
+
+                        if ($cartstore->has_uid_data()) {
+                            $grossprice = $netprice;
+                            $taxpercent = 0;
+                        } else {
+                            $grossprice = $items[$key]['price'];
+                        }
+
+                        $items[$key]['price_net'] = $netprice;
+                        $items[$key]['price'] = $grossprice; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    }
+                    $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
+                    $items[$key]['taxpercentage'] = round($taxpercent, 2);
+                }
+            }
+        }
+        return $items;
     }
 }

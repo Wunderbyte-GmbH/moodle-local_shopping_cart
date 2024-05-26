@@ -159,6 +159,11 @@
         <div class="sc_price_label" data-userid="{{userid}}">
             {{> local_shopping_cart/price_label }}
         </div>
+        {{#showuidchecker}}
+            <div class="form_uidchecker mt-2 d-flex justify-content-end">
+                {{{showuidchecker}}}
+            </div>
+        {{/showuidchecker}}
         {{#termsandconditions}}
         <div class="form_termsandconditions mt-2 d-flex justify-content-end">
             <div class="form-group">
