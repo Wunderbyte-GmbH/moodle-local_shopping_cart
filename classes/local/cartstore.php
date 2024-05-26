@@ -737,6 +737,31 @@ class cartstore {
     }
 
     /**
+     * Gets the openinstallments.
+     * @param string $country
+     * @param string $uidnumber
+     * @param string $companyname
+     * @param string $street
+     * @param string $place
+     * @return bool
+     * @throws coding_exception
+     */
+    public function delete_uid_data() {
+
+        $data = $this->get_cache();
+
+        unset($data['uidcountry']);
+        unset($data['uidnumber']);
+        unset($data['companyname']);
+        unset($data['street']);
+        unset($data['place']);
+
+        $this->set_cache($data);
+
+        return true;
+    }
+
+    /**
      * Returns the cachekey for this user as string.
      * @return string
      */

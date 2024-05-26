@@ -149,14 +149,12 @@ const initUidChecker = () => {
         );
 
         // After submitting we want to reload the window to update the rule list.
-        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, () => {
-
+        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, (e) => {
 
             reinit();
+            uidcheckerform.load(e.data);
             // eslint-disable-next-line no-console
             console.log('form submitted');
-
-            confirmZeroPriceCheckoutModal();
         });
     }
 
@@ -685,23 +683,7 @@ async function dealWithZeroPrice(event) {
     event.stopPropagation();
     event.preventDefault();
 
-    const uidchecker = document.querySelector(SELECTORS.CHECKUIDFORM);
-
-    const uidcheckerform = new DynamicForm(
-        uidchecker,
-        'local_shopping_cart\\form\\dynamicuidchecker'
-    );
-
-    if (uidcheckerform) {
-        const result = await uidcheckerform.submitFormAjax();
-        // eslint-disable-next-line no-console
-        console.log('afterformsubmitted', result);
-    } else {
-        // eslint-disable-next-line no-console
-        console.log('afterformsubmitted');
-
-        confirmZeroPriceCheckoutModal(event.target);
-    }
+    confirmZeroPriceCheckoutModal(event.target);
 }
 
 /**

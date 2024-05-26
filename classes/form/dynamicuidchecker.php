@@ -44,6 +44,8 @@ class dynamicuidchecker extends dynamic_form {
      */
     public function definition() {
 
+        global $USER;
+
         $mform = $this->_form;
 
         $mform->addElement('static', 'enteruid', '', get_string('enteruid', 'local_shopping_cart'));
@@ -62,6 +64,18 @@ class dynamicuidchecker extends dynamic_form {
             ['class' => 'uidchecker-submitbutton']
         );
         $mform->hideIf('submitbutton', 'useuid', 'neq', '1');
+
+        $cartstore = cartstore::instance($USER->id);
+        if ($cartstore->has_uid_data()) {
+            $uiddata = $cartstore->get_uid_data();
+            $mform->addElement('static',
+                'printuiddata',
+                '',
+                $uiddata['companyname'] . "<br>"
+                . $uiddata['street'] . "<br>"
+                . $uiddata['place'] . "<br>");
+
+        }
 
     }
 
@@ -92,21 +106,27 @@ class dynamicuidchecker extends dynamic_form {
         // If the user has entered a valid UID, we retrieve here the data fetched during validation.
         if (!empty(uidchecker::$uiddataset)) {
 
-            // In order to have all the relevant data on our Invoice, we save this here.
-            $address = uidchecker::$uiddataset->address;
-            list($street, $city) = explode(PHP_EOL, $address);
-            $data->name = uidchecker::$uiddataset->name;
-            $data->street = $street;
-            $data->city = $city;
-
             $cartstore = cartstore::instance($USER->id);
-            $cartstore->set_uid_data(
-                uidchecker::$uiddataset->countryCode,
-                uidchecker::$uiddataset->vatNumber,
-                uidchecker::$uiddataset->name,
-                $street,
-                $city);
 
+            if (uidchecker::$uiddataset->vatNumber === false) {
+
+                $cartstore->delete_uid_data();
+
+            } else  {
+                // In order to have all the relevant data on our Invoice, we save this here.
+                $address = uidchecker::$uiddataset->address;
+                list($street, $city) = explode(PHP_EOL, $address);
+                $data->name = uidchecker::$uiddataset->name;
+                $data->street = $street;
+                $data->city = $city;
+
+                $cartstore->set_uid_data(
+                    uidchecker::$uiddataset->countryCode,
+                    uidchecker::$uiddataset->vatNumber,
+                    uidchecker::$uiddataset->name,
+                    $street,
+                    $city);
+            }
         }
 
         return $data;
@@ -124,17 +144,20 @@ class dynamicuidchecker extends dynamic_form {
      */
     public function set_data_for_dynamic_submission(): void {
 
-        global $USER, $CFG;
+        global $USER;
+
         $data = new stdClass();
 
         $cartstore = cartstore::instance($USER->id);
 
         if ($cartstore->has_uid_data()) {
             $uiddata = $cartstore->get_uid_data();
-        }
 
-        $data->checkuidcountrycode = $uiddata['uidcountry'];
-        $data->checkuidnumber = $uiddata['uidnumber'];
+            $data->useuid = 1;
+            $data->checkuidcountrycode = $uiddata['uidcountry'];
+            $data->checkuidnumber = $uiddata['uidnumber'];
+
+        }
 
         $this->set_data($data);
     }
@@ -182,9 +205,18 @@ class dynamicuidchecker extends dynamic_form {
         // If there actually is a UID number... we check online.
         if (!empty($data['useuid'])) {
 
-            if ($data['checkuidcountrycode'] == 'nouid') {
+            if ($data['checkuidcountrycode'] == 'nouid'
+                && !empty($data['checkuidnumber'])) {
                 $errors['checkuidcountrycode'] = get_string('errorselectcountry', 'local_shopping_cart');
-            } else {
+            } else if ($data['checkuidcountrycode'] == 'nouid'
+                && empty($data['checkuidnumber'])) {
+
+                uidchecker::$uiddataset = (object)[
+                    'vatNumber' => false,
+                    'countryCode' => false,
+                ];
+            }
+            else {
                 $response = uidchecker::check_uid_number(
                     $data['checkuidcountrycode'],
                     $data['checkuidnumber'],
