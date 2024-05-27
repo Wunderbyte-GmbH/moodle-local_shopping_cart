@@ -148,13 +148,33 @@ const initUidChecker = () => {
             'local_shopping_cart\\form\\dynamicuidchecker'
         );
 
-        // After submitting we want to reload the window to update the rule list.
-        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, (e) => {
+        uidcheckerform.addEventListener('change', (e) => {
 
-            reinit();
-            uidcheckerform.load(e.data);
+            // eslint-disable-next-line no-console
+            console.log(e.target.checked, e.target.name);
+
+            if (!e.target.name) {
+                return;
+            }
+
+            if (e.target.name == 'useuid'
+                && e.target.checked === false) {
+
+                // eslint-disable-next-line no-console
+                console.log(e.target.value);
+
+                uidcheckerform.submitFormAjax();
+            }
+        });
+
+        // After submitting we want to reload the window to update the rule list.
+        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, () => {
+
+            uidcheckerform.load();
             // eslint-disable-next-line no-console
             console.log('form submitted');
+
+            reinit();
         });
     }
 
@@ -420,8 +440,15 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
     }
 
     // We must make sure the checkbox is only once visible on the site.
-    // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
-    usecredit = usecredit ? 1 : 0;
+    const checkboxes = document.querySelectorAll(SELECTORS.PRICELABELCHECKBOX);
+
+    if (checkboxes.length == 1) {
+        checkboxes.forEach(checkbox => {
+            usecredit = checkbox.checked ? 1 : 0;
+        });
+    } else {
+        usecredit = usecredit ? 1 : 0;
+    }
     useinstallments = useinstallments ? 1 : 0;
 
     Ajax.call([{

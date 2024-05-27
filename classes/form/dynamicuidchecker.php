@@ -146,6 +146,9 @@ class dynamicuidchecker extends dynamic_form {
 
         global $USER;
 
+        $ajaxformdata = $this->_ajaxformdata;
+        $mform = $this->_form;
+
         $data = new stdClass();
 
         $cartstore = cartstore::instance($USER->id);
@@ -157,6 +160,10 @@ class dynamicuidchecker extends dynamic_form {
             $data->checkuidcountrycode = $uiddata['uidcountry'];
             $data->checkuidnumber = $uiddata['uidnumber'];
 
+        } else if (!empty($mform->getSubmitValue('checkuidnumber'))) {
+            $data->useuid = 1;
+            // $data->checkuidcountrycode = $mform->getSubmitValue('checkuidnumber');
+            // $data->checkuidnumber = $mform->getSubmitValue('checkuidcountrycode');
         }
 
         $this->set_data($data);
@@ -233,6 +240,11 @@ class dynamicuidchecker extends dynamic_form {
                 }
 
             }
+        } else {
+            uidchecker::$uiddataset = (object)[
+                'vatNumber' => false,
+                'countryCode' => false,
+            ];
         }
 
         return $errors;
