@@ -34,7 +34,8 @@ function fix_ledger_bug() {
     $sql = "SELECT sch.*
         FROM {local_shopping_cart_history} sch
         LEFT JOIN {local_shopping_cart_ledger} scl ON sch.identifier = scl.identifier AND sch.itemid = scl.itemid
-        WHERE sch.paymentstatus = 2 AND scl.id IS NULL AND sch.timemodified > 1711925988 AND sch.timemodified < 1715779807";
+        WHERE sch.paymentstatus = 2 AND scl.id IS NULL
+        AND sch.timemodified > 1711925988 AND sch.timemodified < 1715779807";
 
     $records = $DB->get_records_sql($sql);
 
@@ -47,9 +48,9 @@ function fix_ledger_bug() {
         $DB->insert_record('local_shopping_cart_ledger', $record);
     }
 
-    $sql = "SELECT sch.*
-            FROM {local_shopping_cart_ledger}
-            WHERE sch.timecreated IS NULL AND sch.timemodified IS NOT NULL";
+    $sql = "SELECT scl.*
+            FROM {local_shopping_cart_ledger} scl
+            WHERE scl.timecreated IS NULL AND scl.timemodified IS NOT NULL";
 
     $records = $DB->get_records_sql($sql);
 

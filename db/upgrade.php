@@ -537,12 +537,12 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024042401, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2024042402) {
+    if ($oldversion < 2024052900) {
 
         // This is just to fix some erronous entries in the ledger, due to minor previous bugs.
         fix_ledger_bug();
 
-        upgrade_plugin_savepoint(true, 2024042402, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2024052900, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
