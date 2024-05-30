@@ -62,7 +62,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
         $cachedeleted = false;
 
         try {
-            $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier, true);
+            $shoppingcart = $sc->fetch_data_from_schistory_cache($cartidentifier);
         } catch (\Exception $e) {
             $cachedeleted = true;
         }

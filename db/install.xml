@@ -1,109 +1,122 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/shopping_cart/db" VERSION="2022121200" COMMENT="XMLDB file for Moodle local/shopping_cart"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+<XMLDB PATH="local/shopping_cart/db" VERSION="20230215" COMMENT="XMLDB file for Moodle local/shopping_cart"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
-    <TABLES>
-        <TABLE NAME="local_shopping_cart_history" COMMENT="Shopping Cart History">
-            <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
-                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the user who optained something."/>
-                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the item bought."/>
-                <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
-                <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Item price."/>
-                <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3"
-                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
-                <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
-                       COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
-                <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
-                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Applied discount."/>
-                <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
-                <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
-                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
-                <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of payment."/>
-                <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
-                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>
-                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
-                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="serviceperiodstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
-                       COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
-                <FIELD NAME="serviceperiodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
-                       COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
-                <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
-            </FIELDS>
-            <KEYS>
-                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-            </KEYS>
-            <INDEXES>
-                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
-                <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
-                <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in JOIN"/>
-                <INDEX NAME="usepay" UNIQUE="false" FIELDS="userid,paymentstatus" COMMENT="Userid and paymentstatus used in WHERE"/>
-            </INDEXES>
-        </TABLE>
-        <TABLE NAME="local_shopping_cart_credits" COMMENT="Shopping Cart Credits">
-            <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
-                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the concerned user."/>
-                <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Credits."/>
-                <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
-                <FIELD NAME="balance" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Balance after this booking."/>
-                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>
-                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
-                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-            </FIELDS>
-            <KEYS>
-                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-            </KEYS>
-            <INDEXES>
-                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
-                <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
-                <INDEX NAME="userid-currency" UNIQUE="false" FIELDS="userid, currency" COMMENT="userid and currency used in WHERE"/>
-            </INDEXES>
-        </TABLE>
-        <TABLE NAME="local_shopping_cart_ledger" COMMENT="This ledger only supports insert and works as a reliable record of all payments.">
-            <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the user who bought the item."/>
-                <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the bought item."/>
-                <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
-                <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
-                       COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
-                <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3"
-                       COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
-                <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
-                       COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
-                <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
-                <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
-                       COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
-                <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
-                       COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
-                <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
-                       COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
-                <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>
-                <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like mod_booking."/>
-                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"
-                       COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
-                <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The type of payment."/>
-                <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
-                <FIELD NAME="accountid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the moodle payment account used."/>
-                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"
-                       COMMENT="Which user actually effectuated the transaction (might have been cashier)"/>
-                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
-            </FIELDS>
-            <KEYS>
-                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-            </KEYS>
-            <INDEXES>
-                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
-                <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
-                <INDEX NAME="itemid" UNIQUE="false" FIELDS="itemid" COMMENT="Itemid used in transaction"/>
-                <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in JOIN"/>
-            </INDEXES>
-        </TABLE>
-    </TABLES>
+  <TABLES>
+    <TABLE NAME="local_shopping_cart_history" COMMENT="Shopping Cart History">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the user who optained something."/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the item bought."/>
+        <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
+        <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Item price."/>
+        <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3" COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
+        <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4" COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
+        <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+        <FIELD NAME="taxcountrycode" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="country code of the country used for tax calculation."/>
+        <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Applied discount."/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
+        <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Component which provided the item."/>
+        <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Identifier of the cart checkout process."/>
+        <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of payment."/>
+        <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="serviceperiodstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
+        <FIELD NAME="serviceperiodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The period over which an item is consumed (e.g. a course subscription)."/>
+        <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
+        <FIELD NAME="address_billing" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the billing address used for this purchase"/>
+        <FIELD NAME="address_shipping" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the shipping address used for this purchase"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
+        <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
+        <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in JOIN"/>
+        <INDEX NAME="usepay" UNIQUE="false" FIELDS="userid, paymentstatus" COMMENT="Userid and paymentstatus used in WHERE"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shopping_cart_credits" COMMENT="Shopping Cart Credits">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the concerned user."/>
+        <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Credits."/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency in which it was paid."/>
+        <FIELD NAME="balance" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Balance after this booking."/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The user who effected the transaction."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this entry was created."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
+        <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
+        <INDEX NAME="userid-currency" UNIQUE="false" FIELDS="userid, currency" COMMENT="userid and currency used in WHERE"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shopping_cart_ledger" COMMENT="This ledger only supports insert and works as a reliable record of all payments.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the user who bought the item."/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Id of the bought item."/>
+        <FIELD NAME="itemname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the item bought"/>
+        <FIELD NAME="price" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="The actually paid price of the item (discount is substracted). Negative values normally appear for cancelation and cashback."/>
+        <FIELD NAME="tax" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="3" COMMENT="Tax applied to this item $price as an absolute value in $currency. Net price = $price - $tax"/>
+        <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4" COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
+        <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+        <FIELD NAME="taxcountrycode" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="country code of the country used for tax calculation."/>
+        <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
+        <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Credits used for payment. Negativ credits are given to a user, normally in exchange for cancelation."/>
+        <FIELD NAME="fee" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2" COMMENT="Fees are only saved during cancelation, when price goes back to the user, but a cancelation fee is kept."/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Currency which was used to pay this item."/>
+        <FIELD NAME="componentname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the component which provided the item, like mod_booking."/>
+        <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The identifier is used during checkout to identify a whole cart. Many items can be bought with the same identifier."/>
+        <FIELD NAME="payment" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The type of payment."/>
+        <FIELD NAME="paymentstatus" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Was the transaction successful or not?"/>
+        <FIELD NAME="accountid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Id of the moodle payment account used."/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Which user actually effectuated the transaction (might have been cashier)"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="canceluntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="One component can provide different areas with independent ids."/>
+        <FIELD NAME="address_billing" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the billing address used for this purchase"/>
+        <FIELD NAME="address_shipping" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the shipping address used for this purchase"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who made transaction"/>
+        <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified" COMMENT="Userid who modified entry"/>
+        <INDEX NAME="itemid" UNIQUE="false" FIELDS="itemid" COMMENT="Itemid used in transaction"/>
+        <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in JOIN"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_shopping_cart_address" COMMENT="Shopping Cart Addresses provided by the user">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Userid of the user this address belongs to"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Full name of the user"/>
+        <FIELD NAME="state" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="address" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="Street and house number / floor (optional) / studio (optional)"/>
+        <FIELD NAME="address2" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="Additional address details (optional)"/>
+        <FIELD NAME="city" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="City"/>
+        <FIELD NAME="zip" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Zip code"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Phone number in international format"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid the address belongs to"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
 </XMLDB>

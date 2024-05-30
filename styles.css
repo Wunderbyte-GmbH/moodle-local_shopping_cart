@@ -294,12 +294,6 @@
     display: none;
 }
 
-/* The payment button checkout must be a little bit below. */
-#page-local-shopping_cart-checkout div.shopping_cart_payment_region {
-    padding-top: 50px;
-    padding-bottom: 50px;
-}
-
 #page-local-shopping_cart-checkout .wunderbyteTableJavascript ul {
     padding: 0;
     border-top: 1px solid var(--primary);
@@ -318,6 +312,22 @@
 
 #page-local-shopping_cart-checkout #region-main-box #success #litotalprice {
     color: var(--success);
+}
+
+#page-local-shopping_cart-checkout .selectedaddresses {
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#page-local-shopping_cart-checkout .selectedaddresses .selectedaddress:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+#page-local-shopping_cart-checkout .selectedaddresses .selectedaddress .addresslabel {
+    font-weight: bold;
 }
 
 #shopping_cart-cashiers-cart div.shopping-cart-cashier-items-container img.sc-cart-item-image {
@@ -351,4 +361,20 @@ div.shopping-cart-items-container div.item-description {
 
 .shopping-cart-items .item-button:hover {
     color: rgb(29, 33, 37);
+}
+
+
+.addressselection .requiredaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.addressselection .savedaddress {
+    border: 1px solid rgba(0, 0, 0, .125);
+    padding: 5px;
+}
+
+#page-local-shopping_cart-address .modal-form-dialogue .form-inline .form-control {
+    width: 100%;
 }

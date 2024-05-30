@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
@@ -107,9 +108,37 @@ if (empty($data['currency'])) {
     $data['currency'] = $scdata['currency'] ?? '';
 }
 
-$data['successurl'] = $sp->get_success_url('shopping_cart', (int)$scdata['identifier'])->out(false);
+$data['successurl'] = $sp->get_success_url('shopping_cart', (int) $scdata['identifier'])->out(false);
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+// Address handling.
+$requiredaddresskeys = addresses::get_required_address_keys();
+$requriedaddresses = addresses::get_required_address_data();
+$countries = get_string_manager()->get_list_of_countries();
+$hasallrequiredaddresses = true;
+$selectedaddresses = [];
+foreach ($requiredaddresskeys as $addresstype) {
+    $addressid = $data["address_" . $addresstype];
+    if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
+        $address = addresses::get_address_for_user($userid, $addressid);
+        if ($address !== false) {
+            $address->label = ucfirst($requriedaddresses[$addresstype]['addresslabel']);
+            $address->country = $countries[$address->state];
+            $selectedaddresses[] = get_object_vars($address);
+        } else {
+            // There was an error loading the address from db.
+            $hasallrequiredaddresses = false;
+        }
+    } else {
+        $hasallrequiredaddresses = false;
+    }
+}
+if ($hasallrequiredaddresses) {
+    $data['selected_addresses'] = $selectedaddresses;
+    $data['show_selected_addresses'] = true;
+}
+$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

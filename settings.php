@@ -116,15 +116,27 @@ if ($hassiteconfig) {
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-        new admin_setting_configcheckbox($componentname . '/calculateconsumation',
-                get_string('calculateconsumation', 'local_shopping_cart'),
-                get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
+            new admin_setting_configcheckbox($componentname . '/calculateconsumation',
+                    get_string('calculateconsumation', 'local_shopping_cart'),
+                    get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
             new admin_setting_configcheckbox($componentname . '/rounddiscounts',
                     get_string('rounddiscounts', 'local_shopping_cart'),
                     get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
+
+    // Setting to enable address processing during checkout.
+    $settings->add(
+            new admin_setting_configmulticheckbox($componentname . '/addresses_required',
+                    get_string('addresses_required:title', 'local_shopping_cart'),
+                    get_string('addresses_required:desc', 'local_shopping_cart'),
+                    [""],
+                    [
+                            'billing' => ucfirst(get_string('addresses:billing', 'local_shopping_cart')),
+                            'shipping' => ucfirst(get_string('addresses:shipping', 'local_shopping_cart'))
+                    ]
+            ));
 
     $settings->add(
             new admin_setting_confightmleditor(
