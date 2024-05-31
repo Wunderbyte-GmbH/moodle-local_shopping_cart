@@ -126,4 +126,17 @@ class uidchecker {
             'EU' => get_string('eu', 'local_shopping_cart'),
         ];
     }
+
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $countrykey
+     * @return array
+     */
+    public static function is_european($countrykey) {
+        $countries = self::return_countrycodes_array();
+        if (isset($countries[$countrykey])) {
+            return true;
+        }
+        return false;
+    }
 }

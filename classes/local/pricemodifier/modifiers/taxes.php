@@ -30,6 +30,7 @@ use coding_exception;
 use context_system;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\local\uidchecker;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\taxcategories;
 
@@ -87,12 +88,9 @@ abstract class taxes extends modifier_base {
             ?taxcategories $taxcategories,
             int $userid): array {
 
-        $countrycode = null; // TODO get countrycode from user info.
-
-        $context = context_system::instance();
-
         $cartstore = cartstore::instance($userid);
-
+        $countrycode = $cartstore->get_countrycode();
+        //get_taxcode
         foreach ($items as $key => $item) {
 
             if ($taxcategories) {
@@ -100,10 +98,11 @@ abstract class taxes extends modifier_base {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent >= 0) {
                     $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
+                    $iseuropean = uidchecker::is_european($countrycode);
                     if ($itemisnet) {
                         $netprice = $items[$key]['price']; // Price is now considered a net price.
 
-                        if ($cartstore->has_uid_data()) {
+                        if ($iseuropean && $cartstore->has_uid_data()) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {
@@ -118,7 +117,7 @@ abstract class taxes extends modifier_base {
                     } else {
                         $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
 
-                        if ($cartstore->has_uid_data()) {
+                        if ($iseuropean && $cartstore->has_uid_data()) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {

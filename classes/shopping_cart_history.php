@@ -349,6 +349,8 @@ class shopping_cart_history {
      * @param int|null $schistoryid
      * @param int|null $installments
      * @param string|null $json
+     * @param int|null $addressbilling
+     * @param int|null $addressshipping
      * @return int
      * @throws dml_exception
      * @throws coding_exception
@@ -376,7 +378,9 @@ class shopping_cart_history {
             int $usermodified = null,
             int $schistoryid = null,
             int $installments = null,
-            string $json = null) {
+            string $json = null,
+            int $addressbilling = null,
+            int $addressshipping = null) {
 
         global $USER;
 
@@ -408,6 +412,8 @@ class shopping_cart_history {
         $data->schistoryid = $schistoryid;
         $data->installments = $installments;
         $data->json = $json;
+        $data->address_billing = $addressbilling;
+        $data->address_shipping = $addressshipping;
 
         return self::write_to_db($data);
     }
@@ -729,7 +735,7 @@ class shopping_cart_history {
         }
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->set('schistorycache', $dataarray);
+        $cache->set('schistorycache', $data);
 
         return true;
     }
@@ -751,7 +757,6 @@ class shopping_cart_history {
         }
 
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
-
             self::write_to_db((object)$shoppingcart);
 
             $shoppingcart['storedinhistory'] = true;

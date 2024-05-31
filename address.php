@@ -23,6 +23,7 @@
  */
 
 use local_shopping_cart\addresses;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -48,7 +49,6 @@ $PAGE->set_heading(get_string('addresses:heading', 'local_shopping_cart'));
 $PAGE->set_pagelayout('standard');
 
 $data = addresses::get_template_render_data();
-
 // Handle form submit, when user selected new address(es).
 if (isset($_POST['submit'])) {
     require_sesskey();
@@ -68,7 +68,10 @@ if (isset($_POST['submit'])) {
         $data['show_error'] = get_string('addresses:selectionrequired', 'local_shopping_cart');
     } else {
         $userid = $USER->id;
-        shopping_cart::local_shopping_cart_save_address_in_cache($userid, $selectedaddressdbids);
+
+        $cartstore = cartstore::instance($userid);
+        $cartstore->local_shopping_cart_save_address_in_cache($selectedaddressdbids);
+
         redirect($CFG->wwwroot . '/local/shopping_cart/checkout.php', '', 0);
     }
 }

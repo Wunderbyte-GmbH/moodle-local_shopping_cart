@@ -27,8 +27,6 @@ namespace local_shopping_cart\output;
 
 use core_user;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_history;
 use moodle_url;
 use renderable;
 use renderer_base;

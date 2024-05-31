@@ -346,38 +346,6 @@ class shopping_cart {
     }
 
     /**
-     * Saves the selected addres ids ($selectedaddressesdbids) in the shopping cart cache.
-     *
-     * @param int $userid
-     * @param array $selectedaddressesdbids the addresses the user selected for this shopping cart
-     */
-    public static function local_shopping_cart_save_address_in_cache(int $userid, array $selectedaddressesdbids) {
-        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
-        $cachekey = $userid . '_shopping_cart';
-
-        $cachedrawdata = $cache->get($cachekey);
-        if ($cachedrawdata) {
-            $taxcountrycode = null; // Most probable tax country.
-            $billingaddressid = null; // Most probable billing address.
-            foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
-                $cachedrawdata["address_" . $addreskey] = intval($addressdbid);
-            }
-            if (isset($cachedrawdata["address_billing"])) {
-                // Override guessed billing address id if there is a dedicated billing address set.
-                $billingaddressid = $cachedrawdata["address_billing"];
-            }
-
-            if ($billingaddressid != null) {
-                $billingaddress = addresses::get_address_for_user($userid, $billingaddressid);
-                $taxcountrycode = $billingaddress->state;
-            }
-            $cachedrawdata["taxcountrycode"] = $taxcountrycode;
-
-            $cache->set($cachekey, $cachedrawdata);
-        }
-    }
-
-    /**
      * This is to unload all the items from the cart.
      * In the first instance, this is about cached items.
      *
@@ -574,118 +542,6 @@ class shopping_cart {
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid]);
-    }
-
-    /**
-     * Function local_shopping_cart_get_cache_data
-     * This function returns all the item and calculates live the price for them.
-     * This function also supports the credit system of this moodle.
-     * If usecredit is true, the credit of the user is substracted from price...
-     * ... and supplementary information about the subtraction is returned.
-     *
-     * @param int|null $userid
-     * @param bool $usecredit
-     * @return array
-     */
-    public static function local_shopping_cart_get_cache_data(int $userid, $usecredit = null): array {
-        global $USER, $CFG;
-
-        if (empty($userid)) {
-            $userid = $USER->id;
-        }
-
-        $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-
-        $cartstore = cartstore::instance($userid);
-
-        // If we have cachedrawdata, we need to check the expiration date.
-        if ($cachedrawdata) {
-            if (isset($cachedrawdata['expirationdate']) && !is_null($cachedrawdata['expirationdate'])
-                    && $cachedrawdata['expirationdate'] < time()) {
-                self::delete_all_items_from_cart($userid);
-                $cachedrawdata = $cache->get($cachekey);
-            }
-        }
-
-        // We create a new item to pass on in any case.
-        $data = [];
-        $data['userid'] = $userid;
-        $data['count'] = 0;
-
-        $data['maxitems'] = get_config('local_shopping_cart', 'maxitems');
-        $data['items'] = [];
-        $data['price'] = 0.00;
-        $data['taxesenabled'] = $taxesenabled;
-        $data['initialtotal'] = 0.00;
-        $data['deductible'] = 0.00;
-        $data['checkboxid'] = bin2hex(random_bytes(3));
-        $data['usecredit'] = $usecredit;
-        $data['expirationdate'] = time();
-        $data['checkouturl'] = $CFG->wwwroot . "/local/shopping_cart/checkout.php";
-
-        if (!$cachedrawdata) {
-            list($data['credit'], $data['currency']) = shopping_cart_credits::get_balance($userid);
-            $data['items'] = [];
-            $data['remainingcredit'] = $data['credit'];
-
-        } else if ($cachedrawdata) {
-            $count = isset($cachedrawdata['items']) ? count($cachedrawdata['items']) : 0;
-            $data['count'] = $count;
-
-            $data['currency'] = $cachedrawdata['currency'] ?? null;
-            $data['credit'] = $cachedrawdata['credit'] ?? null;
-            $data['remainingcredit'] = $data['credit'];
-
-            // Address handling.
-            $addressesrequired = addresses::get_required_address_keys();
-            foreach ($addressesrequired as $addresskey) {
-                if (isset($cachedrawdata["address_" . $addresskey])) {
-                    $data["address_" . $addresskey] = $cachedrawdata["address_" . $addresskey];
-                }
-            }
-            $data['taxcountrycode'] = $cachedrawdata["taxcountrycode"];
-
-            if ($count > 0) {
-                // Update all items and inject userid and address data.
-                $items = array_map(function($item) use ($addressesrequired, $data, $USER, $userid) {
-                    $item['userid'] = $userid != $USER->id ? -1 : 0;
-                    $item['taxcountrycode'] = $data['taxcountrycode'];
-                    foreach ($addressesrequired as $addresskey) {
-                        if (isset($data["address_" . $addresskey])) {
-                            $item["address_" . $addresskey] = $data["address_" . $addresskey];
-                        }
-                    }
-                    return $item;
-                }, $cachedrawdata['items']);
-
-                $data['items'] = self::update_item_price_data(array_values($items), $taxcategories, $data['taxcountrycode']);
-
-                $data['price'] = self::calculate_total_price($data["items"]);
-                if ($taxesenabled) {
-                    $data['price_net'] = self::calculate_total_price($data["items"], true);
-                }
-                $data['discount'] = array_sum(array_column($data['items'], 'discount'));
-                $data['expirationdate'] = $cachedrawdata['expirationdate'];
-            }
-        }
-
-        // There might be cases where we don't have the currency or credit yet. We take it from the last item in our cart.
-        if (empty($data['currency']) && (count($data['items']) > 0)) {
-            $data['currency'] = end($data['items'])['currency'];
-        } else if (empty($data['currency'])) {
-            $data['currency'] = '';
-        }
-        $data['credit'] = $data['credit'] ?? 0.00;
-
-        if ($cachedrawdata && count($data['items']) > 0) {
-            // If there is credit for this user, we give her options.
-            shopping_cart_credits::prepare_checkout($data, $userid, $usecredit);
-        } else if (count($data['items']) == 0) {
-            // If not, we save the cache right away.
-            $cache->set($cachekey, $data);
-        }
-
-        return $data;
     }
 
     /**
@@ -955,6 +811,8 @@ class shopping_cart {
                     $item['annotation'] = $annotation ?? '';
                     $item['payment'] = $paymentmethod;
                     $item['usermodified'] = $USER->id;
+                    $item['address_billing'] = $data['address_billing'];
+                    $item['address_shipping'] = $data['address_shipping'];
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -988,7 +846,9 @@ class shopping_cart {
                             $item['usermodified'],
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
-                            $item['json'] ?? ''
+                            $item['json'] ?? '',
+                            $item['address_billing'] ?? '',
+                            $item['address_shipping'] ?? '',
                     );
 
                     $item['id'] = $id;

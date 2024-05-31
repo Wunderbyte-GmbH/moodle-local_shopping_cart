@@ -31,6 +31,7 @@ use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use context_system;
+use local_shopping_cart\addresses;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\shopping_cart_credits;
 
@@ -762,10 +763,50 @@ class cartstore {
     }
 
     /**
+     * Saves the selected addres ids ($selectedaddressesdbids) in the shopping cart cache.
+     *
+     * @param array $selectedaddressesdbids the addresses the user selected for this shopping cart
+     * @return void
+     */
+    public function local_shopping_cart_save_address_in_cache(array $selectedaddressesdbids) {
+
+        $data = $this->get_cache();
+
+        $taxcountrycode = null; // Most probable tax country.
+        $billingaddressid = null; // Most probable billing address.
+
+        foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
+            $data["address_" . $addreskey] = intval($addressdbid);
+        }
+        if (isset($data["address_billing"])) {
+            // Override guessed billing address id if there is a dedicated billing address set.
+            $billingaddressid = $data["address_billing"];
+        }
+
+        if ($billingaddressid != null) {
+            $billingaddress = addresses::get_address_for_user($this->userid, $billingaddressid);
+            $taxcountrycode = $billingaddress->state;
+        }
+        $data["taxcountrycode"] = $taxcountrycode;
+
+        $this->set_cache($data);
+    }
+
+    /**
      * Returns the cachekey for this user as string.
      * @return string
      */
     private function get_cachekey() {
         return $this->userid . '_shopping_cart';
+    }
+
+    /**
+     * Returns cached countrycode.
+     * @return string
+     * @throws coding_exception
+     */
+    public function get_countrycode() {
+        $data = $this->get_cache();
+        return $data['taxcountrycode'] ?? null;
     }
 }

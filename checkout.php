@@ -142,18 +142,6 @@ if (isset($success)) {
     }
 }
 
-if (empty($jsononly)) {
-    // Output the header.
-    echo $OUTPUT->header();
-    // Convert numbers to strings with 2 fixed decimals right before rendering.
-    shopping_cart::convert_prices_to_number_format($data);
-
-    echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
-    // Now output the footer.
-    echo $OUTPUT->footer();
-}
-
-$data['successurl'] = $sp->get_success_url('shopping_cart', (int) $scdata['identifier'])->out(false);
 
 $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
@@ -188,7 +176,14 @@ if ($hasallrequiredaddresses) {
     $data['show_selected_addresses'] = true;
 }
 $data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
+if (empty($jsononly)) {
 
-echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
-// Now output the footer.
-echo $OUTPUT->footer();
+    // Convert numbers to strings with 2 fixed decimals right before rendering.
+    shopping_cart::convert_prices_to_number_format($data);
+
+    // Output the header.
+    echo $OUTPUT->header();
+    echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+    echo $OUTPUT->footer();
+}
+

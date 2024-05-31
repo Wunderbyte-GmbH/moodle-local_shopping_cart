@@ -37,15 +37,15 @@
 
 }}
 
-<div class="addressselection mb-4">
+<div class="local-shopping_cart-addressselection mb-4">
     {{#required_addresses}}
-        <div class="requiredaddress mb-3">
+        <div class="local-shopping_cart-requiredaddress mb-3">
             <h4>{{#str}} addresses:select, local_shopping_cart, {{addresslabel}} {{/str}}</h4>
             <fieldset>
                 {{#saved_addresses}}
                     <div class="ml-2">
                         <input type="radio" name="selectedaddress_{{addresskey}}" value="{{id}}" id="{{addresskey}}address{{id}}"/>
-                        <label for="{{addresskey}}address{{id}}" class="savedaddress">
+                        <label for="{{addresskey}}address{{id}}" class="local-shopping_cart-savedaddress">
                             {{> local_shopping_cart/address_singleline }}
                         </label>
                     </div>

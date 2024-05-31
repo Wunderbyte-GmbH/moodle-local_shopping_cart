@@ -34,7 +34,6 @@ use external_value;
 use external_single_structure;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_history;
 
 defined('MOODLE_INTERNAL') || die();
 
