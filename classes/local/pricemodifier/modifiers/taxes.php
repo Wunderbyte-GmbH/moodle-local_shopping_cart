@@ -90,7 +90,6 @@ abstract class taxes extends modifier_base {
 
         $cartstore = cartstore::instance($userid);
         $countrycode = $cartstore->get_countrycode();
-        //get_taxcode
         foreach ($items as $key => $item) {
 
             if ($taxcategories) {

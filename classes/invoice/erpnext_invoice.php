@@ -169,6 +169,8 @@ class erpnext_invoice implements invoice {
      * Create the json for the REST API.
      */
     public function prepare_json_invoice_data(): void {
+        $serviceperiodstart = null;
+        $serviceperiodend = null;
         foreach ($this->invoiceitems as $item) {
             if (!$this->item_exists($item->itemname)) {
                 throw new moodle_exception('generalexceptionmessage', 'local_shopping_cart', '',
@@ -188,6 +190,21 @@ class erpnext_invoice implements invoice {
                 $itemdata['rate'] = (int) $item->price - (int) $item->tax;
             }
             $this->invoicedata['items'][] = $itemdata;
+
+            $itemserviceperiodstart = $item->serviceperiodstart ?? $item->timecreated;
+            $itemserviceperiodend = $item->serviceperiodend ?? $item->timecreated;
+            if (
+                is_null($serviceperiodstart) ||
+                $itemserviceperiodstart < $serviceperiodstart
+            ) {
+                $serviceperiodstart = $itemserviceperiodstart;
+            }
+            if (
+                is_null($serviceperiodend) ||
+                $itemserviceperiodend > $serviceperiodend
+            ) {
+                $serviceperiodend = $itemserviceperiodend;
+            }
         }
         $this->invoicedata['customer'] = $this->customer;
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
