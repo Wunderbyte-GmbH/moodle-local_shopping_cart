@@ -349,8 +349,8 @@ class shopping_cart_history {
      * @param int|null $schistoryid
      * @param int|null $installments
      * @param string|null $json
-     * @param int|null $addressbilling
-     * @param int|null $addressshipping
+     * @param int $addressbilling
+     * @param int $addressshipping
      * @return int
      * @throws dml_exception
      * @throws coding_exception
@@ -379,8 +379,8 @@ class shopping_cart_history {
             int $schistoryid = null,
             int $installments = null,
             string $json = null,
-            int $addressbilling = null,
-            int $addressshipping = null) {
+            int $addressbilling = 0,
+            int $addressshipping = 0) {
 
         global $USER;
 

@@ -811,8 +811,8 @@ class shopping_cart {
                     $item['annotation'] = $annotation ?? '';
                     $item['payment'] = $paymentmethod;
                     $item['usermodified'] = $USER->id;
-                    $item['address_billing'] = $data['address_billing'];
-                    $item['address_shipping'] = $data['address_shipping'];
+                    $item['address_billing'] = $data['address_billing'] ?? 0;
+                    $item['address_shipping'] = $data['address_shipping'] ?? 0;
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -847,8 +847,8 @@ class shopping_cart {
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
                             $item['json'] ?? '',
-                            $item['address_billing'] ?? '',
-                            $item['address_shipping'] ?? '',
+                            $item['address_billing'] ?? 0,
+                            $item['address_shipping'] ?? 0,
                     );
 
                     $item['id'] = $id;
