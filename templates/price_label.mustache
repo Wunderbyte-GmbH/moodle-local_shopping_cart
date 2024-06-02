@@ -65,6 +65,14 @@
                 <div class="firstpayment">
                     {{initialpayment}} {{currency}} {{#str}} insteadof, local_shopping_cart {{/str}} {{originalprice}} {{currency}}
                 </div>
+                {{#installmentslinkeditems}}
+                <div class="itemname font-weight-bold">
+                    {{#str}} downpayment, local_shopping_cart {{/str}} {{#str}}for, local_shopping_cart{{/str}} {{itemname}}:
+                </div>
+                <div class="firstpayment">
+                    {{initialpayment}} {{currency}} {{#str}} insteadof, local_shopping_cart {{/str}} {{originalprice}} {{currency}}
+                </div>
+                {{/installmentslinkeditems}}
                 <div class="furtherpayments mt-1">
                     <i>{{#str}} furtherpayments, local_shopping_cart {{/str}}</i>:
                     {{#payments}}

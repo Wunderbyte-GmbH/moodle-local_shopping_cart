@@ -148,8 +148,11 @@ class erpnext_invoice implements invoice {
         }
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
         if (!$response) {
-            throw new moodle_exception('generalexceptionmessage', 'local_shopping_cart', '',
-                    'The invoice could not be created. ', $this->errormessage . $this->client->error);
+            throw new moodle_exception('generalexceptionmessage',
+                'local_shopping_cart',
+                '',
+                'The invoice could not be created. ',
+                $this->errormessage . $this->client->error);
         }
         $success = $this->validate_response($response);
         if ($success) {

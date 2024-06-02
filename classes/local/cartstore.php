@@ -679,6 +679,42 @@ class cartstore {
         return true;
     }
 
+
+    /**
+     * Items can be linked via a key which is part of the cartitem class.
+     * The linkage is used eg to calculate the installpayments with subbookings.
+     *
+     * @param int $itemid
+     * @param string $component
+     * @param string $area
+     *
+     * @return array
+     *
+     */
+    public function get_linked_items(int $itemid, string $component, string $area): array {
+
+        $returnarray = [];
+        $data = $this->get_cache();
+
+        foreach ($data['items'] as $item) {
+
+            if ($item['componentname'] !== $component) {
+                continue;
+            }
+
+            $identifierarray = explode('_', $item['linkeditem'] ?? '');
+
+            if (($area != $identifierarray[0] ?? '')
+                || ($itemid != $identifierarray[1] ?? 0)) {
+
+                continue;
+            }
+            $returnarray[] = $item;
+        }
+
+        return $returnarray;
+    }
+
     /**
      * Gets the openinstallments.
      * @param string $country
