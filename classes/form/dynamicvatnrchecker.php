@@ -25,7 +25,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\local\uidchecker;
+use local_shopping_cart\local\vatnrchecker;
 use moodle_url;
 use stdClass;
 
@@ -36,7 +36,7 @@ use stdClass;
  * @author Georg Maißer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class dynamicuidchecker extends dynamic_form {
+class dynamicvatnrchecker extends dynamic_form {
 
     /**
      * {@inheritdoc}
@@ -48,32 +48,32 @@ class dynamicuidchecker extends dynamic_form {
 
         $mform = $this->_form;
 
-        $mform->addElement('static', 'enteruid', '', get_string('enteruid', 'local_shopping_cart'));
-        $mform->addElement('advcheckbox', 'useuid', ' ', get_string('useuid', 'local_shopping_cart'));
+        $mform->addElement('static', 'entervatnr', '', get_string('entervatnr', 'local_shopping_cart'));
+        $mform->addElement('advcheckbox', 'usevatnr', ' ', get_string('usevatnr', 'local_shopping_cart'));
 
-        $options = uidchecker::return_countrycodes_array();
-        $mform->addElement('select', 'checkuidcountrycode', get_string('checkuidcountrycode', 'local_shopping_cart'), $options);
-        $mform->hideIf('checkuidcountrycode', 'useuid', 'neq', '1');
-        $mform->addElement('text', 'checkuidnumber', get_string('checkuidnumber', 'local_shopping_cart'), '');
-        $mform->hideIf('checkuidnumber', 'useuid', 'neq', '1');
-        $mform->setType('checkuidnumber', PARAM_ALPHANUM);
+        $options = vatnrchecker::return_countrycodes_array();
+        $mform->addElement('select', 'checkvatnrcountrycode', get_string('checkvatnrcountrycode', 'local_shopping_cart'), $options);
+        $mform->hideIf('checkvatnrcountrycode', 'usevatnr', 'neq', '1');
+        $mform->addElement('text', 'checkvatnrnumber', get_string('checkvatnrnumber', 'local_shopping_cart'), '');
+        $mform->hideIf('checkvatnrnumber', 'usevatnr', 'neq', '1');
+        $mform->setType('checkvatnrnumber', PARAM_ALPHANUM);
 
         $mform->addElement('submit',
             'submitbutton',
             get_string('verify', 'local_shopping_cart'),
-            ['class' => 'uidchecker-submitbutton']
+            ['class' => 'vatnrchecker-submitbutton']
         );
-        $mform->hideIf('submitbutton', 'useuid', 'neq', '1');
+        $mform->hideIf('submitbutton', 'usevatnr', 'neq', '1');
 
         $cartstore = cartstore::instance($USER->id);
-        if ($cartstore->has_uid_data()) {
-            $uiddata = $cartstore->get_uid_data();
+        if ($cartstore->has_vatnr_data()) {
+            $vatnrdata = $cartstore->get_vatnr_data();
             $mform->addElement('static',
-                'printuiddata',
+                'printvatnrdata',
                 '',
-                $uiddata['companyname'] . "<br>"
-                . $uiddata['street'] . "<br>"
-                . $uiddata['place'] . "<br>");
+                $vatnrdata['companyname'] . "<br>"
+                . $vatnrdata['street'] . "<br>"
+                . $vatnrdata['place'] . "<br>");
 
         }
 
@@ -103,27 +103,27 @@ class dynamicuidchecker extends dynamic_form {
 
         $data = $this->get_data();
 
-        // If the user has entered a valid UID, we retrieve here the data fetched during validation.
-        if (!empty(uidchecker::$uiddataset)) {
+        // If the user has entered a valid VATNR, we retrieve here the data fetched during validation.
+        if (!empty(vatnrchecker::$vatnrdataset)) {
 
             $cartstore = cartstore::instance($USER->id);
 
-            if (uidchecker::$uiddataset->vatNumber === false) {
+            if (vatnrchecker::$vatnrdataset->vatNumber === false) {
 
-                $cartstore->delete_uid_data();
+                $cartstore->delete_vatnr_data();
 
             } else  {
                 // In order to have all the relevant data on our Invoice, we save this here.
-                $address = uidchecker::$uiddataset->address;
+                $address = vatnrchecker::$vatnrdataset->address;
                 list($street, $city) = explode(PHP_EOL, $address);
-                $data->name = uidchecker::$uiddataset->name;
+                $data->name = vatnrchecker::$vatnrdataset->name;
                 $data->street = $street;
                 $data->city = $city;
 
-                $cartstore->set_uid_data(
-                    uidchecker::$uiddataset->countryCode,
-                    uidchecker::$uiddataset->vatNumber,
-                    uidchecker::$uiddataset->name,
+                $cartstore->set_vatnr_data(
+                    vatnrchecker::$vatnrdataset->countryCode,
+                    vatnrchecker::$vatnrdataset->vatNumber,
+                    vatnrchecker::$vatnrdataset->name,
                     $street,
                     $city);
             }
@@ -153,17 +153,17 @@ class dynamicuidchecker extends dynamic_form {
 
         $cartstore = cartstore::instance($USER->id);
 
-        if ($cartstore->has_uid_data()) {
-            $uiddata = $cartstore->get_uid_data();
+        if ($cartstore->has_vatnr_data()) {
+            $vatnrdata = $cartstore->get_vatnr_data();
 
-            $data->useuid = 1;
-            $data->checkuidcountrycode = $uiddata['uidcountry'];
-            $data->checkuidnumber = $uiddata['uidnumber'];
+            $data->usevatnr = 1;
+            $data->checkvatnrcountrycode = $vatnrdata['vatnrcountry'];
+            $data->checkvatnrnumber = $vatnrdata['vatnrnumber'];
 
-        } else if (!empty($mform->getSubmitValue('checkuidnumber'))) {
-            $data->useuid = 1;
-            // $data->checkuidcountrycode = $mform->getSubmitValue('checkuidnumber');
-            // $data->checkuidnumber = $mform->getSubmitValue('checkuidcountrycode');
+        } else if (!empty($mform->getSubmitValue('checkvatnrnumber'))) {
+            $data->usevatnr = 1;
+            // $data->checkvatnrcountrycode = $mform->getSubmitValue('checkvatnrnumber');
+            // $data->checkvatnrnumber = $mform->getSubmitValue('checkvatnrcountrycode');
         }
 
         $this->set_data($data);
@@ -209,39 +209,39 @@ class dynamicuidchecker extends dynamic_form {
 
         $errors = [];
 
-        // If there actually is a UID number... we check online.
-        if (!empty($data['useuid'])) {
+        // If there actually is a VATNR number... we check online.
+        if (!empty($data['usevatnr'])) {
 
-            if ($data['checkuidcountrycode'] == 'nouid'
-                && !empty($data['checkuidnumber'])) {
-                $errors['checkuidcountrycode'] = get_string('errorselectcountry', 'local_shopping_cart');
-            } else if ($data['checkuidcountrycode'] == 'nouid'
-                && empty($data['checkuidnumber'])) {
+            if ($data['checkvatnrcountrycode'] == 'novatnr'
+                && !empty($data['checkvatnrnumber'])) {
+                $errors['checkvatnrcountrycode'] = get_string('errorselectcountry', 'local_shopping_cart');
+            } else if ($data['checkvatnrcountrycode'] == 'novatnr'
+                && empty($data['checkvatnrnumber'])) {
 
-                uidchecker::$uiddataset = (object)[
+                vatnrchecker::$vatnrdataset = (object)[
                     'vatNumber' => false,
                     'countryCode' => false,
                 ];
             }
             else {
-                $response = uidchecker::check_uid_number(
-                    $data['checkuidcountrycode'],
-                    $data['checkuidnumber'],
+                $response = vatnrchecker::check_vatnr_number(
+                    $data['checkvatnrcountrycode'],
+                    $data['checkvatnrnumber'],
                 );
 
                 $result = json_decode($response);
 
                 if (!isset($result->valid) || !$result->valid) {
-                    $a = $data['checkuidcountrycode'] . $data['checkuidnumber'];
-                    $errors['checkuidnumber'] = get_string('errorinvaliduid', 'local_shopping_cart', $a);
+                    $a = $data['checkvatnrcountrycode'] . $data['checkvatnrnumber'];
+                    $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
                 } else {
-                    // $errors['checkuidnumber'] = $response;
-                    uidchecker::$uiddataset = $result;
+                    // $errors['checkvatnrnumber'] = $response;
+                    vatnrchecker::$vatnrdataset = $result;
                 }
 
             }
         } else {
-            uidchecker::$uiddataset = (object)[
+            vatnrchecker::$vatnrdataset = (object)[
                 'vatNumber' => false,
                 'countryCode' => false,
             ];

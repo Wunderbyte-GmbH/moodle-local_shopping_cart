@@ -655,26 +655,26 @@ $string['installmentpaymentisdue'] = 'Don\'t forget: {$a->itemname}, {$a->price}
 $string['installmentpaymentwasdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
 $string['noinstallments'] = "Currently there are no open installment payments";
 
-// Uid checker.
-$string['uidcheckerheading'] = "Check UID";
-$string['uidcheckerheadingdescription'] = "A UID can be entered and checked before payment";
-$string['showuidchecker'] = "Use UID number and potentially waive VAT";
-$string['showuidcheckerdescription'] = "If successfully verified, VAT may be waived";
+// VAT number checker.
+$string['vatnrcheckerheading'] = "Check VAT number";
+$string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
+$string['showvatnrchecker'] = "Use VAT number and potentially waive VAT";
+$string['showvatnrcheckerdescription'] = "If successfully verified, VAT may be waived";
 
-$string['checkuidcountrycode'] = "Select your country";
-$string['checkuidnumber'] = "Enter your VAT number";
+$string['checkvatnrcountrycode'] = "Select your country";
+$string['checkvatnrnumber'] = "Enter your VAT number";
 $string['owncountrycode'] = "Country of own company";
-$string['owncountrycode_desc'] = "To automatically verify the UID, the UID of your own company must also be provided.";
-$string['ownuidnumber'] = "UID number of own company";
-$string['ownuidnumber_desc'] = "To automatically verify the UID, the UID of your own company must also be provided.";
+$string['owncountrycode_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
+$string['ownvatnrnumber'] = "VAT number of own company";
+$string['ownvatnrnumber_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
 
-$string['useuid'] = "Enter UID";
-$string['nouid'] = "No UID";
-$string['verify'] = "Verify validity of UID";
-$string['enteruid'] = 'You can enter you UID if you are buying for a company';
+$string['usevatnr'] = "Enter VAT number";
+$string['novatnr'] = "No VAT number";
+$string['verify'] = "Verify validity of VAT number";
+$string['entervatnr'] = 'You can enter you VAT number if you are buying for a company';
 
 $string['errorselectcountry'] = 'Please choose a country';
-$string['errorinvaliduid'] = 'The given UID {$a} is invalid';
+$string['errorinvalidvatnr'] = 'The given VAT number {$a} is invalid';
 
 $string['at'] = "Austria";
 $string['be'] = "Belgium";

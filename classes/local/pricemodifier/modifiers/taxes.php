@@ -30,7 +30,7 @@ use coding_exception;
 use context_system;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifier_base;
-use local_shopping_cart\local\uidchecker;
+use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\taxcategories;
 
@@ -97,11 +97,11 @@ abstract class taxes extends modifier_base {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent >= 0) {
                     $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
-                    $iseuropean = uidchecker::is_european($countrycode);
+                    $iseuropean = vatnrchecker::is_european($countrycode);
                     if ($itemisnet) {
                         $netprice = $items[$key]['price']; // Price is now considered a net price.
 
-                        if ($iseuropean && $cartstore->has_uid_data()) {
+                        if ($iseuropean && $cartstore->has_vatnr_data()) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {
@@ -116,7 +116,7 @@ abstract class taxes extends modifier_base {
                     } else {
                         $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
 
-                        if ($iseuropean && $cartstore->has_uid_data()) {
+                        if ($iseuropean && $cartstore->has_vatnr_data()) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {

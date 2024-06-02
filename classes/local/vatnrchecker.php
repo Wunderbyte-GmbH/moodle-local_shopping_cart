@@ -32,33 +32,38 @@ namespace local_shopping_cart\local;
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class uidchecker {
-
-    const UIDCHECKERURL = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number';
-
-    /** @var stdClass $uiddataset Allows us to pass on the data we retrieve during verification to data processing */
-    public static $uiddataset = null;
+class vatnrchecker {
 
     /**
-     * Function to verify UID of business partner online.
-     * @param string $uidnumber
+     * VATNRCHECKERURL
+     *
+     * @var string
+     */
+    const VATNRCHECKERURL = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number';
+
+    /** @var stdClass $vatnrdataset Allows us to pass on the data we retrieve during verification to data processing */
+    public static $vatnrdataset = null;
+
+    /**
+     * Function to verify VATNR of business partner online.
+     * @param string $vatnrnumber
      * @return string
      */
-    public static function check_uid_number(string $countrycode, string $uidnumber) {
+    public static function check_vatnr_number(string $countrycode, string $vatnrnumber) {
         $response = [];
 
         if (empty($countrycode)
-            || empty($uidnumber)) {
+            || empty($vatnrnumber)) {
 
             return '';
         }
 
-        $url = self::UIDCHECKERURL;
+        $url = self::VATNRCHECKERURL;
         $params = (object)[
             "countryCode" => $countrycode,
-            "vatNumber" => $uidnumber,
+            "vatNumber" => $vatnrnumber,
             "requesterMemberStateCode" => get_config('local_shopping_cart', 'owncountrycode'),
-            "requesterNumber" => get_config('local_shopping_cart', 'ownuidnumber'),
+            "requesterNumber" => get_config('local_shopping_cart', 'ownvatnrnumber'),
 
         ];
 
@@ -93,7 +98,7 @@ class uidchecker {
      */
     public static function return_countrycodes_array() {
         return [
-            'nouid' => get_string('nouid', 'local_shopping_cart'),
+            'novatnr' => get_string('novatnr', 'local_shopping_cart'),
             'AT' => get_string('at', 'local_shopping_cart'),
             'BE' => get_string('be', 'local_shopping_cart'),
             'BG' => get_string('bg', 'local_shopping_cart'),

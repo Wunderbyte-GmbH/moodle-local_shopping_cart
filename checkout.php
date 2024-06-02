@@ -24,7 +24,7 @@
  */
 
 use core\plugininfo\cachestore;
-use local_shopping_cart\form\dynamicuidchecker;
+use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\addresses;
@@ -132,13 +132,13 @@ if (isset($success)) {
     // During this process,the new identifier is created, if necessary.
     checkout::prepare_checkout($data);
 
-    // We add the uidcheckerform here, if necessary.
-    if (get_config('local_shopping_cart', 'showuidchecker')
+    // We add the vatnrcheckerform here, if necessary.
+    if (get_config('local_shopping_cart', 'showvatnrchecker')
         && !empty(get_config('local_shopping_cart', 'owncountrycode')
-        && !empty(get_config('local_shopping_cart', 'ownuidnumber')))) {
-        $uidchecker = new dynamicuidchecker();
-        $uidchecker->set_data_for_dynamic_submission();
-        $data['showuidchecker'] = $uidchecker->render();
+        && !empty(get_config('local_shopping_cart', 'ownvatnrnumber')))) {
+        $vatnrchecker = new dynamicvatnrchecker();
+        $vatnrchecker->set_data_for_dynamic_submission();
+        $data['showvatnrchecker'] = $vatnrchecker->render();
     }
 }
 

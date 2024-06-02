@@ -62,7 +62,7 @@ const SELECTORS = {
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
     ACCEPTTERMS: '#accepttermsnandconditions',
-    CHECKUIDFORM: 'div.form_uidchecker',
+    CHECKVATNRFORM: 'div.form_vatnrchecker',
 };
 /**
  *
@@ -135,20 +135,20 @@ const SELECTORS = {
         addAcceptTermsListener(accepttermsbutton, paymentbutton);
     }
 
-    initUidChecker();
+    initVATNRChecker();
 };
 
-const initUidChecker = () => {
+const initVATNRChecker = () => {
 
-    const uidchecker = document.querySelector(SELECTORS.CHECKUIDFORM);
+    const vatnrchecker = document.querySelector(SELECTORS.CHECKVATNRFORM);
 
-    if (uidchecker) {
-        const uidcheckerform = new DynamicForm(
-            uidchecker,
-            'local_shopping_cart\\form\\dynamicuidchecker'
+    if (vatnrchecker) {
+        const vatnrcheckerform = new DynamicForm(
+            vatnrchecker,
+            'local_shopping_cart\\form\\dynamicvatnrchecker'
         );
 
-        uidcheckerform.addEventListener('change', (e) => {
+        vatnrcheckerform.addEventListener('change', (e) => {
 
             // eslint-disable-next-line no-console
             console.log(e.target.checked, e.target.name);
@@ -157,20 +157,20 @@ const initUidChecker = () => {
                 return;
             }
 
-            if (e.target.name == 'useuid'
+            if (e.target.name == 'usevatnr'
                 && e.target.checked === false) {
 
                 // eslint-disable-next-line no-console
                 console.log(e.target.value);
 
-                uidcheckerform.submitFormAjax();
+                vatnrcheckerform.submitFormAjax();
             }
         });
 
         // After submitting we want to reload the window to update the rule list.
-        uidcheckerform.addEventListener(uidcheckerform.events.FORM_SUBMITTED, () => {
+        vatnrcheckerform.addEventListener(vatnrcheckerform.events.FORM_SUBMITTED, () => {
 
-            uidcheckerform.load();
+            vatnrcheckerform.load();
             // eslint-disable-next-line no-console
             console.log('form submitted');
 

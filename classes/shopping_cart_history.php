@@ -55,12 +55,6 @@ class shopping_cart_history {
      *
      * @var int
      */
-    private $uid;
-
-    /**
-     *
-     * @var int
-     */
     private $itemid;
 
     /**
@@ -86,7 +80,6 @@ class shopping_cart_history {
      */
     public function __construct(stdClass $data = null) {
         if ($data) {
-            $this->uid = $data->uid;
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
@@ -781,7 +774,7 @@ class shopping_cart_history {
 
         global $DB;
 
-        $uid = $DB->insert_record('local_shopping_cart_id', [
+        $vatnr = $DB->insert_record('local_shopping_cart_id', [
             'userid' => $userid,
             'timecreated' => time(),
         ]);
@@ -789,14 +782,14 @@ class shopping_cart_history {
         $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
 
         // The base value defines the number of digits.
-        $uid = $basevalue + $uid;
+        $vatnr = $basevalue + $vatnr;
 
         // We need to keep it below 7 digits.
-        if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {
-            throw new moodle_exception('uidistoobig', 'local_shopping_cart');
+        if ((!empty($basevalue) && (($vatnr / $basevalue) > 10))) {
+            throw new moodle_exception('vatnristoobig', 'local_shopping_cart');
         }
 
-        return $uid;
+        return $vatnr;
     }
 
     /**

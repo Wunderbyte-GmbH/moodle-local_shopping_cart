@@ -718,19 +718,19 @@ class cartstore {
     /**
      * Gets the openinstallments.
      * @param string $country
-     * @param string $uidnumber
+     * @param string $vatnrnumber
      * @param string $companyname
      * @param string $street
      * @param string $place
      * @return bool
      * @throws coding_exception
      */
-    public function set_uid_data($country, $uidnumber, $companyname, $street, $place) {
+    public function set_vatnr_data($country, $vatnrnumber, $companyname, $street, $place) {
 
         $data = $this->get_cache();
 
-        $data['uidcountry'] = $country;
-        $data['uidnumber'] = $uidnumber;
+        $data['vatnrcountry'] = $country;
+        $data['vatnrnumber'] = $vatnrnumber;
         $data['companyname'] = $companyname;
         $data['street'] = $street;
         $data['place'] = $place;
@@ -741,16 +741,16 @@ class cartstore {
     }
 
     /**
-     * Returns cached data only if uid is set.
-     * UID data has the keys uidcountry, uidnumber, companyname, street & place.
+     * Returns cached data only if vatnr is set.
+     * VATNR data has the keys vatnrcountry, vatnrnumber, companyname, street & place.
      * @return array
      * @throws coding_exception
      */
-    public function get_uid_data() {
+    public function get_vatnr_data() {
 
         $data = $this->get_cache();
 
-        if (!$this->has_uid_data()) {
+        if (!$this->has_vatnr_data()) {
             return [];
         }
 
@@ -758,15 +758,15 @@ class cartstore {
     }
 
     /**
-     * Check if uid data is there.
+     * Check if vatnr data is there.
      * @return bool
      * @throws coding_exception
      */
-    public function has_uid_data() {
+    public function has_vatnr_data() {
 
         $data = $this->get_cache();
 
-        if (!empty($data['uidnumber'])) {
+        if (!empty($data['vatnrnumber'])) {
             return true;
         }
 
@@ -776,19 +776,19 @@ class cartstore {
     /**
      * Gets the openinstallments.
      * @param string $country
-     * @param string $uidnumber
+     * @param string $vatnrnumber
      * @param string $companyname
      * @param string $street
      * @param string $place
      * @return bool
      * @throws coding_exception
      */
-    public function delete_uid_data() {
+    public function delete_vatnr_data() {
 
         $data = $this->get_cache();
 
-        unset($data['uidcountry']);
-        unset($data['uidnumber']);
+        unset($data['vatnrcountry']);
+        unset($data['vatnrnumber']);
         unset($data['companyname']);
         unset($data['street']);
         unset($data['place']);
@@ -843,6 +843,7 @@ class cartstore {
      */
     public function get_countrycode() {
         $data = $this->get_cache();
-        return $data['taxcountrycode'] ?? null;
+
+        return $data['taxcountrycode'] ?? $data['vatnrcountry'] ?? null;
     }
 }
