@@ -23,7 +23,7 @@ import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
 
 import {get_string as getString} from 'core/str';
-import Templates from "../../../../lib/amd/src/templates";
+import Templates from 'core/templates';
 
 const SELECTORS = {
     ADDRESSRENDERCONTAINER: '#addressestemplatespace',
