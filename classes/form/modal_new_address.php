@@ -46,22 +46,22 @@ class modal_new_address extends dynamic_form {
         $mform = $this->_form;
 
         // Name.
-        $attributes = array("placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart'));
+        $attributes = ["placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart')];
         $mform->addElement(
                 'text',
                 'name',
                 get_string('addresses:newaddress:name:label', 'local_shopping_cart'),
                 $attributes,
-                $this->_ajaxformdata["name"]
+                $this->_ajaxformdata["name"] ?? ''
         );
 
         // Country.
-        $choices = array("" => "") + get_string_manager()->get_list_of_countries();
-        $options = array(
+        $choices = ["" => ""] + get_string_manager()->get_list_of_countries();
+        $options = [
                 'multiple' => false,
                 'placeholder' => get_string('addresses:newaddress:state:placeholder', 'local_shopping_cart'),
                 'noselectionstring' => get_string('addresses:newaddress:state:choose', 'local_shopping_cart'),
-        );
+        ];
         $mform->addElement(
                 'autocomplete',
                 'state',
@@ -72,51 +72,51 @@ class modal_new_address extends dynamic_form {
         $mform->setAdvanced('state', true);
 
         // Address line 1.
-        $options = array(
+        $options = [
                 'placeholder' => get_string('addresses:newaddress:address:placeholder', 'local_shopping_cart'),
-        );
+        ];
         $mform->addElement(
                 'text',
                 'address',
                 get_string('addresses:newaddress:address:label', 'local_shopping_cart'),
                 $options,
-                $this->_ajaxformdata["address"]
+                $this->_ajaxformdata["address"] ?? ''
         );
 
         // Address line 2.
-        $options = array(
+        $options = [
                 'placeholder' => get_string('addresses:newaddress:address2:placeholder', 'local_shopping_cart'),
-        );
+        ];
         $mform->addElement(
                 'text',
                 'address2',
                 get_string('addresses:newaddress:address2:label', 'local_shopping_cart'),
                 $options,
-                $this->_ajaxformdata["address2"]
+                $this->_ajaxformdata["address2"] ?? ''
         );
 
         // City.
-        $options = array(
+        $options = [
                 'placeholder' => get_string('addresses:newaddress:city:placeholder', 'local_shopping_cart'),
-        );
+        ];
         $mform->addElement(
                 'text',
                 'city',
                 get_string('addresses:newaddress:city:label', 'local_shopping_cart'),
                 $options,
-                $this->_ajaxformdata["city"]
+                $this->_ajaxformdata["city"] ?? ''
         );
 
         // Zip.
-        $options = array(
+        $options = [
                 'placeholder' => get_string('addresses:newaddress:zip:placeholder', 'local_shopping_cart'),
-        );
+        ];
         $mform->addElement(
                 'text',
                 'zip',
                 get_string('addresses:newaddress:zip:label', 'local_shopping_cart'),
                 $options,
-                $this->_ajaxformdata["zip"]
+                $this->_ajaxformdata["zip"] ?? ''
         );
 
     }
@@ -164,12 +164,12 @@ class modal_new_address extends dynamic_form {
         $data = new stdClass();
         global $USER;
         $data->name = fullname($USER);
-        $data->state = $USER->country;
-        $data->address = $USER->address;
-        $data->address2 = $USER->address2;
-        $data->city = $USER->city;
+        $data->state = $USER->country ?? '';
+        $data->address = $USER->address ?? '';
+        $data->address2 = $USER->address2 ?? '';
+        $data->city = $USER->city ?? '';
         $data->zip = "";
-        $data->phone = $USER->phone1;
+        $data->phone = $USER->phone1 ?? '';
         $this->set_data($data);
     }
 
