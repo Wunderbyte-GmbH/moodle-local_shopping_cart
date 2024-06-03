@@ -388,9 +388,10 @@ if ($hassiteconfig) {
                 <div class="collapse mb-5" id="collapseTaxCategories">
                 <div class="card card-body">
                 Multi country multi tax categories:
-                <pre class="mb-1 p-1">default A:0 B:0 C:0
-                At A:20 B:10 C:0
-                De A:19 B:10 C:0</pre><hr/>
+                <pre class="mb-1 p-1">
+                default A:0 B:0 C:0
+                AT A:20 B:10 C:0
+                DE A:19 B:10 C:0</pre><hr/>
                 Multi tax categories, no countries:
                 <pre class="mb-1 p-1">A:30 B:0</pre><hr/>
                 Just one default tax:
