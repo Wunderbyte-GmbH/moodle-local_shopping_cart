@@ -211,10 +211,13 @@ class erpnext_invoice implements invoice {
         }
         $this->invoicedata['customer'] = $this->customer;
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
+        $duedate = date('Y-m-d', strtotime("+ 30 days", $this->invoicedata['timecreated']));
         // Convert the Unix timestamp to ISO 8601 date format.
         $this->invoicedata['posting_date'] = $date;
         $this->invoicedata['set_posting_time'] = 1;
-        $this->invoicedata['due_date'] = $date;
+        $this->invoicedata['due_date'] = $duedate;
+        $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
+        $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
         $this->jsoninvoice = json_encode($this->invoicedata);
     }
 
