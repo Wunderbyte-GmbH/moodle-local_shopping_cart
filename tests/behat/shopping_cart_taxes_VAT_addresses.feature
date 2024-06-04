@@ -43,7 +43,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I log out
 
   @javascript
-  Scenario: Shopping Cart taxes: use VAT number and billing address to reduce price of single item
+  Scenario: Shopping Cart taxes: use VAT number and Austrian address to reduce price of single item
     Given I log in as "admin"
     And Testitem "1" has been put in shopping cart of user "admin"
     And I visit "/local/shopping_cart/checkout.php"
@@ -69,3 +69,33 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I wait "1" seconds
     And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
+    ## TODO complete purchase and test ledger #74
+
+  @javascript
+  Scenario: Shopping Cart taxes: use VAT number and German address to reduce price of single item
+    Given I log in as "admin"
+    And Testitem "1" has been put in shopping cart of user "admin"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I wait until the page is ready
+    And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
+    ## Select billing address
+    And I follow "Continue to address"
+    And I wait until the page is ready
+    And I should see "Berlin" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I click on "Berlin" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I press "Choose selected address"
+    And I wait until the page is ready
+    And I should see "11.90 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    ## Provide a valid VAT number and verify price
+    And I set the field "usevatnr" to "1"
+    And I set the field "Select your country" to "Austria"
+    And I set the field "Enter your VAT number" to "U74259768"
+    And I click on "Verify validity of VAT number" "button"
+    And I wait "1" seconds
+    And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
+    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
+    ## TODO complete purchase and test ledger #74
