@@ -639,6 +639,7 @@ class shopping_cart_history {
             // If until now we have no ledger record, we duplicate from record.
             if (empty($ledgerrecord)) {
                 $ledgerrecord = $record;
+                $ledgerrecord->price = $record->price_gross;
             }
 
             if (empty($record->id)) {
