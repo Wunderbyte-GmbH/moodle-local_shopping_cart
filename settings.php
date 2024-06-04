@@ -319,10 +319,15 @@ if ($hassiteconfig) {
                 get_string('fixedpercentageafterserviceperiodstart', 'local_shopping_cart'),
                 get_string('fixedpercentageafterserviceperiodstart_desc', 'local_shopping_cart'), 1));
 
-    $cancellationsettings->add(
-        new admin_setting_configcheckbox($componentname . '/allowrebookingcredit',
+        // This way of rebooking doesn't seem useful anymore...
+        // Since the functions introduced in the rebooking section (see further below).
+        // Therefore will be only displayed if already in use.
+    if (!empty(get_config('local_shopping_cart', 'allowrebookingcredit'))) {
+        $cancellationsettings->add(
+                new admin_setting_configcheckbox($componentname . '/allowrebookingcredit',
                 get_string('allowrebookingcredit', 'local_shopping_cart'),
                 get_string('allowrebookingcredit_desc', 'local_shopping_cart'), 0));
+    };
 
     $ADMIN->add($componentname, $cancellationsettings);
 
@@ -515,7 +520,7 @@ if ($hassiteconfig) {
             $newcountries
     ));
 
-    // Add a heading for the section.
+    // Add a heading for the rebooking section.
     $settings->add(new admin_setting_heading($componentname . '/rebookingheading',
             get_string('rebookingheading', 'local_shopping_cart'),
             get_string('rebookingheadingdescription', 'local_shopping_cart')
