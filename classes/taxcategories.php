@@ -89,8 +89,12 @@ class taxcategories {
      * @return array
      */
     public function taxdata_for_countrycode(?string $countrycode = null): array {
-        if (key_exists($countrycode, $this->taxmatrix)) {
-            return $this->taxmatrix[$countrycode];
+        $countrycode = strtolower($countrycode);
+        $taxmatrixkeys = array_map('strtolower', array_keys($this->taxmatrix));
+        $index = array_search($countrycode, $taxmatrixkeys);
+        if ($index !== false) {
+            $originalkey = array_keys($this->taxmatrix)[$index];
+            return $this->taxmatrix[$originalkey];
         } else {
             return $this->taxmatrix[self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX];
         }

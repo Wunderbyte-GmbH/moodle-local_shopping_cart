@@ -92,17 +92,19 @@ abstract class taxes extends modifier_base {
         $cartstore = cartstore::instance($userid);
         $countrycode = $cartstore->get_countrycode();
         foreach ($items as $key => $item) {
-
             if ($taxcategories) {
-
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent >= 0) {
                     $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
                     $iseuropean = vatnrchecker::is_european($countrycode);
+                    $isowncountry = vatnrchecker::is_own_country($countrycode);
                     if ($itemisnet) {
                         $netprice = $items[$key]['price']; // Price is now considered a net price.
-
-                        if ($iseuropean && $cartstore->has_vatnr_data()) {
+                        if (
+                            $iseuropean &&
+                            $cartstore->has_vatnr_data() &&
+                            !$isowncountry
+                        ) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else if ($item['area'] == "rebookitem") {
@@ -121,8 +123,11 @@ abstract class taxes extends modifier_base {
                         $items[$key]['tax'] = $grossprice - $netprice;
                     } else {
                         $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
-
-                        if ($iseuropean && $cartstore->has_vatnr_data()) {
+                        if (
+                            $iseuropean &&
+                            $cartstore->has_vatnr_data() &&
+                            !$isowncountry
+                        ) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {

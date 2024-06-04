@@ -145,4 +145,17 @@ class vatnrchecker {
         }
         return false;
     }
+
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $countrykey
+     * @return array
+     */
+    public static function is_own_country($countrykey) {
+        $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
+        if ($countrykey == $hostvatnr) {
+            return true;
+        }
+        return false;
+    }
 }
