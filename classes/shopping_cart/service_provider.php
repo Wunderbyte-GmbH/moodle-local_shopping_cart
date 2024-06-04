@@ -112,7 +112,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('rebooking', 'local_shopping_cart') . ': ' . $record->itemname,
-                    - ((float)$record->price + (float)$record->tax),
+                    - ((float)$record->price),
                     $record->currency ?? 'EUR',
                     'local_shopping_cart',
                     'rebookitem',
