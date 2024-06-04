@@ -104,6 +104,10 @@ abstract class taxes extends modifier_base {
                         if ($iseuropean && $cartstore->has_vatnr_data()) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
+                        } else if ($item['area'] == "rebookitem") {
+                            // In rebooking, price is already gross.
+                            $grossprice = $items[$key]['price'];
+                            $netprice = round($grossprice / (1 + $taxpercent), 2);
                         } else {
                             $grossprice = round($netprice * (1 + $taxpercent), 2);
                         }
