@@ -827,7 +827,7 @@ class shopping_cart {
                             $userid,
                             $item['itemid'],
                             $item['itemname'],
-                            $item['price_gross'],
+                            $item['price'],
                             $item['discount'],
                             $item['currency'],
                             $item['componentname'],

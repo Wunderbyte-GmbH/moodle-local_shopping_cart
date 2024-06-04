@@ -108,7 +108,8 @@ abstract class taxes extends modifier_base {
                             $grossprice = round($netprice * (1 + $taxpercent), 2);
                         }
                         $items[$key]['price_net'] = $netprice;
-                        $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
+                        // Always use gross price in "price".
+                        $items[$key]['price'] = $grossprice; // Set back formatted price.
                         // Add tax to price (= gross price).
                         $items[$key]['price_gross'] = $grossprice;
                         // And net tax info.
