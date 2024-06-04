@@ -28,8 +28,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | Account1 | 1         | A                  | 1              | 1                | AT             | U74259768      |
     And the following "local_shopping_cart > user addresses" exist:
       | user  | name   | state | address     | city   | zip  |
-      | admin | User 1 | AT    | Brovarna 23 | Wienn  | w123 |
-      | admin | User 1 | DE    | Brovarna 23 | Berlin | b123 |
+      | user1 | User 1 | AT    | Brovarna 23 | Wienn  | w123 |
+      | user2 | User 2 | DE    | Brovarna 23 | Berlin | b123 |
     And I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the field "id_s_local_shopping_cart_addresses_required_billing" to "1"
@@ -44,8 +44,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and Austrian address to reduce price of single item
-    Given I log in as "admin"
-    And Testitem "1" has been put in shopping cart of user "admin"
+    Given I log in as "user1"
+    And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
     And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
@@ -69,12 +69,11 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I wait "1" seconds
     And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
-    ## TODO complete purchase and test ledger #74
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce price of single item
-    Given I log in as "admin"
-    And Testitem "1" has been put in shopping cart of user "admin"
+    Given I log in as "user2"
+    And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
     And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
@@ -98,4 +97,3 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I wait "1" seconds
     And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
-    ## TODO complete purchase and test ledger #74
