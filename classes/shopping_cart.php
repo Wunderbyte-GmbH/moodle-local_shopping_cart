@@ -545,31 +545,6 @@ class shopping_cart {
     }
 
     /**
-     * Function local_shopping_cart_get_cache_data
-     * This function returns all the item and calculates live the price for them.
-     * This function also supports the credit system of this moodle.
-     * If usecredit is true, the credit of the user is substracted from price...
-     * ... and supplementary information about the subtraction is returned.
-     *
-     * @param int|null $userid
-     * @param bool $usecredit
-     * @return array
-     */
-    public static function local_shopping_cart_get_cache_data(int $userid, $usecredit = null): array {
-        global $USER, $CFG;
-
-        if (empty($userid)) {
-            $userid = $USER->id;
-        }
-
-        $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-
-        $cartstore = cartstore::instance($userid);
-
-        return $cartstore->get_data();
-    }
-
-    /**
      * Returns 0|1 fore the saved usecredit state, null if no such state exists.
      *
      * @param int $userid
@@ -836,6 +811,8 @@ class shopping_cart {
                     $item['annotation'] = $annotation ?? '';
                     $item['payment'] = $paymentmethod;
                     $item['usermodified'] = $USER->id;
+                    $item['address_billing'] = $data['address_billing'] ?? 0;
+                    $item['address_shipping'] = $data['address_shipping'] ?? 0;
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -869,7 +846,9 @@ class shopping_cart {
                             $item['usermodified'],
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
-                            $item['json'] ?? ''
+                            $item['json'] ?? '',
+                            $item['address_billing'] ?? 0,
+                            $item['address_shipping'] ?? 0,
                     );
 
                     $item['id'] = $id;
@@ -1253,51 +1232,6 @@ class shopping_cart {
             ]);
             $event->trigger();
         }
-    }
-
-    /**
-     * Enriches the cart item with tax information if given
-     *
-     * @param array $items array of cart items
-     * @param taxcategories|null $taxcategories
-     * @return array
-     */
-    public static function update_item_price_data(array $items, ?taxcategories $taxcategories): array {
-        $countrycode = null; // TODO get countrycode from user info.
-
-        $context = context_system::instance();
-
-        foreach ($items as $key => $item) {
-
-            if ($taxcategories) {
-                $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
-                if ($taxpercent >= 0) {
-                    $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
-                    $items[$key]['taxpercentage'] = round($taxpercent, 2);
-                    $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
-                    if ($itemisnet) {
-                        $netprice = $items[$key]['price']; // Price is now considered a net price.
-                        $grossprice = round($netprice * (1 + $taxpercent), 2);
-                        $items[$key]['price_net'] = $netprice;
-                        $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
-                        // Add tax to price (= gross price).
-                        $items[$key]['price_gross'] = $grossprice;
-                        // And net tax info.
-                        $items[$key]['tax'] = $grossprice - $netprice;
-                    } else {
-                        $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
-                        $grossprice = $items[$key]['price'];
-                        $items[$key]['price_net'] = $netprice;
-                        $items[$key]['price'] = $grossprice; // Set back formatted price.
-                        // Add tax to price (= gross price).
-                        $items[$key]['price_gross'] = $grossprice;
-                        // And net tax info.
-                        $items[$key]['tax'] = $grossprice - $netprice;
-                    }
-                }
-            }
-        }
-        return $items;
     }
 
     /**

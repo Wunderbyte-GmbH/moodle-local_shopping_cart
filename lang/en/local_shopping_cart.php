@@ -51,6 +51,43 @@ $string['testing:title'] = 'Shopping cart demo';
 $string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
 $string['testing:item'] = 'Test item';
 
+// Address handling.
+$string['addresses:button'] = 'Continue to address';
+$string['addresses:pagetitle'] = 'Address';
+$string['addresses:heading'] = 'Address';
+$string['addresses:select'] = 'Select an {$a}';
+$string['addresses:billing'] = 'billing address';
+$string['addresses:shipping'] = 'shipping address';
+$string['addresses:addnew'] = 'Enter new address';
+$string['addresses:change'] = 'Change Address';
+$string['addresses:confirm:single'] = 'Choose selected address';
+$string['addresses:confirm:multiple'] = 'Choose selected addresses';
+$string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
+
+// New address form.
+$string['addresses:newaddress'] = 'Add new address';
+$string['addresses:newaddress:name:label'] = 'Name';
+$string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';
+$string['addresses:newaddress:name:error'] = 'Please enter your name';
+$string['addresses:newaddress:state:label'] = 'Country';
+$string['addresses:newaddress:state:choose'] = 'Choose...';
+$string['addresses:newaddress:state:placeholder'] = 'Select a country';
+$string['addresses:newaddress:state:error'] = 'Please select a country';
+$string['addresses:newaddress:address:label'] = 'Address';
+$string['addresses:newaddress:address:placeholder'] = 'Street and house number / floor (optional) / studio (optional)';
+$string['addresses:newaddress:address:error'] = 'Address is required';
+$string['addresses:newaddress:address2:label'] = 'Additional address details';
+$string['addresses:newaddress:address2:placeholder'] = 'Additional address (optional)';
+$string['addresses:newaddress:city:label'] = 'City';
+$string['addresses:newaddress:city:placeholder'] = 'City';
+$string['addresses:newaddress:city:error'] = 'Please enter your city';
+$string['addresses:newaddress:zip:label'] = 'Zip';
+$string['addresses:newaddress:zip:placeholder'] = '1234';
+$string['addresses:newaddress:zip:error'] = 'Invalid zip code';
+$string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
+$string['addresses:newaddress:submit'] = 'Add address';
+$string['addresses:newaddress:saved'] = 'Address created';
+
 // Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
@@ -81,6 +118,8 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Clic
 $string['showdescription'] = 'Show description';
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
+$string['addresses_required:title'] = 'Address processing enabled';
+$string['addresses_required:desc'] = 'Ask for address during checkout';
 $string['taxsettings'] = 'Shopping Cart Taxes';
 $string['enabletax'] = 'Enable Tax processing';
 $string['enabletax_desc'] = 'Should tax information processing be enabled for this module';
@@ -615,3 +654,55 @@ $string['reminderdaysbefore_desc'] = "X days before a payment is due, a reminder
 $string['installmentpaymentisdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
 $string['installmentpaymentwasdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
 $string['noinstallments'] = "Currently there are no open installment payments";
+
+// VAT number checker.
+$string['vatnrcheckerheading'] = "Check VAT number";
+$string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
+$string['showvatnrchecker'] = "Use VAT number and potentially waive VAT";
+$string['showvatnrcheckerdescription'] = "If successfully verified, VAT may be waived";
+
+$string['checkvatnrcountrycode'] = "Select your country";
+$string['checkvatnrnumber'] = "Enter your VAT number";
+$string['owncountrycode'] = "Country of own company";
+$string['owncountrycode_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
+$string['ownvatnrnumber'] = "VAT number of own company";
+$string['ownvatnrnumber_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
+
+$string['usevatnr'] = "Enter VAT number";
+$string['novatnr'] = "No VAT number";
+$string['verify'] = "Verify validity of VAT number";
+$string['entervatnr'] = 'You can enter you VAT number if you are buying for a company';
+
+$string['errorselectcountry'] = 'Please choose a country';
+$string['errorinvalidvatnr'] = 'The given VAT number {$a} is invalid';
+
+$string['at'] = "Austria";
+$string['be'] = "Belgium";
+$string['bg'] = "Bulgaria";
+$string['cy'] = "Cyprus";
+$string['cz'] = "Czech Republic";
+$string['de'] = "Germany";
+$string['dk'] = "Denmark";
+$string['ee'] = "Estonia";
+$string['el'] = "Greece";
+$string['es'] = "Spain";
+$string['fi'] = "Finland";
+$string['fr'] = "France";
+$string['hr'] = "Croatia";
+$string['hu'] = "Hungary";
+$string['ie'] = "Ireland";
+$string['it'] = "Italy";
+$string['lu'] = "Luxembourg";
+$string['lv'] = "Latvia";
+$string['lt'] = "Lithuania";
+$string['mt'] = "Malta";
+$string['nl'] = "Netherlands";
+$string['pl'] = "Poland";
+$string['pt'] = "Portugal";
+$string['ro'] = "Romania";
+$string['se'] = "Sweden";
+$string['si'] = "Slovenia";
+$string['sk'] = "Slovakia";
+$string['gb'] = "United Kingdom";
+$string['xi'] = "Northern Ireland";
+$string['eu'] = "European Union";

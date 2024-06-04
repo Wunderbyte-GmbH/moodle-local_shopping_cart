@@ -31,6 +31,7 @@ use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use context_system;
+use local_shopping_cart\addresses;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\shopping_cart_credits;
 
@@ -678,11 +679,171 @@ class cartstore {
         return true;
     }
 
+
+    /**
+     * Items can be linked via a key which is part of the cartitem class.
+     * The linkage is used eg to calculate the installpayments with subbookings.
+     *
+     * @param int $itemid
+     * @param string $component
+     * @param string $area
+     *
+     * @return array
+     *
+     */
+    public function get_linked_items(int $itemid, string $component, string $area): array {
+
+        $returnarray = [];
+        $data = $this->get_cache();
+
+        foreach ($data['items'] as $item) {
+
+            if ($item['componentname'] !== $component) {
+                continue;
+            }
+
+            $identifierarray = explode('_', $item['linkeditem'] ?? '');
+
+            if (($area != $identifierarray[0] ?? '')
+                || ($itemid != $identifierarray[1] ?? 0)) {
+
+                continue;
+            }
+            $returnarray[] = $item;
+        }
+
+        return $returnarray;
+    }
+
+    /**
+     * Gets the openinstallments.
+     * @param string $country
+     * @param string $vatnrnumber
+     * @param string $companyname
+     * @param string $street
+     * @param string $place
+     * @return bool
+     * @throws coding_exception
+     */
+    public function set_vatnr_data($country, $vatnrnumber, $companyname, $street, $place) {
+
+        $data = $this->get_cache();
+
+        $data['vatnrcountry'] = $country;
+        $data['vatnrnumber'] = $vatnrnumber;
+        $data['companyname'] = $companyname;
+        $data['street'] = $street;
+        $data['place'] = $place;
+
+        $this->set_cache($data);
+
+        return true;
+    }
+
+    /**
+     * Returns cached data only if vatnr is set.
+     * VATNR data has the keys vatnrcountry, vatnrnumber, companyname, street & place.
+     * @return array
+     * @throws coding_exception
+     */
+    public function get_vatnr_data() {
+
+        $data = $this->get_cache();
+
+        if (!$this->has_vatnr_data()) {
+            return [];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check if vatnr data is there.
+     * @return bool
+     * @throws coding_exception
+     */
+    public function has_vatnr_data() {
+
+        $data = $this->get_cache();
+
+        if (!empty($data['vatnrnumber'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets the openinstallments.
+     * @param string $country
+     * @param string $vatnrnumber
+     * @param string $companyname
+     * @param string $street
+     * @param string $place
+     * @return bool
+     * @throws coding_exception
+     */
+    public function delete_vatnr_data() {
+
+        $data = $this->get_cache();
+
+        unset($data['vatnrcountry']);
+        unset($data['vatnrnumber']);
+        unset($data['companyname']);
+        unset($data['street']);
+        unset($data['place']);
+
+        $this->set_cache($data);
+
+        return true;
+    }
+
+    /**
+     * Saves the selected addres ids ($selectedaddressesdbids) in the shopping cart cache.
+     *
+     * @param array $selectedaddressesdbids the addresses the user selected for this shopping cart
+     * @return void
+     */
+    public function local_shopping_cart_save_address_in_cache(array $selectedaddressesdbids) {
+
+        $data = $this->get_cache();
+
+        $taxcountrycode = null; // Most probable tax country.
+        $billingaddressid = null; // Most probable billing address.
+
+        foreach ($selectedaddressesdbids as $addreskey => $addressdbid) {
+            $data["address_" . $addreskey] = intval($addressdbid);
+        }
+        if (isset($data["address_billing"])) {
+            // Override guessed billing address id if there is a dedicated billing address set.
+            $billingaddressid = $data["address_billing"];
+        }
+
+        if ($billingaddressid != null) {
+            $billingaddress = addresses::get_address_for_user($this->userid, $billingaddressid);
+            $taxcountrycode = $billingaddress->state;
+        }
+        $data["taxcountrycode"] = $taxcountrycode;
+
+        $this->set_cache($data);
+    }
+
     /**
      * Returns the cachekey for this user as string.
      * @return string
      */
     private function get_cachekey() {
         return $this->userid . '_shopping_cart';
+    }
+
+    /**
+     * Returns cached countrycode.
+     * @return string
+     * @throws coding_exception
+     */
+    public function get_countrycode() {
+        $data = $this->get_cache();
+
+        return $data['taxcountrycode'] ?? $data['vatnrcountry'] ?? null;
     }
 }

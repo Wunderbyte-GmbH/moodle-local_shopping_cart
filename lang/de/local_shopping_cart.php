@@ -40,6 +40,42 @@ $string['rebookingcredit'] = 'Umbuchungsgutschrift';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
 
+// Address handling.
+$string['addresses:button'] = 'Weiter zur Adresseingabe';
+$string['addresses:pagetitle'] = 'Adresse';
+$string['addresses:heading'] = 'Adresse';
+$string['addresses:select'] = 'Wähle eine {$a}';
+$string['addresses:billing'] = 'Rechnungsadresse';
+$string['addresses:shipping'] = 'Lieferadresse';
+$string['addresses:addnew'] = 'Neue Adresse eingeben';
+$string['addresses:change'] = 'Adresse ändern';
+$string['addresses:confirm:single'] = 'Ausgewählte Adresse verwenden';
+$string['addresses:confirm:multiple'] = 'Ausgewählte Adressen verwenden';
+$string['addresses:selectionrequired'] = 'Bitte wähle eine Adresse um fortzufahren';
+// New address form.
+$string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
+$string['addresses:newaddress:name:label'] = 'Name';
+$string['addresses:newaddress:name:placeholder'] = 'Vollständiger Name (Vor- und Nachname)';
+$string['addresses:newaddress:name:error'] = 'Bitte gib einen Namen ein';
+$string['addresses:newaddress:state:label'] = 'Land';
+$string['addresses:newaddress:state:choose'] = 'Wählen...';
+$string['addresses:newaddress:state:placeholder'] = 'Tippe um ein land auszuwählen';
+$string['addresses:newaddress:state:error'] = 'Bitte wähle ein Land';
+$string['addresses:newaddress:address:label'] = 'Adresse';
+$string['addresses:newaddress:address:placeholder'] = 'Straße und Hausnummer / Stiege (optional) / Türnummer (optional)';
+$string['addresses:newaddress:address:error'] = 'Eine gültige Adresse ist erforderlich';
+$string['addresses:newaddress:address2:label'] = 'Addresszusatz';
+$string['addresses:newaddress:address2:placeholder'] = 'Addresszusatz (optional)';
+$string['addresses:newaddress:city:label'] = 'Stadt';
+$string['addresses:newaddress:city:placeholder'] = 'Stadt';
+$string['addresses:newaddress:city:error'] = 'Bitte gib eine Stadt ein';
+$string['addresses:newaddress:zip:label'] = 'PLZ';
+$string['addresses:newaddress:zip:placeholder'] = 'Postleitzahl';
+$string['addresses:newaddress:zip:error'] = 'Ungültige Postleitzahl';
+$string['addresses:newaddress:checkasdefault'] = 'Als meine standard Adresse setzen';
+$string['addresses:newaddress:submit'] = 'Hinzufügen';
+$string['addresses:newaddress:saved'] = 'Die Adresse wurde hinzugefügt';
+
 // Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
@@ -72,6 +108,8 @@ $string['nopaymentaccountsdesc'] =
 $string['showdescription'] = 'Zeige Beschreibung';
 $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
+$string['addresses_required:title'] = 'Adresseingabe aktivieren';
+$string['addresses_required:desc'] = 'Adresse während dem Checkout abfragen';
 $string['taxsettings'] = 'Warenkorb Steuern';
 $string['enabletax'] = 'MWSt aktivieren';
 $string['enabletax_desc'] = 'Soll MWSt im Wartenkorb angezeigt und verwendet werden';
@@ -539,3 +577,55 @@ $string['reminderdaysbefore_desc'] = "Die eingestellte Anzahl Tage vor fälliger
 $string['installmentpaymentisdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['installmentpaymentwasdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
+
+// UID checker.
+$string['vatnrcheckerheading'] = "UID überprüfen";
+$string['vatnrcheckerheadingdescription'] = "Vor dem Zahlen kann eine UID eingegeben und überprüft werden";
+$string['showvatnrchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls auf Umsatzsteuer";
+$string['showvatnrcheckerdescription'] = "Bei erfolgreicher Überprüfung kann auf die Einhebung der Umsatzsteuer verzichtet werden";
+
+$string['checkvatnrcountrycode'] = "Wählen Sie Ihr Land";
+$string['checkvatnrnumber'] = "Geben Sie Ihre UID Nummer";
+$string['owncountrycode'] = "Land der eigenen Firma";
+$string['owncountrycode_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
+$string['ownvatnrnumber'] = "UID Nummer der eigenen Firma";
+$string['ownvatnrnumber_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
+
+$string['usevatnr'] = "UID eingeben";
+$string['novatnr'] = "Keine UID verwenden";
+$string['verify'] = "UID prüfen";
+$string['entervatnr'] = 'Sie können Ihre Umsatzsteuer-ID eingeben, wenn Sie für ein Unternehmen einkaufen.';
+
+$string['errorselectcountry'] = 'Bitte Land auswählen';
+$string['errorinvalidvatnr'] = 'Die übermittelte UID {$a} ist ungültig';
+
+$string['at'] = "Österreich";
+$string['be'] = "Belgien";
+$string['bg'] = "Bulgarien";
+$string['cy'] = "Zypern";
+$string['cz'] = "Tschechien";
+$string['de'] = "Deutschland";
+$string['dk'] = "Dänemark";
+$string['ee'] = "Estland";
+$string['el'] = "Griechenland";
+$string['es'] = "Spanien";
+$string['fi'] = "Finnland";
+$string['fr'] = "Frankreich";
+$string['hr'] = "Kroatien";
+$string['hu'] = "Ungarn";
+$string['ie'] = "Irland";
+$string['it'] = "Italien";
+$string['lu'] = "Luxemburg";
+$string['lv'] = "Lettland";
+$string['lt'] = "Litauen";
+$string['mt'] = "Malta";
+$string['nl'] = "Niederlande";
+$string['pl'] = "Polen";
+$string['pt'] = "Portugal";
+$string['ro'] = "Rumänien";
+$string['se'] = "Schweden";
+$string['si'] = "Slowenien";
+$string['sk'] = "Slowakei";
+$string['gb'] = "Vereinigtes Königreich";
+$string['xi'] = "Nordirland";
+$string['eu'] = "Europäische Union";

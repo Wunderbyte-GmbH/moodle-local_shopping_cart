@@ -29,6 +29,8 @@ import {confirmPayment} from 'local_shopping_cart/cashier';
 import {discountModal} from 'local_shopping_cart/cashier';
 import {showNotification} from 'local_shopping_cart/notifications';
 
+import DynamicForm from 'core_form/dynamicform';
+
 import {
     get_strings as getStrings,
     get_string as getString
@@ -60,6 +62,7 @@ const SELECTORS = {
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
     ACCEPTTERMS: '#accepttermsnandconditions',
+    CHECKVATNRFORM: 'div.form_vatnrchecker',
 };
 /**
  *
@@ -131,6 +134,50 @@ const SELECTORS = {
     if (accepttermsbutton && paymentbutton) {
         addAcceptTermsListener(accepttermsbutton, paymentbutton);
     }
+
+    initVATNRChecker();
+};
+
+const initVATNRChecker = () => {
+
+    const vatnrchecker = document.querySelector(SELECTORS.CHECKVATNRFORM);
+
+    if (vatnrchecker) {
+        const vatnrcheckerform = new DynamicForm(
+            vatnrchecker,
+            'local_shopping_cart\\form\\dynamicvatnrchecker'
+        );
+
+        vatnrcheckerform.addEventListener('change', (e) => {
+
+            // eslint-disable-next-line no-console
+            console.log(e.target.checked, e.target.name);
+
+            if (!e.target.name) {
+                return;
+            }
+
+            if (e.target.name == 'usevatnr'
+                && e.target.checked === false) {
+
+                // eslint-disable-next-line no-console
+                console.log(e.target.value);
+
+                vatnrcheckerform.submitFormAjax();
+            }
+        });
+
+        // After submitting we want to reload the window to update the rule list.
+        vatnrcheckerform.addEventListener(vatnrcheckerform.events.FORM_SUBMITTED, () => {
+
+            vatnrcheckerform.load();
+            // eslint-disable-next-line no-console
+            console.log('form submitted');
+
+            reinit();
+        });
+    }
+
 };
 
 export const buttoninit = (itemid, component, area) => {
@@ -393,8 +440,15 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
     }
 
     // We must make sure the checkbox is only once visible on the site.
-    // const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
-    usecredit = usecredit ? 1 : 0;
+    const checkboxes = document.querySelectorAll(SELECTORS.PRICELABELCHECKBOX);
+
+    if (checkboxes.length == 1) {
+        checkboxes.forEach(checkbox => {
+            usecredit = checkbox.checked ? 1 : 0;
+        });
+    } else {
+        usecredit = usecredit ? 1 : 0;
+    }
     useinstallments = useinstallments ? 1 : 0;
 
     Ajax.call([{
@@ -651,7 +705,7 @@ export function addItemShowNotification(data) {
  *
  * @param {*} event
  */
-function dealWithZeroPrice(event) {
+async function dealWithZeroPrice(event) {
 
     event.stopPropagation();
     event.preventDefault();

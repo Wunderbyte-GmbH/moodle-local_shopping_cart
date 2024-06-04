@@ -55,12 +55,6 @@ class shopping_cart_history {
      *
      * @var int
      */
-    private $uid;
-
-    /**
-     *
-     * @var int
-     */
     private $itemid;
 
     /**
@@ -86,7 +80,6 @@ class shopping_cart_history {
      */
     public function __construct(stdClass $data = null) {
         if ($data) {
-            $this->uid = $data->uid;
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
@@ -349,6 +342,8 @@ class shopping_cart_history {
      * @param int|null $schistoryid
      * @param int|null $installments
      * @param string|null $json
+     * @param int $addressbilling
+     * @param int $addressshipping
      * @return int
      * @throws dml_exception
      * @throws coding_exception
@@ -376,7 +371,9 @@ class shopping_cart_history {
             int $usermodified = null,
             int $schistoryid = null,
             int $installments = null,
-            string $json = null) {
+            string $json = null,
+            int $addressbilling = 0,
+            int $addressshipping = 0) {
 
         global $USER;
 
@@ -408,6 +405,8 @@ class shopping_cart_history {
         $data->schistoryid = $schistoryid;
         $data->installments = $installments;
         $data->json = $json;
+        $data->address_billing = $addressbilling;
+        $data->address_shipping = $addressshipping;
 
         return self::write_to_db($data);
     }
@@ -713,31 +712,29 @@ class shopping_cart_history {
         return $dataarr;
     }
 
-
     /**
      * On loading the checkout.php, the shopping cart is stored in the schistory cache.
      * This is because we don't pass the individual items, but only a total sum and description to the payment provider.
      * To identify the items in the cart, we have to store them with an identifier.
      * To avoid cluttering the table with useless data, we store it temporarily in this cache.
      *
-     * @param array $dataarray
+     * @param array $data
      * @return bool|null
      */
-    public function store_in_schistory_cache(array $dataarray) {
+    public function store_in_schistory_cache(array $data) {
 
-        if (!isset($dataarray['identifier'])) {
+        if (!isset($data['identifier'])) {
             return null;
         }
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->set('schistorycache', $dataarray);
+        $cache->set('schistorycache', $data);
 
         return true;
     }
 
     /**
      * Get data from schistory cache.
-     * If the flag is set, we also trigger writing to tb and set the approbiate cache flag to do it only once.
      * @param string $identifier
      * @return mixed|false
      */
@@ -753,7 +750,6 @@ class shopping_cart_history {
         }
 
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
-
             self::write_to_db((object)$shoppingcart);
 
             $shoppingcart['storedinhistory'] = true;
@@ -778,7 +774,7 @@ class shopping_cart_history {
 
         global $DB;
 
-        $uid = $DB->insert_record('local_shopping_cart_id', [
+        $vatnr = $DB->insert_record('local_shopping_cart_id', [
             'userid' => $userid,
             'timecreated' => time(),
         ]);
@@ -786,14 +782,14 @@ class shopping_cart_history {
         $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
 
         // The base value defines the number of digits.
-        $uid = $basevalue + $uid;
+        $vatnr = $basevalue + $vatnr;
 
         // We need to keep it below 7 digits.
-        if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {
-            throw new moodle_exception('uidistoobig', 'local_shopping_cart');
+        if ((!empty($basevalue) && (($vatnr / $basevalue) > 10))) {
+            throw new moodle_exception('vatnristoobig', 'local_shopping_cart');
         }
 
-        return $uid;
+        return $vatnr;
     }
 
     /**

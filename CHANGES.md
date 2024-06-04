@@ -1,3 +1,6 @@
+## Version 0.9.3 (2024052101)
+* Bugfix: Fix incomplete ledger records.
+
 ## Version 0.9.0 (2024052101)
 * Bugfixes: Add creation date to ledger.
 * Bugfixes: Installment checkbox.

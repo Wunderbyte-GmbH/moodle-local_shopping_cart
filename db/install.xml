@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/shopping_cart/db" VERSION="2022121200" COMMENT="XMLDB file for Moodle local/shopping_cart"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+<XMLDB PATH="local/shopping_cart/db" VERSION="20230215" COMMENT="XMLDB file for Moodle local/shopping_cart"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
     <TABLES>
         <TABLE NAME="local_shopping_cart_history" COMMENT="Shopping Cart History">
@@ -152,6 +152,25 @@
             </KEYS>
             <INDEXES>
                 <INDEX NAME="itemid-componentname-area" UNIQUE="true" FIELDS="itemid, componentname, area"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="local_shopping_cart_address" COMMENT="Shopping cart addresses that were added during checkout process.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="state" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="address" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="address2" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="city" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="zip" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="phone" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who added address"/>
             </INDEXES>
         </TABLE>
     </TABLES>

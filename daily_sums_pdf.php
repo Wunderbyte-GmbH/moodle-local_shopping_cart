@@ -72,15 +72,15 @@ if (empty($html)) {
     $html = str_replace("[[title]]", $data['title'] ?? '', $html);
     $html = str_replace("[[date]]", $data['date'] ?? '', $html);
     $html = str_replace("[[printdate]]", $data['printdate'] ?? '', $html);
-    $html = str_replace("[[totalsum]]", $data['totalsum'] ?? '', $html);
+    $html = str_replace("[[totalsum]]", $data['totalsum'] ?? '0.00', $html);
     $html = str_replace("[[currency]]", $data['currency'] ?? '', $html);
-    $html = str_replace("[[online]]", $data['online'] ?? '', $html);
-    $html = str_replace("[[cash]]", $data['cash'] ?? '', $html);
-    $html = str_replace("[[creditcard]]", $data['creditcard'] ?? '', $html);
-    $html = str_replace("[[debitcard]]", $data['debitcard'] ?? '', $html);
-    $html = str_replace("[[manual]]", $data['manual'] ?? '', $html);
-    $html = str_replace("[[creditspaidbackcash]]", $data['creditspaidbackcash'] ?? '', $html);
-    $html = str_replace("[[creditspaidbacktransfer]]", $data['creditspaidbacktransfer'] ?? '', $html);
+    $html = str_replace("[[online]]", $data['online'] ?? '0.00', $html);
+    $html = str_replace("[[cash]]", $data['cash'] ?? '0.00', $html);
+    $html = str_replace("[[creditcard]]", $data['creditcard'] ?? '0.00', $html);
+    $html = str_replace("[[debitcard]]", $data['debitcard'] ?? '0.00', $html);
+    $html = str_replace("[[manual]]", $data['manual'] ?? '0.00', $html);
+    $html = str_replace("[[creditspaidbackcash]]", $data['creditspaidbackcash'] ?? '0.00', $html);
+    $html = str_replace("[[creditspaidbacktransfer]]", $data['creditspaidbacktransfer'] ?? '0.00', $html);
     $html = str_replace("[[cashandcards]]", $cashandcards ?? '', $html);
 }
 

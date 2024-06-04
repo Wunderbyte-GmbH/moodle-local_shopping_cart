@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\admin_setting_taxcategories;
+use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,7 +35,7 @@ $componentname = 'local_shopping_cart';
 if ($hassiteconfig) {
     // Add the category to the local plugin branch.
     $settings = new admin_settingpage('local_shopping_cart_settings', '');
-    $ADMIN->add('localplugins', new admin_category($componentname, get_string('pluginname', $componentname)));
+    $ADMIN->add('localplugins', new admin_category($componentname, new lang_string('pluginname', $componentname)));
     $ADMIN->add($componentname, $settings);
 
     $paymentaccountrecords = $DB->get_records_sql("
@@ -56,8 +57,8 @@ if ($hassiteconfig) {
         // If we have no payment accounts then show a static text instead.
         $settings->add(new admin_setting_description(
                 'nopaymentaccounts',
-                get_string('nopaymentaccounts', 'local_shopping_cart'),
-                get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
+                new lang_string('nopaymentaccounts', 'local_shopping_cart'),
+                new lang_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
         ));
 
     } else {
@@ -65,8 +66,8 @@ if ($hassiteconfig) {
         $settings->add(
                 new admin_setting_configselect(
                         $componentname . '/accountid',
-                        get_string('accountid', $componentname),
-                        get_string('accountid:description', $componentname),
+                        new lang_string('accountid', $componentname),
+                        new lang_string('accountid:description', $componentname),
                         null,
                         $paymentaccounts
                 )
@@ -94,8 +95,8 @@ if ($hassiteconfig) {
     $settings->add(
             new admin_setting_configtext(
                     $componentname . '/maxitems',
-                    get_string('maxitems', $componentname),
-                    get_string('maxitems:description', $componentname),
+                    new lang_string('maxitems', $componentname),
+                    new lang_string('maxitems:description', $componentname),
                     10,
                     PARAM_INT
             )
@@ -105,8 +106,8 @@ if ($hassiteconfig) {
     $settings->add(
             new admin_setting_configtext(
                     $componentname . '/expirationtime',
-                    get_string('expirationtime', $componentname),
-                    get_string('expirationtime:description', $componentname),
+                    new lang_string('expirationtime', $componentname),
+                    new lang_string('expirationtime:description', $componentname),
                     15,
                     PARAM_INT
             )
@@ -115,8 +116,8 @@ if ($hassiteconfig) {
     $settings->add(
             new admin_setting_configtext(
                     $componentname . '/expirationtime',
-                    get_string('expirationtime', $componentname),
-                    get_string('expirationtime:description', $componentname),
+                    new lang_string('expirationtime', $componentname),
+                    new lang_string('expirationtime:description', $componentname),
                     15,
                     PARAM_INT
             )
@@ -133,16 +134,28 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
-        new admin_setting_configcheckbox($componentname . '/bookingfeeonlyonce',
-                get_string('bookingfeeonlyonce', 'local_shopping_cart'),
-                get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1));
+            new admin_setting_configcheckbox($componentname . '/bookingfeeonlyonce',
+                    get_string('bookingfeeonlyonce', 'local_shopping_cart'),
+                    get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1)
+    );
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
             new admin_setting_configcheckbox($componentname . '/rounddiscounts',
-                    get_string('rounddiscounts', 'local_shopping_cart'),
-                    get_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
+                    new lang_string('rounddiscounts', 'local_shopping_cart'),
+                    new lang_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
 
+    // Setting to enable address processing during checkout.
+    $settings->add(
+            new admin_setting_configmulticheckbox($componentname . '/addresses_required',
+                    new lang_string('addresses_required:title', 'local_shopping_cart'),
+                    new lang_string('addresses_required:desc', 'local_shopping_cart'),
+                    [""],
+                    [
+                            'billing' => ucfirst(new lang_string('addresses:billing', 'local_shopping_cart')),
+                            'shipping' => ucfirst(new lang_string('addresses:shipping', 'local_shopping_cart'))
+                    ]
+            ));
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/samecostcenter',
@@ -168,8 +181,8 @@ if ($hassiteconfig) {
     $settings->add(
             new admin_setting_confightmleditor(
                     $componentname . '/additonalcashiersection',
-                    get_string('additonalcashiersection', $componentname),
-                    get_string('additonalcashiersection:description', $componentname),
+                    new lang_string('additonalcashiersection', $componentname),
+                    new lang_string('additonalcashiersection:description', $componentname),
                     '..',
                     PARAM_RAW
             )
@@ -359,11 +372,11 @@ if ($hassiteconfig) {
     $ADMIN->add($componentname, $cashreportsettings);
 
     // Setting to enable taxes processing.
-    $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', get_string('taxsettings', 'local_shopping_cart'));
+    $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', new lang_string('taxsettings', 'local_shopping_cart'));
     $taxsettings->add(
             new admin_setting_configcheckbox($componentname . '/enabletax',
-                    get_string('enabletax', 'local_shopping_cart'),
-                    get_string('enabletax_desc', 'local_shopping_cart'), 0));
+                    new lang_string('enabletax', 'local_shopping_cart'),
+                    new lang_string('enabletax_desc', 'local_shopping_cart'), 0));
 
     $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
     if ($taxprocessingenabled) {
@@ -375,9 +388,10 @@ if ($hassiteconfig) {
                 <div class="collapse mb-5" id="collapseTaxCategories">
                 <div class="card card-body">
                 Multi country multi tax categories:
-                <pre class="mb-1 p-1">default A:0 B:0 C:0
-                At A:20 B:10 C:0
-                De A:19 B:10 C:0</pre><hr/>
+                <pre class="mb-1 p-1">
+                default A:0 B:0 C:0
+                AT A:20 B:10 C:0
+                DE A:19 B:10 C:0</pre><hr/>
                 Multi tax categories, no countries:
                 <pre class="mb-1 p-1">A:30 B:0</pre><hr/>
                 Just one default tax:
@@ -387,9 +401,9 @@ if ($hassiteconfig) {
         $taxsettings->add(
                 new admin_setting_taxcategories(
                         $componentname . '/taxcategories',
-                        get_string('taxcategories', $componentname),
-                        get_string('taxcategories_desc', $componentname) . $taxcategoriesexample,
-                        '',
+                        new lang_string('taxcategories', $componentname),
+                        new lang_string('taxcategories_desc', $componentname) . $taxcategoriesexample,
+                        '20',
                         PARAM_TEXT
                 )
         );
@@ -397,8 +411,8 @@ if ($hassiteconfig) {
         $taxsettings->add(
                 new admin_setting_configtext(
                         $componentname . '/defaulttaxcategory',
-                        get_string('defaulttaxcategory', $componentname),
-                        get_string('defaulttaxcategory_desc', $componentname),
+                        new lang_string('defaulttaxcategory', $componentname),
+                        new lang_string('defaulttaxcategory_desc', $componentname),
                         "",
                         PARAM_TEXT
                 )
@@ -538,6 +552,35 @@ if ($hassiteconfig) {
                 PARAM_FLOAT
         )
         );
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading('local_shopping_cart/vatnrcheckerheading',
+            get_string('vatnrcheckerheading', 'local_shopping_cart'),
+            get_string('vatnrcheckerheadingdescription', 'local_shopping_cart')
+            ));
+
+    // Checkbox to show vatnr check on checkout.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/showvatnrchecker',
+                get_string('showvatnrchecker', 'local_shopping_cart'),
+                get_string('showvatnrcheckerdescription', 'local_shopping_cart'), 0));
+
+
+    $settings->add(
+        new admin_setting_configselect($componentname . '/owncountrycode',
+                get_string('owncountrycode', $componentname),
+                get_string('owncountrycode_desc', $componentname),
+                null,
+                vatnrchecker::return_countrycodes_array()
+    ));
+
+     // Add a text field for the Token.
+     $settings->add(new admin_setting_configtext('local_shopping_cart/ownvatnrnumber',
+            get_string('ownvatnrnumber', 'local_shopping_cart'),
+            get_string('ownvatnrnumber_desc', 'local_shopping_cart'),
+            '',
+            PARAM_ALPHANUM
+    ));
 
     // Add a heading for the section.
     $settings->add(new admin_setting_heading('local_shopping_cart/privacyheading',

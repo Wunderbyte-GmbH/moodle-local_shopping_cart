@@ -343,7 +343,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 3:
                 return 1;
             default:
-                return 0;
+                return 0.0;
         }
     }
 

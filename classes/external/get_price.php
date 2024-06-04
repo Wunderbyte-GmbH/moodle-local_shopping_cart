@@ -137,14 +137,19 @@ class get_price extends external_api {
                         'initialtotal_net' => new external_value(
                             PARAM_FLOAT,
                             'Initial price before deduced credits net amount',
-                            VALUE_DEFAULT, 0),
+                            VALUE_DEFAULT,
+                            0),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
-                        'installmentscheckboxid' => new external_value(PARAM_TEXT,
-                            'As indicator if installments are used at all.', VALUE_DEFAULT, ''),
+                        'installmentscheckboxid' => new external_value(
+                            PARAM_TEXT,
+                            'As indicator if installments are used at all.',
+                            VALUE_DEFAULT,
+                            ''
+                        ),
                         'installments' => new external_multiple_structure(
                             new external_single_structure([
                                 'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),
@@ -157,6 +162,15 @@ class get_price extends external_api {
                                         'date' => new external_value(PARAM_TEXT, 'Date as string', VALUE_REQUIRED),
                                         'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
                                     ])
+                                ),
+                                'installmentslinkeditems' => new external_multiple_structure(
+                                    new external_single_structure([
+                                        'initialpayment' => new external_value(PARAM_FLOAT, 'Initialpayment', VALUE_REQUIRED),
+                                        'originalprice' => new external_value(PARAM_FLOAT, 'Original price', VALUE_REQUIRED),
+                                        'itemname' => new external_value(PARAM_TEXT, 'Item name', VALUE_REQUIRED),
+                                        'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
+                                        ]
+                                    ),
                                 ),
                             ])
                         ),

@@ -149,16 +149,49 @@
             <p>
             {{mail}}
             </p>
-         </li>
+        </li>
     </ul>
     <div>
-         <div class="shopping-cart-checkout-items-container">
+        <div class="shopping-cart-checkout-items-container">
             {{> local_shopping_cart/shopping_cart_items }}
         </div>
 
         <div class="sc_price_label" data-userid="{{userid}}">
             {{> local_shopping_cart/price_label }}
         </div>
+        {{#show_selected_addresses}}
+            <div class="selectedaddresses mt-4">
+                {{#selected_addresses}}
+                    <div class="selectedaddress">
+                        {{> local_shopping_cart/address_singleline }}
+                    </div>
+                {{/selected_addresses}}
+                <a href="{{wwwroot}}/local/shopping_cart/address.php">{{#str}} addresses:change, local_shopping_cart {{/str}}</a>
+            </div>
+        {{/show_selected_addresses}}
+
+        <div>
+            {{^address_selection_required}}
+                {{> local_shopping_cart/checkout_payment_region }}
+            {{/address_selection_required}}
+            {{#address_selection_required}}
+                <div class="pull-right mt-3">
+                    <a
+                            class="btn btn-primary mr-3"
+                            type="button"
+                            id="addressesbtn"
+                            href="{{wwwroot}}/local/shopping_cart/address.php">
+                        {{#str}} addresses:button, local_shopping_cart {{/str}}
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+            {{/address_selection_required}}
+        </div>
+        {{#showvatnrchecker}}
+            <div class="form_vatnrchecker mt-2 d-flex justify-content-end">
+                {{{showvatnrchecker}}}
+            </div>
+        {{/showvatnrchecker}}
         {{#termsandconditions}}
         <div class="form_termsandconditions mt-2 d-flex justify-content-end">
             <div class="form-group">
@@ -174,29 +207,25 @@
             </div>
         </div>
         {{/termsandconditions}}
-        <div>
-            {{> local_shopping_cart/payment_region }}
-        </div>
-   </div>
-    {{#has_historyitems}}
-    <div class="card mt-4">
-        <div class="card-header text-center bg-primary text-white">
-            <i class="fa fa-history fa-2x" aria-hidden="true"></i>
-            <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
-        </div>
-        <div class="card-body">
-            <div class="history">
-                <ul class="list-group cashier-history-items">
-                    {{> local_shopping_cart/credit_item }}
-                    {{#historyitems}}
-                        {{> local_shopping_cart/history_item }}
-                    {{/historyitems}}
-                </ul>
+        {{#has_historyitems}}
+            <div class="card mt-6">
+                <div class="card-header text-center bg-primary text-white">
+                    <i class="fa fa-history fa-2x" aria-hidden="true"></i>
+                    <b class="d-block">{{#str}} previouspurchases, local_shopping_cart {{/str}}</b>
+                </div>
+                <div class="card-body">
+                    <div class="history">
+                        <ul class="list-group cashier-history-items">
+                            {{> local_shopping_cart/credit_item }}
+                            {{#historyitems}}
+                                {{> local_shopping_cart/history_item }}
+                            {{/historyitems}}
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
+        {{/has_historyitems}}
     </div>
-    {{/has_historyitems}}
-</div>
 {{/finished}}
 
 {{#js}}

@@ -125,13 +125,57 @@ abstract class installments extends modifier_base {
 
                     // Check which payment it is.
                     // If this is the first payment, price is downpayment.
-                    $data['items'][$key]['price'] = $jsonobject->downpayment;
+
+                    // The downpayment may be higher if we find linked items.
+                    $cartstore = cartstore::instance($data['userid']);
+                    $linkeditems = $cartstore->get_linked_items($itemdata['itemid'], $itemdata['componentname'], $itemdata['area']);
+
+                    $originalprice = $itemdata['price'];
+                    $installmentslinkeditems = [];
+                    $openamount = $originalprice;
+
+                    if (!empty($linkeditems)) {
+                        // First, we calculate the ratio of the downpayment.
+                        $downpaymentratio = $jsonobject->downpayment / $originalprice;
+
+                        // Now we set the payment for the initial item.
+                        $data['items'][$key]['price'] = $jsonobject->downpayment;
+
+                        // We want to apply the same ratio to the subbooking items.
+                        foreach ($linkeditems as $linkeditem) {
+
+                            $linkedkey = array_search($linkeditem, $data['items']);
+
+                            $originallinkedprice = $linkeditem['price'];
+                            $linkeddownpayment = round($linkeditem['price'] * $downpaymentratio, 2);
+                            $data['items'][$linkedkey]['price'] = $linkeddownpayment;
+
+                            // No, we add the difference between the new price of the linked item to the original downpayment.
+                            $data['items'][$key]['price'] += ($originallinkedprice - $jsonobject->downpayment);
+                            $installmentslinkeditems[] = [
+                                'itemname' => $linkeditem['itemname'],
+                                'originalprice' => $originallinkedprice,
+                                'initialpayment' => $linkeddownpayment,
+                                'currency' => $linkeditem['currency'],
+                            ];
+
+                            $openamount += ($originallinkedprice - $linkeddownpayment);
+                        }
+                        // Now we reduce the announced price of all the other items as well.
+                        // But we need to ad the reduction to the initial item.
+                        // We don't want to multiply our installment payments, but only increase the one we had before.
+
+                    } else {
+                        $data['items'][$key]['price'] = $jsonobject->downpayment;
+                    }
+
+                    $openamount -= $jsonobject->downpayment;
 
                     $now = time();
                     $delta = $jsonobject->duedatevariable * 86400;
 
                     $interval = round($delta / ($jsonobject->numberofpayments));
-                    $payment = ($itemdata['price'] - $jsonobject->downpayment) / $jsonobject->numberofpayments;
+                    $payment = ($openamount) / $jsonobject->numberofpayments;
 
                     // If there is nothing left to pay, we don't add payments.
                     if ($payment <= 0) {
@@ -144,7 +188,7 @@ abstract class installments extends modifier_base {
                     while ($counter < $jsonobject->numberofpayments) {
                         $counter++;
                         $timestamp = $now + ($interval * $counter);
-                        $installmentpayments['originalprice'] = $itemdata['price'];
+                        $installmentpayments['originalprice'] = $originalprice;
                         $installmentpayments['itemname'] = $itemdata["itemname"];
                         $installmentpayments['initialpayment'] = $jsonobject->downpayment;
                         $installmentpayments['currency'] = $itemdata['currency'];
@@ -158,6 +202,7 @@ abstract class installments extends modifier_base {
                         ];
                         $installmentpayments['installments'] = $jsonobject->numberofpayments;
                     }
+                    $installmentpayments['installmentslinkeditems'] = $installmentslinkeditems;
                     $data['installments'][] = $installmentpayments;
                     $data['items'][$key]['installments'] = $jsonobject->numberofpayments;
 
