@@ -238,6 +238,7 @@ $string['unknown'] = ' - method unknown';
 $string['paid'] = 'Paid';
 $string['paymentconfirmed'] = 'Payment confirmed';
 $string['restart'] = 'Next customer';
+$string['samerestart'] = 'Continue with same customer';
 $string['print'] = 'Print';
 $string['previouspurchases'] = 'Previous purchases';
 $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout ❯❯';

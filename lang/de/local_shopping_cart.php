@@ -235,6 +235,7 @@ $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['paid'] = 'Bezahlt';
 $string['paymentconfirmed'] = 'Zahlung bestätigt und gebucht.';
 $string['restart'] = 'Nächste/r KundIn';
+$string['samerestart'] = 'Weiter mit gleicher Person';
 $string['print'] = 'Drucken';
 $string['previouspurchases'] = 'Bisherige Käufe';
 $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung ❯❯';

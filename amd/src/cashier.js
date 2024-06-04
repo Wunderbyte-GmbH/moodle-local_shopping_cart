@@ -39,6 +39,15 @@ export const init = (userid = 0) => {
 
     document.getElementById('checkout-tab').classList.remove('success');
 
+    if (userid > 0) {
+        const url = new URL(window.location.href);
+
+        if (!url.searchParams.has('userid')) {
+            url.searchParams.append('userid', userid);
+            window.history.pushState(null, null, url.toString());
+        }
+    }
+
     const buybuttons = document.querySelectorAll('.buy-btn');
     const manualrebookbtn = document.querySelector('#cashiermanualrebook-btn');
     const cartcancelbtn = document.querySelector('#shoppingcart-cancel-btn');
@@ -56,7 +65,7 @@ export const init = (userid = 0) => {
     if (cartcancelbtn) {
         cartcancelbtn.addEventListener('click', () => {
             deleteAllItems(userid);
-            const newurl = Url.relativeUrl("/local/shopping_cart/cashier.php", [], false);
+            const newurl = Url.relativeUrl("/local/shopping_cart/cashier.php", [userid], false);
             location.href = newurl;
         });
     }
@@ -101,6 +110,7 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                     let params = {
                         success: 1,
                         identifier: identifier,
+                        userid: userid
                     };
 
                     const newurl = Url.relativeUrl("/local/shopping_cart/checkout.php", params, false);
