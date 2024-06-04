@@ -151,6 +151,24 @@ class local_shopping_cart_generator extends testing_module_generator {
     }
 
     /**
+     * Function to create a dummy user address record.
+     *
+     * @param array|stdClass $record
+     * @return stdClass the address object
+     */
+    public function create_user_address($record = null) {
+        global $DB, $USER;
+
+        $record = (object) $record;
+        $record->address2 = $record->address2 ?? '';
+        $record->phone = $record->phone ?? '';
+
+        $record->id = $DB->insert_record('local_shopping_cart_address', $record, true);
+
+        return $record;
+    }
+
+    /**
      * Function, to get userid
      * @param string $username
      * @return int

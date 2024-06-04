@@ -54,6 +54,12 @@ class behat_local_shopping_cart_generator extends behat_generator_base {
                 'required' => ['user', 'testitemid'],
                 'switchids' => ['user' => 'userid'],
             ],
+            'user addresses' => [
+                'singular' => 'user address',
+                'datagenerator' => 'user_address',
+                'required' => ['user', 'name', 'state', 'address', 'city', 'zip'],
+                'switchids' => ['user' => 'userid'],
+            ],
         ];
     }
 
