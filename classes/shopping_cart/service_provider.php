@@ -41,7 +41,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      */
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
 
-        global $DB;
+        global $DB, $USER;
 
         // We might need to add additional information to the area.
         // Therefore, we split it here.
@@ -238,6 +238,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         $canceluntil = strtotime('+14 days', $now);
         $serviceperiodestart = $now;
         $serviceperiodeend = strtotime('+100 days', $now);
+        $nodelete = 0;
+        $costcenter = '';
+        $installment = null;
 
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
@@ -254,6 +257,11 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 3:
                 $price = 13.8;
                 $tax = 'C';
+                break;
+            case 5:
+                $price = 42.42;
+                $tax = 'B';
+                $installment = 1;
                 break;
             default:
                 $price = 12.12;
@@ -273,7 +281,36 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             $serviceperiodestart,
             $serviceperiodeend,
             $tax,
+            $nodelete,
+            $costcenter,
+            $installment
             );
+
+        // Spoecial case to crate installment.
+        if ($itemid == 5) {
+
+            $jsonobject = (object) [
+                "allowinstallment" => "1",
+                "downpayment" => 20,
+                "numberofpayments" => "2",
+                "duedaysbeforecoursestart" => 0,
+                "duedatevariable" => 10,
+            ];
+
+            $iteminfo = new \stdClass;
+            $iteminfo->itemid = $itemid;
+            $iteminfo->area = $area;
+            $iteminfo->componentname = 'local_shopping_cart';
+            $iteminfo->json = json_encode($jsonobject);
+            $iteminfo->usermodified = $USER->id;
+            $iteminfo->allowinstallment = 1;
+            // Force record into local_shopping_cart_iteminfo table.
+            if ($iteminfo->id = $DB->get_field('local_shopping_cart_iteminfo', 'id', ['itemid' => $itemid], IGNORE_MISSING)) {
+                $DB->update_record('local_shopping_cart_iteminfo', $iteminfo);
+            } else {
+                $DB->insert_record('local_shopping_cart_iteminfo', $iteminfo);
+            }
+        }
 
         return ['cartitem' => $cartitem];
     }
