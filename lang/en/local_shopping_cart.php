@@ -212,7 +212,7 @@ $string['total_gross'] = 'Total Gross:';
 $string['paymentsuccessful'] = 'Payment successful!';
 $string['paymentdenied'] = 'Payment denied!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
-$string['backtohome'] = 'Back to home.';
+$string['backtohome'] = 'Back to home';
 
 $string['success'] = 'Success';
 $string['pending'] = 'Pending';
