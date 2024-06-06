@@ -457,5 +457,6 @@ div.shopping-cart-items-container div.item-description {
 }
 
 #page-local-shopping_cart-address .modal-form-dialogue .form-inline .form-control {
+    /* stylelint-disable-next-line declaration-no-important */
     width: 100% !important;
 }
