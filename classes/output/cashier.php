@@ -51,7 +51,7 @@ class cashier implements renderable, templatable {
      * @param int|null $userid
      * @param int|null $usecredit
      */
-    public function __construct(int $userid = null, $usecredit = 0) {
+    public function __construct(?int $userid = null, ?int $usecredit = 0) {
 
         if (!empty($userid)) {
             $cartstore = cartstore::instance($userid);

@@ -201,7 +201,7 @@ class modal_cancel_addcredit extends dynamic_form {
      *
      * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 

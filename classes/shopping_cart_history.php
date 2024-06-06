@@ -75,10 +75,10 @@ class shopping_cart_history {
 
     /**
      * History constructor
-     * @param stdClass $data
+     * @param ?stdClass $data
      * @return void
      */
-    public function __construct(stdClass $data = null) {
+    public function __construct(?stdClass $data = null) {
         if ($data) {
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
@@ -331,8 +331,8 @@ class shopping_cart_history {
      * @param string $payment
      * @param int $paymentstatus
      * @param int|null $canceluntil
-     * @param int $serviceperiodstart
-     * @param int $serviceperiodend
+     * @param int|null $serviceperiodstart
+     * @param int|null $serviceperiodend
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
@@ -342,8 +342,8 @@ class shopping_cart_history {
      * @param int|null $schistoryid
      * @param int|null $installments
      * @param string|null $json
-     * @param int $addressbilling
-     * @param int $addressshipping
+     * @param int|null $addressbilling
+     * @param int|null $addressshipping
      * @return int
      * @throws dml_exception
      * @throws coding_exception
@@ -360,20 +360,20 @@ class shopping_cart_history {
             string $identifier,
             string $payment,
             int $paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_PENDING,
-            int $canceluntil = null,
-            int $serviceperiodstart = 0,
-            int $serviceperiodend = 0,
-            float $tax = null,
-            float $taxpercentage = null,
-            string $taxcategory = null,
-            string $costcenter = null,
-            string $annotation = null,
-            int $usermodified = null,
-            int $schistoryid = null,
-            int $installments = null,
-            string $json = null,
-            int $addressbilling = 0,
-            int $addressshipping = 0) {
+            ?int $canceluntil = null,
+            ?int $serviceperiodstart = 0,
+            ?int $serviceperiodend = 0,
+            ?float $tax = null,
+            ?float $taxpercentage = null,
+            ?string $taxcategory = null,
+            ?string $costcenter = null,
+            ?string $annotation = null,
+            ?int $usermodified = null,
+            ?int $schistoryid = null,
+            ?int $installments = null,
+            ?string $json = null,
+            ?int $addressbilling = 0,
+            ?int $addressshipping = 0) {
 
         global $USER;
 
@@ -419,11 +419,11 @@ class shopping_cart_history {
      * @param string $componentname
      * @param string $area
      * @param int|null $entryid
-     * @param float $credit
+     * @param float|null $credit
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area, int $entryid = null,
-        $credit = null): array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area, ?int $entryid = null,
+        ?float $credit = null): array {
 
         global $DB;
 
@@ -859,10 +859,10 @@ class shopping_cart_history {
      * Marks an item for rebooking.
      * @param int $historyid
      * @param int $userid
-     * @param bool $remove can be set to true, if we already know that we remove
+     * @param ?bool $remove can be set to true, if we already know that we remove
      * @return array
      */
-    public static function toggle_mark_for_rebooking(int $historyid, int $userid, bool $remove = null): array {
+    public static function toggle_mark_for_rebooking(int $historyid, int $userid, ?bool $remove = null): array {
 
         $userid = shopping_cart::set_user($userid);
 

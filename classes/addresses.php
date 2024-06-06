@@ -83,7 +83,7 @@ class addresses {
         foreach ($requiredaddresskeys as $addresstype) {
             $requiredaddresseslocalized[$addresstype] = [
                     "addresskey" => $addresstype,
-                    "addresslabel" => get_string('addresses:' . $addresstype, 'local_shopping_cart')
+                    "addresslabel" => get_string('addresses:' . $addresstype, 'local_shopping_cart'),
             ];
         }
         return $requiredaddresseslocalized;
@@ -124,7 +124,7 @@ class addresses {
     public static function get_address_for_user(int $userid, int $addressid): ?stdClass {
         global $DB;
 
-        return $DB->get_record_select(self::DATABASE_TABLE, 'userid=? AND id=?', array($userid, $addressid));
+        return $DB->get_record_select(self::DATABASE_TABLE, 'userid=? AND id=?', [$userid, $addressid]);
     }
 
     /**

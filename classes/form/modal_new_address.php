@@ -203,13 +203,13 @@ class modal_new_address extends dynamic_form {
     /**
      * Validate dates.
      *
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
      * @return array
      */
     public function validation($data, $files) {
-        $errors = array();
-        $requiredfields = array("name", "state", "address", "city", "zip");
+        $errors = [];
+        $requiredfields = ["name", "state", "address", "city", "zip"];
 
         foreach ($requiredfields as $requiredfield) {
             if (empty(trim($data[$requiredfield]))) {

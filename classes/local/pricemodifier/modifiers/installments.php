@@ -151,6 +151,7 @@ abstract class installments extends modifier_base {
                             $data['items'][$linkedkey]['price'] = $linkeddownpayment;
 
                             // No, we add the difference between the new price of the linked item to the original downpayment.
+                            // phpcs:ignore
                             // $data['items'][$key]['price'] += ($originallinkedprice - $jsonobject->downpayment);
 
                             $installmentslinkeditems[] = [

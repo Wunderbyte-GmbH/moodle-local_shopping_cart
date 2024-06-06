@@ -112,7 +112,7 @@ class dynamicvatnrchecker extends dynamic_form {
 
                 $cartstore->delete_vatnr_data();
 
-            } else  {
+            } else {
                 // In order to have all the relevant data on our Invoice, we save this here.
                 $address = vatnrchecker::$vatnrdataset->address;
                 list($street, $city) = explode(PHP_EOL, $address);
@@ -162,8 +162,10 @@ class dynamicvatnrchecker extends dynamic_form {
 
         } else if (!empty($mform->getSubmitValue('checkvatnrnumber'))) {
             $data->usevatnr = 1;
+            // phpcs:disable
             // $data->checkvatnrcountrycode = $mform->getSubmitValue('checkvatnrnumber');
             // $data->checkvatnrnumber = $mform->getSubmitValue('checkvatnrcountrycode');
+            // phpcs:enable
         }
 
         $this->set_data($data);
@@ -201,9 +203,9 @@ class dynamicvatnrchecker extends dynamic_form {
     /**
      * Validate form.
      *
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 
@@ -222,8 +224,7 @@ class dynamicvatnrchecker extends dynamic_form {
                     'vatNumber' => false,
                     'countryCode' => false,
                 ];
-            }
-            else {
+            } else {
                 $response = vatnrchecker::check_vatnr_number(
                     $data['checkvatnrcountrycode'],
                     $data['checkvatnrnumber'],
@@ -235,6 +236,7 @@ class dynamicvatnrchecker extends dynamic_form {
                     $a = $data['checkvatnrcountrycode'] . $data['checkvatnrnumber'];
                     $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
                 } else {
+                    // phpcs:ignore
                     // $errors['checkvatnrnumber'] = $response;
                     vatnrchecker::$vatnrdataset = $result;
                 }

@@ -641,12 +641,12 @@ class shopping_cart {
      *
      * @param int $userid
      * @param int $paymenttype
-     * @param array $datafromhistory
-     * @param string $annotation - empty on default
+     * @param ?array $datafromhistory
+     * @param ?string $annotation - empty on default
      * @return array
      */
-    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null,
-        string $annotation = '') {
+    public static function confirm_payment(int $userid, int $paymenttype, ?array $datafromhistory = null,
+        ?string $annotation = '') {
         global $USER;
 
         $identifier = 0;
@@ -927,7 +927,7 @@ class shopping_cart {
         string $area,
         int $userid,
         string $componentname,
-        int $historyid = null,
+        ?int $historyid = null,
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
         int $applytocomponent = 1): array {

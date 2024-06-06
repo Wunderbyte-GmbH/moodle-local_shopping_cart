@@ -153,7 +153,7 @@ if ($hassiteconfig) {
                     [""],
                     [
                             'billing' => ucfirst(new lang_string('addresses:billing', 'local_shopping_cart')),
-                            'shipping' => ucfirst(new lang_string('addresses:shipping', 'local_shopping_cart'))
+                            'shipping' => ucfirst(new lang_string('addresses:shipping', 'local_shopping_cart')),
                     ]
             ));
     // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
@@ -579,8 +579,8 @@ if ($hassiteconfig) {
                 vatnrchecker::return_countrycodes_array()
     ));
 
-     // Add a text field for the Token.
-     $settings->add(new admin_setting_configtext('local_shopping_cart/ownvatnrnumber',
+    // Add a text field for the Token.
+    $settings->add(new admin_setting_configtext('local_shopping_cart/ownvatnrnumber',
             get_string('ownvatnrnumber', 'local_shopping_cart'),
             get_string('ownvatnrnumber_desc', 'local_shopping_cart'),
             '',
