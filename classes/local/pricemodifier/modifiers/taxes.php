@@ -64,7 +64,7 @@ abstract class taxes extends modifier_base {
                     get_config('local_shopping_cart', 'defaulttaxcategory'),
                     get_config('local_shopping_cart', 'taxcategories')
             );
-            $data['items'] = self::update_item_price_data(array_values($data['items']), $taxcategories, $data['userid']);
+            $data['items'] = self::update_item_price_data(array_values($data['items']), $data['userid'], $taxcategories);
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);
             $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
             $data['initialtotal'] = $data['price'];
@@ -80,13 +80,14 @@ abstract class taxes extends modifier_base {
      * Enriches the cart item with tax information if given
      *
      * @param array $items array of cart items
+     * @param int $userid
      * @param taxcategories|null $taxcategories
      * @return array
      */
     public static function update_item_price_data(
             array $items,
-            ?taxcategories $taxcategories,
-            int $userid): array {
+            int $userid,
+            ?taxcategories $taxcategories): array {
 
         $cartstore = cartstore::instance($userid);
         $countrycode = $cartstore->get_countrycode();

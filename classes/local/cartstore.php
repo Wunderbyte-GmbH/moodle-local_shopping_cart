@@ -775,11 +775,6 @@ class cartstore {
 
     /**
      * Gets the openinstallments.
-     * @param string $country
-     * @param string $vatnrnumber
-     * @param string $companyname
-     * @param string $street
-     * @param string $place
      * @return bool
      * @throws coding_exception
      */

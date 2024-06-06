@@ -46,6 +46,7 @@ class vatnrchecker {
 
     /**
      * Function to verify VATNR of business partner online.
+     * @param string $countrycode
      * @param string $vatnrnumber
      * @return string
      */

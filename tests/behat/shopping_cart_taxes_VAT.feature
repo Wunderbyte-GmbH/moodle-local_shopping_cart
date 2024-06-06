@@ -31,7 +31,7 @@ Feature: Configure tax categories and using VAT to waive price.
   Scenario: Shopping Cart taxes: use VAT number to reduce net price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart | 
+      | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
@@ -61,7 +61,7 @@ Feature: Configure tax categories and using VAT to waive price.
   Scenario: Shopping Cart taxes: use VAT number to reduce gross price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  | 0     | local_shopping_cart | 
+      | itempriceisnet  | 0     | local_shopping_cart |
     And I log in as "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
@@ -107,7 +107,7 @@ Feature: Configure tax categories and using VAT to waive price.
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
-    ## VAT verification reloads page and does not preserve installment status - reactivate it. 
+    ## VAT verification reloads page and does not preserve installment status - reactivate it.
     And I should see "42.42 EUR" in the ".sc_totalprice" "css_element"
     And I set the field "Use installment payments" to "1"
     And I wait "1" seconds

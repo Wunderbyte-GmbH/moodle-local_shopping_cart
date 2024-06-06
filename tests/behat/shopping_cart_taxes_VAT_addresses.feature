@@ -46,7 +46,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
   Scenario: Shopping Cart taxes: use VAT number and Austrian address to reduce net price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart | 
+      | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
@@ -77,7 +77,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce net price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart | 
+      | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
@@ -108,7 +108,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce gross price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  | 0     | local_shopping_cart | 
+      | itempriceisnet  | 0     | local_shopping_cart |
     And I log in as "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
