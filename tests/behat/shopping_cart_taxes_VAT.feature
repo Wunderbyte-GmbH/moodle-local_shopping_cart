@@ -61,7 +61,7 @@ Feature: Configure tax categories and using VAT to waive price.
   Scenario: Shopping Cart taxes: use VAT number to reduce gross price of single item
     Given the following config values are set as admin:
       | config          | value | plugin              |
-      | itempriceisnet  |       | local_shopping_cart | 
+      | itempriceisnet  | 0     | local_shopping_cart | 
     And I log in as "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
