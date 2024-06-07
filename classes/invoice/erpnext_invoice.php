@@ -234,14 +234,14 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['due_date'] = $date;
         $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
         $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
-        //$this->invoicedata['address_billing'] = $this->get_billing_address_country();
 
         $this->invoicedata['taxes_and_charges'] = $this->get_taxes_charges_template();
-        $taxchargeexists = $this->tax_charge_exists($this->get_taxes_charges_template());
-        if (!$taxchargeexists) {
+        if (!$this->invoicedata['taxes_and_charges']) {
             // $newtemplate = $this->create_tax_charge();
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "tax template does not excist. ");
+        } else {
+            self::tax_charge_exists($this->invoicedata['taxes_and_charges']);
         }
         $this->jsoninvoice = json_encode($this->invoicedata);
     }

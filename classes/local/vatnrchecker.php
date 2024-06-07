@@ -98,39 +98,43 @@ class vatnrchecker {
      * @return array
      */
     public static function return_countrycodes_array() {
-        return [
-            'novatnr' => get_string('novatnr', 'local_shopping_cart', null, 'en'),
-            'AT' => get_string('at', 'local_shopping_cart', null, 'en'),
-            'BE' => get_string('be', 'local_shopping_cart', null, 'en'),
-            'BG' => get_string('bg', 'local_shopping_cart', null, 'en'),
-            'CY' => get_string('cy', 'local_shopping_cart', null, 'en'),
-            'CZ' => get_string('cz', 'local_shopping_cart', null, 'en'),
-            'DE' => get_string('de', 'local_shopping_cart', null, 'en'),
-            'DK' => get_string('dk', 'local_shopping_cart', null, 'en'),
-            'EE' => get_string('ee', 'local_shopping_cart', null, 'en'),
-            'EL' => get_string('el', 'local_shopping_cart', null, 'en'),
-            'ES' => get_string('es', 'local_shopping_cart', null, 'en'),
-            'FI' => get_string('fi', 'local_shopping_cart', null, 'en'),
-            'FR' => get_string('fr', 'local_shopping_cart', null, 'en'),
-            'HR' => get_string('hr', 'local_shopping_cart', null, 'en'),
-            'HU' => get_string('hu', 'local_shopping_cart', null, 'en'),
-            'IE' => get_string('ie', 'local_shopping_cart', null, 'en'),
-            'IT' => get_string('it', 'local_shopping_cart', null, 'en'),
-            'LU' => get_string('lu', 'local_shopping_cart', null, 'en'),
-            'LV' => get_string('lv', 'local_shopping_cart', null, 'en'),
-            'LT' => get_string('lt', 'local_shopping_cart', null, 'en'),
-            'MT' => get_string('mt', 'local_shopping_cart', null, 'en'),
-            'NL' => get_string('nl', 'local_shopping_cart', null, 'en'),
-            'PL' => get_string('pl', 'local_shopping_cart', null, 'en'),
-            'PT' => get_string('pt', 'local_shopping_cart', null, 'en'),
-            'RO' => get_string('ro', 'local_shopping_cart', null, 'en'),
-            'SE' => get_string('se', 'local_shopping_cart', null, 'en'),
-            'SI' => get_string('si', 'local_shopping_cart', null, 'en'),
-            'SK' => get_string('sk', 'local_shopping_cart', null, 'en'),
-            'GB' => get_string('gb', 'local_shopping_cart', null, 'en'),
-            'XI' => get_string('xi', 'local_shopping_cart', null, 'en'),
-            'EU' => get_string('eu', 'local_shopping_cart', null, 'en'),
+        $originallanguage = current_language();
+        force_current_language('en');
+        $countries = [
+            'novatnr' => get_string('novatnr', 'local_shopping_cart'),
+            'AT' => get_string('at', 'local_shopping_cart'),
+            'BE' => get_string('be', 'local_shopping_cart'),
+            'BG' => get_string('bg', 'local_shopping_cart'),
+            'CY' => get_string('cy', 'local_shopping_cart'),
+            'CZ' => get_string('cz', 'local_shopping_cart'),
+            'DE' => get_string('de', 'local_shopping_cart'),
+            'DK' => get_string('dk', 'local_shopping_cart'),
+            'EE' => get_string('ee', 'local_shopping_cart'),
+            'EL' => get_string('el', 'local_shopping_cart'),
+            'ES' => get_string('es', 'local_shopping_cart'),
+            'FI' => get_string('fi', 'local_shopping_cart'),
+            'FR' => get_string('fr', 'local_shopping_cart'),
+            'HR' => get_string('hr', 'local_shopping_cart'),
+            'HU' => get_string('hu', 'local_shopping_cart'),
+            'IE' => get_string('ie', 'local_shopping_cart'),
+            'IT' => get_string('it', 'local_shopping_cart'),
+            'LU' => get_string('lu', 'local_shopping_cart'),
+            'LV' => get_string('lv', 'local_shopping_cart'),
+            'LT' => get_string('lt', 'local_shopping_cart'),
+            'MT' => get_string('mt', 'local_shopping_cart'),
+            'NL' => get_string('nl', 'local_shopping_cart'),
+            'PL' => get_string('pl', 'local_shopping_cart'),
+            'PT' => get_string('pt', 'local_shopping_cart'),
+            'RO' => get_string('ro', 'local_shopping_cart'),
+            'SE' => get_string('se', 'local_shopping_cart'),
+            'SI' => get_string('si', 'local_shopping_cart'),
+            'SK' => get_string('sk', 'local_shopping_cart'),
+            'GB' => get_string('gb', 'local_shopping_cart'),
+            'XI' => get_string('xi', 'local_shopping_cart'),
+            'EU' => get_string('eu', 'local_shopping_cart'),
         ];
+        force_current_language($originallanguage);
+        return $countries;
     }
 
     /**
@@ -171,7 +175,7 @@ class vatnrchecker {
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
         $countries = self::return_countrycodes_array();
         if ($isowncountry) {
-            return $countries[$hostvatnr] . ' - Tax';
+            return $countries[$hostvatnr] . ' Tax';
         } else if ($iseuropean) {
             return 'EU Reverse Charge';
         }
