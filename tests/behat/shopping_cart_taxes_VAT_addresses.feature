@@ -72,7 +72,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I click on "Verify validity of VAT number" "button"
     And I wait "1" seconds
     And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
-    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element" 
+    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce net price of single item

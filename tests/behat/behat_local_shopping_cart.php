@@ -60,9 +60,7 @@ class behat_local_shopping_cart extends behat_base {
         $userid = $this->get_user_id_by_identifier($username);
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
-
         $cartstore = cartstore::instance($userid);
-        //$cartstore->reset_instance($userid);
         $data = shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
         $data = $cartstore->get_data();
     }
