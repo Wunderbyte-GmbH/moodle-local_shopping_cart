@@ -360,20 +360,21 @@ class shopping_cart_history {
             string $identifier,
             string $payment,
             int $paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_PENDING,
-            ?int $canceluntil = null,
-            ?int $serviceperiodstart = 0,
-            ?int $serviceperiodend = 0,
-            ?float $tax = null,
-            ?float $taxpercentage = null,
-            ?string $taxcategory = null,
-            ?string $costcenter = null,
-            ?string $annotation = null,
-            ?int $usermodified = null,
-            ?int $schistoryid = null,
-            ?int $installments = null,
-            ?string $json = null,
-            ?int $addressbilling = 0,
-            ?int $addressshipping = 0) {
+            int $canceluntil = null,
+            int $serviceperiodstart = 0,
+            int $serviceperiodend = 0,
+            float $tax = null,
+            float $taxpercentage = null,
+            string $taxcategory = null,
+            string $costcenter = null,
+            string $annotation = null,
+            int $usermodified = null,
+            int $schistoryid = null,
+            int $installments = null,
+            string $json = null,
+            int $addressbilling = 0,
+            int $addressshipping = 0,
+            string $taxcountrycode = null) {
 
         global $USER;
 
@@ -407,6 +408,7 @@ class shopping_cart_history {
         $data->json = $json;
         $data->address_billing = $addressbilling;
         $data->address_shipping = $addressshipping;
+        $data->taxcountrycode = $taxcountrycode;
 
         return self::write_to_db($data);
     }

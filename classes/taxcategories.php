@@ -89,7 +89,7 @@ class taxcategories {
      * @return array
      */
     public function taxdata_for_countrycode(?string $countrycode = null): array {
-        $countrycode = strtolower($countrycode);
+        $countrycode = $countrycode ? strtolower($countrycode) : '';
         $taxmatrixkeys = array_map('strtolower', array_keys($this->taxmatrix));
         $index = array_search($countrycode, $taxmatrixkeys);
         if ($index !== false) {

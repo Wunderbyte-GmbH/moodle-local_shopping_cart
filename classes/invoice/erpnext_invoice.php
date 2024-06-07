@@ -30,6 +30,7 @@ use core\task\manager;
 use core_user;
 use local_shopping_cart\interfaces\invoice;
 use curl;
+use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart_history;
 use local_shopping_cart\task\create_invoice_task;
 use moodle_exception;
@@ -128,6 +129,7 @@ class erpnext_invoice implements invoice {
         $url = $this->baseurl . '/api/resource/Sales Invoice';
         // Setup invoice creation.
         $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
+
         // Set user.
         foreach ($this->invoiceitems as $item) {
             if (empty($this->user)) {
@@ -171,6 +173,18 @@ class erpnext_invoice implements invoice {
     /**
      * Create the json for the REST API.
      */
+    public function get_taxes_charges_template(): string {
+        $iseuropean = vatnrchecker::is_european($this->invoicedata['taxcountrycode'] ?? null);
+        $isowncountry = vatnrchecker::is_own_country($this->invoicedata['taxcountrycode'] ?? null);
+        return vatnrchecker::get_template(
+            $iseuropean,
+            $isowncountry
+        );
+    }
+
+    /**
+     * Create the json for the REST API.
+     */
     public function prepare_json_invoice_data(): void {
         $serviceperiodstart = null;
         $serviceperiodend = null;
@@ -208,13 +222,27 @@ class erpnext_invoice implements invoice {
             ) {
                 $serviceperiodend = $itemserviceperiodend;
             }
+            $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
+            $this->invoicedata['address_billing'] = $item->address_billing;
         }
+
         $this->invoicedata['customer'] = $this->customer;
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
         // Convert the Unix timestamp to ISO 8601 date format.
         $this->invoicedata['posting_date'] = $date;
         $this->invoicedata['set_posting_time'] = 1;
         $this->invoicedata['due_date'] = $date;
+        $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
+        $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
+        //$this->invoicedata['address_billing'] = $this->get_billing_address_country();
+
+        $this->invoicedata['taxes_and_charges'] = $this->get_taxes_charges_template();
+        $taxchargeexists = $this->tax_charge_exists($this->get_taxes_charges_template());
+        if (!$taxchargeexists) {
+            // $newtemplate = $this->create_tax_charge();
+            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                    "tax template does not excist. ");
+        }
         $this->jsoninvoice = json_encode($this->invoicedata);
     }
 
@@ -230,10 +258,43 @@ class erpnext_invoice implements invoice {
         $url = str_replace(' ', '%20', $uncleanedurl);
         mtrace($url);
         $response = $this->client->get($url);
+
         if (!$response) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "customer_exists function got this error: " . $this->client->get_errno() . $this->errormessage .
             $this->client->error);
+        }
+        return $this->validate_response($response);
+    }
+
+    /**
+     * Check if the tax charge already exists so it is not recreated on ERPNext.
+     *
+     * @return bool
+     */
+    public function tax_charge_exists($taxchargestemplate): bool {
+        $uncleanedurl =
+            $this->baseurl . "/api/resource/Sales%20Taxes%20and%20Charges%20Template/" . rawurlencode($taxchargestemplate) . "/";
+        $url = str_replace(' ', '%20', $uncleanedurl);
+        mtrace($url);
+        $response = $this->client->get($url);
+        if (!$response) {
+            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                    "tax_charge function got this error: " . $this->client->get_errno() . $this->errormessage .
+            $this->client->error);
+        } else {
+            $taxtemplate = json_decode($response);
+            $taxes = [];
+            foreach ($taxtemplate->data->taxes as $tax) {
+                $taxes[] =
+                    array(
+                        'charge_type' => $tax->charge_type,
+                        'account_head' => $tax->account_head,
+                        'description' => $tax->description,
+                        'rate' => $tax->rate,
+                    );
+            }
+            $this->invoicedata['taxes'] = $taxes;
         }
         return $this->validate_response($response);
     }
@@ -264,6 +325,38 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
                     "create_customer function got this error: " . $this->client->get_errno() . $this->errormessage);
+        }
+        return $this->validate_response($response);
+    }
+
+    /**
+     * Create a tax charge on ERPNext. That is needed for invoicing.
+     *
+     * @return bool
+     */
+    public function create_tax_charge(): bool {
+        $url = $this->baseurl . '/api/resource/Sales%20Taxes%20and%20Charges%20Template';
+        $taxpercentage = reset($this->invoiceitems);
+        $taxpercentage = $taxpercentage->taxpercentage ?? '0.0';
+        $title = "Test";
+        $company = "Wunderbyte GmbH";
+        $taxes = [
+            [
+                "charge_type" => "On Net Total",
+                "account_head" => "Umsatzsteuer - WB",
+                "rate" => $taxpercentage,
+                "description" => "VAT " . $taxpercentage . "%",
+            ]
+        ];
+        $taxtemplate = [
+            "title" => $title,
+            "company" => $company,
+            "taxes" => $taxes
+        ];
+        $response = $this->client->post($url, json_encode($taxtemplate));
+        if (!$response) {
+            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                    "create_tax_charge function got this error: " . $this->client->get_errno() . $this->errormessage);
         }
         return $this->validate_response($response);
     }
@@ -330,6 +423,26 @@ class erpnext_invoice implements invoice {
             return array_column($territoryarray['data'], 'name');
         }
         return [];
+    }
+
+    /**
+     * Get all territories from ERP so we can check if they match the value used in Moodle.
+     * Empty array is returned if request had a problem.
+     *
+     * @return string of countries and territories (like EU)
+     */
+    private function get_billing_address_country(): string {
+        global $DB;
+        $data = [
+            'id' => $this->invoicedata['address_billing'],
+        ];
+
+        $addressid = $DB->get_record(
+            'local_shopping_cart_address',
+            $data,
+            'state'
+        );
+        return $addressid;
     }
 
     /**

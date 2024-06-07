@@ -98,11 +98,12 @@ abstract class taxes extends modifier_base {
                     $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
                     $iseuropean = vatnrchecker::is_european($countrycode);
                     $isowncountry = vatnrchecker::is_own_country($countrycode);
+                    $hasvarnr = $cartstore->has_vatnr_data();
                     if ($itemisnet) {
                         $netprice = $items[$key]['price']; // Price is now considered a net price.
                         if (
                             $iseuropean &&
-                            $cartstore->has_vatnr_data() &&
+                            $hasvarnr &&
                             !$isowncountry
                         ) {
                             $grossprice = $netprice;
@@ -125,7 +126,7 @@ abstract class taxes extends modifier_base {
                         $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
                         if (
                             $iseuropean &&
-                            $cartstore->has_vatnr_data() &&
+                            $hasvarnr &&
                             !$isowncountry
                         ) {
                             $grossprice = $netprice;
@@ -143,6 +144,10 @@ abstract class taxes extends modifier_base {
                     }
                     $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
+                    $items[$key]['taxcountrycode'] = vatnrchecker::get_template(
+                        $iseuropean,
+                        $isowncountry
+                    );
                 }
             }
         }

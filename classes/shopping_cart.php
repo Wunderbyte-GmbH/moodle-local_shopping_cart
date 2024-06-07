@@ -834,6 +834,7 @@ class shopping_cart {
                     $item['usermodified'] = $USER->id;
                     $item['address_billing'] = $data['address_billing'] ?? 0;
                     $item['address_shipping'] = $data['address_shipping'] ?? 0;
+                    $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -870,6 +871,7 @@ class shopping_cart {
                             $item['json'] ?? '',
                             $item['address_billing'] ?? 0,
                             $item['address_shipping'] ?? 0,
+                            $item['taxcountrycode'] ?? 0,
                     );
 
                     $item['id'] = $id;
