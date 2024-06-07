@@ -33,6 +33,7 @@ Feature: Configure tax categories and using VAT to waive price.
       | config          | value | plugin              |
       | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -63,6 +64,7 @@ Feature: Configure tax categories and using VAT to waive price.
       | config          | value | plugin              |
       | itempriceisnet  | 0     | local_shopping_cart |
     And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -87,6 +89,7 @@ Feature: Configure tax categories and using VAT to waive price.
       | timebetweenpayments | 2     | local_shopping_cart |
       | reminderdaysbefore  | 1     | local_shopping_cart |
     And I log in as "admin"
+    And Shopping cart has been cleaned for user "admin"
     And Testitem "5" has been put in shopping cart of user "admin"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready

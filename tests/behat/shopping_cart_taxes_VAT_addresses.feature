@@ -48,6 +48,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | config          | value | plugin              |
       | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -71,7 +72,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I click on "Verify validity of VAT number" "button"
     And I wait "1" seconds
     And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
-    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
+    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element" 
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce net price of single item
@@ -79,6 +80,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | config          | value | plugin              |
       | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user2"
+    And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -110,6 +112,7 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | config          | value | plugin              |
       | itempriceisnet  | 0     | local_shopping_cart |
     And I log in as "user2"
+    And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready

@@ -37,6 +37,7 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
   @javascript
   Scenario: Cashier buys three items when tax categories eanbled
     Given I log in as "admin"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And Testitem "3" has been put in shopping cart of user "user1"

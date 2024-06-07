@@ -35,6 +35,7 @@ Feature: User cancellation after cash payment on the checkout page.
   @javascript
   Scenario: User select two items procedd to checkout cancel one than pay with credits
     Given I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
