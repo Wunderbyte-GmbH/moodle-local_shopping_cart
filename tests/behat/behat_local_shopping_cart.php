@@ -24,7 +24,6 @@
 
 use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart;
 
 /**

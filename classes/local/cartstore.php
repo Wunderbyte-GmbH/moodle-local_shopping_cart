@@ -292,6 +292,7 @@ class cartstore {
         $data = $this->get_cache();
 
         $data['credit'] = round($newbalance, 2);
+        $data['remainingcredit'] = round($newbalance, 2);
         $data['currency'] = $currency;
 
         $this->set_cache($data);
