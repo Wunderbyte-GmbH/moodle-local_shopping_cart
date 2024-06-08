@@ -441,6 +441,7 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
         $cartstore->delete_all_items();
+        $cartstore->reset_instance($userid);
         return true;
     }
 
