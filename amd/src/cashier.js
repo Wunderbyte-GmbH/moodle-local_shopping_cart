@@ -16,6 +16,8 @@
 /* eslint-disable no-console */
 
 /*
+ * The Cashier module.
+ *
  * @package    local_shopping_cart
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

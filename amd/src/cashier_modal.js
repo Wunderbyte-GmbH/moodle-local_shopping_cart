@@ -17,7 +17,7 @@
  * Contain the logic for the gateways modal.
  *
  * @module     core_payment/gateways_modal
- * @copyright  2019 Shamim Rezaie <shamim@moodle.com>
+ * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
