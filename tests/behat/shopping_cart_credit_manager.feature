@@ -76,8 +76,8 @@ Feature: Cashier manage credits in shopping cart
   @javascript
   Scenario: Shopping cart credits: cashier correct (reduce) credits for user
     Given the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 20      | EUR      | 20      |
+      | user  | credit | currency |
+      | user1 | 20     | EUR      |
     And I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
@@ -103,8 +103,8 @@ Feature: Cashier manage credits in shopping cart
   @javascript
   Scenario: Shopping cart credits: cashier payback (cache) part of credits to user
     Given the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 25      | EUR      | 25      |
+      | user  | credit | currency |
+      | user1 | 25     | EUR      |
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
@@ -132,8 +132,8 @@ Feature: Cashier manage credits in shopping cart
   @javascript
   Scenario: Shopping cart credits: cashier payback (transfer) part of credits to user
     Given the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 25      | EUR      | 25      |
+      | user  | credit | currency |
+      | user1 | 25     | EUR      |
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
@@ -161,8 +161,8 @@ Feature: Cashier manage credits in shopping cart
   @javascript
   Scenario: Shopping cart credits: cashier payback (transfer) all of credits to user
     Given the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 23      | EUR      | 23      |
+      | user  | credit | currency |
+      | user1 | 23     | EUR      |
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
@@ -187,8 +187,8 @@ Feature: Cashier manage credits in shopping cart
   @javascript
   Scenario: Shopping cart credits: cashier payback (cache) all of credits to user
     Given the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 22      | EUR      | 22      |
+      | user  | credit | currency |
+      | user1 | 22     | EUR      |
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"

@@ -26,8 +26,8 @@ Feature: User cancellation after cash payment on the checkout page.
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 50      | EUR      | 50      |
+      | user  | credit | currency |
+      | user1 | 50     | EUR      |
     And the following "local_shopping_cart > plugin setup" exist:
       | account  |
       | Account1 |
