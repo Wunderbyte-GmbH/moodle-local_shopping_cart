@@ -49,6 +49,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
+    ## Required due to potential bug in credit cashing
+    And Shopping cart credits has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -81,6 +83,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | itempriceisnet  | 1     | local_shopping_cart |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
+    ## Required due to potential bug in credit cashing
+    And Shopping cart credits has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
@@ -113,6 +117,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | itempriceisnet  | 0     | local_shopping_cart |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
+    ## Required due to potential bug in credit cashing
+    And Shopping cart credits has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready

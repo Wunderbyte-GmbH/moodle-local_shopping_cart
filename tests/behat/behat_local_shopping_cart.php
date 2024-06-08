@@ -25,6 +25,7 @@
 use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_credits;
 
 /**
  * Behat functions.
@@ -46,6 +47,20 @@ class behat_local_shopping_cart extends behat_base {
     public function i_clean_users_cart(string $username) {
         $userid = $this->get_user_id_by_identifier($username);
         shopping_cart::delete_all_items_from_cart($userid);
+    }
+
+    /**
+     * Clean shopping cart for given user.
+     *
+     * @param string $username
+     * @Given /^Shopping cart credits has been cleaned for user "([^"]*)"$/
+     */
+    public function i_clean_users_credits(string $username) {
+        $userid = $this->get_user_id_by_identifier($username);
+
+        list($balance, $currency) = shopping_cart_credits::get_balance($userid);
+        $cartstore = cartstore::instance($userid);
+        $cartstore->set_credit($balance, $currency);
     }
 
     /**

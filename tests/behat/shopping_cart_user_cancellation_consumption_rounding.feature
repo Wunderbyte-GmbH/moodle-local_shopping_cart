@@ -39,6 +39,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | user1 | 1          |
       | user1 | 2          |
       | user1 | 3          |
+    ## Required due to potential bug in credit cashing
+    And Shopping cart credits has been cleaned for user "user1"
     When I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
@@ -88,6 +90,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | user1 | 1          |
       | user1 | 2          |
       | user1 | 3          |
+    ## Required due to potential bug in credit cashing
+    And Shopping cart credits has been cleaned for user "user1"
     When I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
