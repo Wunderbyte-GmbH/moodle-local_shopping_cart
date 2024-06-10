@@ -112,6 +112,8 @@ $string['addon:description'] = 'Addition to the expiration time after checkout p
 $string['additonalcashiersection'] = 'Add text for cashier section';
 $string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';
 $string['accountid'] = 'Payment account';
+$string['allowchooseaccount'] = 'Allow different payment account';
+$string['allowchooseaccount_desc'] = 'For each article, different payment accounts can be chosen.';
 $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
 $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
@@ -169,6 +171,7 @@ $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cashier'] = 'Is a cashier';
 $string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';
 $string['shopping_cart:cashtransfer'] = 'Can transfer cash from one cashier to another';
+$string['shopping_cart:changepaymentaccount'] = 'Can change the payment account of articles';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -623,6 +626,8 @@ $string['allowinstallment'] = 'Allow installments';
 $string['allowinstallment_help'] = 'With installments, only a part of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
 $string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
+
+$string['sch_paymentaccountid'] = "Change the payment account";
 
 $string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = "This number refers to the required payments AFTER the first payment. Please note that installments will not be possible if there isn't enough time until coursestart, considering number of payments and time between payments (admin plugin setting).";

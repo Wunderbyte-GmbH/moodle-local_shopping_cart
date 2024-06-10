@@ -73,4 +73,12 @@ $capabilities = [
                         'student' => CAP_ALLOW,
                 ],
         ],
+        'local/shopping_cart:changepaymentaccount' => [
+                'riskbitmask' => RISK_PERSONAL,
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
 ];

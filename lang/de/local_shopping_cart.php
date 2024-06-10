@@ -100,6 +100,8 @@ $string['addon:description'] = 'Zeit, die zur Ablaufzeit hinzugefügt wird, nach
 $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';
 $string['accountid'] = 'Zahlungsanbieter-Konto';
+$string['allowchooseaccount'] = 'Erlaube andere Zahlungsanbieter';
+$string['allowchooseaccount_desc'] = 'Bei jedem Artikel können individuelle und abweichende Anbieter angegeben werden.';
 $string['accountid:description'] =
         'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
@@ -167,6 +169,7 @@ $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
 $string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine andere Kassa umbuchen';
+$string['shopping_cart:changepaymentaccount'] = 'Kann den paymentaccount von Artikeln ändern';
 
 // File: lib.php.
 $string['foo'] = 'foo';
@@ -547,6 +550,8 @@ $string['allowinstallment'] = 'Erlaube Ratenzahlungen';
 $string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
 $string['useinstallments'] = "Ratenzahlungen aktivieren";
 $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
+
+$string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
 
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
 $string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung. Bitte beachten Sie, dass Ratenzahlungen nicht möglich sind, wenn nicht genügend Zeit bis zum Kursbeginn verbleibt, unter Berücksichtigung der Anzahl der Zahlungen und der Zeit zwischen den Zahlungen (Admin-Plugin-Einstellung).';

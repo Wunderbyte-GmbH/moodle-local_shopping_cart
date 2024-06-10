@@ -23,6 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_payment\helper;
 use local_shopping_cart\admin_setting_taxcategories;
 use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart;
@@ -38,14 +39,11 @@ if ($hassiteconfig) {
     $ADMIN->add('localplugins', new admin_category($componentname, new lang_string('pluginname', $componentname)));
     $ADMIN->add($componentname, $settings);
 
-    $paymentaccountrecords = $DB->get_records_sql("
-        SELECT id, name
-        FROM {payment_accounts}
-        WHERE enabled = 1");
+    $paymentaccountrecords = helper::get_payment_accounts_to_manage(context_system::instance(), false);
 
     $paymentaccounts = [];
     foreach ($paymentaccountrecords as $paymentaccountrecord) {
-        $paymentaccounts[$paymentaccountrecord->id] = $paymentaccountrecord->name;
+        $paymentaccounts[$paymentaccountrecord->get('id')] = $paymentaccountrecord->get('name');
     }
 
     if (empty($paymentaccounts)) {
@@ -72,6 +70,12 @@ if ($hassiteconfig) {
                         $paymentaccounts
                 )
         );
+
+        // Allow chosing individual paymentaccount for each item.
+        $settings->add(
+                new admin_setting_configcheckbox($componentname . '/allowchooseaccount',
+                        new lang_string('allowchooseaccount', 'local_shopping_cart'),
+                        new lang_string('allowchooseaccount_desc', 'local_shopping_cart'), 0));
     }
 
     // Currency dropdown.

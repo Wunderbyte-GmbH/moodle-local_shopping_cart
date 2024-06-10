@@ -86,6 +86,8 @@ class shopping_cart {
         int $itemid,
         int $userid): array {
 
+        global $DB;
+
         $userid = self::set_user($userid);
 
         // Check the cache for items in cart.
@@ -120,6 +122,24 @@ class shopping_cart {
                 $currentcostcenter = $cartitem['costcenter'] ?? '';
 
                 if (!$cartstore->same_costcenter($currentcostcenter)) {
+                    return [
+                        'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
+                        'itemname' => $cartitem['itemname'] ?? '',
+                    ];
+                }
+            }
+            if (get_config('local_shopping_cart', 'allowchooseaccount')) {
+
+                $searchdata = [
+                    'itemid' => $cartitem['itemid'],
+                    'componentname' => $cartitem['componentname'],
+                    'area' => $cartitem['area'],
+                ];
+                $json = $DB->get_field('local_shopping_cart_iteminfo', 'json', $searchdata);
+                $jsonobject = json_decode($json);
+
+                $paymentaccountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?: 1;
+                if (!$cartstore->set_paymentaccountid($paymentaccountid)) {
                     return [
                         'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
                         'itemname' => $cartitem['itemname'] ?? '',
