@@ -286,6 +286,10 @@ class shopping_cart_handler {
 
         $jsonobject = json_decode($record->json);
 
+        if (!$jsonobject || empty($jsonobject)) {
+            return;
+        }
+
         $formdata->sch_paymentaccountid = $jsonobject->paymentaccountid ?: get_config('local_shopping_cart', 'accountid') ?? 0;
         $formdata->sch_allowinstallment = $jsonobject->allowinstallment ?? 0;
         $formdata->sch_downpayment = $jsonobject->downpayment ?? 0;
