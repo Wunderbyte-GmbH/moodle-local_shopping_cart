@@ -184,10 +184,75 @@ class erpnext_invoice implements invoice {
 
     /**
      * Create the json for the REST API.
+     * @return string
+     */
+    public function get_billing_address(): string {
+        $address = '';
+        global $DB;
+
+        // Get billing address.
+        $data = [
+            'id' => $this->invoicedata['address_billing'],
+        ];
+
+        $addressrecord = $DB->get_record(
+            'local_shopping_cart_address',
+            $data
+        );
+        if ($addressrecord) {
+            // Check if address exists in erp.
+            $addresstitle =
+                $addressrecord->name . ' - ' .
+                $addressrecord->city . ' - ' .
+                $addressrecord->id;
+
+            $uncleanedurl = $this->baseurl . "/api/resource/Address/" . rawurlencode($addresstitle . '-Abrechnung') . "/";
+            $url = str_replace(' ', '%20', $uncleanedurl);
+            mtrace($url);
+            $response = $this->client->get($url);
+            if (!$this->validate_response($response)) {
+                // Create new address.
+                $response = self::create_address($addressrecord, $addresstitle);
+            }
+            $response = json_decode($response);
+            return $response->data->name;
+        }
+        return $address;
+    }
+
+    /**
+     * Create a address on ERPNext. That is needed for invoicing.
+     * @param string $countrykey
+     * @return string
+     */
+    public function create_address($addressrecord, $addresstitle): string {
+
+        $url = $this->baseurl . '/api/resource/Address';
+        $address = [];
+        $address['address_title'] = $addresstitle;
+        $address['address_type'] = 'Billing';
+        $address['address_line1'] = $addressrecord->address;
+        $address['city'] = $addressrecord->city;
+        $address['state'] = $addressrecord->state;
+        $address['pincode'] = $addressrecord->zip;
+        $address['country'] = get_string($addressrecord->state, 'core_countries');
+        $address['customer'] = $addressrecord->name;
+
+        $response = $this->client->post($url, json_encode($address));
+        if (!$this->validate_response($response)) {
+            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                    "create_customer function got this error: " . $this->client->get_errno() . $this->errormessage);
+        }
+        return $response;
+    }
+
+    /**
+     * Create the json for the REST API.
      */
     public function prepare_json_invoice_data(): void {
         $serviceperiodstart = null;
         $serviceperiodend = null;
+        $taxrate = null;
         foreach ($this->invoiceitems as $item) {
             if (!$this->item_exists($item->itemname)) {
                 throw new moodle_exception('generalexceptionmessage', 'local_shopping_cart', '',
@@ -199,13 +264,9 @@ class erpnext_invoice implements invoice {
             $itemdata = [];
             $itemdata['item_code'] = $item->itemname;
             $itemdata['qty'] = 1;
-            $isnetprice = $this->is_net_price($item->price, $item->taxpercentage, $item->tax);
             // ERPNext expects net price.
-            if ($isnetprice) {
-                $itemdata['rate'] = (int) $item->price;
-            } else {
-                $itemdata['rate'] = (int) $item->price - (int) $item->tax;
-            }
+            $itemdata['rate'] = (float) $item->price - (float) $item->tax;
+
             $this->invoicedata['items'][] = $itemdata;
 
             $itemserviceperiodstart = $item->serviceperiodstart ?? $item->timecreated;
@@ -243,6 +304,8 @@ class erpnext_invoice implements invoice {
         } else {
             self::tax_charge_exists($this->invoicedata['taxes_and_charges']);
         }
+
+        $this->invoicedata['customer_address'] = $this->get_billing_address();
         $this->jsoninvoice = json_encode($this->invoicedata);
     }
 
@@ -423,49 +486,6 @@ class erpnext_invoice implements invoice {
             return array_column($territoryarray['data'], 'name');
         }
         return [];
-    }
-
-    /**
-     * Get all territories from ERP so we can check if they match the value used in Moodle.
-     * Empty array is returned if request had a problem.
-     *
-     * @return string of countries and territories (like EU)
-     */
-    private function get_billing_address_country(): string {
-        global $DB;
-        $data = [
-            'id' => $this->invoicedata['address_billing'],
-        ];
-
-        $addressid = $DB->get_record(
-            'local_shopping_cart_address',
-            $data,
-            'state'
-        );
-        return $addressid;
-    }
-
-    /**
-     * Determine if price is net or gross. This is necessary because admin setting can change over time.
-     *
-     * @param float $price
-     * @param int $taxpercentage
-     * @param int $taxamount
-     * @return bool true if price is net
-     */
-    public function is_net_price(float $price, int $taxpercentage, int $taxamount): bool {
-        // Calculate the tax amount based on the provided price.
-        $calculatedtaxamount = ($price * $taxpercentage) / 100;
-
-        // Check if the provided tax amount matches the calculated tax amount.
-        $tolerance = 0.01;  // Define a small tolerance for floating-point comparison.
-        $isgross = abs($taxamount - $calculatedtaxamount) < $tolerance;
-
-        if ($isgross) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**
