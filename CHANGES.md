@@ -1,3 +1,11 @@
+## Version 0.9.5 (2024061000)
+* Improvement: Include billing and shipping adress.
+* Improvement: Setting to use prices as gross or net.
+* Improvement: Include tax categories and VAT checker.
+* Improvement: Add possibility to change payment accounts for individual items.
+* Bugfix: Price calculations for rebookings.
+* Bugfix: Price calculations for subbookings.
+
 ## Version 0.9.3 (2024052101)
 * Bugfix: Fix incomplete ledger records.
 
