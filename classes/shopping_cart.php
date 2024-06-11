@@ -813,7 +813,6 @@ class shopping_cart {
                         'component' => $item['componentname'],
                     ],
                 ]);
-
             }
 
             if ($success == true) {

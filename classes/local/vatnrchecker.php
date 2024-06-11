@@ -170,8 +170,12 @@ class vatnrchecker {
      */
     public static function get_template(
         $iseuropean,
-        $isowncountry
+        $isowncountry,
+        $uid
     ) {
+        if (!is_null($uid)) {
+            return 'Export VAT';
+        }
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
         $countries = self::return_countrycodes_array();
         if ($isowncountry) {

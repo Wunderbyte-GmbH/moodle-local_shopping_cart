@@ -178,7 +178,8 @@ class erpnext_invoice implements invoice {
         $isowncountry = vatnrchecker::is_own_country($this->invoicedata['taxcountrycode'] ?? null);
         return vatnrchecker::get_template(
             $iseuropean,
-            $isowncountry
+            $isowncountry,
+            $this->invoicedata['uid']
         );
     }
 
@@ -241,7 +242,7 @@ class erpnext_invoice implements invoice {
         $response = $this->client->post($url, json_encode($address));
         if (!$this->validate_response($response)) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
-                    "create_customer function got this error: " . $this->client->get_errno() . $this->errormessage);
+                    "create_address function got this error: " . $this->client->get_errno() . $this->errormessage);
         }
         return $response;
     }
@@ -264,7 +265,25 @@ class erpnext_invoice implements invoice {
             $itemdata['item_code'] = $item->itemname;
             $itemdata['qty'] = 1;
             // ERPNext expects net price.
-            $itemdata['rate'] = (float) $item->price - (float) $item->tax;
+
+            $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
+            $this->invoicedata['uid'] = $item->vatnumber;
+            if (!isset($this->invoicedata['taxes_and_charges'])) {
+                $this->invoicedata['taxes_and_charges'] = self::get_taxes_charges_template();
+                if (!$this->invoicedata['taxes_and_charges']) {
+                    // $newtemplate = $this->create_tax_charge();
+                    throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
+                            "tax template does not excist. ");
+                } else {
+                    self::tax_charge_exists($this->invoicedata['taxes_and_charges']);
+                }
+            }
+
+            if (isset($item->vatnumber) && !is_null($item->vatnumber)) {
+                $itemdata['rate'] = (float) $item->price;
+            } else {
+                $itemdata['rate'] = (float) $item->price - (float) $item->tax;
+            }
 
             $this->invoicedata['items'][] = $itemdata;
 
@@ -282,9 +301,7 @@ class erpnext_invoice implements invoice {
             ) {
                 $serviceperiodend = $itemserviceperiodend;
             }
-            $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
             $this->invoicedata['address_billing'] = $item->address_billing;
-            $this->invoicedata['uid'] = $item->vatnumber;
         }
 
         $this->invoicedata['customer'] = $this->customer;
@@ -295,15 +312,6 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['due_date'] = $date;
         $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
         $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
-
-        $this->invoicedata['taxes_and_charges'] = $this->get_taxes_charges_template();
-        if (!$this->invoicedata['taxes_and_charges']) {
-            // $newtemplate = $this->create_tax_charge();
-            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
-                    "tax template does not excist. ");
-        } else {
-            self::tax_charge_exists($this->invoicedata['taxes_and_charges']);
-        }
 
         $this->invoicedata['customer_address'] = $this->get_billing_address();
         $this->jsoninvoice = json_encode($this->invoicedata);
@@ -321,11 +329,18 @@ class erpnext_invoice implements invoice {
         $url = str_replace(' ', '%20', $uncleanedurl);
         mtrace($url);
         $response = $this->client->get($url);
+        if (!$this->validate_response($response)) {
+            return false;
 
-        if (!$response) {
-            throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
-                    "customer_exists function got this error: " . $this->client->get_errno() . $this->errormessage .
-            $this->client->error);
+        } else {
+            $responsetaxid = json_decode($response);
+            if (
+                $responsetaxid->data->tax_id == '' &&
+                isset($this->invoicedata['uid'])
+            ) {
+                $responsetaxid->data->tax_id = $this->invoicedata['uid'];
+                $response = $this->client->put($url, json_encode($responsetaxid->data));
+            }
         }
         return $this->validate_response($response);
     }
@@ -384,6 +399,9 @@ class erpnext_invoice implements invoice {
         }
         $customer['email_id'] = $this->user->email;
         $customer['customer_details'] = $this->user->id;
+        if (isset($this->invoicedata['uid'])) {
+            $customer['tax_id'] = $this->invoicedata['uid'];
+        }
         $response = $this->client->post($url, json_encode($customer));
         if (!$response) {
             throw new moodle_exception('serverconnection', 'local_shopping_cart', '',
