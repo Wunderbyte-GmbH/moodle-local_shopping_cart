@@ -290,7 +290,7 @@ class shopping_cart_handler {
             return;
         }
 
-        $formdata->sch_paymentaccountid = $jsonobject->paymentaccountid ?: get_config('local_shopping_cart', 'accountid') ?? 0;
+        $formdata->sch_paymentaccountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?? 0;
         $formdata->sch_allowinstallment = $jsonobject->allowinstallment ?? 0;
         $formdata->sch_downpayment = $jsonobject->downpayment ?? 0;
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments ?? 0;
