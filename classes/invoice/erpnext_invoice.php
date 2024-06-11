@@ -252,7 +252,6 @@ class erpnext_invoice implements invoice {
     public function prepare_json_invoice_data(): void {
         $serviceperiodstart = null;
         $serviceperiodend = null;
-        $taxrate = null;
         foreach ($this->invoiceitems as $item) {
             if (!$this->item_exists($item->itemname)) {
                 throw new moodle_exception('generalexceptionmessage', 'local_shopping_cart', '',
@@ -285,6 +284,7 @@ class erpnext_invoice implements invoice {
             }
             $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
             $this->invoicedata['address_billing'] = $item->address_billing;
+            $this->invoicedata['uid'] = $item->vatnumber;
         }
 
         $this->invoicedata['customer'] = $this->customer;

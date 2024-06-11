@@ -374,7 +374,8 @@ class shopping_cart_history {
             string $json = null,
             int $addressbilling = 0,
             int $addressshipping = 0,
-            string $taxcountrycode = null) {
+            string $taxcountrycode = null,
+            string $vatnumber = null) {
 
         global $USER;
 
@@ -409,6 +410,7 @@ class shopping_cart_history {
         $data->address_billing = $addressbilling;
         $data->address_shipping = $addressshipping;
         $data->taxcountrycode = $taxcountrycode;
+        $data->vatnumber = $vatnumber;
 
         return self::write_to_db($data);
     }

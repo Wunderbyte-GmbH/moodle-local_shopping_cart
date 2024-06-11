@@ -835,6 +835,7 @@ class shopping_cart {
                     $item['address_billing'] = $data['address_billing'] ?? 0;
                     $item['address_shipping'] = $data['address_shipping'] ?? 0;
                     $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
+                    $item['vatnumber'] = $data['vatnrnumber'] ?? '';
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -869,9 +870,10 @@ class shopping_cart {
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
                             $item['json'] ?? '',
-                            $item['address_billing'] ?? 0,
-                            $item['address_shipping'] ?? 0,
-                            $item['taxcountrycode'] ?? 0,
+                            $item['address_billing'],
+                            $item['address_shipping'],
+                            $item['taxcountrycode'],
+                            $item['vatnumber'],
                     );
 
                     $item['id'] = $id;

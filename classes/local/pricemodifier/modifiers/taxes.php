@@ -144,10 +144,6 @@ abstract class taxes extends modifier_base {
                     }
                     $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
-                    $items[$key]['taxcountrycode'] = vatnrchecker::get_template(
-                        $iseuropean,
-                        $isowncountry
-                    );
                 }
             }
         }
