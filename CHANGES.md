@@ -1,3 +1,6 @@
+## Version 0.9.6 (2024061200)
+* Bugfix: Small fix concerning paymentaccountid.
+
 ## Version 0.9.5 (2024061000)
 * Improvement: Include billing and shipping adress.
 * Improvement: Setting to use prices as gross or net.
