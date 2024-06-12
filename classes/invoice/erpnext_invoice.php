@@ -164,9 +164,63 @@ class erpnext_invoice implements invoice {
             $responsedata = json_decode($response, true);
             $invoice->invoiceid = $responsedata['data']['name'];
             $DB->insert_record('local_shopping_cart_invoices', $invoice);
+            $this->send_invoice($responsedata['data']['name'], $this->user->email);
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function send_invoice($invoicename, $customeremail) {
+        // Prepare the email parameters
+        $emailparams = array(
+            "recipients" => [$customeremail],
+            "subject" => "Your Invoice " . $invoicename,
+            "message" => "Dear Customer,<br><br>Please find attached your invoice.<br><br>Best regards,<br>Your Company",
+            "attachments" => array(
+                array(
+                    "fname" => $invoicename . ".pdf",
+                    "fcontent" => $this->get_invoice_pdf($invoicename)
+                )
+            ),
+            "reference_doctype" => "Sales Invoice",
+            "reference_name" => $invoicename
+        );
+
+        $jsondata = json_encode($emailparams);
+        $url = $this->baseurl . '/api/method/frappe.core.doctype.communication.email.make';
+        $response = $this->client->post(str_replace(' ', '%20', $url), $jsondata);
+
+        $success = $this->validate_response($response);
+        if ($success) {
+            echo 'Curl error:' . $response;
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private function get_invoice_pdf($invoicename) {
+        $url = $this->baseurl . "/api/method/frappe.utils.print_format.download_pdf";
+        $params = array(
+            "doctype" => "Sales Invoice",
+            "name" => $invoicename,
+            "format" => "Standard", // Replace with your actual print format name
+            "no_letterhead" => 0
+        );
+        $query = "doctype=" . urlencode($params["doctype"]) .
+             "&name=" . urlencode($params["name"]) .
+             "&format=" . urlencode($params["format"]) .
+             "&no_letterhead=" . urlencode($params["no_letterhead"]);
+
+        $urlwithquery = "$url?$query";
+        $response = $this->client->get($urlwithquery);
+        $success = $this->validate_response($response);
+        if ($success) {
+            echo 'Curl error:' . $response;
+            return false;
+        } else {
+            return base64_encode($response);
         }
     }
 
