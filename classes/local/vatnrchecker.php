@@ -178,7 +178,13 @@ class vatnrchecker {
         }
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
         $countries = self::return_countrycodes_array();
-        if ($isowncountry) {
+        if (
+            $isowncountry ||
+            (
+                $iseuropean &&
+                get_config('local_shopping_cart', 'owncountrytax')
+            )
+        ) {
             return $countries[$hostvatnr] . ' Tax';
         } else if ($iseuropean) {
             return 'EU Reverse Charge';

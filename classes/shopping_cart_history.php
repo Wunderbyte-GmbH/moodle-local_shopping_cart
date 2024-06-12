@@ -255,10 +255,13 @@ class shopping_cart_history {
         $returnid = 0;
         if (isset($data->items)) {
             foreach ($data->items as $item) {
-                // $item[] write to item
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $data->address_billing ?? null;
-                $item['vatnumber'] = $data->vatnrnumber ?? null;
+                $uidcountrynr = null;
+                if ($data->vatnrnumber) {
+                    $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
+                }
+                $item['vatnumber'] = $uidcountrynr;
                 if (self::write_to_db((object)$item) == 0) {
                     $returnid = 0;
                 }

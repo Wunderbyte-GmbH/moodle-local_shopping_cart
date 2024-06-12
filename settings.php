@@ -218,6 +218,12 @@ if ($hassiteconfig) {
             )
     );
 
+    // If this setting is turned on, all customers have to pay the sellers tax template.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/owncountrytax',
+                get_string('owncountrytax', 'local_shopping_cart'),
+                get_string('owncountrytax_desc', 'local_shopping_cart'), 0));
+
     $defaultreceipthtml =
     '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
         <tr>
