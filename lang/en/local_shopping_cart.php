@@ -548,6 +548,9 @@ $string['choosedefaultcountry'] = 'Choose Default Country for Customers';
 $string['choosedefaultcountrydesc'] = 'Select the default country for your customers. If user does not provide invoice data, this
  country is selected for the invoice.';
 $string['erpnext'] = 'ERPNext';
+$string['erpnext_subject'] = 'Your Invoice';
+$string['erpnext_content'] = 'Dear Customer,<br><br>Please find attached your invoice.<br><br>Best regards,<br>Wunderbyte Support Team';
+$string['erpnext_reference_doctype'] = 'Sales Invoice';
 
 // Privacy API.
 $string['history'] = "Purchases";

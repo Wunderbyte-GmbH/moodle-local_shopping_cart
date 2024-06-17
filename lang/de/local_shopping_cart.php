@@ -541,6 +541,9 @@ $string['choosedefaultcountry'] = 'Standardland auswählen';
 $string['choosedefaultcountrydesc'] = 'Wählen Sie das Standardland für die Rechnungsadresse aus. Dieses wird verwendet,
  wenn die Kund/innen keine Angaben zur Rechnungsadresse machen.';
 $string['erpnext'] = 'ERPNext';
+$string['erpnext_subject'] = 'Ihre Rechnung';
+$string['erpnext_content'] = 'Sehr geehrte Kundin, sehr geehrter Kunde,<br><br>Im Anhang finden Sie Ihre Rechnung.<br><br>Mit freundlichen Grüßen,<br>Wunderbyte Support Team';
+$string['erpnext_reference_doctype'] = 'Sales Invoice';
 
 // Privacy API.
 $string['history'] = "Käufe";

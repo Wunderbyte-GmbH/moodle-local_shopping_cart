@@ -55,7 +55,7 @@ interface invoice {
      * Prepare the data for the curl request as JSON string.
      *
      */
-    public function prepare_json_invoice_data(): void;
+    public function prepare_json_invoice_data(): bool;
 
     /**
      * Get an array of items for the invoice.
