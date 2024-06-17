@@ -150,6 +150,7 @@ class erpnext_invoice implements invoice {
                 return false;
             }
         }
+
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
         $success = $this->validate_response($response);
         if ($success) {
@@ -159,13 +160,28 @@ class erpnext_invoice implements invoice {
             $responsedata = json_decode($response, true);
             $invoice->invoiceid = $responsedata['data']['name'];
             $DB->insert_record('local_shopping_cart_invoices', $invoice);
-            if ($this->send_invoice($responsedata['data']['name'], $this->user->email)) {
-                return false;
+
+            // Submit the invoice
+            $submitresponse = $this->submit_invoice($invoice->invoiceid);
+            if ($submitresponse) {
+                // Mark the invoice as paid.
+                $paymentresponse = $this->create_payment($submitresponse, $invoice->invoiceid);
+                if ($paymentresponse) {
+                    $submitresponse = $this->submit_payment_entry($paymentresponse);
+                    if (
+                        $this->send_invoice($responsedata['data']['name'], $this->user->email &&
+                        $submitresponse
+                    )) {
+                        return true;
+                    }
+                }
             }
-            return true;
-        } else {
-            return false;
+            if ($this->send_invoice($responsedata['data']['name'], $this->user->email)) {
+                return true;
+            }
         }
+
+        return false;
     }
 
     /**
@@ -210,6 +226,85 @@ class erpnext_invoice implements invoice {
             return false;
         }
     }
+
+    /**
+     * Submit invoice.
+     *
+     * @param string $invoiceid
+     * @return string true if invoice was submitted, false if not
+     */
+    public function submit_invoice($invoiceid) : string {
+        $submiturl = $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid;
+        $submitdata = json_encode([
+            'status' => 'Submitted',
+            'docstatus' => '1',
+        ]);
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        if ($this->validate_response($submitresponse)) {
+            return $submitresponse;
+        }
+        return false;
+    }
+
+    /**
+     * Submit invoice.
+     *
+     * @param string $$paymentresponse
+     * @return string true if invoice was submitted, false if not
+     */
+    public function submit_payment_entry($paymentresponse) : string {
+        $paymentresponsedata = json_decode($paymentresponse, true);
+        $paymententryid = $paymentresponsedata['data']['name'];
+        $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
+        $submitdata = json_encode([
+            'status' => 'Submitted',
+            'docstatus' => '1',
+        ]);
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        if ($this->validate_response($submitresponse)) {
+            return $submitresponse;
+        }
+        return false;
+    }
+
+
+    /**
+     * Create payment
+     *
+     * @param string $submitresponse
+     * @return string true if invoice was submitted, false if not
+     */
+    public function create_payment($submitresponse, $invoiceid) : string {
+        $jsoninvoice = json_decode($submitresponse);
+        $paymententryurl = $this->baseurl . '/api/resource/Payment Entry';
+        $paymententrydata = json_encode([
+            'payment_type' => 'Receive',
+            'party_type' => 'Customer',
+            'party' => $this->customer,
+            'paid_amount' => $jsoninvoice->data->grand_total,
+            'received_amount' => $jsoninvoice->data->grand_total,
+            'target_exchange_rate' => 1.0,
+            'paid_to' => 'Erste Bank - WB',
+            'paid_to_account_currency' => 'EUR',
+            'reference_no' => $jsoninvoice->data->name . '-' . $jsoninvoice->data->posting_date,
+            'reference_date' => date('Y-m-d'),
+            'references' => [
+                [
+                    'reference_doctype' => 'Sales Invoice',
+                    'reference_name' => $invoiceid,
+                    'total_amount' => $jsoninvoice->data->grand_total,
+                    'outstanding_amount' => $jsoninvoice->data->grand_total,
+                    'allocated_amount' => $jsoninvoice->data->grand_total,
+                ],
+            ],
+        ]);
+        $paymentresponse = $this->client->post(str_replace(' ', '%20', $paymententryurl), $paymententrydata);
+        if ($this->validate_response($paymentresponse)) {
+            return $paymentresponse;
+        }
+        return false;
+    }
+
 
     /**
      * Create customer
@@ -430,7 +525,7 @@ class erpnext_invoice implements invoice {
             $this->baseurl . "/api/resource/Sales%20Taxes%20and%20Charges%20Template/" . rawurlencode($taxchargestemplate) . "/";
         $url = str_replace(' ', '%20', $uncleanedurl);
         $response = $this->client->get($url);
-        if (!$response) {
+        if (!$this->validate_response($response)) {
             return false;
         } else {
             $taxtemplate = json_decode($response);
