@@ -152,7 +152,7 @@ class erpnext_invoice implements invoice {
         }
 
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
-        $success = $this->validate_response($response);
+        $success = $this->validate_response($response, $url);
         if ($success) {
             $invoice = new stdClass();
             $invoice->identifier = $identifier;
@@ -169,18 +169,13 @@ class erpnext_invoice implements invoice {
                 if ($paymentresponse) {
                     $submitresponse = $this->submit_payment_entry($paymentresponse);
                     if (
-                        $this->send_invoice($responsedata['data']['name'], $this->user->email &&
                         $submitresponse
-                    )) {
+                    ) {
                         return true;
                     }
                 }
             }
-            if ($this->send_invoice($responsedata['data']['name'], $this->user->email)) {
-                return true;
-            }
         }
-
         return false;
     }
 
@@ -202,24 +197,26 @@ class erpnext_invoice implements invoice {
         $emailparams = [
             "recipients" => $customeremail,
             "subject" => get_string('erpnext_subject', 'local_shopping_cart') . " " . $invoicename,
-            "content" => get_string('erpnext_content', 'local_shopping_cart'),
-            "attachments" => [
-                [
-                    "fname" => $invoicename . ".pdf",
-                    "fcontent" => $invoicepdf
-                ]
-            ],
-            "reference_doctype" => get_string('erpnext_reference_doctype', 'local_shopping_cart'),
-            "send_mail" => "1",
-            "send_me_a_copy" => "0",
-            "reference_name" => $invoicename,
+            "content" => '<div class="ql-editor read-mode"><p>Testing Content</p></div>',
+            "doctype" => "Sales Invoice",
+            "name" => $invoicename,
+            "send_mail" => 1,
+            "print_html" => null,
+            "send_me_a_copy" => 0,
+            "print_format" => "Standardrechnung",
+            "sender" => "info@wunderbyte.at",
+            "attachments" => [],
+            "read_receipt" => 0,
+            "print_letterhead" => 1,
+            "send_after" => null,
+            "print_language" => "de",
         ];
         force_current_language($currentlang);
         $jsondata = json_encode($emailparams);
         $url = $this->baseurl . '/api/method/frappe.core.doctype.communication.email.make';
         $response = $this->client->post(str_replace(' ', '%20', $url), $jsondata);
 
-        $success = $this->validate_response($response);
+        $success = $this->validate_response($response, $url);
         if ($success) {
             return true;
         } else {
@@ -240,7 +237,7 @@ class erpnext_invoice implements invoice {
             'docstatus' => '1',
         ]);
         $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
-        if ($this->validate_response($submitresponse)) {
+        if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
         }
         return false;
@@ -261,7 +258,7 @@ class erpnext_invoice implements invoice {
             'docstatus' => '1',
         ]);
         $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
-        if ($this->validate_response($submitresponse)) {
+        if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
         }
         return false;
@@ -299,7 +296,7 @@ class erpnext_invoice implements invoice {
             ],
         ]);
         $paymentresponse = $this->client->post(str_replace(' ', '%20', $paymententryurl), $paymententrydata);
-        if ($this->validate_response($paymentresponse)) {
+        if ($this->validate_response($paymentresponse, $paymententryurl)) {
             return $paymentresponse;
         }
         return false;
@@ -327,7 +324,7 @@ class erpnext_invoice implements invoice {
 
         $urlwithquery = "$url?$query";
         $response = $this->client->get($urlwithquery);
-        $success = $this->validate_response($response);
+        $success = $this->validate_response($response, $url);
         if ($success) {
             return false;
         } else {
@@ -377,10 +374,10 @@ class erpnext_invoice implements invoice {
             $uncleanedurl = $this->baseurl . "/api/resource/Address/" . rawurlencode($addresstitle . '-Abrechnung') . "/";
             $url = str_replace(' ', '%20', $uncleanedurl);
             $response = $this->client->get($url);
-            if (!$this->validate_response($response)) {
+            if (!$this->validate_response($response, $url)) {
                 // Create new address.
                 $response = self::create_address($addressrecord, $addresstitle);
-                if (!$this->validate_response($response)) {
+                if (!$this->validate_response($response, $url)) {
                     return false;
                 }
             }
@@ -410,7 +407,7 @@ class erpnext_invoice implements invoice {
         $address['customer'] = $addressrecord->name;
 
         $response = $this->client->post($url, json_encode($address));
-        if (!$this->validate_response($response)) {
+        if (!$this->validate_response($response, $url)) {
             return false;
         }
         return $response;
@@ -498,7 +495,7 @@ class erpnext_invoice implements invoice {
         $uncleanedurl = $this->baseurl . "/api/resource/Customer/" . rawurlencode($this->customer) . "/";
         $url = str_replace(' ', '%20', $uncleanedurl);
         $response = $this->client->get($url);
-        if (!$this->validate_response($response)) {
+        if (!$this->validate_response($response, $url)) {
             return false;
 
         } else {
@@ -511,7 +508,7 @@ class erpnext_invoice implements invoice {
                 $response = $this->client->put($url, json_encode($responsetaxid->data));
             }
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 
     /**
@@ -525,7 +522,7 @@ class erpnext_invoice implements invoice {
             $this->baseurl . "/api/resource/Sales%20Taxes%20and%20Charges%20Template/" . rawurlencode($taxchargestemplate) . "/";
         $url = str_replace(' ', '%20', $uncleanedurl);
         $response = $this->client->get($url);
-        if (!$this->validate_response($response)) {
+        if (!$this->validate_response($response, $url)) {
             return false;
         } else {
             $taxtemplate = json_decode($response);
@@ -541,7 +538,7 @@ class erpnext_invoice implements invoice {
             }
             $this->invoicedata['taxes'] = $taxes;
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 
     /**
@@ -559,7 +556,6 @@ class erpnext_invoice implements invoice {
         $countrycode = get_config('local_shopping_cart', 'defaultcountry');
         if (in_array($countrycode, $this->get_all_territories())) {
             $customer['territory'] = $countrycode;
-            mtrace("Territory does not match with available territories in ERPNext, choosing All Territories as fallback");
         } else {
             // This is a value present by default in ERPNext.
             $customer['territory'] = 'All Territories';
@@ -573,7 +569,7 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 
     /**
@@ -604,7 +600,7 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 
     /**
@@ -620,29 +616,30 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 
     /**
      * Check if entry exists in the JSON response.
      *
      * @param string $response The JSON response from ERPNext.
+     * @param string $url of the request response from ERPNext.
      * @return bool True if the entry exists, false otherwise.
      */
-    public function validate_response(string $response): bool {
+    public function validate_response(string $response, string $url): bool {
         // Decode the JSON response into an associative array.
         $resparray = json_decode($response, true);
         // Check if the response contains data.
-        if (isset($resparray['data'])) {
+        if (isset($resparray['data']) ||isset($resparray['message'])) {
             return true; // Entry exists or entry was successfully created.
         }
         // Check if the response contains an error message.
         if (isset($resparray['exc_type'])) {
-            $this->errormessage = $resparray['exc_type'];
+            $this->errormessage = $resparray['exc_type'] . ' - ' . $url;
             return false; // Entry does not exist (error).
         }
         if (isset($resparray['exception'])) {
-            $this->errormessage = $resparray['exception'];
+            $this->errormessage = $resparray['exception'] . ' - ' . $url;
             return false; // Entry does not exist (error).
         }
         return false;
@@ -660,7 +657,7 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
-        $success = $this->validate_response($response);
+        $success = $this->validate_response($response, $url);
         if ($success) {
             $territoryarray = json_decode($response, true);
             return array_column($territoryarray['data'], 'name');
@@ -680,6 +677,6 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
-        return $this->validate_response($response);
+        return $this->validate_response($response, $url);
     }
 }
