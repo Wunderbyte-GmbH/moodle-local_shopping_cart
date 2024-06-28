@@ -1,3 +1,8 @@
+## Version 0.9.7 (2024062800)
+* Feature: Add addresses for correct tax handling
+* Feature: Add support for automatic Invoice creation via ERP Next
+* Feature: Add VAt nr Checker
+
 ## Version 0.9.6 (2024061200)
 * Bugfix: Small fix concerning paymentaccountid.
 
