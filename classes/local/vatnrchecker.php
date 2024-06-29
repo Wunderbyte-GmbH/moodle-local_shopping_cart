@@ -140,7 +140,7 @@ class vatnrchecker {
     /**
      * Function to return an array of localized country codes.
      * @param string $countrykey
-     * @return array
+     * @return bool
      */
     public static function is_european($countrykey) {
         $countries = self::return_countrycodes_array();
@@ -153,7 +153,7 @@ class vatnrchecker {
     /**
      * Function to return an array of localized country codes.
      * @param string $countrykey
-     * @return array
+     * @return bool
      */
     public static function is_own_country($countrykey) {
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
@@ -164,8 +164,11 @@ class vatnrchecker {
     }
 
     /**
-     * Function to return an array of localized country codes.
-     * @param string $countrykey
+     * Function to return a VAT template string.
+     * @param bool $iseuropean
+     * @param bool $isowncountry
+     * @param string $uid
+     *
      * @return string
      */
     public static function get_template(

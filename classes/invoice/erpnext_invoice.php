@@ -161,7 +161,7 @@ class erpnext_invoice implements invoice {
             $invoice->invoiceid = $responsedata['data']['name'];
             $DB->insert_record('local_shopping_cart_invoices', $invoice);
 
-            // Submit the invoice
+            // Submit the invoice.
             $submitresponse = $this->submit_invoice($invoice->invoiceid);
             if ($submitresponse) {
                 // Mark the invoice as paid.
@@ -186,8 +186,8 @@ class erpnext_invoice implements invoice {
      * @param string $customeremail
      * @return bool true if invoice was send, false if not
      */
-    public function send_invoice($invoicename, $customeremail) : bool {
-        // Prepare the email parameters
+    public function send_invoice($invoicename, $customeremail): bool {
+        // Prepare the email parameters.
         $invoicepdf = $this->get_invoice_pdf($invoicename);
         if (!$invoicepdf) {
             return false;
@@ -230,7 +230,7 @@ class erpnext_invoice implements invoice {
      * @param string $invoiceid
      * @return string true if invoice was submitted, false if not
      */
-    public function submit_invoice($invoiceid) : string {
+    public function submit_invoice($invoiceid): string {
         $submiturl = $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid;
         $submitdata = json_encode([
             'status' => 'Submitted',
@@ -246,10 +246,10 @@ class erpnext_invoice implements invoice {
     /**
      * Submit invoice.
      *
-     * @param string $$paymentresponse
+     * @param string $paymentresponse
      * @return string true if invoice was submitted, false if not
      */
-    public function submit_payment_entry($paymentresponse) : string {
+    public function submit_payment_entry($paymentresponse): string {
         $paymentresponsedata = json_decode($paymentresponse, true);
         $paymententryid = $paymentresponsedata['data']['name'];
         $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
@@ -269,9 +269,11 @@ class erpnext_invoice implements invoice {
      * Create payment
      *
      * @param string $submitresponse
+     * @param string $invoiceid
+     *
      * @return string true if invoice was submitted, false if not
      */
-    public function create_payment($submitresponse, $invoiceid) : string {
+    public function create_payment($submitresponse, $invoiceid): string {
         $jsoninvoice = json_decode($submitresponse);
         $paymententryurl = $this->baseurl . '/api/resource/Payment Entry';
         $paymententrydata = json_encode([
@@ -589,12 +591,12 @@ class erpnext_invoice implements invoice {
                 "account_head" => "Umsatzsteuer - WB",
                 "rate" => $taxpercentage,
                 "description" => "VAT " . $taxpercentage . "%",
-            ]
+            ],
         ];
         $taxtemplate = [
             "title" => $title,
             "company" => $company,
-            "taxes" => $taxes
+            "taxes" => $taxes,
         ];
         $response = $this->client->post($url, json_encode($taxtemplate));
         if (!$response) {

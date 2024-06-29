@@ -326,6 +326,7 @@ class shopping_cart_history {
     /**
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
+     *
      * @param int $userid
      * @param int $itemid
      * @param string $itemname
@@ -351,7 +352,11 @@ class shopping_cart_history {
      * @param string|null $json
      * @param int|null $addressbilling
      * @param int|null $addressshipping
+     * @param string|null $taxcountrycode
+     * @param string|null $vatnumber
+     *
      * @return int
+     *
      * @throws dml_exception
      * @throws coding_exception
      */
