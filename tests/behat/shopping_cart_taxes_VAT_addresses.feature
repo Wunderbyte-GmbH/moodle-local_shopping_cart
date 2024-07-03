@@ -104,7 +104,7 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     ## Provide a valid VAT number and verify price
     And I set the field "usevatnr" to "1"
     And I set the field "Select your country" to "Germany"
-    And I set the field "Enter your VAT number" to "812526315"  
+    And I set the field "Enter your VAT number" to "812526315"
     And I click on "Verify validity of VAT number" "button"
     And I wait "1" seconds
     ## Address does not returned for Germany VAT requests
