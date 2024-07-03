@@ -1,6 +1,5 @@
 @local @local_shopping_cart @javascript
-
-Feature: Configure tax categories and using VAT and addressess to waive price.
+Feature: Configure tax categories and use VAT and addresses to reduce price.
 
   Background:
     Given the following "users" exist:
@@ -24,8 +23,8 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And the following "local_shopping_cart > plugin setup" exist:
-      | account  | enabletax | defaulttaxcategory  | showvatnrchecker | owncountrycode | ownvatnrnumber |
-      | Account1 | 1         | A                   | 1                | AT             | U74259768      |
+      | account  | enabletax | defaulttaxcategory  | showvatnrchecker |
+      | Account1 | 1         | A                   | 1                |
     And the following "local_shopping_cart > user addresses" exist:
       | user  | name   | state | address     | city   | zip  |
       | user1 | User 1 | AT    | Brovarna 23 | Wienn  | w123 |
@@ -45,8 +44,11 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and Austrian address to reduce net price of single item
     Given the following config values are set as admin:
-      | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart |
+      | config         | value     | plugin              |
+      | itempriceisnet | 1         | local_shopping_cart |
+      | owncountrycode | DE        | local_shopping_cart |
+      | ownvatnrnumber | 812526315 | local_shopping_cart |
+      ## Mercedes-Bentz :)
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
@@ -77,8 +79,10 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce net price of single item
     Given the following config values are set as admin:
-      | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart |
+      | config          | value     | plugin              |
+      | itempriceisnet  | 1         | local_shopping_cart |
+      | owncountrycode  | AT        | local_shopping_cart |
+      | ownvatnrnumber  | U74259768 | local_shopping_cart |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
@@ -99,18 +103,21 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I should see "(10.00 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "usevatnr" to "1"
-    And I set the field "Select your country" to "Austria"
-    And I set the field "Enter your VAT number" to "U74259768"
+    And I set the field "Select your country" to "Germany"
+    And I set the field "Enter your VAT number" to "812526315"  
     And I click on "Verify validity of VAT number" "button"
     And I wait "1" seconds
-    And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
+    ## Address does not returned for Germany VAT requests
+    ## And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number and German address to reduce gross price of single item
     Given the following config values are set as admin:
-      | config          | value | plugin              |
-      | itempriceisnet  | 0     | local_shopping_cart |
+      | config          | value     | plugin              |
+      | itempriceisnet  | 0         | local_shopping_cart |
+      | owncountrycode  | AT        | local_shopping_cart |
+      | ownvatnrnumber  | U74259768 | local_shopping_cart |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
@@ -131,9 +138,10 @@ Feature: Configure tax categories and using VAT and addressess to waive price.
     And I should see "(8.40 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "usevatnr" to "1"
-    And I set the field "Select your country" to "Austria"
-    And I set the field "Enter your VAT number" to "U74259768"
+    And I set the field "Select your country" to "Germany"
+    And I set the field "Enter your VAT number" to "812526315"
     And I click on "Verify validity of VAT number" "button"
     And I wait "1" seconds
-    And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
+    ## Address does not returned for Germany VAT requests
+    ## And I should see "Wunderbyte GmbH" in the ".form_vatnrchecker" "css_element"
     And I should see "8.40 EUR" in the ".sc_totalprice" "css_element"
