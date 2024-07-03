@@ -114,9 +114,15 @@ class dynamicvatnrchecker extends dynamic_form {
 
             } else {
                 // In order to have all the relevant data on our Invoice, we save this here.
-                $address = vatnrchecker::$vatnrdataset->address;
-                list($street, $city) = explode(PHP_EOL, $address);
                 $data->name = vatnrchecker::$vatnrdataset->name;
+                $address = vatnrchecker::$vatnrdataset->address;
+                $addressstr = explode(PHP_EOL, $address);
+                if (count($addressstr) > 1) {
+                    list($street, $city) = explode(PHP_EOL, $address);
+                } else {
+                    $street = $addressstr[0] ?? '';
+                    $city = '';
+                }
                 $data->street = $street;
                 $data->city = $city;
 
