@@ -1,6 +1,5 @@
 @local @local_shopping_cart @javascript
-
-Feature: Configure tax categories and using VAT to waive price.
+Feature: Configure tax categories and use VAT to reduce price.
 
   Background:
     Given the following "users" exist:
@@ -25,7 +24,8 @@ Feature: Configure tax categories and using VAT to waive price.
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And the following "local_shopping_cart > plugin setup" exist:
       | account  | enabletax | defaulttaxcategory | taxcategories | showvatnrchecker | owncountrycode | ownvatnrnumber |
-      | Account1 | 1         | A                  | A:15 B:5 C:0  | 1                | AT             | U74259768      |
+      | Account1 | 1         | A                  | A:15 B:5 C:0  | 1                | DE             | 812526315      |
+      ## Mercedes-Bentz VAT :)
 
   @javascript
   Scenario: Shopping Cart taxes: use VAT number to reduce net price of single item
@@ -61,8 +61,8 @@ Feature: Configure tax categories and using VAT to waive price.
   @javascript
   Scenario: Shopping Cart taxes: use VAT number to reduce gross price of single item
     Given the following config values are set as admin:
-      | config          | value | plugin              |
-      | itempriceisnet  | 0     | local_shopping_cart |
+      | config         | value | plugin              |
+      | itempriceisnet | 0     | local_shopping_cart |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
