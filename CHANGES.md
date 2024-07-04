@@ -1,3 +1,6 @@
+## Version 0.9.8 (2024070400)
+* Improvement: Add more automatic tests
+
 ## Version 0.9.7 (2024062800)
 * Feature: Add addresses for correct tax handling
 * Feature: Add support for automatic Invoice creation via ERP Next
