@@ -81,7 +81,7 @@ class cartstore {
     /**
      * Adds an item to the shopping cart cache store.
      * @param cartitem $item
-     * @return void
+     * @return array
      * @throws coding_exception
      */
     public function add_item(cartitem $item) {
@@ -532,7 +532,7 @@ class cartstore {
 
         $items = $this->get_items();
         foreach ($items as $itemincart) {
-            if ($itemincart['area'] = 'bookingfee' || $itemincart['area'] = 'rebookingcredit') {
+            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit') {
                 // We only need to check for "real" items, booking fee does not apply.
                 continue;
             } else {
