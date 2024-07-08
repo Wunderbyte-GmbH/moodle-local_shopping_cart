@@ -206,8 +206,10 @@ class shopping_cart_rebookingcredit {
             $item = (array)$item;
             $data['items'][$key] = $item;
 
-            if (($item['area'] === 'rebookitem')
-                && ($item['componentname'] === 'local_shopping_cart') ) {
+            if (
+                ($item['area'] === 'rebookitem')
+                && ($item['componentname'] === 'local_shopping_cart')
+            ) {
                 $keyofrebooking = $key;
 
                 // If the totalprice is lower than 0, the rebooking must be corrected by the difference.

@@ -123,6 +123,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     0,
                     'A',
                     0, // Rebook items can be deleted again.
+                    $record->costcenter ?? null
                 );
                 return ['cartitem' => $cartitem];
             case 'installments':

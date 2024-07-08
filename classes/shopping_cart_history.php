@@ -912,19 +912,25 @@ class shopping_cart_history {
         $cache->set($cachekey, $itemstorebook);
 
         if (!empty($marked) && empty($remove)) {
-            // Before we add the item to the cart, let's make sure there is no booking fee currently applied.
-            shopping_cart_rebookingcredit::delete_booking_fee($userid);
 
-            shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
+            $response = shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
 
-            if (get_config('local_shopping_cart', 'rebookingfee') > 0) {
-                // We check if we need to add the rebookingfee.
-                $record = self::return_item_from_history($historyid);
-                $now = time();
+            if ($response['success'] === LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
+                // Before we add the item to the cart, let's make sure there is no booking fee currently applied.
+                shopping_cart_rebookingcredit::delete_booking_fee($userid);
 
-                if ($record->canceluntil <= $now) {
-                    shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingfee', 1, $userid);
+                if (get_config('local_shopping_cart', 'rebookingfee') > 0) {
+                    // We check if we need to add the rebookingfee.
+                    $record = self::return_item_from_history($historyid);
+                    $now = time();
+
+                    if ($record->canceluntil <= $now) {
+                        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingfee', 1, $userid);
+                    }
                 }
+            } else {
+                // Remove the toggle again, because it was not successful.
+                self::toggle_mark_for_rebooking($historyid, $userid, true);
             }
         }
 

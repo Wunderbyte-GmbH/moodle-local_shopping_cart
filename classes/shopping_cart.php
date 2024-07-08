@@ -112,13 +112,14 @@ class shopping_cart {
             ];
         }
 
-        if ($area == "option") {
+        if ($area == "option" || $area == "rebookitem") {
             // If the setting 'samecostcenter' ist turned on...
             // ... then we do not allow to add items with different cost centers.
             $providerclass = static::get_service_provider_classname($component);
             $cartitem = component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
 
             if (get_config('local_shopping_cart', 'samecostcenter')) {
+
                 $currentcostcenter = $cartitem['costcenter'] ?? '';
 
                 if (!$cartstore->same_costcenter($currentcostcenter)) {
@@ -221,14 +222,16 @@ class shopping_cart {
             // ... to add the booking fee...
             // ... we add the booking fee.
             list($areatocheck) = explode('-', $area);
-            if ((!$cartstore->has_items()
+            if (
+                (!$cartstore->has_items()
                 || $cartstore->get_total_price_of_items() === 0)
                 && !in_array($areatocheck, [
                     'bookingfee',
                     'rebookingfee',
                     'rebookingcredit',
                     'rebookitem',
-                    'installments'])) {
+                    'installments'])
+            ) {
                 // If we buy for user, we need to use -1 as userid.
                 // Also we add $userid as second param so we can check if fee was already paid.
                 shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
@@ -248,8 +251,10 @@ class shopping_cart {
                     // This is because we always add the fee first.
                     // But if the price of the item we buy is 0, we don't want to demand a booking fee neither.
                     // Therefore, we need to delete it again from the cart.
-                    if (($cartitem->price() == 0)
-                        && count($cartstore->get_items()) < 2) {
+                    if (
+                        ($cartitem->price() == 0)
+                        && count($cartstore->get_items()) < 2
+                    ) {
                         $cartstore->delete_bookingfee();
                     }
 
@@ -265,7 +270,8 @@ class shopping_cart {
                     // Add or reschedule all delete_item_tasks for all the items in the cart.
                     self::add_or_reschedule_addhoc_tasks(
                         $itemdata['expirationtime'],
-                        $userid);
+                        $userid
+                    );
 
                     $context = context_system::instance();
                     // Trigger item deleted event.
@@ -789,8 +795,10 @@ class shopping_cart {
 
             // Here, we have two different ways to call the component callback.
             // And for rebooking, there is quite some change going, as we actually replace the item.
-            if (($item['componentname'] === 'local_shopping_cart')
-                && ($item['area'] === 'rebookitem')) {
+            if (
+                ($item['componentname'] === 'local_shopping_cart')
+                && ($item['area'] === 'rebookitem')
+            ) {
 
                 shopping_cart_rebookingcredit::checkout_rebooking_item(
                     $item['componentname'],
