@@ -673,12 +673,6 @@ function reload(userid) {
 
     reloadHistory(userid);
     return;
-
-    const url = new URL(window.location.href);
-
-    url.searchParams.delete('userid');
-    url.searchParams.append('userid', userid);
-    window.location.href = url.toString();
 }
 
 /**
