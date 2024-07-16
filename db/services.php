@@ -108,6 +108,13 @@ $functions = [
                 'capabilities' => '',
                 'ajax' => 1,
         ],
+        'local_shopping_cart_reload_history' => [
+                'classname' => 'local_shopping_cart\external\reload_history',
+                'description' => 'Reload complete shopping cart history',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1,
+        ],
         'local_shopping_cart_quota_consumed' => [
                 'classname' => 'local_shopping_cart\external\get_quota_consumed',
                 'description' => 'Return the consumed quota from a given item',

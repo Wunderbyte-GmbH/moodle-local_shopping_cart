@@ -51,6 +51,9 @@ let notenoughcredits = 'notenoughcredits';
 
 export const init = (cancelationFee = null) => {
 
+    // eslint-disable-next-line no-console
+    console.log('init');
+
     const buttons = document.querySelectorAll(SELECTORS.CANCELBUTTON);
 
     buttons.forEach(button => {
@@ -339,6 +342,7 @@ function confirmPaidBack(element) {
 
              // We also need to call the udpateTotalPrice function from this place to make sure everything is uptodate.
             updateTotalPrice();
+            reloadHistory(userid);
             return;
         },
         fail: function(ex) {
@@ -666,9 +670,60 @@ function markforrebooking(button) {
  * @param {*} userid
  */
 function reload(userid) {
+
+    reloadHistory(userid);
+    return;
+
     const url = new URL(window.location.href);
 
     url.searchParams.delete('userid');
     url.searchParams.append('userid', userid);
     window.location.href = url.toString();
+}
+
+/**
+ * Function to reload Shopping cart history with get param userid.
+ * @param {*} userid
+ */
+export function reloadHistory(userid) {
+
+    const histories
+        = document.querySelectorAll('[data-id="shopping-cart-history"][data-userid="' + userid + '"]');
+
+     // eslint-disable-next-line no-console
+     console.log(histories);
+
+    histories.forEach((history) => {
+
+        // eslint-disable-next-line no-console
+        console.log(history);
+
+        Ajax.call([{
+            methodname: "local_shopping_cart_reload_history",
+            args: {
+                'userid': userid,
+            },
+            done: function(data) {
+
+                // eslint-disable-next-line no-console
+                console.log(data);
+
+                Templates.renderForPromise('local_shopping_cart/history_card', data).then(({html, js}) => {
+
+                    Templates.replaceNode(history, html, js);
+
+                    return true;
+
+                    }).catch((e) => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
+
+            },
+            fail: function(ex) {
+                // eslint-disable-next-line no-console
+                console.log("ex:" + ex);
+            },
+        }]);
+    });
 }

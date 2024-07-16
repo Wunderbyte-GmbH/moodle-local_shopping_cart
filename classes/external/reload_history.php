@@ -33,8 +33,10 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,11 +46,11 @@ require_once($CFG->libdir . '/externallib.php');
  * External Service for shopping cart.
  *
  * @package   local_shopping_cart
- * @copyright 2022 Wunderbyte GmbH {@link http://www.wunderbyte.at}
+ * @copyright 2024 Wunderbyte GmbH {@link http://www.wunderbyte.at}
  * @author    Georg Maißer
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class get_history_items extends external_api {
+class reload_history extends external_api {
 
     /**
      * Describes the paramters for this service.
@@ -85,43 +87,38 @@ class get_history_items extends external_api {
             $userid = (int)$USER->id;
         }
 
-        return shopping_cart_history::get_history_list_for_user($userid);
+        // If the given user doesn't want to see the history for herself...
+        // ... we check her permissions.
+        if ($USER->id != $userid) {
+            $context = context_system::instance();
+            if (!has_capability('local/shopping_cart:cashier', $context, $USER)) {
+                throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+            }
+        }
+
+        if (!$historylist = new shoppingcart_history_list($userid)) {
+            throw new moodle_exception('couldnotgeneratehistory', 'local_shopping_cart');
+        }
+
+        $list = $historylist->return_list();
+
+        return $list;
     }
 
     /**
      * Definition of return value
      *
-     * @return external_multiple_structure
+     * @return external_single_structure
      */
-    public static function execute_returns(): external_multiple_structure {
-        return new external_multiple_structure(
-            new external_single_structure(
-                [
-                    'itemid' => new external_value(PARAM_INT, 'Item id'),
-                    'id' => new external_value(PARAM_INT, 'Historyid id'),
-                    'itemname' => new external_value(PARAM_TEXT, 'Item name'),
-                    'area' => new external_value(PARAM_TEXT, 'Area'),
-                    'componentname' => new external_value(PARAM_TEXT, 'Componentname'),
-                    'buttonclass' => new external_value(PARAM_TEXT, 'Buttonclass'),
-                    'price' => new external_value(PARAM_FLOAT, 'Price'),
-                    'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quota consumed'),
-                    'round' => new external_value(PARAM_INT, 'Round'),
-                    'price_gross' => new external_value(PARAM_FLOAT, 'Gros price of item'),
-                    'price_net' => new external_value(PARAM_FLOAT, 'Net price of item'),
-                    'taxpercentage_visual' => new external_value(PARAM_TEXT, 'Tax percentage visual'),
-                    'date' => new external_value(PARAM_TEXT, 'Date string name'),
-                    'paymentstring' => new external_value(PARAM_TEXT, 'Paid with'),
-                    'orderid' => new external_value(PARAM_TEXT, 'Order id'),
-                    'gateway' => new external_value(PARAM_TEXT, 'Gateway'),
-                    'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until'),
-                    'receipturl' => new external_value(PARAM_URL, 'Receipt url'),
-                    'canceled' => new external_value(PARAM_BOOL, 'Canceled'),
-                    'showrebooking' => new external_value(PARAM_BOOL, 'Show rebooking'),
-                    'rebooking' => new external_value(PARAM_BOOL, 'Rebooking'),
-                    'currency' => new external_value(PARAM_ALPHA, 'Currency'),
-                    'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus'),
-                ]
-            )
-        );
+    public static function execute_returns(): external_single_structure {
+        return new external_single_structure([
+            'historyitems' => get_history_items::execute_returns(),
+            'has_historyitems' => new external_value(PARAM_BOOL),
+            'canpayback' => new external_value(PARAM_BOOL),
+            'taxesenabled' => new external_value(PARAM_BOOL),
+            'currency' => new external_value(PARAM_ALPHAEXT),
+            'credit' => new external_value(PARAM_INT, 'Credit', VALUE_DEFAULT, 0),
+            'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
+        ]);
     }
 }
