@@ -86,6 +86,13 @@ $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maxima
 $string['cancelationfee'] = 'Stornierungsgebühr';
 $string['bookingfee'] = 'Buchungsgebühr';
 $string['bookingfee_desc'] = 'Für jede Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
+$string['bookingfeevariable'] = 'Variable Buchungsgebühr';
+$string['bookingfeevariable_desc'] = 'Entsprechend der Kostenstelle (Feld "{$a}"), können unterschiedliche Buchungsgebühren angegeben werden.';
+$string['definefeesforcostcenters'] = 'Preise entsprechend der Kostenstellen angeben.';
+$string['definefeesforcostcenters_desc'] = 'Bitte im folgenden Format eingeben:
+  Kostenstelle1:3.5,
+  Kostenstelle2:5,
+  Kostenstelle3:0 ';
 $string['rebookingfee'] = 'Umbuchungsgebühr';
 $string['rebookingfee_desc'] = 'Für jede Umbuchung wird eine Gebühr eingehoben, wenn die normale Stornoperiode vorbei ist.';
 $string['uniqueidentifier'] = 'Eindeutige Buchungsid';

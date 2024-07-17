@@ -54,11 +54,31 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         switch ($area) {
             case 'bookingfee':
+                $price = get_config('local_shopping_cart', 'bookingfee');
+
+                // Does the fee depend on costcenter?
+                if (!empty(get_config('local_shopping_cart', 'bookingfeevariable'))) {
+                    $cartstore = cartstore::instance($userid);
+                    $items = $cartstore->get_all_items();
+                    $item = reset($items);
+                    $costcenter = $item['costcenter'];
+                    $ccfees = get_config('local_shopping_cart', 'definefeesforcostcenters');
+                    $pairs = explode(", ", $ccfees);
+                    $ccarray = [];
+                    foreach ($pairs as $pair) {
+                        list($key, $value) = explode(":", $pair);
+                        $ccarray[$key] = $value;
+                    }
+                    if (in_array($costcenter, array_keys($ccarray))) {
+                        $price = $ccarray[$costcenter];
+                    }
+                }
+
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('bookingfee', 'local_shopping_cart'),
-                    get_config('local_shopping_cart', 'bookingfee'),
+                    $price,
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
                     'local_shopping_cart',
                     'bookingfee',

@@ -235,6 +235,23 @@ class cartstore {
     }
 
     /**
+     * Returns all items.
+     * @return array
+     * @throws coding_exception
+     */
+    public function get_all_items() {
+
+        $data = $this->get_cache();
+
+        if ($data) {
+            if (isset($data['items'])) {
+                return $data['items'];
+            }
+        }
+        return [];
+    }
+
+    /**
      * Saves one specific item (not add!).
      * @param array $item
      * @return bool

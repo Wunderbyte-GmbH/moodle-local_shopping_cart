@@ -61,7 +61,8 @@ class shopping_cart_bookingfee {
     public static function add_fee_to_cart(int $userid, int $buyforuserid = 0): bool {
 
         // Do we need to add a fee at all?
-        if (get_config('local_shopping_cart', 'bookingfee') <= 0) {
+        if (get_config('local_shopping_cart', 'bookingfee') <= 0
+            && empty(get_config('local_shopping_cart', 'bookingfeevariable'))) {
             return false;
         }
 

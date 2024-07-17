@@ -217,26 +217,8 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
 
-        if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
-            // If we have nothing in our cart and we are not about...
-            // ... to add the booking fee...
-            // ... we add the booking fee.
-            list($areatocheck) = explode('-', $area);
-            if (
-                (!$cartstore->has_items()
-                || $cartstore->get_total_price_of_items() === 0)
-                && !in_array($areatocheck, [
-                    'bookingfee',
-                    'rebookingfee',
-                    'rebookingcredit',
-                    'rebookitem',
-                    'installments'])
-            ) {
-                // If we buy for user, we need to use -1 as userid.
-                // Also we add $userid as second param so we can check if fee was already paid.
-                shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
-            }
-        }
+        $addfee = !$cartstore->has_items()
+        || $cartstore->get_total_price_of_items() === 0;
 
         switch ($cartparam) {
             case LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS:
@@ -313,6 +295,28 @@ class shopping_cart {
                 $itemdata = self::get_dummy_item(LOCAL_SHOPPING_CART_CARTPARAM_ERROR, $userid);
                 break;
         }
+
+        if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
+            // If we have nothing in our cart and we are not about...
+            // ... to add the booking fee...
+            // ... we add the booking fee.
+            list($areatocheck) = explode('-', $area);
+            if (
+                $addfee
+                && !in_array($areatocheck, [
+                    'bookingfee',
+                    'rebookingfee',
+                    'rebookingcredit',
+                    'rebookitem',
+                    'installments']
+                )
+            ) {
+                // If we buy for user, we need to use -1 as userid.
+                // Also we add $userid as second param so we can check if fee was already paid.
+                shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+            }
+        }
+
         return $itemdata;
     }
 
