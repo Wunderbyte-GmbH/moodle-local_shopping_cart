@@ -113,9 +113,9 @@ class reload_history extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'historyitems' => get_history_items::execute_returns(),
-            'has_historyitems' => new external_value(PARAM_BOOL),
-            'canpayback' => new external_value(PARAM_BOOL),
-            'taxesenabled' => new external_value(PARAM_BOOL),
+            'has_historyitems' => new external_value(PARAM_BOOL, 'Has history items marker', VALUE_DEFAULT, false),
+            'canpayback' => new external_value(PARAM_BOOL, 'Can pay back', VALUE_DEFAULT, false),
+            'taxesenabled' => new external_value(PARAM_BOOL, 'Taxes enabled', VALUE_DEFAULT, false),
             'currency' => new external_value(PARAM_ALPHAEXT),
             'credit' => new external_value(PARAM_INT, 'Credit', VALUE_DEFAULT, 0),
             'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
