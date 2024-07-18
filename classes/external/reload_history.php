@@ -81,16 +81,11 @@ class reload_history extends external_api {
 
         self::validate_context($context);
 
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
-            $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
-        } else {
-            $userid = (int)$USER->id;
-        }
+        $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
 
         // If the given user doesn't want to see the history for herself...
         // ... we check her permissions.
         if ($USER->id != $userid) {
-            $context = context_system::instance();
             if (!has_capability('local/shopping_cart:cashier', $context, $USER)) {
                 throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
             }
