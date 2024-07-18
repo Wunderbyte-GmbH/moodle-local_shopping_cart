@@ -101,11 +101,11 @@ $string['bookingfee_desc'] = 'Booking fee for every checkout.';
 $string['rebookingfee'] = 'Rebooking fee';
 $string['rebookingfee_desc'] = 'Rebooking fee for every rebooking.';
 $string['bookingfeevariable'] = 'Variable Booking Fee';
-$string['bookingfeevariable_desc'] = 'Depending on the cost center (field {$a}), different booking fees can be specified.';
+$string['bookingfeevariable_desc'] = 'Depending on the costcenter, different booking fees can be specified.';
 $string['definefeesforcostcenters'] = 'Specify prices according to cost centers.';
-$string['definefeesforcostcenters_desc'] = 'Please enter in the following format:
-  CostCenter1:3.5,
-  CostCenter2:5,
+$string['definefeesforcostcenters_desc'] = 'Please enter in the following format:<br>
+  CostCenter1:3.5 <br>
+  CostCenter2:5 <br>
   CostCenter3:0 ';
 $string['uniqueidentifier'] = 'Unique id';
 $string['uniqueidentifier_desc'] = 'Define the starting id, if you want. If you set this value to 10000000 the first purchase will have the id 10000001. If you set the value, the max number of digits will be defined as well. If you set it to 1, you can only have 9 purchases.';

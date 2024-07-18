@@ -138,33 +138,20 @@ if ($hassiteconfig) {
         )
     );
 
-    $pluginman = core_plugin_manager::instance();
-    $plugininfo = $pluginman->get_plugin_info('mod_booking');
-    if ($plugininfo) {
-        $costcenter = get_config('booking', 'cfcostcenter');
-        if (!empty($costcenter) && $costcenter != "-1") {
-                $records = booking_handler::get_customfields();
-                $name = $costcenter;
-                $cc = array_filter($records, function($cc) use ($costcenter, &$name) {
-                    if ($cc->shortname === $costcenter) {
-                        $name = "$cc->name ($cc->shortname)";
-                        return true;
-                    }
-                    return false;
-                });
-                $settings->add(
-                        new admin_setting_configcheckbox($componentname . '/bookingfeevariable',
-                                get_string('bookingfeevariable', 'local_shopping_cart'),
-                                get_string('bookingfeevariable_desc', 'local_shopping_cart', $name), 0)
-                        );
-                $settings->add (
-                        new admin_setting_configtextarea(
-                        $componentname . '/definefeesforcostcenters',
-                        get_string('definefeesforcostcenters', 'local_shopping_cart'),
-                        get_string('definefeesforcostcenters_desc', 'local_shopping_cart'),
-                        '', PARAM_TEXT, 30, 10)
-                        );
-        };
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/bookingfeevariable',
+                get_string('bookingfeevariable', 'local_shopping_cart'),
+                get_string('bookingfeevariable_desc', 'local_shopping_cart'), 0)
+        );
+    $bookingfeevariable = get_config('local_shopping_cart', 'bookingfeevariable') == 1;
+    if ($bookingfeevariable) {
+        $settings->add (
+                new admin_setting_configtextarea(
+                $componentname . '/definefeesforcostcenters',
+                get_string('definefeesforcostcenters', 'local_shopping_cart'),
+                get_string('definefeesforcostcenters_desc', 'local_shopping_cart'),
+                '', PARAM_TEXT, 30, 10)
+                );
     }
 
     $settings->add(

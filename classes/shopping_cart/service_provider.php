@@ -63,7 +63,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     $item = reset($items);
                     $costcenter = $item['costcenter'];
                     $ccfees = get_config('local_shopping_cart', 'definefeesforcostcenters');
-                    $pairs = explode(", ", $ccfees);
+                    $pairs = explode(PHP_EOL, $ccfees);
                     $ccarray = [];
                     foreach ($pairs as $pair) {
                         list($key, $value) = explode(":", $pair);
