@@ -305,7 +305,7 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         if (!empty($this->credit)) {
-            $returnarray['credit'] = $this->credit;
+            $returnarray['credit'] = number_format(round((float) $this->credit ?? 0, 2), 2, '.', '');
         }
 
         if (!empty($this->currency)) {

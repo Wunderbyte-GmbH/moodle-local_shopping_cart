@@ -112,7 +112,7 @@ class reload_history extends external_api {
             'canpayback' => new external_value(PARAM_BOOL, 'Can pay back', VALUE_DEFAULT, false),
             'taxesenabled' => new external_value(PARAM_BOOL, 'Taxes enabled', VALUE_DEFAULT, false),
             'currency' => new external_value(PARAM_ALPHAEXT),
-            'credit' => new external_value(PARAM_INT, 'Credit', VALUE_DEFAULT, 0),
+            'credit' => new external_value(PARAM_TEXT, 'Credit', VALUE_DEFAULT, ""),
             'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
         ]);
     }
