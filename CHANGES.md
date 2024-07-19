@@ -1,3 +1,8 @@
+## Version 0.9.10 (2024071900)
+* Bugfix: Avoid double credit reduction in some cases
+* Bugfix: Default values for missing keys in webservice
+* Bugfix: remove condition leading to incorrect userid
+
 ## Version 0.9.9 (2024071800)
 * Improvement: enable filtered text display in additionalcashiersection
 * Improvement: Only show rebooking item if it's the same different costcenter
