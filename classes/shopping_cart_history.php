@@ -258,7 +258,7 @@ class shopping_cart_history {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $data->address_billing ?? null;
                 $uidcountrynr = null;
-                if ($data->vatnrnumber) {
+                if (isset($data->vatnrnumber)) {
                     $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
                 }
                 $item['vatnumber'] = $uidcountrynr;
