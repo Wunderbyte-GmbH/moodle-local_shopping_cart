@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Warenkorb';
 $string['modulename'] = 'Warenkorb';
-
-// General strings.
 $string['addtocart'] = 'In den Warenkorb';
 $string['cash'] = 'Bargeld';
 $string['choose...'] = 'Auswählen...';
@@ -39,8 +37,6 @@ $string['rebooking'] = 'Umbuchung';
 $string['rebookingcredit'] = 'Umbuchungsgutschrift';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['showorderid'] = 'Order-ID anzeigen...';
-
-// Address handling.
 $string['addresses:button'] = 'Weiter zur Adresseingabe';
 $string['addresses:pagetitle'] = 'Adresse';
 $string['addresses:heading'] = 'Adresse';
@@ -52,7 +48,6 @@ $string['addresses:change'] = 'Adresse ändern';
 $string['addresses:confirm:single'] = 'Ausgewählte Adresse verwenden';
 $string['addresses:confirm:multiple'] = 'Ausgewählte Adressen verwenden';
 $string['addresses:selectionrequired'] = 'Bitte wähle eine Adresse um fortzufahren';
-// New address form.
 $string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Vollständiger Name (Vor- und Nachname)';
@@ -75,8 +70,6 @@ $string['addresses:newaddress:zip:error'] = 'Ungültige Postleitzahl';
 $string['addresses:newaddress:checkasdefault'] = 'Als meine standard Adresse setzen';
 $string['addresses:newaddress:submit'] = 'Hinzufügen';
 $string['addresses:newaddress:saved'] = 'Die Adresse wurde hinzugefügt';
-
-// Settings.
 $string['maxitems'] = 'Max. Anzahl von Buchungen im Warenkorb';
 $string['maxitems:description'] = 'Maximale Anzahl von Buchungen im Warenkorb für den/die Nutzer/in festlegen';
 $string['globalcurrency'] = 'Währung';
@@ -151,12 +144,10 @@ $string['cashreport:showcustomorderid_desc'] = 'Achtung: Nur aktivieren, wenn ih
 $string['samecostcenter'] = 'Nur eine Kostenstelle pro Zahlungsvorgang';
 $string['samecostcenter_desc'] = 'Alle Items im Warenkorb müssen die selbe Kostenstelle haben.
 Items mit unterschiedlichen Kostenstellen müssen separat gebucht werden.';
-
 $string['privacyheading'] = "Privatsphäreneinstellungen";
 $string['privacyheadingdescription'] = "Einstellungen in Verbindung mit den Moodle Privatsphäreneinstellugnen";
 $string['deleteledger'] = "Lösche das Zahlungsjournal wenn ein/e NutzerIn das Löschen ihrer Daten verlangt";
 $string['deleteledgerdescription'] = "Das Zahlungsjournal enthält Zahlungsinformationen, die aus rechtlichen Gründen womöglich erhalten bleiben müssen.";
-
 $string['rebookingheading'] = "Umbuchungen";
 $string['rebookingheadingdescription'] = "Käufe können unter gewissen Umständen umgebucht werden. Das bedeutet, dass z.B. ein gekaufter Kurs storniert wird. Anstatt eines Guthabens wird sofort auf einen anderen Kurs umgebucht. Dabei fällt keine neuerliche Buchungsgebühr an. Eventuelle Überzahlungen verfallen.";
 $string['rebookingperiod'] = "Umbuchungsperiode";
@@ -171,25 +162,17 @@ $string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
 $string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
 wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['rebookingalert'] = "Um umzubuchen fügen Sie bitte noch einen weiteren Kurs in Ihrem Einkaufswagen hinzu";
-
-// Capabilities.
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
 $string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine andere Kassa umbuchen';
 $string['shopping_cart:changepaymentaccount'] = 'Kann den paymentaccount von Artikeln ändern';
-
-// File: lib.php.
 $string['foo'] = 'foo';
-
-// Cache.
 $string['cachedef_cashier'] = 'Kassier Cache';
 $string['cachedef_cacheshopping'] = 'Shopping Cache';
 $string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['cachedef_cachedcashreport'] = 'Kassajournal-Cache';
-
-// Errors.
 $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['error:capabilitymissing'] = 'FEHLER: Ihnen fehlt eine erforderliche Berechtigung.';
@@ -213,8 +196,6 @@ $string['error:notpositive'] = 'Bitte geben Sie eine positive Zahl ein.';
 $string['error:choosevalue'] = 'Sie müssen hier einen Wert auswählen.';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
 $string['notenoughcredits'] = 'Nicht genügend Guthaben vorhanden.';
-
-// Cart.
 $string['total'] = 'Gesamt:';
 $string['total_net'] = 'Gesamt Netto:';
 $string['total_gross'] = 'Gesamt Brutto:';
@@ -222,11 +203,9 @@ $string['paymentsuccessful'] = 'Zahlung erfolgreich!';
 $string['paymentdenied'] = 'Zahlung abgelehnt!';
 $string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
 $string['backtohome'] = 'Zurück zur Überblicksseite.';
-
 $string['success'] = 'Erfolgreich.';
 $string['pending'] = 'Warten...';
 $string['failure'] = 'Fehler.';
-
 $string['alreadyincart'] = 'Das gewählte Item ist bereits im Warenkorb.';
 $string['cartisfull'] = 'Ihr Warenkorb ist voll.';
 $string['cartisempty'] = 'Ihr Warenkorb ist leer.';
@@ -234,8 +213,6 @@ $string['yourcart'] = 'Ihr Warenkorb';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
 $string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
 Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';
-
-// Cashier.
 $string['paymentonline'] = 'via Online-Zahlung';
 $string['paymentcashier'] = 'an der Kassa';
 $string['paymentcashier:cash'] = 'in bar an der Kassa';
@@ -255,7 +232,6 @@ $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['user'] = 'Teilnehmerin...';
 $string['searchforitem'] = 'Suche...';
 $string['choose'] = 'Auswählen';
-
 $string['cashout'] = 'Barzahlungen';
 $string['cashoutamount'] = 'Barzahlungsbetrag';
 $string['cashoutnoamountgiven'] = 'Es können keine Nullbuchungen durchgeführt werden';
@@ -264,7 +240,6 @@ $string['cashoutreason'] = 'Grund für die Bartransaktion';
 $string['cashoutreasonnecessary'] = 'Sie müssen einen Grund eingeben.';
 $string['cashoutreason_desc'] = 'Mögliche Gründe: Wechselgeld, Einzahlung etc.';
 $string['cashoutsuccess'] = 'Barzahlung erfolgreich';
-
 $string['cashtransfer'] = 'Bargeldumbuchung';
 $string['cashtransferamount'] = 'Umbuchungsbetrag';
 $string['cashtransfernopositiveamount'] = 'Kein positiver Wert!';
@@ -277,7 +252,6 @@ $string['cashtransfercashierfrom_help'] = 'Kassier:in, von deren Kassa das Geld 
 $string['cashtransfercashierto'] = 'An Kassa';
 $string['cashtransfercashierto_help'] = 'Kassier:in, in deren Kassa das Geld hinzugefügt wird';
 $string['cashtransfersuccess'] = 'Bargeldumbuchung erfolgreich';
-
 $string['paidwithcash'] = 'Barzahlung bestätigen';
 $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
@@ -287,7 +261,6 @@ $string['manualrebookingisallowed_desc'] = 'Mit dieser Einstellung kann die Kass
  die bereits online bezahlt wurden, die aber im Kassajournal fehlen. (<span class="text-danger">Achtung:
  Aktivieren Sie dieses Feature nur, wenn Sie sicher sind, dass Sie es wirklich benötigen. Falsche Handhabung kann
  zu fehlerhaften Einträgen in der Datenbank führen!</span>)';
-
 $string['cancelpurchase'] = 'Kauf stornieren';
 $string['canceled'] = 'Storniert';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
@@ -296,10 +269,8 @@ $string['applytocomponent'] = 'Stornierung an Artikel Plugin melden';
 $string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt, kann das Häkchen entfernt werden um hier zu stornieren, ohne dass die Käuferin aus z.B. dem Kurs ausgeschrieben wird.';
 $string['markforrebooking'] = 'Kurs umbuchen';
 $string['markedforrebooking'] = 'Fürs Umbuchen markiert';
-
 $string['youcancanceluntil'] = 'Sie können bis {$a} stornieren.';
 $string['youcannotcancelanymore'] = 'Stornieren ist nicht möglich.';
-
 $string['confirmcanceltitle'] = 'Stornierung bestätigen';
 $string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
  Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich der Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
@@ -345,16 +316,13 @@ $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Kä
     Folgende Nutzer:innen erhalten den Kaufpreis zurück:
     {$a->userlist}
     Sie können unten die Bearbeitungsgebühr anführen. Diese wird von der rückerstatteten Summe abgezogen.';
-
 $string['confirmpaidbacktitle'] = 'Bestätige Auszahlung';
 $string['confirmpaidbackbody'] = 'Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.';
 $string['confirmpaidback'] = 'Bestätige Auszahlung';
-
 $string['confirmzeropricecheckouttitle'] = 'Jetzt buchen';
 $string['confirmzeropricecheckoutbody'] = 'Für diese Buchung ist keine Zahlung notwendig.
 Wollen Sie fortfahren und direkt buchen?';
 $string['confirmzeropricecheckout'] = 'Bestätige';
-
 $string['deletecreditcash'] = 'Ausbezahlt bar';
 $string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['credit'] = 'Guthaben:';
@@ -371,9 +339,7 @@ per Banküberweisung zurückbezahlen möchten.';
 $string['creditsmanagerreason'] = 'Grund';
 $string['creditsmanager:correctcredits'] = 'Guthaben korrigieren';
 $string['creditsmanager:payback'] = 'Guthaben zurückbezahlen';
-
 $string['cashier'] = 'Kassa';
-
 $string['initialtotal'] = 'Preis: ';
 $string['usecredit'] = 'Verwende Guthaben:';
 $string['deductible'] = 'Abziehbar:';
@@ -381,13 +347,8 @@ $string['remainingcredit'] = 'Verbleibendes Guthaben:';
 $string['remainingtotal'] = 'Preis:';
 $string['creditsused'] = 'Guthaben eingelöst';
 $string['creditsusedannotation'] = 'Extra-Zeile für eingelöstes Guthaben';
-
 $string['nopermission'] = "No permission to cancel";
-
-// Access.php.
 $string['local/shopping_cart:cashier'] = 'NutzerIn hat Kassier-Rechte';
-
-// Report.
 $string['reports'] = 'Berichte';
 $string['cashreport'] = 'Kassajournal';
 $string['cashreport_desc'] = 'Hier erhalten Sie einen Überblick über alle getätigten Bezahlungen.
@@ -409,8 +370,6 @@ Lassen Sie das Feld leer, um die Standard-Vorlage zu verwenden.';
 $string['downloadcashreportlimit'] = 'Download-Limit festlegen';
 $string['downloadcashreportlimitdesc'] = 'Geben Sie die maximale Anzahl an Zeilen ein, die beim Download des Kassajournals heruntergeladen werden sollen.
 Dies kann Download-Problem bei zu großen Datenmengen beheben.';
-
-// Report headers.
 $string['timecreated'] = 'Erstellt';
 $string['timemodified'] = 'Abgeschlossen';
 $string['id'] = 'ID';
@@ -430,8 +389,6 @@ $string['usermodified'] = 'Bearbeitet von';
 $string['testing:title'] = 'Warenkorb-Demo';
 $string['testing:description'] = 'Hier können Sie Test-Items zum Warenkorb hinzufügen, um das Warenkorb-Plugin zu testen.';
 $string['testing:item'] = 'Test-Item';
-
-// Payment methods.
 $string['paymentmethod'] = 'Bezahlmethode';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Kassa';
@@ -443,7 +400,6 @@ $string['paymentmethodcashier:cash'] = 'Kassa (Bar)';
 $string['paymentmethodcashier:creditcard'] = 'Kassa (Kreditkarte)';
 $string['paymentmethodcashier:debitcard'] = 'Kassa (Bankomatkarte)';
 $string['paymentmethodcashier:manual'] = 'Manuell nachgebucht';
-
 $string['paidby'] = 'Bezahlt mit';
 $string['paidby:visa'] = 'VISA';
 $string['paidby:mastercard'] = 'Mastercard';
@@ -451,14 +407,10 @@ $string['paidby:eps'] = 'EPS';
 $string['paidby:dinersclub'] = 'Diners Club';
 $string['paidby:americanexpress'] = 'American Express';
 $string['paidby:unknown'] = 'Unbekannt';
-
-// Payment status.
 $string['paymentpending'] = 'Keine Rückmeldung';
 $string['paymentaborted'] = 'Abgebrochen';
 $string['paymentsuccess'] = 'Erfolg';
 $string['paymentcanceled'] = 'Storno';
-
-// Receipt.
 $string['receipt'] = 'Buchungsbestätigung';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
@@ -474,25 +426,15 @@ $string['receipt:location'] = 'Ort';
 $string['receipt:dayofweektime'] = 'Tag & Uhrzeit';
 $string['receipt:price'] = 'Preis';
 $string['receipt:total'] = 'Gesamtsumme';
-
-// Terms and conditions.
 $string['confirmterms'] = "AGBs akzeptieren";
 $string['accepttermsandconditions'] = "Bestätigung der AGBs verlangen";
 $string['accepttermsandconditions:description'] = "Ohne Häkchen bei den AGBs ist buchen nicht möglich.";
 $string['termsandconditions'] = "AGBs";
 $string['termsandconditions:description'] = "Sie können hier z.B. ein PDF verlinken. Für Übersetzungen verwenden Sie die
  <a href='https://docs.moodle.org/402/de/Multi-language_content_filter' target='_blank'>Moodle Sprachfilter</a>.";
-
-// Shortcodes.
 $string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
-
-// Shopping cart history card.
 $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';
-
-// Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
-
-// Discount modal.
 $string['discount'] = 'Rabatt';
 $string['applydiscount'] = 'Rabatt abziehen';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
@@ -502,8 +444,6 @@ $string['discountabsolute_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "
 $string['discountpercent'] = 'Prozent';
 $string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';
 $string['floatonly'] = 'Nur Dezimalzahlen werden akzeptiert. Das richtige Trennzeichen hängt von Ihrem System ab.';
-
-// Events.
 $string['item_bought'] = 'Artikel gekauft';
 $string['item_notbought'] = 'Artikel konnte nicht gekauft werden';
 $string['item_added'] = 'Artikel hinzugefügt';
@@ -518,18 +458,12 @@ $string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/i
 $string['itemcanceled'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} storniert';
 $string['payment_added'] = 'Nutzer/in hat eine Zahlung gestartet';
 $string['payment_added_log'] = 'Nutzer/in mit der id {$a->userid} hat für den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} einen Zahlungsprozess mit dem identifier {$a->identifier} gestartet';
-
-// Caches.
 $string['cachedef_schistory'] = 'Warenkorb-Cache (Shopping Cart History Cache)';
 $string['cachedef_cacherebooking'] = 'Umbuchungs-Cache (Rebooking Cache)';
-
-// Cashier manual rebook.
 $string['annotation'] = 'Anmerkung';
 $string['annotation_rebook_desc'] = 'Geben Sie eine Anmerkung oder die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
 $string['cashier_manualrebook'] = 'Manuelle Nachbuchung';
 $string['cashier_manualrebook_desc'] = 'Manuelle Nachbuchung einer Zahlungstransaktion wurde durchgeführt.';
-
-// Invoicing.
 $string['invoicingplatformheading'] = 'Bitte wählen Sie Ihre Rechnungsplattform';
 $string['invoicingplatformdescription'] = 'Wählen Sie Ihre bevorzugte Rechnungsplattform aus den folgenden Optionen aus.';
 $string['chooseplatform'] = 'Plattform wählen';
@@ -551,20 +485,14 @@ $string['erpnext'] = 'ERPNext';
 $string['erpnext_subject'] = 'Ihre Rechnung';
 $string['erpnext_content'] = 'Sehr geehrte Kundin, sehr geehrter Kunde,<br><br>Im Anhang finden Sie Ihre Rechnung.<br><br>Mit freundlichen Grüßen,<br>Wunderbyte Support Team';
 $string['erpnext_reference_doctype'] = 'Sales Invoice';
-
-// Privacy API.
 $string['history'] = "Käufe";
 $string['ledger'] = "Zahlungsjournal";
 $string['credits'] = "Guthaben";
-
-// Handler.
 $string['allowinstallment'] = 'Erlaube Ratenzahlungen';
 $string['allowinstallment_help'] = 'Bei Ratenzahlungen muss zuerst nur ein Teil des Gesamtbetrags überwiesen werden.';
 $string['useinstallments'] = "Ratenzahlungen aktivieren";
 $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
-
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
-
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
 $string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung. Bitte beachten Sie, dass Ratenzahlungen nicht möglich sind, wenn nicht genügend Zeit bis zum Kursbeginn verbleibt, unter Berücksichtigung der Anzahl der Zahlungen und der Zeit zwischen den Zahlungen (Admin-Plugin-Einstellung).';
 $string['duedate'] = 'Letztes Zahlungsdatum';
@@ -594,28 +522,22 @@ $string['reminderdaysbefore_desc'] = "Die eingestellte Anzahl Tage vor fälliger
 $string['installmentpaymentisdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['installmentpaymentwasdue'] = 'Nicht vergessen: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Bitte hier zahlen</a>';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
-
-// UID checker.
 $string['vatnrcheckerheading'] = "UID überprüfen";
 $string['vatnrcheckerheadingdescription'] = "Vor dem Zahlen kann eine UID eingegeben und überprüft werden";
 $string['showvatnrchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls auf Umsatzsteuer";
 $string['showvatnrcheckerdescription'] = "Bei erfolgreicher Überprüfung kann auf die Einhebung der Umsatzsteuer verzichtet werden";
-
 $string['checkvatnrcountrycode'] = "Wählen Sie Ihr Land";
 $string['checkvatnrnumber'] = "Geben Sie Ihre UID Nummer";
 $string['owncountrycode'] = "Land der eigenen Firma";
 $string['owncountrycode_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
 $string['ownvatnrnumber'] = "UID Nummer der eigenen Firma";
 $string['ownvatnrnumber_desc'] = "Zum automatischen Prüfen der UID muss auch die UID der eigenen Firma übermittelt werden.";
-
 $string['usevatnr'] = "UID eingeben";
 $string['novatnr'] = "Keine UID verwenden";
 $string['verify'] = "UID prüfen";
 $string['entervatnr'] = 'Sie können Ihre Umsatzsteuer-ID eingeben, wenn Sie für ein Unternehmen einkaufen.';
-
 $string['errorselectcountry'] = 'Bitte Land auswählen';
 $string['errorinvalidvatnr'] = 'Die übermittelte UID {$a} ist ungültig';
-
 $string['at'] = "Österreich";
 $string['be'] = "Belgien";
 $string['bg'] = "Bulgarien";
