@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Shopping Cart';
 $string['modulename'] = 'Shopping Cart';
-
-// General strings.
 $string['addtocart'] = 'Add to cart';
 $string['allowrebooking'] = 'Allow rebooking';
 $string['allowrebooking_desc'] = 'Allow users to rebook already bought items.
@@ -50,8 +48,6 @@ $string['showorderid'] = 'Show Order-ID...';
 $string['testing:title'] = 'Shopping cart demo';
 $string['testing:description'] = 'Here you can test your shopping cart by adding test items to the cart.';
 $string['testing:item'] = 'Test item';
-
-// Address handling.
 $string['addresses:button'] = 'Continue to address';
 $string['addresses:pagetitle'] = 'Address';
 $string['addresses:heading'] = 'Address';
@@ -63,8 +59,6 @@ $string['addresses:change'] = 'Change Address';
 $string['addresses:confirm:single'] = 'Choose selected address';
 $string['addresses:confirm:multiple'] = 'Choose selected addresses';
 $string['addresses:selectionrequired'] = 'Please choose a valid address to continue';
-
-// New address form.
 $string['addresses:newaddress'] = 'Add new address';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';
@@ -87,8 +81,6 @@ $string['addresses:newaddress:zip:error'] = 'Invalid zip code';
 $string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
 $string['addresses:newaddress:submit'] = 'Add address';
 $string['addresses:newaddress:saved'] = 'Address created';
-
-// Settings.
 $string['maxitems'] = 'Max. items in the shopping cart';
 $string['maxitems:description'] = 'Set the maximum number of items for the user shopping cart';
 $string['globalcurrency'] = 'Currency';
@@ -160,12 +152,10 @@ $string['cashreport:showcustomorderid_desc'] = 'Be careful: Only activate this s
 $string['samecostcenter'] = 'Only one cost center per payment';
 $string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
 Items with different cost centers need to be booked separately.';
-
 $string['privacyheading'] = "Privacy settings";
 $string['privacyheadingdescription'] = "Set behaviour related to the privacy settings in Moodle";
 $string['deleteledger'] = "Delete ledger on deletion request of user";
 $string['deleteledgerdescription'] = "The ledger will hold payment information which you might need to keep for legal reasons, even when a user is deleted.";
-
 $string['rebookingheading'] = "Rebookings";
 $string['rebookingheadingdescription'] = "Purchases can be rebooked under certain circumstances. This means that, for example, a purchased course is canceled. Instead of a credit, it is immediately rebooked to another course. No additional booking fee is charged. Any overpayments will be forfeited.";
 $string['rebookingperiod'] = "Rebooking Period";
@@ -173,25 +163,17 @@ $string['rebookingperioddesc'] = "The time during which the maximum number of re
 $string['rebookingmaxnumber'] = "Maximum Number of Rebookings";
 $string['rebookingmaxnumberdesc'] = "For example, only 3 rebookings are allowed within 100 days";
 $string['rebookingalert'] = "To rebook, add another course to your cart";
-
-// Capabilities.
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:history'] = 'See History';
 $string['shopping_cart:cashier'] = 'Is a cashier';
 $string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';
 $string['shopping_cart:cashtransfer'] = 'Can transfer cash from one cashier to another';
 $string['shopping_cart:changepaymentaccount'] = 'Can change the payment account of articles';
-
-// File: lib.php.
 $string['foo'] = 'foo';
-
-// Cache.
 $string['cachedef_cashier'] = 'Cashier cache';
 $string['cachedef_cacheshopping'] = 'Shopping cache';
 $string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['cachedef_cachedcashreport'] = 'Cash report cache';
-
-// Errors.
 $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['error:capabilitymissing'] = 'ERROR: You do not have a necessary capability.';
@@ -216,8 +198,6 @@ $string['error:notpositive'] = 'Please enter a positive number.';
 $string['error:choosevalue'] = 'Please enter a value.';
 $string['selectuserfirst'] = 'Select user first';
 $string['notenoughcredits'] = 'Not enough credits available.';
-
-// Cart.
 $string['total'] = 'Total:';
 $string['total_net'] = 'Total Net:';
 $string['total_gross'] = 'Total Gross:';
@@ -225,11 +205,9 @@ $string['paymentsuccessful'] = 'Payment successful!';
 $string['paymentdenied'] = 'Payment denied!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
 $string['backtohome'] = 'Back to home';
-
 $string['success'] = 'Success';
 $string['pending'] = 'Pending';
 $string['failure'] = 'Failure';
-
 $string['alreadyincart'] = 'The item is already in your cart.';
 $string['cartisfull'] = 'Your shopping cart is full.';
 $string['cartisempty'] = 'Your shopping cart is empty.';
@@ -237,8 +215,6 @@ $string['yourcart'] = 'Your shopping cart';
 $string['addedtocart'] = '{$a} was added to your cart.';
 $string['creditnotmatchbalance'] = 'Sum of credits in table local_shopping_cart_credits does not match with latest balance!
                                     There might be duplicate entries or corrupted records in the credits table for userid {$a}';
-
-// Cashier.
 $string['paymentonline'] = 'online';
 $string['paymentcashier'] = 'at cashier\'s office';
 $string['paymentcashier:cash'] = 'with cash at cashier\'s office';
@@ -258,7 +234,6 @@ $string['selectuser'] = 'Select a user...';
 $string['user'] = 'User...';
 $string['searchforitem'] = 'Search for item...';
 $string['choose'] = 'Choose';
-
 $string['cashout'] = 'Cash transactions';
 $string['cashoutamount'] = 'Amount of cash transation';
 $string['cashoutnoamountgiven'] = 'Enter a positive (deposit) or negative amount (cashout), but not 0.';
@@ -267,7 +242,6 @@ $string['cashoutreason'] = 'Reason for the transaction';
 $string['cashoutreasonnecessary'] = 'You need to give a reason';
 $string['cashoutreason_desc'] = 'Possible reasons are change money, bank deposit etc.';
 $string['cashoutsuccess'] = 'Cash transaction successful';
-
 $string['cashtransfer'] = 'Cash transfer';
 $string['cashtransferamount'] = 'Amount of cash transfer';
 $string['cashtransfernopositiveamount'] = 'No positive amount!';
@@ -280,7 +254,6 @@ $string['cashtransfercashierfrom_help'] = 'Cashier from whom the amount is taken
 $string['cashtransfercashierto'] = 'To cashier';
 $string['cashtransfercashierto_help'] = 'Cashier to whom the amount is given';
 $string['cashtransfersuccess'] = 'Cash transfer successful';
-
 $string['paidwithcash'] = 'Confirm cash payment';
 $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
@@ -290,20 +263,16 @@ $string['manualrebookingisallowed_desc'] = 'With this setting activated, the cas
  rebook payments that were already paid online but are missing in the cash report.
  (<span class="text-danger">Be careful: Only activate this feature if you are sure that you really need it.
  Incorrect use might compromise your database integrity!</span>)';
-
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['canceled'] = 'Canceled';
 $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['cancelsuccess'] = 'Successfully canceled';
 $string['applytocomponent'] = 'Cancel without callback to plugin';
 $string['applytocomponent_desc'] = 'With this setting unchecked, you can cancel eg a double booking without unenroling a buyer from the bought course.';
-
 $string['markforrebooking'] = 'Rebook to another course';
 $string['markedforrebooking'] = 'Marked for rebooking';
-
 $string['youcancanceluntil'] = 'You can cancel until {$a}.';
 $string['youcannotcancelanymore'] = 'No cancelation possible.';
-
 $string['confirmcanceltitle'] = 'Confirm cancellation';
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
  The user who purchased will get his money back of which the cancellation fee will be subtracted.';
@@ -355,16 +324,13 @@ $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase fo
  The following users will get their money back as credit:
  {$a->userlist}
  You can specify the cancelation fee below. It will be deduced from the original purchase price.';
-
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
 $string['confirmpaidbackbody'] =
  'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidback'] = 'Confirm';
-
 $string['confirmzeropricecheckouttitle'] = 'Book now';
 $string['confirmzeropricecheckoutbody'] = 'You do not have to pay anything. Do you want to proceed and book?';
 $string['confirmzeropricecheckout'] = 'Confirm';
-
 $string['deletecreditcash'] = 'Refunded with cash';
 $string['deletecredittransfer'] = 'Refunded via transfer';
 $string['credit'] = 'Credit:';
@@ -380,9 +346,7 @@ If you have chosen "Pay back credits" then enter the amount to pay back and choo
 $string['creditsmanagerreason'] = 'Reason';
 $string['creditsmanager:correctcredits'] = 'Correct credits';
 $string['creditsmanager:payback'] = 'Pay back credits';
-
 $string['cashier'] = 'Cashier';
-
 $string['initialtotal'] = 'Price: ';
 $string['usecredit'] = 'Use credit:';
 $string['deductible'] = 'Deductible:';
@@ -390,13 +354,8 @@ $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';
 $string['creditsused'] = 'Credits used';
 $string['creditsusedannotation'] = 'Extra row because credits were used';
-
 $string['nopermission'] = "No permission to cancel";
-
-// Access.php.
 $string['local/shopping_cart:cashier'] = 'User has cashier rights';
-
-// Report.
 $string['reports'] = 'Reports';
 $string['cashreport'] = 'Cash report';
 $string['cashreport_desc'] = 'Here you get an overview over all accounting transactions.
@@ -419,8 +378,6 @@ Leave this empty to use the default template.';
 $string['downloadcashreportlimit'] = 'Download limit';
 $string['downloadcashreportlimitdesc'] = 'Enter the max. number of rows for cash report download.
 By limiting, you can fix troubles with too large amounts of data.';
-
-// Report headers.
 $string['timecreated'] = 'Created';
 $string['timemodified'] = 'Completed';
 $string['id'] = 'ID';
@@ -437,8 +394,6 @@ $string['paymentstatus'] = 'Status';
 $string['gateway'] = 'Gateway';
 $string['orderid'] = 'OrderID';
 $string['usermodified'] = 'Modified by';
-
-// Payment methods.
 $string['paymentmethod'] = 'Payment method';
 $string['paymentmethodonline'] = 'Online';
 $string['paymentmethodcashier'] = 'Cashier';
@@ -450,7 +405,6 @@ $string['paymentmethodcashier:cash'] = 'Cashier (Cash)';
 $string['paymentmethodcashier:creditcard'] = 'Cashier (Credit card)';
 $string['paymentmethodcashier:debitcard'] = 'Cashier (Debit card)';
 $string['paymentmethodcashier:manual'] = 'Manually rebooked';
-
 $string['paidby'] = 'Paid by';
 $string['paidby:visa'] = 'VISA';
 $string['paidby:mastercard'] = 'Mastercard';
@@ -458,21 +412,16 @@ $string['paidby:eps'] = 'EPS';
 $string['paidby:dinersclub'] = 'Diners Club';
 $string['paidby:americanexpress'] = 'American Express';
 $string['paidby:unknown'] = 'Unknown';
-
-// Payment status.
 $string['paymentpending'] = 'Pending';
 $string['paymentaborted'] = 'Aborted';
 $string['paymentsuccess'] = 'Success';
 $string['paymentcanceled'] = 'Canceled';
-
-// Receipt.
 $string['receipt'] = 'Receipt';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[pos]], [[name]], [[location]], [[dayofweektime]] between [[items]] and [[/items]].
  Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]] and [[date]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
-
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
 $string['receipt:bookingconfirmation'] = 'Booking confirmation';
@@ -482,25 +431,15 @@ $string['receipt:location'] = 'Location';
 $string['receipt:dayofweektime'] = 'Day & Time';
 $string['receipt:price'] = 'Price';
 $string['receipt:total'] = 'Total sum';
-
-// Terms and conditions.
 $string['confirmterms'] = "I accept the terms and conditions";
 $string['accepttermsandconditions'] = "Require acceptance of terms and conditions";
 $string['accepttermsandconditions:description'] = "Without accepting terms and conditions, buying is not possible.";
 $string['termsandconditions'] = "Terms & Conditions";
 $string['termsandconditions:description'] = "You can link to your PDF. For localization of this field, use
  <a href='https://docs.moodle.org/402/en/Multi-language_content_filter' target='_blank'>Moodle multi-language filters</a>.";
-
-// Shortcodes.
 $string['shoppingcarthistory'] = 'All purchases of a given user';
-
-// Shopping cart history card.
 $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
-
-// Form modal_cancel_all_addcredit.
 $string['nousersfound'] = 'No users found';
-
-// Discount modal.
 $string['discount'] = 'Discount';
 $string['applydiscount'] = 'Apply discount';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
@@ -510,8 +449,6 @@ $string['discountabsolute_help'] = 'Reduce price by this amount, like "15". No c
 $string['discountpercent'] = 'Percentage';
 $string['discountpercent_help'] = 'Reduce price by this percentage, like "10". Don\'t enter %-symbol';
 $string['floatonly'] = 'Only numeric values (decimals) are accepted. The correct separator depends on your system.';
-
-// Events.
 $string['item_bought'] = 'Item bought';
 $string['item_notbought'] = 'Item could not be bought';
 $string['item_added'] = 'Item added';
@@ -526,18 +463,12 @@ $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with th
 $string['itemcanceled'] = 'User with the userid {$a->userid} canceled item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['payment_added'] = 'User has started a payment transaction';
 $string['payment_added_log'] = 'User with the userid {$a->userid} has started a payment with the identifier {$a->identifier} for item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
-
-// Caches.
 $string['cachedef_schistory'] = 'Shopping cart items cache (shopping cart history cache)';
 $string['cachedef_cacherebooking'] = 'Rebooking cache';
-
-// Cashier manual rebook.
 $string['annotation'] = 'Annotation';
 $string['annotation_rebook_desc'] = 'Enter an annotation or the OrderID of the payment transaction you want to rebook.';
 $string['cashier_manualrebook'] = 'Manual rebooking';
 $string['cashier_manualrebook_desc'] = 'Someone made a manual rebooking of a payment transaction.';
-
-// Invoicing.
 $string['invoicingplatformheading'] = 'Please choose your invoicing platform';
 $string['invoicingplatformdescription'] = 'Select your preferred invoicing platform from the options below.';
 $string['chooseplatform'] = 'Choose Platform';
@@ -558,13 +489,9 @@ $string['erpnext'] = 'ERPNext';
 $string['erpnext_subject'] = 'Your Invoice';
 $string['erpnext_content'] = 'Dear Customer,<br><br>Please find attached your invoice.<br><br>Best regards,<br>Wunderbyte Support Team';
 $string['erpnext_reference_doctype'] = 'Sales Invoice';
-
-// Privacy API.
 $string['history'] = "Purchases";
 $string['ledger'] = "Ledger";
 $string['credits'] = "Credits";
-
-// GDPR.
 $string['privacy:metadata:local_shopping_cart_history'] = 'Shopping Cart History';
 $string['privacy:metadata:local_shopping_cart_history:userid'] = 'Userid of the user who optained something.';
 $string['privacy:metadata:local_shopping_cart_history:itemid'] = 'Id of the item bought.';
@@ -593,7 +520,6 @@ $string['privacy:metadata:local_shopping_cart_history:costcenter'] = 'The cost c
 $string['privacy:metadata:local_shopping_cart_history:balance'] = 'Balance after this booking.';
 $string['privacy:metadata:local_shopping_cart_history:annotiation'] = 'Annotation or OrderID.';
 $string['privacy:metadata:local_shopping_cart_history:invoiceid'] = 'Invoice ID from the invoicing platform';
-
 $string['privacy:metadata:local_shopping_cart_credits'] = 'Shopping Cart Credits';
 $string['privacy:metadata:local_shopping_cart_credits:userid'] = 'Userid of the concerned user.';
 $string['privacy:metadata:local_shopping_cart_credits:credits'] = 'Credits.';
@@ -602,7 +528,6 @@ $string['privacy:metadata:local_shopping_cart_credits:balance'] = 'Balance after
 $string['privacy:metadata:local_shopping_cart_credits:usermodified'] = 'The user who effected the transaction.';
 $string['privacy:metadata:local_shopping_cart_credits:timecreated'] = 'Time this entry was created.';
 $string['privacy:metadata:local_shopping_cart_credits:timemodified'] = 'Time this entry was modified.';
-
 $string['privacy:metadata:local_shopping_cart_ledger'] = 'This ledger only supports insert and works as a reliable record of all payments.';
 $string['privacy:metadata:local_shopping_cart_ledger:userid'] = 'Id of the user who bought the item.';
 $string['privacy:metadata:local_shopping_cart_ledger:itemid'] = 'Id of the bought item.';
@@ -627,20 +552,15 @@ $string['privacy:metadata:local_shopping_cart_ledger:timecreated'] = 'The time c
 $string['privacy:metadata:local_shopping_cart_ledger:canceluntil'] = 'The cancel until time';
 $string['privacy:metadata:local_shopping_cart_ledger:area'] = 'One component can provide different areas with independent ids.';
 $string['privacy:metadata:local_shopping_cart_ledger:annotation'] = 'Annotation or OrderID.';
-
 $string['privacy:metadata:local_shopping_cart_invoices'] = 'Table for issued invoices';
 $string['privacy:metadata:local_shopping_cart_invoices:identifier'] = 'Reference to local_shopping_cart_ledger';
 $string['privacy:metadata:local_shopping_cart_invoices:timecreated'] = 'Timestamp when the record was created';
 $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID from the invoicing platform';
-
-// Shopping cart handler.
 $string['allowinstallment'] = 'Allow installments';
 $string['allowinstallment_help'] = 'With installments, only a part of the total amount needs to be paid initially.';
 $string['useinstallments'] = "Use installment payments";
 $string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
-
 $string['sch_paymentaccountid'] = "Change the payment account";
-
 $string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = "This number refers to the required payments AFTER the first payment. Please note that installments will not be possible if there isn't enough time until coursestart, considering number of payments and time between payments (admin plugin setting).";
 $string['duedate'] = 'Final payment date';
@@ -671,28 +591,22 @@ $string['reminderdaysbefore_desc'] = "X days before a payment is due, a reminder
 $string['installmentpaymentisdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
 $string['installmentpaymentwasdue'] = 'Don\'t forget: {$a->itemname}, {$a->price} {$a->currency}. <a href="/local/shopping_cart/installments.php">Click here to pay</a>';
 $string['noinstallments'] = "Currently there are no open installment payments";
-
-// VAT number checker.
 $string['vatnrcheckerheading'] = "Check VAT number";
 $string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
 $string['showvatnrchecker'] = "Use VAT number and potentially waive VAT";
 $string['showvatnrcheckerdescription'] = "If successfully verified, VAT may be waived";
-
 $string['checkvatnrcountrycode'] = "Select your country";
 $string['checkvatnrnumber'] = "Enter your VAT number";
 $string['owncountrycode'] = "Country of own company";
 $string['owncountrycode_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
 $string['ownvatnrnumber'] = "VAT number of own company";
 $string['ownvatnrnumber_desc'] = "To automatically verify the VAT number, the VAT number of your own company must also be provided.";
-
 $string['usevatnr'] = "Enter VAT number";
 $string['novatnr'] = "No VAT number";
 $string['verify'] = "Verify validity of VAT number";
 $string['entervatnr'] = 'You can enter you VAT number if you are buying for a company';
-
 $string['errorselectcountry'] = 'Please choose a country';
 $string['errorinvalidvatnr'] = 'The given VAT number {$a} is invalid';
-
 $string['at'] = "Austria";
 $string['be'] = "Belgium";
 $string['bg'] = "Bulgaria";
