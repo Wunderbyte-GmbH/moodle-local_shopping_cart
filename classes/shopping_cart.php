@@ -547,6 +547,7 @@ class shopping_cart {
             'relateduserid' => $userid,
             'other' => [
                 'itemid' => $itemid,
+                'optionid' => $itemid,
                 'component' => $component,
             ],
         ]);

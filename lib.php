@@ -199,3 +199,23 @@ function local_shopping_cart_pluginfile($course, $cm, $context, $filearea, $args
     // Send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     send_stored_file($file, 0, 0, true, $options);
 }
+
+/**
+ * Helper function to get a list of all shoppingcart events to be shown in a select (dropdown).
+ * @return array a list containing the full paths of all booking events as key
+ *               and the event names as values
+ */
+function get_list_of_shoppingcart_events() {
+    $eventinformation = [];
+    $events = core_component::get_component_classes_in_namespace('local_shopping_cart', 'event');
+    foreach (array_keys($events) as $event) {
+        // We need to filter all classes that extend event base, or the base class itself.
+        if (is_a($event, \core\event\base::class, true)) {
+            $parts = explode('\\', $event);
+            $eventwithnamespace = "\\{$event}";
+            $eventinformation[$eventwithnamespace] = $eventwithnamespace::get_name() .
+                " (" . array_pop($parts) . ")";
+        }
+    }
+    return $eventinformation;
+}
