@@ -107,7 +107,6 @@ $string['cachedef_cachedcashreport'] = 'Cash report cache';
 $string['cachedef_cacherebooking'] = 'Rebooking cache';
 $string['cachedef_cacheshopping'] = 'Shopping cache';
 $string['cachedef_cashier'] = 'Cashier cache';
-$string['cachedef_schistory'] = 'Shopping cart history cache';
 $string['cachedef_schistory'] = 'Shopping cart items cache (shopping cart history cache)';
 $string['calculateconsumation'] = 'Credit on cancelation minus already consumed value';
 $string['calculateconsumation_desc'] = 'On cancelation, the credit is calculated depending on the already consumed share of a bought article.';
