@@ -132,7 +132,7 @@ class modal_creditsmanager extends dynamic_form {
         $mode = $data->creditsmanagermode;
         switch ($mode) {
             case 1: // Correct credits.
-                if (!self::creditsmanager_correct_credits($data)) {
+                if (!shopping_cart_credits::creditsmanager_correct_credits($data)) {
                     $data->error = 'notenoughcredits';
                 }
                 break;
@@ -143,42 +143,6 @@ class modal_creditsmanager extends dynamic_form {
                 break;
         }
         return $data;
-    }
-
-    /**
-     * Correct credits.
-     * @param stdClass $data the form data
-     */
-    public function creditsmanager_correct_credits(stdClass $data) {
-        global $USER;
-
-        $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-
-        // Add credits.
-        try {
-            shopping_cart_credits::add_credit($data->userid, $data->creditsmanagercredits, $currency);
-
-            // Log it to ledger.
-            // Also record this in the ledger table.
-            $ledgerrecord = new stdClass;
-            $now = time();
-            $ledgerrecord->userid = $data->userid;
-            $ledgerrecord->itemid = 0;
-            $ledgerrecord->price = 0;
-            $ledgerrecord->credits = (float) $data->creditsmanagercredits;
-            $ledgerrecord->currency = $currency;
-            $ledgerrecord->componentname = 'local_shopping_cart';
-            $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
-            $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
-            $ledgerrecord->usermodified = $USER->id;
-            $ledgerrecord->timemodified = $now;
-            $ledgerrecord->timecreated = $now;
-            $ledgerrecord->annotation = $data->creditsmanagerreason;
-            shopping_cart::add_record_to_ledger_table($ledgerrecord);
-        } catch (moodle_exception $e) {
-            return false;
-        }
-        return true;
     }
 
     /**

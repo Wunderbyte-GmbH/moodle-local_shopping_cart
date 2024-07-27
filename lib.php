@@ -49,6 +49,7 @@ define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL', 7);
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8);
     // Credits removed and paid back to user by (bank) transfer.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION', 10); // Credits payed back during rebooking.
 
 // Cart success params.
 define('LOCAL_SHOPPING_CART_CARTPARAM_ERROR', -1); // General error.

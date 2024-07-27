@@ -185,7 +185,7 @@ class shopping_cart {
         // Default.
         return [
             'success' => LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS,
-            'itemname' => $cartitem['itemname'] ?? '',
+            'itemname' => '',
         ];
     }
 
@@ -387,11 +387,12 @@ class shopping_cart {
      * @return bool
      */
     public static function delete_item_from_cart(
-            string $component,
-            string $area,
-            int $itemid,
-            int $userid,
-            bool $unload = true): bool {
+        string $component,
+        string $area,
+        int $itemid,
+        int $userid,
+        bool $unload = true
+    ): bool {
 
         global $USER;
 
@@ -430,12 +431,13 @@ class shopping_cart {
         $items = $cartstore->get_items();
         // If there are only fees and/or rebookingcredits left, we delete them.
         if (!empty($items)) {
-
             // At first, check we can delete.
             $letsdelete = true;
             foreach ($items as $remainingitem) {
-                if ($remainingitem['area'] === 'bookingfee' ||
-                    $remainingitem['area'] === 'rebookingcredit') {
+                if (
+                    ($remainingitem['area'] === 'bookingfee')
+                    || ($remainingitem['area'] === 'rebookingcredit')
+                ) {
                     continue;
                 } else {
                     // If we still have bookable items, we cannot delete fees and credits from cart.
@@ -547,7 +549,6 @@ class shopping_cart {
             'relateduserid' => $userid,
             'other' => [
                 'itemid' => $itemid,
-                'optionid' => $itemid,
                 'component' => $component,
             ],
         ]);
@@ -556,8 +557,13 @@ class shopping_cart {
 
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'successful_checkout',
-            [$area, $itemid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER, $userid]);
+        return component_class_callback(
+            $providerclass,
+            'successful_checkout',
+            [$area, $itemid,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER,
+            $userid]
+        );
     }
 
     /**
@@ -677,8 +683,12 @@ class shopping_cart {
      * @param ?string $annotation - empty on default
      * @return array
      */
-    public static function confirm_payment(int $userid, int $paymenttype, ?array $datafromhistory = null,
-        ?string $annotation = '') {
+    public static function confirm_payment(
+        int $userid,
+        int $paymenttype,
+        ?array $datafromhistory = null,
+        ?string $annotation = ''
+    ) {
         global $USER;
 
         $identifier = 0;
@@ -701,9 +711,10 @@ class shopping_cart {
             $data = $cartstore->get_data();
 
             // If the price is not null, user has to have cashier rights to proceed here.
-            if (($data['price'] != 0)
-                && !has_capability('local/shopping_cart:cashier', $context)) {
-
+            if (
+                ($data['price'] != 0)
+                && !has_capability('local/shopping_cart:cashier', $context)
+            ) {
                 return [
                     'status' => 0,
                     'error' => get_string('nopermission', 'local_shopping_cart'),
@@ -711,16 +722,10 @@ class shopping_cart {
                     'identifier' => $identifier,
                 ];
             }
-
-            // Retrieve items from cache.
-            $cartstore = cartstore::instance($userid);
-            $data = $cartstore->get_data();
-
             // Now the user either has enough credit to pay for herself, or she is a cashier.
             $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
 
         } else {
-
             // TODO: Migrate everything to the cartstore & pricemodifiers.
 
             // Even if we get the data from history, we still need to look in cache.
@@ -728,8 +733,10 @@ class shopping_cart {
             shopping_cart_credits::prepare_checkout($data, $userid);
 
             // Now we need to store the new credit balance.
-            if (!empty($data['deductible']) &&
-                ($data['credit'] != $data['remainingcredit'])) {
+            if (
+                !empty($data['deductible'])
+                && ($data['credit'] != $data['remainingcredit'])
+            ) {
                 shopping_cart_credits::use_credit($userid, $data);
                 $creditsalreadyused = true;
             }
@@ -745,6 +752,7 @@ class shopping_cart {
             ];
         }
 
+        $totalprice = 0;
         $success = true;
         $error = [];
 
@@ -765,7 +773,7 @@ class shopping_cart {
                 }
             }
 
-            $ledgerrecord = new stdClass;
+            $ledgerrecord = new stdClass();
             $ledgerrecord->userid = $userid;
             $ledgerrecord->itemid = 0;
             $ledgerrecord->price = (float) (-1.0) * $data["deductible"];
@@ -788,6 +796,8 @@ class shopping_cart {
 
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
             $item = (array) $item;
+
+            $totalprice += $item['price'];
 
             // If the item identifier is specified (this is only the case, when we get data from history)...
             // ... we use the identifier. Else, it stays the same.
@@ -835,7 +845,6 @@ class shopping_cart {
 
                 // We create this entry only for cash payment, that is when there is no datafromhistory yet.
                 if (!$datafromhistory) {
-
                     $paymentmethod = $paymenttype;
 
                     // Make sure we can pass on a valid value.
@@ -849,8 +858,10 @@ class shopping_cart {
                     $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
                     $item['vatnumber'] = $data['vatnrnumber'] ?? '';
 
-                    if (($item['componentname'] === 'local_shopping_cart')
-                        && ($item['area'] === 'rebookitem')) {
+                    if (
+                        ($item['componentname'] === 'local_shopping_cart')
+                        && ($item['area'] === 'rebookitem')
+                    ) {
 
                             $historyitem = shopping_cart_history::return_item_from_history($item['itemid']);
 
@@ -859,33 +870,33 @@ class shopping_cart {
                     }
 
                     $id = shopping_cart_history::create_entry_in_history(
-                            $userid,
-                            $item['itemid'],
-                            $item['itemname'],
-                            $item['price'],
-                            $item['discount'],
-                            $item['currency'],
-                            $item['componentname'],
-                            $item['area'],
-                            $item['identifier'],
-                            $item['payment'],
-                            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-                            $item['canceluntil'] ?? null,
-                            $item['serviceperiodstart'] ?? 0,
-                            $item['serviceperiodend'] ?? 0,
-                            $item['tax'] ?? null,
-                            $item['taxpercentage'] ?? null,
-                            $item['taxcategory'] ?? null,
-                            $item['costcenter'] ?? null,
-                            $item['annotation'],
-                            $item['usermodified'],
-                            $item['schistoryid'] ?? null,
-                            $item['installments'] ?? 0,
-                            $item['json'] ?? '',
-                            $item['address_billing'],
-                            $item['address_shipping'],
-                            $item['taxcountrycode'],
-                            $item['vatnumber'],
+                        $userid,
+                        $item['itemid'],
+                        $item['itemname'],
+                        $item['price'],
+                        $item['discount'],
+                        $item['currency'],
+                        $item['componentname'],
+                        $item['area'],
+                        $item['identifier'],
+                        $item['payment'],
+                        LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+                        $item['canceluntil'] ?? null,
+                        $item['serviceperiodstart'] ?? 0,
+                        $item['serviceperiodend'] ?? 0,
+                        $item['tax'] ?? null,
+                        $item['taxpercentage'] ?? null,
+                        $item['taxcategory'] ?? null,
+                        $item['costcenter'] ?? null,
+                        $item['annotation'],
+                        $item['usermodified'],
+                        $item['schistoryid'] ?? null,
+                        $item['installments'] ?? 0,
+                        $item['json'] ?? '',
+                        $item['address_billing'],
+                        $item['address_shipping'],
+                        $item['taxcountrycode'],
+                        $item['vatnumber']
                     );
 
                     $item['id'] = $id;
@@ -926,6 +937,26 @@ class shopping_cart {
                     ],
                 ]);
                 $event->trigger();
+            }
+
+            // There can be a case during rebooking, where we are stuck with a negative total.
+            // This negative total needs to be transformed to a credit.
+
+            if ($totalprice < 0) {
+                $now = time();
+
+                // Add credit to the user.
+                $correctiondata = (object)[
+                    'userid' => $userid,
+                    'currency' => $data['currency'],
+                    'creditsmanagercredits' => -$totalprice,
+                    'creditsmanagerreason' => get_string('rebookingidentifier', 'local_shopping_cart', $data['identifier']),
+                    'payment' => LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION,
+                    'timemodified' => $now,
+                    'timecreated' => $now,
+                    'identifier' => $data['identifier'],
+                ];
+                shopping_cart_credits::creditsmanager_correct_credits($correctiondata);
             }
 
             return [
@@ -1844,9 +1875,10 @@ class shopping_cart {
      */
     public static function is_rebookingcredit(string $component, string $area): bool {
 
-        if ($component === 'local_shopping_cart'
-            && $area === 'rebookingcredit') {
-
+        if (
+            ($component === 'local_shopping_cart')
+            && ($area === 'rebookingcredit')
+        ) {
             return true;
         }
 

@@ -216,6 +216,11 @@ class shopping_cart_rebookingcredit {
                 // So: Rebooking of -50 and new item of 30 will correct rebooking to -30.
                 if ($totalprice < 0) {
 
+                    // We don't correct the price, when people can still cancel their bookings themselves.
+                    if ($data['items'][$keyofrebooking]['canceluntil'] > time()) {
+                        break;
+                    }
+
                     // There might be more than one rebooking.
                     if ($data['items'][$keyofrebooking]['price'] > $totalprice) {
                         $totalprice -= $data['items'][$keyofrebooking]['price'];
