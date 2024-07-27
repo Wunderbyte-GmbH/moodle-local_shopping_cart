@@ -283,6 +283,8 @@ if ($debug != 2) {
             get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION =>
             get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION =>
+            get_string('paymentmethodrebookingcreditscorrection', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH =>
             get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD =>

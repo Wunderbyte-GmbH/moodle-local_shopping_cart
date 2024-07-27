@@ -138,7 +138,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     'rebookitem',
                     '',  // No item description for rebookitem.
                     $imageurl->out(),
-                    time(),
+                    $record->canceluntil, // We use the same cancel until for rebooking check.
                     0,
                     0,
                     'A',
