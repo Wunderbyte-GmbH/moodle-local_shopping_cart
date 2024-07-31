@@ -1,3 +1,10 @@
+## Version 0.9.12 (2024073100)
+* Improvement: Enable events for plugin mod_booking rules function
+* Improvement: Sort strings in alphabetical order to meet moodle 4.4 code style regulations
+
+## Version 0.9.11 (2024072400)
+* Bugfix: Safe shopping_cart history when no vatntnumber provided
+
 ## Version 0.9.10 (2024071900)
 * Bugfix: Avoid double credit reduction in some cases
 * Bugfix: Default values for missing keys in webservice
