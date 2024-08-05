@@ -1,4 +1,5 @@
 <?php
+use local_shopping_cart\shopping_cart_history;
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -151,8 +152,29 @@ $pos = 1;
 $sum = 0.0;
 $itemhtml = '';
 foreach ($items as $item) {
-    $tmp = str_replace("[[price]]", number_format((float) $item->price, 2, $commaseparator, ''),
-        $repeathtml[0]);
+
+    if (isset($item->schistoryid)) {
+        $shistoryitem = $DB->get_record('local_shopping_cart_history', ['id' => $schistoryid]);
+        $installmentdata = shopping_cart_history::get_installmentdata($shistoryitem);
+    }
+    if (empty($installmentdata)) {
+        $price = $item->price;
+        $tmp = str_replace(
+            "[[price]]",
+            number_format((float) $item->price, 2, $commaseparator, ''),
+            $repeathtml[0]);
+        $tmp = str_replace("[[installments]]", "", $repeathtml[0]);
+    } else {
+        $price = $shistoryitem->price;
+        $tmp = str_replace(
+            "[[price]]",
+            number_format((float) $price, 2, $commaseparator, ''),
+            $repeathtml[0]);
+        // Make sure to display the price that was actually already payed as price.
+        foreach ($installmentdata['payments'] as $payment) {
+            $price = $payment->price;
+        }
+    }
     $tmp = str_replace("[[name]]", $item->itemname, $tmp);
     $tmp = str_replace("[[pos]]", $pos, $tmp);
 
@@ -168,7 +190,7 @@ foreach ($items as $item) {
         $tmp = str_replace("[[dayofweektime]]", '', $tmp);
     }
 
-    $sum += $item->price;
+    $sum += $price;
     $itemhtml .= $tmp;
     $pos++;
 }
