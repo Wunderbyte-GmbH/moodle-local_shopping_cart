@@ -183,6 +183,25 @@ if ($hassiteconfig) {
                 get_string('samecostcenter', 'local_shopping_cart'),
                 get_string('samecostcenter_desc', 'local_shopping_cart'), 0));
 
+    // If this setting is turned on and a user receives credits, they can later only be used for items with the same costcenter.
+    $settings->add(
+        new admin_setting_configcheckbox($componentname . '/samecostcenterforcredits',
+                get_string('samecostcenterforcredits', 'local_shopping_cart'),
+                get_string('samecostcenterforcredits_desc', 'local_shopping_cart'), 0));
+
+    $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits');
+    if ($samecostcenterforcredits) {
+        $settings->add(
+                new admin_setting_configtext(
+                        $componentname . '/defaultcostcenterforcredits',
+                        get_string('defaultcostcenterforcredits', $componentname),
+                        get_string('defaultcostcenterforcredits_desc', $componentname),
+                        '',
+                        PARAM_TEXT
+                )
+            );
+    }
+
     // Setting to activate manual rebooking for cashier.
     $settings->add(
         new admin_setting_configcheckbox($componentname . '/manualrebookingisallowed',
