@@ -1,3 +1,8 @@
+## Version 0.9.13 (2024080600)
+* Improvement: Add new field for costcenter in credits
+* Improvement: Enable events for booking rules
+* Improvement: Add support for Moodle 4.4
+
 ## Version 0.9.12 (2024073100)
 * Improvement: Enable events for plugin mod_booking rules function
 * Improvement: Sort strings in alphabetical order to meet moodle 4.4 code style regulations
