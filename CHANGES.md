@@ -1,3 +1,8 @@
+## Version 0.9.14 (2024080600)
+* Improvement: Add new field for costcenter in credits
+* Improvement: Enable events for booking rules
+* Improvement: Add support for Moodle 4.4
+
 ## Version 0.9.13 (2024070600)
 * Bugfix: Add installmentdata to receipt
 
