@@ -255,6 +255,8 @@ $string['dailysumspdfhtml:description'] = 'Enter HTML to create the daily sums P
 Leave this empty to use the default template.';
 $string['de'] = "Germany";
 $string['deductible'] = 'Deductible:';
+$string['defaultcostcenterforcredits'] = 'Default costcenter to redeem credits';
+$string['defaultcostcenterforcredits_desc'] = 'If no cost center is specified, credits can be redeemed for items from this cost center. If no value is entered here, credits without defined costcenters can be used for any item.';
 $string['defaulttaxcategory'] = 'Default tax category';
 $string['defaulttaxcategory_desc'] = 'Default tax category to be used when not explicitly declared by cart item (i.e. "A")';
 $string['definefeesforcostcenters'] = 'Specify prices according to cost centers.';
@@ -575,6 +577,8 @@ $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)'
 $string['samecostcenter'] = 'Only one cost center per payment';
 $string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
 Items with different cost centers need to be booked separately.';
+$string['samecostcenterforcredits'] = 'Use credits only for the same costcenter';
+$string['samecostcenterforcredits_desc'] = 'If this setting is turned on and a user receives credits, these credits can only be used for items with the same costcenter.';
 $string['saveinvoicenumber'] = 'Just save invoice number';
 $string['sch_paymentaccountid'] = "Change the payment account";
 $string['se'] = "Sweden";
