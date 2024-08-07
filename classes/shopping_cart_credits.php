@@ -45,12 +45,13 @@ class shopping_cart_credits {
      * @param int $userid
      * @return array
      */
-    public static function get_balance(int $userid): array {
+    public static function get_balance(int $userid, string $costcenter = ''): array {
 
         global $CFG, $DB;
 
         // Just in case, we do not find it in credits table.
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
+        $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits') ?? 0;
 
         $currencies = self::credits_get_used_currencies($userid);
         if (empty($currencies)) {
@@ -60,12 +61,21 @@ class shopping_cart_credits {
             throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
         }
 
-        // Get the latest balance.
-        if (!$balancerecord = $DB->get_record_sql("SELECT balance, currency
-            FROM {local_shopping_cart_credits}
-            WHERE userid = :userid
-            ORDER BY id DESC
-            LIMIT 1", ['userid' => $userid])) {
+        $params = ['userid' => $userid];
+        if (!empty($samecostcenterforcredits) && !empty($costcenter)) {
+            $additionalsql = " AND costcenter = :costcenter ";
+            $params['costcenter'] = $costcenter;
+        } else {
+            $additionalsql = " AND costcenter IS NULL ";
+        }
+        $sql = 'SELECT balance, currency
+        FROM {local_shopping_cart_credits}
+        WHERE userid = :userid' . $additionalsql . '
+        ORDER BY id DESC
+        LIMIT 1';
+
+        // Get the latest balance of the given costcenter.
+        if (!$balancerecord = $DB->get_record_sql($sql, $params)) {
 
             $balance = 0;
         } else {
@@ -194,12 +204,13 @@ class shopping_cart_credits {
     public static function add_credit(
         int $userid,
         float $credit,
-        string $currency
-    ): array {
+        string $currency,
+        string $costcenter = '',
+        ): array {
 
         global $DB, $USER;
 
-        list($balance, $newcurrency) = self::get_balance($userid);
+        list($balance, $newcurrency) = self::get_balance($userid, $costcenter);
 
         $now = time();
 
@@ -212,6 +223,7 @@ class shopping_cart_credits {
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
+        $data->costcenter = $costcenter;
 
         if ($data->balance >= 0) {
             $DB->insert_record('local_shopping_cart_credits', $data);
@@ -220,17 +232,17 @@ class shopping_cart_credits {
             throw new moodle_exception('negativebalancenotallowed');
         }
 
-        list($newbalance, $currency) = self::get_balance($userid);
+        list($newbalance, $currency) = self::get_balance($userid, $costcenter);
 
         if ($newbalance >= 0) {
             // We add the right cache even if it is 0.
 
             $cartstore = cartstore::instance($userid);
-            $cartstore->set_credit($newbalance, $currency);
+            $cartstore->set_credit($newbalance, $currency, $costcenter);
 
         }
 
-        return [$newbalance, $currency];
+        return [$newbalance, $currency, $costcenter];
     }
 
     /**
@@ -378,41 +390,5 @@ class shopping_cart_credits {
             $currencies[] = $record->currency;
         }
         return $currencies;
-    }
-
-    /**
-     * Correct credits.
-     * @param stdClass $data the form data
-     */
-    public static function creditsmanager_correct_credits(stdClass $data) {
-        global $USER;
-
-        $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-
-        // Add credits.
-        try {
-            self::add_credit($data->userid, $data->creditsmanagercredits, $currency);
-
-            // Log it to ledger.
-            // Also record this in the ledger table.
-            $ledgerrecord = new stdClass();
-            $now = time();
-            $ledgerrecord->userid = $data->userid;
-            $ledgerrecord->itemid = 0;
-            $ledgerrecord->price = 0;
-            $ledgerrecord->credits = (float) $data->creditsmanagercredits;
-            $ledgerrecord->currency = $currency;
-            $ledgerrecord->componentname = 'local_shopping_cart';
-            $ledgerrecord->payment = $data->payment ?? LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
-            $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
-            $ledgerrecord->usermodified = $USER->id;
-            $ledgerrecord->timemodified = $now;
-            $ledgerrecord->timecreated = $now;
-            $ledgerrecord->annotation = $data->creditsmanagerreason;
-            shopping_cart::add_record_to_ledger_table($ledgerrecord);
-        } catch (moodle_exception $e) {
-            return false;
-        }
-        return true;
     }
 }
