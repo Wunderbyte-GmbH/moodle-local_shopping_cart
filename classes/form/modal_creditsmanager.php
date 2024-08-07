@@ -87,6 +87,14 @@ class modal_creditsmanager extends dynamic_form {
         $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'eq', 0);
 
+        if (!empty(get_config('local_shopping_cart', 'samecostcenterforcredits'))) {
+            $mform->addElement('text', 'creditsmanagercreditscostcenter',
+            get_string('creditsmanagercreditscostcenter', 'local_shopping_cart'));
+            $mform->setDefault('creditsmanagercreditscostcenter', '');
+            $mform->addHelpButton('creditsmanagercreditscostcenter', 'creditsmanagercreditscostcenter', 'local_shopping_cart');
+            $mform->hideIf('creditsmanagercreditscostcenter', 'creditsmanagermode', 'eq', 0);
+        }
+
         $paymentmethods = [
             0 => get_string('choose...', 'local_shopping_cart'),
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
@@ -153,10 +161,15 @@ class modal_creditsmanager extends dynamic_form {
         global $USER;
 
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-
+        $costcenter = isset($data->creditsmanagercreditscostcenter) ? $data->creditsmanagercreditscostcenter : "";
         // Add credits.
         try {
-            shopping_cart_credits::add_credit($data->userid, $data->creditsmanagercredits, $currency);
+            shopping_cart_credits::add_credit(
+                $data->userid,
+                $data->creditsmanagercredits,
+                $currency,
+                $costcenter
+            );
 
             // Log it to ledger.
             // Also record this in the ledger table.
@@ -174,6 +187,7 @@ class modal_creditsmanager extends dynamic_form {
             $ledgerrecord->timemodified = $now;
             $ledgerrecord->timecreated = $now;
             $ledgerrecord->annotation = $data->creditsmanagerreason;
+            $ledgerrecord->costcenter = $costcenter;
             shopping_cart::add_record_to_ledger_table($ledgerrecord);
         } catch (moodle_exception $e) {
             return false;

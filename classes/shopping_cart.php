@@ -1070,8 +1070,8 @@ class shopping_cart {
                 $cancelationfee = $cancelationfee + $customcredit; // We reduce cancelationfee by the negative customcredit.
                 $customcredit = 0;
             }
-
-            list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
+            $costcenter = $record->costcenter ?? "";
+            list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency, $costcenter);
 
             // We also need to insert a record into the ledger table.
             $record->credits = $customcredit;

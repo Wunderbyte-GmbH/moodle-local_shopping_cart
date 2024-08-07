@@ -234,6 +234,8 @@ $string['creditsmanagercredits_help'] = 'Wenn Sie "Guthaben korrigieren" gewähl
 Beispiel: Ein/e Benutzer/in hat 110 Euro Guthaben, sollte aber nur 100 Euro Guthaben haben. In diesem Fall beträgt der Korrekturwert -10.
 Wenn Sie "Guthaben zurückbezahlen" ausgewählt haben, geben Sie hier den zurückzubezahlenden Betrag ein und geben Sie an, ob Sie in bar oder
 per Banküberweisung zurückbezahlen möchten.';
+$string['creditsmanagercreditscostcenter'] = 'Kostenstelle der das Guthaben zugeordnet wird';
+$string['creditsmanagercreditscostcenter_help'] = 'Wählen Sie die Kostenstellen, für welche das Guthaben in Zukunft eingelöst werden kann. Wenn Sie dieses Feld leer lassen, hängt es von den Einstellungen ab, ob es für alle oder nur für eine bestimmte Kostenstelle eingelöst werden kann.';
 $string['creditsmanagermode'] = 'Was möchten Sie tun?';
 $string['creditsmanagerreason'] = 'Grund';
 $string['creditsmanagersuccess'] = 'Guthabenbuchung wurde durchgeführt.';

@@ -238,6 +238,8 @@ $string['creditsmanagercredits'] = 'Correction value or credits to pay back';
 $string['creditsmanagercredits_help'] = 'If you have chosen "Correct credits" then enter the correction value here.
 Example: A user has 110 EUR in credits but should actually have 100 EUR in credits. In this case the correction value is -10.
 If you have chosen "Pay back credits" then enter the amount to pay back and choose if you want to pay back via cash or bank transfer.';
+$string['creditsmanagercreditscostcenter'] = 'Costcenter to which the credit is assigned to';
+$string['creditsmanagercreditscostcenter_help'] = 'Select the costcenter for which the credit can be redeemed in the future. If you leave this field empty, it depends on your plugin-settings whether it can be redeemed for all or only for a specific costcenter.';
 $string['creditsmanagermode'] = 'What do you want to do?';
 $string['creditsmanagerreason'] = 'Reason';
 $string['creditsmanagersuccess'] = 'Credits have been booked successfully';

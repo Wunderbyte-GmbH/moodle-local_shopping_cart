@@ -191,6 +191,7 @@ if ($hassiteconfig) {
 
     $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits');
     if ($samecostcenterforcredits) {
+        // If no costcenter is specified in credits, they can be redeemed for items from this costcenter.
         $settings->add(
                 new admin_setting_configtext(
                         $componentname . '/defaultcostcenterforcredits',

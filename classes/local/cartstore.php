@@ -96,6 +96,7 @@ class cartstore {
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
         $data['expirationtime'] = $expirationtime;
+        $data['costcenter'] = $item->costcenter ?? "";
 
         $this->set_cache($data);
 
@@ -301,16 +302,18 @@ class cartstore {
      * Set new balance in cache.
      * @param float $newbalance
      * @param string $currency
+     * @param string $costcenter
      * @return void
      * @throws coding_exception
      */
-    public function set_credit(float $newbalance, string $currency) {
+    public function set_credit(float $newbalance, string $currency, string $costcenter = "") {
 
         $data = $this->get_cache();
 
         $data['credit'] = round($newbalance, 2);
         $data['remainingcredit'] = round($newbalance, 2);
         $data['currency'] = $currency;
+        $data['costcenter'] = $costcenter;
 
         $this->set_cache($data);
     }
