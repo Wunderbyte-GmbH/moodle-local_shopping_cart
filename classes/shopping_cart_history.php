@@ -1011,4 +1011,17 @@ class shopping_cart_history {
         }
         return $success;
     }
+
+    public static function get_installmentdata($shistoryitem): array {
+        global $DB;
+            // If installments are given, modify the informations.
+        if (empty($shistoryitem) || empty($shistoryitem->installments)) {
+            return [];
+        }
+        $data = json_decode($shistoryitem->json);
+        if (!isset($data->installments)) {
+            return [];
+        }
+        return (array) $data->installments;
+    }
 }
