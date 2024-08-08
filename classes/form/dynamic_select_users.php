@@ -143,7 +143,7 @@ class dynamic_select_users extends dynamic_form {
      *
      * @param stdClass $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 

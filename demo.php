@@ -139,6 +139,31 @@ echo html_writer::div($renderer->render_button($button), 'testbutton-container m
         ['style' => 'width: 300px;']);
 echo '</div>';
 
+$item = new cartitem(
+    5,
+    '5',
+    42.42,
+    get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+    'local_shopping_cart',
+    'main',
+    '',
+    '',
+    $canceluntil,
+    $serviceperiodestart,
+    $serviceperiodeend,
+    'B',
+    0,
+    '',
+    1);
+$button = new button($item->as_array());
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 5 (installment)', 'h4');
+echo html_writer::div("42.42 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
+
 echo '<div style="width: 300px" class="mt-3">';
 $data = [
         'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",

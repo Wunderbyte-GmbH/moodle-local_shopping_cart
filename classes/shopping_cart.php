@@ -86,6 +86,8 @@ class shopping_cart {
         int $itemid,
         int $userid): array {
 
+        global $DB;
+
         $userid = self::set_user($userid);
 
         // Check the cache for items in cart.
@@ -110,16 +112,35 @@ class shopping_cart {
             ];
         }
 
-        if ($area == "option") {
+        if ($area == "option" || $area == "rebookitem") {
             // If the setting 'samecostcenter' ist turned on...
             // ... then we do not allow to add items with different cost centers.
             $providerclass = static::get_service_provider_classname($component);
             $cartitem = component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
 
             if (get_config('local_shopping_cart', 'samecostcenter')) {
+
                 $currentcostcenter = $cartitem['costcenter'] ?? '';
 
                 if (!$cartstore->same_costcenter($currentcostcenter)) {
+                    return [
+                        'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
+                        'itemname' => $cartitem['itemname'] ?? '',
+                    ];
+                }
+            }
+            if (get_config('local_shopping_cart', 'allowchooseaccount')) {
+
+                $searchdata = [
+                    'itemid' => $cartitem['itemid'],
+                    'componentname' => $cartitem['componentname'],
+                    'area' => $cartitem['area'],
+                ];
+                $json = $DB->get_field('local_shopping_cart_iteminfo', 'json', $searchdata);
+                $jsonobject = json_decode($json);
+
+                $paymentaccountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?: 1;
+                if (!$cartstore->set_paymentaccountid($paymentaccountid)) {
                     return [
                         'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
                         'itemname' => $cartitem['itemname'] ?? '',
@@ -196,24 +217,8 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
 
-        if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
-            // If we have nothing in our cart and we are not about...
-            // ... to add the booking fee...
-            // ... we add the booking fee.
-            list($areatocheck) = explode('-', $area);
-            if ((!$cartstore->has_items()
-                || $cartstore->get_total_price_of_items() === 0)
-                && !in_array($areatocheck, [
-                    'bookingfee',
-                    'rebookingfee',
-                    'rebookingcredit',
-                    'rebookitem',
-                    'installments'])) {
-                // If we buy for user, we need to use -1 as userid.
-                // Also we add $userid as second param so we can check if fee was already paid.
-                shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
-            }
-        }
+        $addfee = !$cartstore->has_items()
+        || $cartstore->get_total_price_of_items() === 0;
 
         switch ($cartparam) {
             case LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS:
@@ -228,8 +233,10 @@ class shopping_cart {
                     // This is because we always add the fee first.
                     // But if the price of the item we buy is 0, we don't want to demand a booking fee neither.
                     // Therefore, we need to delete it again from the cart.
-                    if (($cartitem->price() == 0)
-                        && count($cartstore->get_items()) < 2) {
+                    if (
+                        ($cartitem->price() == 0)
+                        && count($cartstore->get_items()) < 2
+                    ) {
                         $cartstore->delete_bookingfee();
                     }
 
@@ -245,7 +252,8 @@ class shopping_cart {
                     // Add or reschedule all delete_item_tasks for all the items in the cart.
                     self::add_or_reschedule_addhoc_tasks(
                         $itemdata['expirationtime'],
-                        $userid);
+                        $userid
+                    );
 
                     $context = context_system::instance();
                     // Trigger item deleted event.
@@ -287,6 +295,28 @@ class shopping_cart {
                 $itemdata = self::get_dummy_item(LOCAL_SHOPPING_CART_CARTPARAM_ERROR, $userid);
                 break;
         }
+
+        if ($cartparam == LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
+            // If we have nothing in our cart and we are not about...
+            // ... to add the booking fee...
+            // ... we add the booking fee.
+            list($areatocheck) = explode('-', $area);
+            if (
+                $addfee
+                && !in_array($areatocheck, [
+                    'bookingfee',
+                    'rebookingfee',
+                    'rebookingcredit',
+                    'rebookitem',
+                    'installments']
+                )
+            ) {
+                // If we buy for user, we need to use -1 as userid.
+                // Also we add $userid as second param so we can check if fee was already paid.
+                shopping_cart_bookingfee::add_fee_to_cart($buyforuser ? -1 : $userid, $buyforuser ? $userid : 0);
+            }
+        }
+
         return $itemdata;
     }
 
@@ -441,6 +471,7 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
         $cartstore->delete_all_items();
+        $cartstore->reset_instance($userid);
         return true;
     }
 
@@ -516,6 +547,7 @@ class shopping_cart {
             'relateduserid' => $userid,
             'other' => [
                 'itemid' => $itemid,
+                'optionid' => $itemid,
                 'component' => $component,
             ],
         ]);
@@ -542,31 +574,6 @@ class shopping_cart {
         $providerclass = static::get_service_provider_classname($component);
 
         return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid]);
-    }
-
-    /**
-     * Function local_shopping_cart_get_cache_data
-     * This function returns all the item and calculates live the price for them.
-     * This function also supports the credit system of this moodle.
-     * If usecredit is true, the credit of the user is substracted from price...
-     * ... and supplementary information about the subtraction is returned.
-     *
-     * @param int|null $userid
-     * @param bool $usecredit
-     * @return array
-     */
-    public static function local_shopping_cart_get_cache_data(int $userid, $usecredit = null): array {
-        global $USER, $CFG;
-
-        if (empty($userid)) {
-            $userid = $USER->id;
-        }
-
-        $usecredit = shopping_cart_credits::use_credit_fallback($usecredit, $userid);
-
-        $cartstore = cartstore::instance($userid);
-
-        return $cartstore->get_data();
     }
 
     /**
@@ -666,12 +673,12 @@ class shopping_cart {
      *
      * @param int $userid
      * @param int $paymenttype
-     * @param array $datafromhistory
-     * @param string $annotation - empty on default
+     * @param ?array $datafromhistory
+     * @param ?string $annotation - empty on default
      * @return array
      */
-    public static function confirm_payment(int $userid, int $paymenttype, array $datafromhistory = null,
-        string $annotation = '') {
+    public static function confirm_payment(int $userid, int $paymenttype, ?array $datafromhistory = null,
+        ?string $annotation = '') {
         global $USER;
 
         $identifier = 0;
@@ -793,8 +800,10 @@ class shopping_cart {
 
             // Here, we have two different ways to call the component callback.
             // And for rebooking, there is quite some change going, as we actually replace the item.
-            if (($item['componentname'] === 'local_shopping_cart')
-                && ($item['area'] === 'rebookitem')) {
+            if (
+                ($item['componentname'] === 'local_shopping_cart')
+                && ($item['area'] === 'rebookitem')
+            ) {
 
                 shopping_cart_rebookingcredit::checkout_rebooking_item(
                     $item['componentname'],
@@ -817,7 +826,6 @@ class shopping_cart {
                         'component' => $item['componentname'],
                     ],
                 ]);
-
             }
 
             if ($success == true) {
@@ -836,6 +844,10 @@ class shopping_cart {
                     $item['annotation'] = $annotation ?? '';
                     $item['payment'] = $paymentmethod;
                     $item['usermodified'] = $USER->id;
+                    $item['address_billing'] = $data['address_billing'] ?? 0;
+                    $item['address_shipping'] = $data['address_shipping'] ?? 0;
+                    $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
+                    $item['vatnumber'] = $data['vatnrnumber'] ?? '';
 
                     if (($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')) {
@@ -869,7 +881,11 @@ class shopping_cart {
                             $item['usermodified'],
                             $item['schistoryid'] ?? null,
                             $item['installments'] ?? 0,
-                            $item['json'] ?? ''
+                            $item['json'] ?? '',
+                            $item['address_billing'],
+                            $item['address_shipping'],
+                            $item['taxcountrycode'],
+                            $item['vatnumber'],
                     );
 
                     $item['id'] = $id;
@@ -948,7 +964,7 @@ class shopping_cart {
         string $area,
         int $userid,
         string $componentname,
-        int $historyid = null,
+        ?int $historyid = null,
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
         int $applytocomponent = 1): array {
@@ -1253,51 +1269,6 @@ class shopping_cart {
             ]);
             $event->trigger();
         }
-    }
-
-    /**
-     * Enriches the cart item with tax information if given
-     *
-     * @param array $items array of cart items
-     * @param taxcategories|null $taxcategories
-     * @return array
-     */
-    public static function update_item_price_data(array $items, ?taxcategories $taxcategories): array {
-        $countrycode = null; // TODO get countrycode from user info.
-
-        $context = context_system::instance();
-
-        foreach ($items as $key => $item) {
-
-            if ($taxcategories) {
-                $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
-                if ($taxpercent >= 0) {
-                    $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
-                    $items[$key]['taxpercentage'] = round($taxpercent, 2);
-                    $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
-                    if ($itemisnet) {
-                        $netprice = $items[$key]['price']; // Price is now considered a net price.
-                        $grossprice = round($netprice * (1 + $taxpercent), 2);
-                        $items[$key]['price_net'] = $netprice;
-                        $items[$key]['price'] = $items[$key]['price_net']; // Set back formatted price.
-                        // Add tax to price (= gross price).
-                        $items[$key]['price_gross'] = $grossprice;
-                        // And net tax info.
-                        $items[$key]['tax'] = $grossprice - $netprice;
-                    } else {
-                        $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
-                        $grossprice = $items[$key]['price'];
-                        $items[$key]['price_net'] = $netprice;
-                        $items[$key]['price'] = $grossprice; // Set back formatted price.
-                        // Add tax to price (= gross price).
-                        $items[$key]['price_gross'] = $grossprice;
-                        // And net tax info.
-                        $items[$key]['tax'] = $grossprice - $netprice;
-                    }
-                }
-            }
-        }
-        return $items;
     }
 
     /**

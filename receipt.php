@@ -25,6 +25,8 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/pdflib.php');
 
+use local_shopping_cart\shopping_cart_history;
+
 require_login();
 
 // Include the main TCPDF library (search for installation path).
@@ -151,8 +153,48 @@ $pos = 1;
 $sum = 0.0;
 $itemhtml = '';
 foreach ($items as $item) {
-    $tmp = str_replace("[[price]]", number_format((float) $item->price, 2, $commaseparator, ''),
-        $repeathtml[0]);
+
+    if (isset($item->schistoryid)) {
+        $shistoryitem = $DB->get_record('local_shopping_cart_history', ['id' => $item->schistoryid]);
+        $installmentdata = shopping_cart_history::get_installmentdata($shistoryitem);
+    }
+    if (empty($installmentdata)) {
+        $price = $item->price;
+        $tmp = str_replace(
+            "[[price]]",
+            number_format((float) $item->price, 2, $commaseparator, ''),
+            $repeathtml[0]);
+        $tmp = str_replace(
+            "[[originalprice]]",
+            number_format((float) $item->price, 2, $commaseparator, ''),
+            $tmp);
+        $tmp = str_replace(
+            "[[outstandingprice]]",
+            number_format(0.0, 2, $commaseparator, ''),
+            $tmp);
+    } else {
+        // In this case, price is what was really paid.
+        $price = $shistoryitem->price;
+        $tmp = str_replace(
+            "[[price]]",
+            number_format((float) $price, 2, $commaseparator, ''),
+            $repeathtml[0]);
+        $tmp = str_replace(
+            "[[originalprice]]",
+            number_format((float) $installmentdata['originalprice'], 2, $commaseparator, ''),
+            $tmp);
+        // Make sure to display the price that was actually already payed as price.
+        $outstanding = 0;
+        foreach ($installmentdata['payments'] as $payment) {
+            if (empty($payment->paid)) {
+                $outstanding += $payment->price;
+            }
+        }
+        $tmp = str_replace(
+            "[[outstandingprice]]",
+            number_format((float) $outstanding, 2, $commaseparator, ''),
+            $tmp);
+    }
     $tmp = str_replace("[[name]]", $item->itemname, $tmp);
     $tmp = str_replace("[[pos]]", $pos, $tmp);
 
@@ -168,7 +210,7 @@ foreach ($items as $item) {
         $tmp = str_replace("[[dayofweektime]]", '', $tmp);
     }
 
-    $sum += $item->price;
+    $sum += $price;
     $itemhtml .= $tmp;
     $pos++;
 }

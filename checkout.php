@@ -24,8 +24,10 @@
  */
 
 use core\plugininfo\cachestore;
+use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
+use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_bookingfee;
@@ -121,14 +123,6 @@ if (isset($success)) {
     // Only if there are items in the cart, we check if we need to add booking fee.
     $cartstore = cartstore::instance($userid);
 
-    // TODO: @georgmaisser Empty if statement, so I had to comment this out.
-    // Is this still needed?
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* if ($cartstore->has_items()) {
-        // Make sure we have the fee (if we need it!).
-        // shopping_cart_bookingfee::add_fee_to_cart($userid);
-    } */
-
     // Add or reschedule all delete_item_tasks for all the items in the cart.
     shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $userid);
 
@@ -137,15 +131,59 @@ if (isset($success)) {
     // The modifier "checkout" prepares our data for the checkout page.
     // During this process,the new identifier is created, if necessary.
     checkout::prepare_checkout($data);
+
+    // We add the vatnrcheckerform here, if necessary.
+    if (get_config('local_shopping_cart', 'showvatnrchecker')
+        && !empty(get_config('local_shopping_cart', 'owncountrycode')
+        && !empty(get_config('local_shopping_cart', 'ownvatnrnumber')))) {
+        $vatnrchecker = new dynamicvatnrchecker();
+        $vatnrchecker->set_data_for_dynamic_submission();
+        $data['showvatnrchecker'] = $vatnrchecker->render();
+    }
 }
 
+
+$data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
+
+// Address handling.
+$requiredaddresskeys = addresses::get_required_address_keys();
+$requriedaddresses = addresses::get_required_address_data();
+$countries = get_string_manager()->get_list_of_countries();
+$hasallrequiredaddresses = !empty($requiredaddresskeys);
+$selectedaddresses = [];
+foreach ($requiredaddresskeys as $addresstype) {
+    if (isset($data["address_" . $addresstype])) {
+        $addressid = $data["address_" . $addresstype];
+    } else {
+        $addressid = "";
+    }
+    if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
+        $address = addresses::get_address_for_user($userid, $addressid);
+        if ($address !== false) {
+            $address->label = ucfirst($requriedaddresses[$addresstype]['addresslabel']);
+            $address->country = $countries[$address->state];
+            $selectedaddresses[] = get_object_vars($address);
+        } else {
+            // There was an error loading the address from db.
+            $hasallrequiredaddresses = false;
+        }
+    } else {
+        $hasallrequiredaddresses = false;
+    }
+}
+if ($hasallrequiredaddresses) {
+    $data['selected_addresses'] = $selectedaddresses;
+    $data['show_selected_addresses'] = true;
+}
+$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 if (empty($jsononly)) {
-    // Output the header.
-    echo $OUTPUT->header();
+
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
 
+    // Output the header.
+    echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
-    // Now output the footer.
     echo $OUTPUT->footer();
 }
+

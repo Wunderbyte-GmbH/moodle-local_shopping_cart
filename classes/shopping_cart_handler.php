@@ -26,6 +26,7 @@ namespace local_shopping_cart;
 
 use coding_exception;
 use context_system;
+use core_payment\helper;
 use dml_exception;
 use Exception;
 use local_shopping_cart\event\payment_added;
@@ -87,11 +88,32 @@ class shopping_cart_handler {
     public function definition(MoodleQuickForm &$mform, array $formdata) {
 
         if (get_config('local_shopping_cart', 'enableinstallments')
-            || get_config('local_shopping_cart', 'allowrebooking')) {
+            || get_config('local_shopping_cart', 'allowrebooking')
+            || get_config('local_shopping_cart', 'allowchooseaccount')) {
             $mform->addElement('header',
                 'sch_shoppingcartheader',
                 '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;'
                 . get_string('pluginname', 'local_shopping_cart'));
+        }
+
+        if (has_capability('local/shopping_cart:changepaymentaccount', context_system::instance())) {
+            if (get_config('local_shopping_cart', 'allowchooseaccount')) {
+
+                $paymentaccountrecords = helper::get_payment_accounts_to_manage(context_system::instance(), false);
+
+                $paymentaccounts = [];
+                foreach ($paymentaccountrecords as $paymentaccountrecord) {
+                    $paymentaccounts[$paymentaccountrecord->get('id')] = $paymentaccountrecord->get('name');
+                }
+
+                if (!empty($paymentaccounts)) {
+                    $mform->addElement(
+                        'select',
+                        'sch_paymentaccountid',
+                        get_string('sch_paymentaccountid', 'local_shopping_cart'),
+                        $paymentaccounts);
+                }
+            }
         }
 
         // Fields for Rebooking.
@@ -202,6 +224,16 @@ class shopping_cart_handler {
             throw new moodle_exception('noitemid', 'local_shoping_cart');
         }
 
+        if (has_capability('local/shopping_cart:changepaymentaccount', context_system::instance())) {
+            if (get_config('local_shopping_cart', 'allowchooseaccount')) {
+                $paymentaccountid = $formdata->sch_paymentaccountid ?? get_config('local_shopping_cart', 'accountid');
+                $this->add_key_to_jsonobject('paymentaccountid', $paymentaccountid);
+            } else {
+                $paymentaccountid = get_config('local_shopping_cart', 'accountid');
+                $this->add_key_to_jsonobject('paymentaccountid', $paymentaccountid);
+            }
+        }
+
         if (isset($formdata->sch_allowinstallment)) {
             $this->add_key_to_jsonobject('allowinstallment', $formdata->sch_allowinstallment);
             $this->add_key_to_jsonobject('downpayment', $formdata->sch_downpayment);
@@ -254,6 +286,11 @@ class shopping_cart_handler {
 
         $jsonobject = json_decode($record->json);
 
+        if (!$jsonobject || empty($jsonobject)) {
+            return;
+        }
+
+        $formdata->sch_paymentaccountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?? 0;
         $formdata->sch_allowinstallment = $jsonobject->allowinstallment ?? 0;
         $formdata->sch_downpayment = $jsonobject->downpayment ?? 0;
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments ?? 0;

@@ -33,7 +33,7 @@ use phpunit_util;
  * Test for cartitem
  * @covers \cartitem
  */
-class cartstore_test extends TestCase {
+final class cartstore_test extends TestCase {
 
     /**
      * Test taxcategory not set
@@ -42,7 +42,7 @@ class cartstore_test extends TestCase {
      *
      * @dataProvider cartstore_get_data_provider
      */
-    public function test_cartstore_get_data(string $property) {
+    public function test_cartstore_get_data(string $property): void {
 
         global $USER;
 
@@ -56,7 +56,7 @@ class cartstore_test extends TestCase {
      * Test test_cartstore_add_items
      * @covers \cartstore
      */
-    public function test_cartstore_add_items() {
+    public function test_cartstore_add_items(): void {
 
         $user1 = $this->get_data_generator()->create_user();
 

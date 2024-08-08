@@ -96,7 +96,7 @@
     {{> local_shopping_cart/button_cancel }}
     {{#showrebooking}}
     <button type="button"
-        class="shopping_cart_history_rebook_button btn btn-sm pull-left {{#rebooking}}btn-warning{{/rebooking}} {{buttonclass}} "
+        class="shopping_cart_history_rebook_button btn btn-sm pull-left {{#rebooking}}btn-warning{{/rebooking}} {{^rebooking}}btn-primary{{/rebooking}}"
         data-historyid="{{id}}"
         data-componentname="{{componentname}}"
         data-area="{{area}}"

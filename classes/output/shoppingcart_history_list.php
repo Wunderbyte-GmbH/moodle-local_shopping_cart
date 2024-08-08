@@ -51,6 +51,13 @@ class shoppingcart_history_list implements renderable, templatable {
     private $historyitems = [];
 
     /**
+     * Userid
+     *
+     * @var int
+     */
+    private $userid = 0;
+
+    /**
      * Cancelation fee..
      *
      * @var float
@@ -90,6 +97,8 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param int $identifier
      */
     public function __construct(int $userid, int $identifier = 0) {
+
+        $this->userid = $userid;
 
         // Get currency from config.
         $this->currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
@@ -282,6 +291,7 @@ class shoppingcart_history_list implements renderable, templatable {
                 $this->historyitems[$key]['price_gross'] = number_format(round((float) $item['price_gross'] ?? 0, 2), 2, '.', '');
                 $this->historyitems[$key]['price_net'] = number_format(round((float) $item['price_net'] ?? 0, 2), 2, '.', '');
             }
+            $this->historyitems[$key]['receipturl'] = $item['receipturl']->out(false);
         }
 
         $returnarray = ['historyitems' => $this->historyitems];
@@ -295,7 +305,7 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         if (!empty($this->credit)) {
-            $returnarray['credit'] = $this->credit;
+            $returnarray['credit'] = number_format(round((float) $this->credit ?? 0, 2), 2, '.', '');
         }
 
         if (!empty($this->currency)) {
@@ -308,6 +318,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if ($this->taxesenabled) {
             $returnarray['taxesenabled'] = true;
+        }
+
+        if ($this->userid) {
+            $returnarray['userid'] = $this->userid;
         }
 
         return $returnarray;
@@ -348,12 +362,8 @@ class shoppingcart_history_list implements renderable, templatable {
      * @return [type]
      */
     private static function add_tax_info(stdClass &$item) {
-        $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
-        if (isset($item->tax) && $itemisnet) {
-            $item->price_gross = $item->price + $item->tax;
-            $item->price_net = $item->price;
-            $item->taxpercentage_visual = round($item->taxpercentage * 100, 2);
-        } else if (isset($item->tax) && !$itemisnet) {
+        // Price is always gross.
+        if (isset($item->tax)) {
             $item->price_gross = $item->price;
             $item->price_net = $item->price - $item->tax;
             $item->taxpercentage_visual = round($item->taxpercentage * 100, 2);

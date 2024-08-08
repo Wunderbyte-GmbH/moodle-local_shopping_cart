@@ -33,7 +33,7 @@ use ReflectionClass;
  * Test for cartitem
  * @covers \cartitem
  */
-class cartitem_test extends TestCase {
+final class cartitem_test extends TestCase {
 
     /**
      * Test taxcategory not set
@@ -41,7 +41,7 @@ class cartitem_test extends TestCase {
      *
      * @return [type]
      */
-    public function test_taxcategory_not_set() {
+    public function test_taxcategory_not_set(): void {
         $price = 10.00;
         $cartitem = new cartitem(1,
                 'Testitem 1',
@@ -60,7 +60,7 @@ class cartitem_test extends TestCase {
      *
      * @return [type]
      */
-    public function test_taxcategory_set() {
+    public function test_taxcategory_set(): void {
         $price = 10.00;
         $cartitem = new cartitem(1,
                 'Testitem 1',
@@ -84,7 +84,7 @@ class cartitem_test extends TestCase {
      *
      * @return [type]
      */
-    public function test_as_array_contains_all_fields() {
+    public function test_as_array_contains_all_fields(): void {
         $reflection = new ReflectionClass(cartitem::class);
         $definedproperties = $reflection->getProperties();
 

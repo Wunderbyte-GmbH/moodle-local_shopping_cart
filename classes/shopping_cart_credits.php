@@ -310,7 +310,7 @@ class shopping_cart_credits {
         $userid = 0;
         $currency = '';
         $data = [];
-        $data['price'] = $shoppingcart->price;
+        $data['price'] = $shoppingcart->initialtotal;
 
         if (isset($shoppingcart->items)) {
             foreach ($shoppingcart->items as $item) {

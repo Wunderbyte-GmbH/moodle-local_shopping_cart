@@ -24,7 +24,6 @@
 
 use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\shopping_cart;
 
 /**
@@ -39,6 +38,17 @@ use local_shopping_cart\shopping_cart;
 class behat_local_shopping_cart extends behat_base {
 
     /**
+     * Clean shopping cart for given user.
+     *
+     * @param string $username
+     * @Given /^Shopping cart has been cleaned for user "([^"]*)"$/
+     */
+    public function i_clean_users_cart(string $username) {
+        $userid = $this->get_user_id_by_identifier($username);
+        shopping_cart::delete_all_items_from_cart($userid);
+    }
+
+    /**
      * Put specified item in shopping cart for given user.
      *
      * @param int $itemid
@@ -49,10 +59,9 @@ class behat_local_shopping_cart extends behat_base {
         $userid = $this->get_user_id_by_identifier($username);
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
-
         $cartstore = cartstore::instance($userid);
+        $data = shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
         $data = $cartstore->get_data();
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
     }
 
     /**

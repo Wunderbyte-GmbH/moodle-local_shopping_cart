@@ -73,6 +73,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
+    And I log out
 
   @javascript
   Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption enabled and cancellation fee given
@@ -121,3 +122,4 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
+    And I log out

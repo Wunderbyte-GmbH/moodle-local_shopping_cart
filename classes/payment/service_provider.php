@@ -62,7 +62,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
         $cachedeleted = false;
 
         try {
-            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier, true);
+            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier);
         } catch (\Exception $e) {
             $cachedeleted = true;
         }
@@ -102,9 +102,20 @@ class service_provider implements \core_payment\local\callback\service_provider 
 
         }
 
-        if (!$accountid = get_config('local_shopping_cart', 'accountid')) {
-            $accountid = 1;
+        // We can only buy items with the same payment account. Therefore, we can just take the first and test it.
+        $record = reset($records);
+        $seachdata = [
+            'itemid' => $record->itemid,
+            'componentname' => $record->componentname,
+            'area' => $record->area,
+        ];
+        if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $seachdata)) {
+            $jsonobject = new \stdClass();
+        } else {
+            $jsonobject = json_decode($record->json);
         }
+
+        $accountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?: 1;
 
         return new \core_payment\local\entities\payable($price, $currency, $accountid);
     }

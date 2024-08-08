@@ -55,12 +55,6 @@ class shopping_cart_history {
      *
      * @var int
      */
-    private $uid;
-
-    /**
-     *
-     * @var int
-     */
     private $itemid;
 
     /**
@@ -81,12 +75,11 @@ class shopping_cart_history {
 
     /**
      * History constructor
-     * @param stdClass $data
+     * @param ?stdClass $data
      * @return void
      */
-    public function __construct(stdClass $data = null) {
+    public function __construct(?stdClass $data = null) {
         if ($data) {
-            $this->uid = $data->uid;
             $this->itemid = $data->itemid;
             $this->itemname = $data->itemname;
             $this->componentname = $data->componentname;
@@ -262,6 +255,13 @@ class shopping_cart_history {
         $returnid = 0;
         if (isset($data->items)) {
             foreach ($data->items as $item) {
+                $item['taxcountrycode'] = $data->taxcountrycode ?? null;
+                $item['address_billing'] = $data->address_billing ?? null;
+                $uidcountrynr = null;
+                if (isset($data->vatnrnumber)) {
+                    $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
+                }
+                $item['vatnumber'] = $uidcountrynr;
                 if (self::write_to_db((object)$item) == 0) {
                     $returnid = 0;
                 }
@@ -326,6 +326,7 @@ class shopping_cart_history {
     /**
      * Add new entry to shopping_cart_history.
      * Use this if you add data manually, to check for validity.
+     *
      * @param int $userid
      * @param int $itemid
      * @param string $itemname
@@ -338,8 +339,8 @@ class shopping_cart_history {
      * @param string $payment
      * @param int $paymentstatus
      * @param int|null $canceluntil
-     * @param int $serviceperiodstart
-     * @param int $serviceperiodend
+     * @param int|null $serviceperiodstart
+     * @param int|null $serviceperiodend
      * @param float|null $tax
      * @param float|null $taxpercentage
      * @param string|null $taxcategory
@@ -349,7 +350,13 @@ class shopping_cart_history {
      * @param int|null $schistoryid
      * @param int|null $installments
      * @param string|null $json
+     * @param int|null $addressbilling
+     * @param int|null $addressshipping
+     * @param string|null $taxcountrycode
+     * @param string|null $vatnumber
+     *
      * @return int
+     *
      * @throws dml_exception
      * @throws coding_exception
      */
@@ -365,18 +372,22 @@ class shopping_cart_history {
             string $identifier,
             string $payment,
             int $paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_PENDING,
-            int $canceluntil = null,
-            int $serviceperiodstart = 0,
-            int $serviceperiodend = 0,
-            float $tax = null,
-            float $taxpercentage = null,
-            string $taxcategory = null,
-            string $costcenter = null,
-            string $annotation = null,
-            int $usermodified = null,
-            int $schistoryid = null,
-            int $installments = null,
-            string $json = null) {
+            ?int $canceluntil = null,
+            ?int $serviceperiodstart = 0,
+            ?int $serviceperiodend = 0,
+            ?float $tax = null,
+            ?float $taxpercentage = null,
+            ?string $taxcategory = null,
+            ?string $costcenter = null,
+            ?string $annotation = null,
+            ?int $usermodified = null,
+            ?int $schistoryid = null,
+            ?int $installments = null,
+            ?string $json = null,
+            ?int $addressbilling = 0,
+            ?int $addressshipping = 0,
+            ?string $taxcountrycode = null,
+            ?string $vatnumber = null) {
 
         global $USER;
 
@@ -408,6 +419,10 @@ class shopping_cart_history {
         $data->schistoryid = $schistoryid;
         $data->installments = $installments;
         $data->json = $json;
+        $data->address_billing = $addressbilling;
+        $data->address_shipping = $addressshipping;
+        $data->taxcountrycode = $taxcountrycode;
+        $data->vatnumber = $vatnumber;
 
         return self::write_to_db($data);
     }
@@ -420,11 +435,11 @@ class shopping_cart_history {
      * @param string $componentname
      * @param string $area
      * @param int|null $entryid
-     * @param float $credit
+     * @param float|null $credit
      * @return array
      */
-    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area, int $entryid = null,
-        $credit = null): array {
+    public static function cancel_purchase(int $itemid, int $userid, string $componentname, string $area, ?int $entryid = null,
+        ?float $credit = null): array {
 
         global $DB;
 
@@ -713,31 +728,29 @@ class shopping_cart_history {
         return $dataarr;
     }
 
-
     /**
      * On loading the checkout.php, the shopping cart is stored in the schistory cache.
      * This is because we don't pass the individual items, but only a total sum and description to the payment provider.
      * To identify the items in the cart, we have to store them with an identifier.
      * To avoid cluttering the table with useless data, we store it temporarily in this cache.
      *
-     * @param array $dataarray
+     * @param array $data
      * @return bool|null
      */
-    public function store_in_schistory_cache(array $dataarray) {
+    public function store_in_schistory_cache(array $data) {
 
-        if (!isset($dataarray['identifier'])) {
+        if (!isset($data['identifier'])) {
             return null;
         }
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-        $cache->set('schistorycache', $dataarray);
+        $cache->set('schistorycache', $data);
 
         return true;
     }
 
     /**
      * Get data from schistory cache.
-     * If the flag is set, we also trigger writing to tb and set the approbiate cache flag to do it only once.
      * @param string $identifier
      * @return mixed|false
      */
@@ -753,7 +766,6 @@ class shopping_cart_history {
         }
 
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
-
             self::write_to_db((object)$shoppingcart);
 
             $shoppingcart['storedinhistory'] = true;
@@ -778,7 +790,7 @@ class shopping_cart_history {
 
         global $DB;
 
-        $uid = $DB->insert_record('local_shopping_cart_id', [
+        $vatnr = $DB->insert_record('local_shopping_cart_id', [
             'userid' => $userid,
             'timecreated' => time(),
         ]);
@@ -786,14 +798,14 @@ class shopping_cart_history {
         $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
 
         // The base value defines the number of digits.
-        $uid = $basevalue + $uid;
+        $vatnr = $basevalue + $vatnr;
 
         // We need to keep it below 7 digits.
-        if ((!empty($basevalue) && (($uid / $basevalue) > 10))) {
-            throw new moodle_exception('uidistoobig', 'local_shopping_cart');
+        if ((!empty($basevalue) && (($vatnr / $basevalue) > 10))) {
+            throw new moodle_exception('vatnristoobig', 'local_shopping_cart');
         }
 
-        return $uid;
+        return $vatnr;
     }
 
     /**
@@ -863,10 +875,10 @@ class shopping_cart_history {
      * Marks an item for rebooking.
      * @param int $historyid
      * @param int $userid
-     * @param bool $remove can be set to true, if we already know that we remove
+     * @param ?bool $remove can be set to true, if we already know that we remove
      * @return array
      */
-    public static function toggle_mark_for_rebooking(int $historyid, int $userid, bool $remove = null): array {
+    public static function toggle_mark_for_rebooking(int $historyid, int $userid, ?bool $remove = null): array {
 
         $userid = shopping_cart::set_user($userid);
 
@@ -900,19 +912,25 @@ class shopping_cart_history {
         $cache->set($cachekey, $itemstorebook);
 
         if (!empty($marked) && empty($remove)) {
-            // Before we add the item to the cart, let's make sure there is no booking fee currently applied.
-            shopping_cart_rebookingcredit::delete_booking_fee($userid);
 
-            shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
+            $response = shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookitem', $historyid, $userid);
 
-            if (get_config('local_shopping_cart', 'rebookingfee') > 0) {
-                // We check if we need to add the rebookingfee.
-                $record = self::return_item_from_history($historyid);
-                $now = time();
+            if ($response['success'] === LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS) {
+                // Before we add the item to the cart, let's make sure there is no booking fee currently applied.
+                shopping_cart_rebookingcredit::delete_booking_fee($userid);
 
-                if ($record->canceluntil <= $now) {
-                    shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingfee', 1, $userid);
+                if (get_config('local_shopping_cart', 'rebookingfee') > 0) {
+                    // We check if we need to add the rebookingfee.
+                    $record = self::return_item_from_history($historyid);
+                    $now = time();
+
+                    if ($record->canceluntil <= $now) {
+                        shopping_cart::add_item_to_cart('local_shopping_cart', 'rebookingfee', 1, $userid);
+                    }
                 }
+            } else {
+                // Remove the toggle again, because it was not successful.
+                self::toggle_mark_for_rebooking($historyid, $userid, true);
             }
         }
 
@@ -992,5 +1010,18 @@ class shopping_cart_history {
             }
         }
         return $success;
+    }
+
+    public static function get_installmentdata($shistoryitem): array {
+        global $DB;
+            // If installments are given, modify the informations.
+        if (empty($shistoryitem) || empty($shistoryitem->installments)) {
+            return [];
+        }
+        $data = json_decode($shistoryitem->json);
+        if (!isset($data->installments)) {
+            return [];
+        }
+        return (array) $data->installments;
     }
 }

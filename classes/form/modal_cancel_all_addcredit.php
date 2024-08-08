@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_shopping_cart\form;
+use mod_booking\singleton_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -138,6 +139,16 @@ class modal_cancel_all_addcredit extends dynamic_form {
 
         }
 
+        // For the booking component, we have a special treatment here.
+        if ($componentname === 'mod_booking'
+            && $area === 'option') {
+            $pluginmanager = \core_plugin_manager::instance();
+            $plugins = $pluginmanager->get_plugins_of_type('mod');
+            if (isset($plugins['booking'])) {
+                booking_option::cancelbookingoption($data->itemid);
+            }
+        }
+
         return $data;
     }
 
@@ -189,7 +200,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
      * Validate dates.
      * @param stdClass $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 
