@@ -551,7 +551,7 @@ $string['receipt:total'] = 'Total sum';
 $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
-[[price]], [[pos]], [[name]], [[location]], [[dayofweektime]] between [[items]] and [[/items]].
+[[price]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
  Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]] and [[date]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
 $string['receiptimage'] = 'Background image for cashiers receipt';
