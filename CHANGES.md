@@ -1,4 +1,7 @@
-## Version 0.9.12 (2024073100)
+## Version 0.9.13 (2024070600)
+* Bugfix: Add installmentdata to receipt
+
+## Version 0.9.12 (2024070600)
 * Improvement: Enable events for plugin mod_booking rules function
 * Improvement: Sort strings in alphabetical order to meet moodle 4.4 code style regulations
 
