@@ -24,6 +24,8 @@
  */
 
 namespace local_shopping_cart;
+use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\output\shoppingcart_history_list;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -959,10 +961,34 @@ class shopping_cart {
                 shopping_cart_credits::creditsmanager_correct_credits($correctiondata);
             }
 
+            // We now trigger an event to card & cashier checkout to react on it.
+            if (!empty($identifier)) {
+                $schlist = new shoppingcart_history_list($userid, $identifier, true);
+                $data = [];
+                $schlist->insert_list($data);
+                $data['success'] = 1;
+                $data['finished'] = 1;
+
+                $event = payment_confirmed::create([
+                    'context' => context_system::instance(),
+                    'userid' => $userid,
+                    'relateduserid' => $USER->id,
+                    'other' => [
+                            'identifier' => $identifier ?? null,
+                            'price' => $data['price'],
+                            'cart' => json_encode($data),
+                            'component' => 'mod_booking', // We want to use this event in mod booking rules.
+
+                    ],
+                ]);
+
+                $event->trigger();
+            }
+
             return [
                     'status' => 1,
                     'error' => '',
-                    'credit' => (float)$data['remainingcredit'],
+                    'credit' => (float)($data['remainingcredit'] ?? 0),
                     'identifier' => $identifier,
 
             ];
@@ -970,7 +996,7 @@ class shopping_cart {
             return [
                     'status' => 0,
                     'error' => implode('<br>', $error),
-                    'credit' => (float)$data['remainingcredit'],
+                    'credit' => (float)($data['remainingcredit'] ?? 0),
                     'identifier' => $identifier,
             ];
         }
@@ -1105,6 +1131,9 @@ class shopping_cart {
             list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency);
 
             // We also need to insert a record into the ledger table.
+            // First, add the prefix and annotation.
+            $record->itemname = get_string('canceled', 'local_shopping_cart') . " - " . $record->itemname;
+            $record->annotation = get_string('canceled', 'local_shopping_cart');
             $record->credits = $customcredit;
             $record->fee = $cancelationfee;
             self::add_record_to_ledger_table($record);
@@ -1290,12 +1319,23 @@ class shopping_cart {
         // Trigger the checkout_completed event. Can be used by observers.
         if (!empty($id)) {
             $context = context_system::instance();
+
+            // To send a good message, we need quite some information here.
+            if (!empty($record->identifier)) {
+                $cart = shopping_cart_history::return_data_via_identifier($record->identifier);
+            } else {
+                $cart = new stdClass();
+            }
+
             $event = checkout_completed::create([
                     'context' => $context,
                     'userid' => $record->usermodified,
                     'relateduserid' => $record->userid,
                     'other' => [
                             'identifier' => $record->identifier ?? null,
+                            'price' => $record->price ?? 0,
+                            'cart' => json_encode($cart),
+                            'orderid' => $record->orderid ?? 0,
                     ],
             ]);
             $event->trigger();

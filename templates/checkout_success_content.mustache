@@ -63,16 +63,41 @@
     }
 
 }}
-<div class="row">
-    <div class="col-md-12 mx-auto mt-5 text-center">
-        <i class="fa fa-check-circle fa-5x text-info"  aria-hidden="true"></i>
+
+<div class="col-md-12 mx-auto mt-5">
+    <div class="card payment payment-success">
+        <div class="card-body">
+                <h2>{{#str}} orderdetails, local_shopping_cart {{/str}}</h2>
+                <ul class="list-group">
+                    {{#historyitems}}
+                        <li class="list-group-item flex-column align-items-start text-dark">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5>{{itemname}}</h5>
+
+                                {{> local_shopping_cart/item_price }}
+                            </div>
+                            <div class="d-flex w-100 justify-content-between">
+                                <p><small>{{date}}</small>
+                            </div>
+                        </li>
+                    {{/historyitems}}
+                </ul>
+                <div class="sc_price_label" data-userid="{{userid}}" data-noupdate="1">
+                    {{> local_shopping_cart/price_label }}
+                </div>
+                {{#selected_addresses}}
+                    <div class="selectedaddresses mt-4">
+                        <div class="selectedaddress">
+                            {{> local_shopping_cart/address_singleline }}
+                        </div>
+                    </div>
+                {{/selected_addresses}}
+            <br>
+            <div class="shopping-cart-shopping_cart_history_receipt">
+                <a href="{{{receipturl}}}" target="_blank" class="shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left">
+                    <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} receipt, local_shopping_cart {{/str}}
+                </a>
+            <div>
+        </div>
     </div>
-    <div class="col-md-12 mx-auto mt-5 text-center">
-        <h1>{{#str}} paymentsuccessful, local_shopping_cart {{/str}}</h1>
-        <p>{{#str}} paymentsuccessfultext, local_shopping_cart {{/str}}</p>
-    </div>
-</div>
-{{> local_shopping_cart/checkout_success_content }}
-<div>
-    <a href="../../" class="btn btn-info">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
 </div>

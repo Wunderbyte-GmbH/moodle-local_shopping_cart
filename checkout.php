@@ -23,14 +23,13 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-use core\plugininfo\cachestore;
+
 use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_bookingfee;
 use local_shopping_cart\shopping_cart_history;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -72,31 +71,26 @@ if (empty($jsononly)) {
 
 $userid = $USER->id;
 
-$cartstore = cartstore::instance($userid);
-$data = $cartstore->get_data();
-
-$data["mail"] = $USER->email;
-$data["name"] = $USER->firstname . $USER->lastname;
-$data["userid"] = $USER->id;
-
 // If we have a successful checkout, we show the bought items via transaction id.
 if (isset($identifier)) {
-    $historylist = new shoppingcart_history_list($userid, $identifier);
+    $data = [];
+    $historylist = new shoppingcart_history_list($userid, $identifier, true);
     $historylist->insert_list($data);
 
     $sucess = shopping_cart_history::has_successful_checkout($identifier);
 }
 
 if (isset($success)) {
-
     if ($success) {
+
         $data['success'] = 1;
         $data['finished'] = 1;
 
         // After successful checkout, remove all items from cart.
         $PAGE->requires->js_call_amd(
             'local_shopping_cart/cart',
-            'deleteAllItems', []
+            'deleteAllItems',
+            []
         );
 
         // If we just want to show the success json, we return it.
@@ -104,11 +98,16 @@ if (isset($success)) {
             echo json_encode(['status' => 0]);
             die;
         }
-
     } else {
         $data['failed'] = 1;
     }
 } else {
+    $cartstore = cartstore::instance($userid);
+    $data = $cartstore->get_data();
+
+    $data["mail"] = $USER->email;
+    $data["name"] = $USER->firstname . $USER->lastname;
+    $data["userid"] = $USER->id;
 
     // Makes sure no open purchase stays active.
     shopping_cart::check_for_ongoing_payment($userid);
@@ -133,17 +132,17 @@ if (isset($success)) {
     checkout::prepare_checkout($data);
 
     // We add the vatnrcheckerform here, if necessary.
-    if (get_config('local_shopping_cart', 'showvatnrchecker')
+    if (
+        get_config('local_shopping_cart', 'showvatnrchecker')
         && !empty(get_config('local_shopping_cart', 'owncountrycode')
-        && !empty(get_config('local_shopping_cart', 'ownvatnrnumber')))) {
+        && !empty(get_config('local_shopping_cart', 'ownvatnrnumber')))
+    ) {
         $vatnrchecker = new dynamicvatnrchecker();
         $vatnrchecker->set_data_for_dynamic_submission();
         $data['showvatnrchecker'] = $vatnrchecker->render();
     }
+    $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 }
-
-
-$data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
 // Address handling.
 $requiredaddresskeys = addresses::get_required_address_keys();
@@ -177,7 +176,6 @@ if ($hasallrequiredaddresses) {
 }
 $data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 if (empty($jsononly)) {
-
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
 
@@ -186,4 +184,3 @@ if (empty($jsononly)) {
     echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
     echo $OUTPUT->footer();
 }
-

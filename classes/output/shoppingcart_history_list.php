@@ -42,7 +42,6 @@ use templatable;
  *
  */
 class shoppingcart_history_list implements renderable, templatable {
-
     /**
      * Historyitems is the array used for output.
      *
@@ -84,6 +83,12 @@ class shoppingcart_history_list implements renderable, templatable {
     private $canpayback = false;
 
     /**
+     * Bool fromledger.
+     * @var bool
+     */
+    private $fromledger = false;
+
+    /**
      * if taxes are enabled for this module
      *
      * @var bool
@@ -95,10 +100,12 @@ class shoppingcart_history_list implements renderable, templatable {
      *
      * @param int $userid
      * @param int $identifier
+     * @param bool $fromledger
      */
-    public function __construct(int $userid, int $identifier = 0) {
+    public function __construct(int $userid, int $identifier = 0, $fromledger = false) {
 
         $this->userid = $userid;
+        $this->fromledger = $fromledger;
 
         // Get currency from config.
         $this->currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
@@ -110,7 +117,12 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // If we provide an identifier, we only get the items from history with this identifier, else, we get all for this user.
         if ($identifier != 0) {
-            $items = shopping_cart_history::return_data_via_identifier($identifier);
+            if (!$fromledger) {
+                $items = shopping_cart_history::return_data_via_identifier($identifier);
+            } else {
+                $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
+            }
+
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
         }
@@ -127,7 +139,6 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
-
             // Receipt URL for the item.
             $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", [
                 'id' => $item->identifier,
@@ -145,7 +156,6 @@ class shoppingcart_history_list implements renderable, templatable {
 
             // Depending on how is calling this and which status the person has, we display different cancel options.
             if (!$item->canceled) {
-
                 $item->canceluntilstring = date('Y-m-d', $item->canceluntil);
 
                 if (!$iscashier) {
@@ -156,8 +166,11 @@ class shoppingcart_history_list implements renderable, templatable {
                             $item->buttonclass = 'btn-primary';
                         } else if ($now <= $item->canceluntil) {
                             // There is a canceluntil, but it has not yet passed.
-                            $item->canceluntilalert = get_string('youcancanceluntil', 'local_shopping_cart',
-                                $item->canceluntilstring);
+                            $item->canceluntilalert = get_string(
+                                'youcancanceluntil',
+                                'local_shopping_cart',
+                                $item->canceluntilstring
+                            );
                             $item->buttonclass = 'btn-primary';
                         } else {
                             $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart');
@@ -167,7 +180,6 @@ class shoppingcart_history_list implements renderable, templatable {
                         $item->canceluntilalert = get_string('youcannotcancelanymore', 'local_shopping_cart');
                         $item->buttonclass = 'disabled hidden';
                     }
-
                 } else {
                     $item->buttonclass = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ?
                         'btn-danger disabled' : 'btn-primary';
@@ -232,12 +244,10 @@ class shoppingcart_history_list implements renderable, templatable {
             }
 
             $this->historyitems[] = (array)$item;
-
         }
 
         if ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee')) {
             if ($cancelationfee >= 0) {
-
                 $this->cancelationfee = $cancelationfee;
             }
         }
@@ -258,6 +268,28 @@ class shoppingcart_history_list implements renderable, templatable {
 
         $historyarray = $this->return_list();
         $data['historyitems'] = $historyarray['historyitems'];
+        $data['taxesenabled'] = $historyarray['taxesenabled'];
+
+        if ($this->fromledger) {
+            $initialtotal = 0;
+            $discount = 0;
+            $price = 0;
+            foreach ($data['historyitems'] as $key => $item) {
+                $initialtotal += $item['price'] > 0 ? $item['price'] : 0;
+                $discount -= $item['price'] < 0 ? $item['price'] : 0;
+                $price += $item['price'];
+
+                if ($item['price'] == 0) {
+                    $data['historyitems'][$key]['price_net'] = "0.00";
+                }
+                $receipturl = $item['receipturl'];
+            }
+
+            $data['initialtotal'] = $initialtotal;
+            $data['discount'] = $discount;
+            $data['price'] = $price;
+            $data['receipturl'] = $receipturl;
+        }
 
         if (isset($historyarray['cancelationfee'])) {
             $data['cancelationfee'] = $historyarray['cancelationfee'];

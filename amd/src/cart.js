@@ -483,9 +483,12 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
             Templates.renderForPromise('local_shopping_cart/price_label', data).then(({html, js}) => {
 
                 labelareas.forEach(labelarea => {
-                    Templates.replaceNodeContents(labelarea, html, js);
 
-                    addZeroPriceListener(data);
+                    // There are labelareas we don't want to update.
+                    if (!labelarea.dataset.noupdate) {
+                        Templates.replaceNodeContents(labelarea, html, js);
+                        addZeroPriceListener(data);
+                    }
                 });
 
                 return true;
