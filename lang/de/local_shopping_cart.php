@@ -558,6 +558,7 @@ $string['unknown'] = ' - Zahlmethode unbekannt';
 $string['usecredit'] = 'Verwende Guthaben:';
 $string['useinstallments'] = "Ratenzahlungen aktivieren";
 $string['user'] = 'Teilnehmerin...';
+$string['userid'] = 'Nutzer:in id';
 $string['useraddeditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} hinzugefügt';
 $string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
 $string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gelöscht';

@@ -627,6 +627,7 @@ $string['unknown'] = ' - method unknown';
 $string['usecredit'] = 'Use credit:';
 $string['useinstallments'] = "Use installment payments";
 $string['user'] = 'User...';
+$string['userid'] = 'Userid';
 $string['useraddeditem'] = 'User with the userid {$a->userid} added item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userdeleteditem'] = 'User with the userid {$a->userid} deleted item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';

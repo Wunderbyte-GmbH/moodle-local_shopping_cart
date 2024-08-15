@@ -138,7 +138,7 @@ if (!empty($colselects)) {
 // ...unique in your call to get_records?" bug.
 $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
-        " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
+        " AS uniqueid, scl.id, scl.userid, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $customorderid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
@@ -178,6 +178,7 @@ if ($debug != 2) {
     // Headers.
     $headers = [
         get_string('id', 'local_shopping_cart'),
+        get_string('userid', 'local_shopping_cart'),
         get_string('identifier', 'local_shopping_cart'),
         get_string('timecreated', 'local_shopping_cart'),
         get_string('timemodified', 'local_shopping_cart'),
@@ -201,6 +202,7 @@ if ($debug != 2) {
     // Columns.
     $columns = [
         'id',
+        'userid',
         'identifier',
         'timecreated',
         'timemodified',
