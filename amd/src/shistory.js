@@ -33,6 +33,8 @@ import {showNotification} from 'local_shopping_cart/notifications';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
+// As there is a dependency, we can load it like this.
+import {queries} from 'local_wunderbyte_table/init';
 
 const SELECTORS = {
     CANCELBUTTON: '.cashier-history-items .shopping_cart_history_cancel_button',
@@ -167,16 +169,23 @@ export function cancelPurchase(itemid, area, userid, componentname, historyid, c
                     console.log(e);
                 });
 
+                // When we have no button, this means that we
                 if (!button) {
                     import('local_wunderbyte_table/reload')
-                    // eslint-disable-next-line promise/always-return
                     .then(wbt => {
-                        wbt.reloadAllTables();
+                        // Look if there are tables on this page.
+                        if (queries && queries.length > 0) {
+                            wbt.reloadAllTables();
+                        } else {
+                            window.location.reload();
+                        }
+                        return;
                     })
                     .catch(err => {
                             // Handle any errors, including if the module doesn't exist
                             // eslint-disable-next-line no-console
                             console.log(err);
+                            window.location.reload();
                     });
                     return;
                 }
