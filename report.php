@@ -87,12 +87,30 @@ if (!empty($account)) {
             $cols = $DB->get_columns($tablename);
             // Generate a select for each table.
             // Only do this, if an orderid exists.
+
+            $orderidexists = false;
+            $paymentbrandexists = false;
+
+            $select = "SELECT $gwname.id, $gwname.paymentid";
+            $from = "FROM {paygw_$gwname} $gwname";
+
             foreach ($cols as $key => $value) {
                 if (strpos($key, 'orderid') !== false) {
-                    $colselects[] =
-                        "SELECT $gwname.id, $gwname.paymentid, $gwname.$key orderid
-                        FROM {paygw_$gwname} $gwname";
+                    $orderidexists = true;
+
+                    $select .= ", $gwname.$key orderid ";
                 }
+                if (strpos($key, 'paymentbrand') !== false) {
+                    $paymentbrandexists = true;
+                    $select .= ", $gwname.$key paymentbrand ";
+                }
+            }
+            if ($orderidexists) {
+
+                if (!$paymentbrandexists) {
+                    $select .= ", '" . get_string('unknown', 'local_shopping_cart') . "' as paymentbrand ";
+                }
+                $colselects[] = "$select $from";
             }
         }
     }
@@ -120,7 +138,7 @@ if (!empty($colselects)) {
         // Sql_cast_to_char is available since Moodle 4.1.
         $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
             "COALESCE(CAST(pgw.id AS VARCHAR),'X')");
-    $selectorderidpart = ", pgw.orderid";
+    $selectorderidpart = ", pgw.orderid, pgw.paymentbrand";
     $colselectsstring = implode(' UNION ', $colselects);
     $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
 } else {
@@ -193,6 +211,7 @@ if ($debug != 2) {
         get_string('itemid', 'local_shopping_cart'),
         get_string('itemname', 'local_shopping_cart'),
         get_string('payment', 'local_shopping_cart'),
+        get_string('paymentbrand', 'local_shopping_cart'),
         get_string('paymentstatus', 'local_shopping_cart'),
         get_string('gateway', 'local_shopping_cart'),
         get_string('orderid', 'local_shopping_cart'),
@@ -217,6 +236,7 @@ if ($debug != 2) {
         'itemid',
         'itemname',
         'payment',
+        'paymentbrand',
         'paymentstatus',
         'gateway',
     ];
@@ -330,6 +350,7 @@ if ($debug != 2) {
         'itemid',
         'itemname',
         'payment',
+        'paymentbrand',
         'paymentstatus',
         'gateway',
         'orderid',

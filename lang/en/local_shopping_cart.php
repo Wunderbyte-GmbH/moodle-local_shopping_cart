@@ -432,6 +432,7 @@ $string['payment'] = 'Payment method';
 $string['payment_added'] = 'User has started a payment transaction';
 $string['payment_added_log'] = 'User with the userid {$a->userid} has started a payment with the identifier {$a->identifier} for item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['paymentaborted'] = 'Aborted';
+$string['paymentbrand'] = 'Brand';
 $string['paymentcanceled'] = 'Canceled';
 $string['paymentcashier'] = 'at cashier\'s office';
 $string['paymentcashier:cash'] = 'with cash at cashier\'s office';

@@ -427,6 +427,7 @@ $string['payment'] = 'Bezahlmethode';
 $string['payment_added'] = 'Nutzer/in hat eine Zahlung gestartet';
 $string['payment_added_log'] = 'Nutzer/in mit der id {$a->userid} hat für den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} einen Zahlungsprozess mit dem identifier {$a->identifier} gestartet';
 $string['paymentaborted'] = 'Abgebrochen';
+$string['paymentbrand'] = 'Marke';
 $string['paymentcanceled'] = 'Storno';
 $string['paymentcashier'] = 'an der Kassa';
 $string['paymentcashier:cash'] = 'in bar an der Kassa';
