@@ -557,7 +557,7 @@ $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
- Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]] and [[date]] (outside of [[items]] tag).
+ Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
  Only use basic HTML supported by TCPDF';
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
@@ -573,6 +573,7 @@ $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)'
 $string['samecostcenter'] = 'Only one cost center per payment';
 $string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
 Items with different cost centers need to be booked separately.';
+$string['saveinvoicenumber'] = 'Just save invoice number';
 $string['sch_paymentaccountid'] = "Change the payment account";
 $string['se'] = "Sweden";
 $string['searchforitem'] = 'Search for item...';
@@ -594,6 +595,8 @@ $string['showvatnrchecker'] = "Use VAT number and potentially waive VAT";
 $string['showvatnrcheckerdescription'] = "If successfully verified, VAT may be waived";
 $string['si'] = "Slovenia";
 $string['sk'] = "Slovakia";
+$string['startinvoicenumber'] = "Number to start the invoice numbers";
+$string['startinvoicenumber_desc'] = "You can use prefixes, but there needs to be at number, which then will be increased";
 $string['startinvoicingdate'] = 'Enter a date from which you want to start generating invoices';
 $string['startinvoicingdatedesc'] = 'In order to prevent invoice creation from invoices in the past
  enter a UNIX timestamp for starting date to issue invoices. Get it from there: https://www.unixtimestamp.com/';

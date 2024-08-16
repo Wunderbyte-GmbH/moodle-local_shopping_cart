@@ -31,7 +31,7 @@ $observers = [
         'callback' => '\local_shopping_cart\observer::payment_error',
     ],
     [
-            'eventname' => '\local_shopping_cart\event\checkout_completed',
-            'callback' => '\local_shopping_cart\observer::checkout_completed',
+        'eventname' => '\local_shopping_cart\event\payment_confirmed',
+        'callback' => '\local_shopping_cart\observer::payment_confirmed',
     ],
 ];

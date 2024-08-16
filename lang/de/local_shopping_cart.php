@@ -488,7 +488,7 @@ $string['receipt:transactionno'] = 'Transaktionsnummer';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[price]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
- Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]] und [[date]] verwenden.
+ Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] und [[order_number]] verwenden.
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
@@ -504,6 +504,7 @@ $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch,
 $string['samecostcenter'] = 'Nur eine Kostenstelle pro Zahlungsvorgang';
 $string['samecostcenter_desc'] = 'Alle Items im Warenkorb müssen die selbe Kostenstelle haben.
 Items mit unterschiedlichen Kostenstellen müssen separat gebucht werden.';
+$string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
 $string['se'] = "Schweden";
 $string['searchforitem'] = 'Suche...';
@@ -525,6 +526,8 @@ $string['showvatnrchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls 
 $string['showvatnrcheckerdescription'] = "Bei erfolgreicher Überprüfung kann auf die Einhebung der Umsatzsteuer verzichtet werden";
 $string['si'] = "Slowenien";
 $string['sk'] = "Slowakei";
+$string['startinvoicenumber'] = "Mit dieser Nummer beginnt der Rechnungskreislauf";
+$string['startinvoicenumber_desc'] = "Sie können einen Prefix eingeben. Es muss allerdings auch eine Zahl enthalten sein";
 $string['startinvoicingdate'] = 'Mit dem folgenden Datum beginnen Sie mit der Rechnungsstellung';
 $string['startinvoicingdatedesc'] = 'Geben Sie einen Unix Timestamp für den Zeitpunkt ein, ab dem Sie Rechnungen generieren wollen.
  Kopieren Sie ihn von dort: https://www.unixtimestamp.com/';

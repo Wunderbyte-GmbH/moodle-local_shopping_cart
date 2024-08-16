@@ -26,6 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/pdflib.php');
 
 use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\addresses;
 
 require_login();
 
@@ -74,6 +75,8 @@ foreach ($files as $file) {
 
 $items = local_shopping_cart\shopping_cart_history::return_data_from_ledger_via_identifier($id);
 $timecreated = $items[array_key_first($items)]->timecreated;
+$addressbilling = $items[array_key_first($items)]->address_billing ?? 0;
+$addressshipping = $items[array_key_first($items)]->address_shipping ?? 0;
 $date = date($dateformat, $timecreated);
 $userid = $items[array_key_first($items)]->userid;
 
@@ -109,6 +112,19 @@ if (!empty($picturefile)) {
     $userpic = '';
 }*/
 
+$address = '';
+if (!empty($addressbilling)) {
+    $billingaddress = addresses::get_address_string_for_user($userid, $addressbilling);
+    $address .= $billingaddress;
+}
+if (!empty($addressshipping)) {
+    $shippingaddress = addresses::get_address_string_for_user($userid, $addressshipping);
+    $address .= "<br>" . html_writer::tag('b', get_string('addresses:shipping', 'local_shopping_cart'));
+    $address .= ': <br>' .  $shippingaddress;
+}
+
+$invoicenumber = $DB->get_field('local_shopping_cart_invoices', 'invoiceid', ['identifier' => $id]);
+
 $cfghtml = str_replace("[[id]]", $id, $cfghtml);
 $cfghtml = str_replace("[[date]]", $date, $cfghtml);
 $cfghtml = str_replace("[[username]]", $user->username, $cfghtml);
@@ -118,9 +134,9 @@ $cfghtml = str_replace("[[mail]]", $user->email, $cfghtml);
 $cfghtml = str_replace("[[email]]", $user->email, $cfghtml);
 $cfghtml = str_replace("[[institution]]", $user->institution, $cfghtml);
 $cfghtml = str_replace("[[department]]", $user->department, $cfghtml);
-$cfghtml = str_replace("[[address]]", $user->address, $cfghtml);
-$cfghtml = str_replace("[[city]]", $user->city, $cfghtml);
-$cfghtml = str_replace("[[country]]", $user->country, $cfghtml);
+$cfghtml = str_replace("[[address]]", $address, $cfghtml);
+$cfghtml = str_replace("[[order_number]]", $id, $cfghtml);
+$cfghtml = str_replace("[[invoice_number]]", $invoicenumber ?: '', $cfghtml);
 
 // We also add the possibility to use any custom user profile field as param.
 if (empty($user->profile)) {
