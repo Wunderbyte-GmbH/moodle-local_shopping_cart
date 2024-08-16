@@ -627,6 +627,38 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024052906, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2024081505) {
+        // As there was a problem with commit history, we repeat the adding of these fields.
+        // Define field address_billing to be added to local_shopping_cart_history.
+        $tablehistory = new xmldb_table('local_shopping_cart_history');
+        $tableledger = new xmldb_table('local_shopping_cart_ledger');
+        $fieldbilling = new xmldb_field('address_billing', XMLDB_TYPE_CHAR, '10', null, null, null, null, 'taxcountrycode');
+        $fieldshipping = new xmldb_field('address_shipping', XMLDB_TYPE_CHAR, '10', null, null, null, null, 'address_billing');
+        $fieldtaxcountrycode = new xmldb_field('taxcountrycode', XMLDB_TYPE_CHAR, '5', null, null, null, null, 'taxcategory');
+
+        if (!$dbman->field_exists($tablehistory, $fieldtaxcountrycode)) {
+            $dbman->add_field($tablehistory, $fieldtaxcountrycode);
+        }
+        if (!$dbman->field_exists($tablehistory, $fieldbilling)) {
+            $dbman->add_field($tablehistory, $fieldbilling);
+        }
+        if (!$dbman->field_exists($tablehistory, $fieldshipping)) {
+            $dbman->add_field($tablehistory, $fieldshipping);
+        }
+        if (!$dbman->field_exists($tableledger, $fieldtaxcountrycode)) {
+            $dbman->add_field($tableledger, $fieldtaxcountrycode);
+        }
+        if (!$dbman->field_exists($tableledger, $fieldbilling)) {
+            $dbman->add_field($tableledger, $fieldbilling);
+        }
+        if (!$dbman->field_exists($tableledger, $fieldshipping)) {
+            $dbman->add_field($tableledger, $fieldshipping);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2024081505, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
