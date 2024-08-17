@@ -348,9 +348,8 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['canpayback'] = true;
         }
 
-        if ($this->taxesenabled) {
-            $returnarray['taxesenabled'] = true;
-        }
+        // The "taxesenabled" array key must exist and contains value.
+        $returnarray['taxesenabled'] = $this->taxesenabled ?? false;
 
         if ($this->userid) {
             $returnarray['userid'] = $this->userid;
