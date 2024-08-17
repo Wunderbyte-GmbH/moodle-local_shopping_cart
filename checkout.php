@@ -75,6 +75,14 @@ $userid = $USER->id;
 if (isset($identifier)) {
     $data = [];
     $historylist = new shoppingcart_history_list($userid, $identifier, true);
+
+    // Prevent users to see the invoices of others.
+    if (
+        $historylist->return_userid() != $userid
+    ) {
+        require_capability('local/shopping_cart:cashier', context_system::instance());
+    }
+
     $success = shopping_cart_history::has_successful_checkout($identifier);
 }
 
