@@ -26,6 +26,7 @@
 
 use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -88,7 +89,6 @@ if (isset($identifier)) {
 
 if (isset($success) && isset($historylist)) {
     if (!empty($success)) {
-
         $historylist->insert_list($data);
 
         $data['success'] = 1;
@@ -105,6 +105,18 @@ if (isset($success) && isset($historylist)) {
         if (!empty($jsononly)) {
             echo json_encode(['status' => 0]);
             die;
+        }
+        if (
+            get_config('local_shopping_cart', 'startinvoicenumber') !== ''
+            && get_config('local_shopping_cart', 'startinvoicenumber') !== false
+        ) {
+            try {
+                create_invoice::create_invoice_files_from_identifier($identifier, $userid);
+            } catch (Exception $e) {
+                if ($CFG->debug == DEBUG_DEVELOPER) {
+                    throw $e;
+                }
+            }
         }
     } else {
         $data['failed'] = 1;

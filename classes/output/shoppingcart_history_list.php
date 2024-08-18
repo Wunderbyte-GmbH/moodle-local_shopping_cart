@@ -386,6 +386,16 @@ class shoppingcart_history_list implements renderable, templatable {
     }
 
     /**
+     * Return userid.
+     *
+     * @return int
+     *
+     */
+    public function return_userid() {
+        return $this->userid;
+    }
+
+    /**
      * Add tax info
      *
      * @param stdClass $item

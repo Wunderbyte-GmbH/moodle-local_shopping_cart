@@ -529,6 +529,14 @@ if ($hassiteconfig) {
     ));
 
     // Add a text field for the Base URL.
+    $settings->add(new admin_setting_configtext('local_shopping_cart/pathtoinvoices',
+            get_string('pathtoinvoices', 'local_shopping_cart'),
+            get_string('pathtoinvoices_desc', 'local_shopping_cart'),
+            "/local_shopping_cart_invoices",
+            PARAM_TEXT
+    ));
+
+    // Add a text field for the Base URL.
     $settings->add(new admin_setting_configtext('local_shopping_cart/baseurl',
             get_string('baseurl', 'local_shopping_cart'),
             get_string('baseurldesc', 'local_shopping_cart'),

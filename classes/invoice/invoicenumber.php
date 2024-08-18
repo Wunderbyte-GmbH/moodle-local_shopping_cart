@@ -111,4 +111,19 @@ class invoicenumber {
         return [$prefix ?? '', $number];
     }
 
+    /**
+     * Returns the invoicenumber linked to the identifier.
+     *
+     * @param int $identifier
+     *
+     * @return string
+     *
+     */
+    public static function get_invoicenumber_by_identifier(int $identifier) {
+        global $DB;
+
+        $invoicenumber = $DB->get_field('local_shopping_cart_invoices', 'invoiceid', ['identifier' => $identifier]);
+
+        return $invoicenumber ?? '';
+    }
 }
