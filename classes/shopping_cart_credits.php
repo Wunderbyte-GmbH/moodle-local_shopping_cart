@@ -222,8 +222,8 @@ class shopping_cart_credits {
 
         list($newbalance, $currency) = self::get_balance($userid);
 
-        if ($newbalance > 0) {
-            // We add the right cache.
+        if ($newbalance >= 0) {
+            // We add the right cache even if it is 0.
 
             $cartstore = cartstore::instance($userid);
             $cartstore->set_credit($newbalance, $currency);
