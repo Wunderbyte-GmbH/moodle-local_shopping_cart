@@ -126,14 +126,14 @@ class create_invoice {
             $message = $e->getMessage();
             $code = $e->getCode();
             // Get detailed information about $file.
-            $fileinfo = array(
+            $fileinfo = [
                     'filename' => $file->get_filename(),
                     'filepath' => $file->get_filepath(),
                     'filesize' => $file->get_filesize(),
                     'filearea' => $file->get_filearea(),
                     'timecreated' => $file->get_timecreated(),
 
-            );
+            ];
             debugging("Moodle Exception: $message (Code: $code). File Info: " . var_dump($fileinfo, true));
         }
     }
@@ -163,11 +163,12 @@ class create_invoice {
      *
      * @param int $identifier
      * @param int $userid
+     * @param string $filename
+     * @param bool $asstring
      *
      * @return string
-     *
      */
-    public static function create_receipt(int $identifier, int $userid, string $filename = '', bool $asstring = false) {
+    public static function create_receipt(int $identifier, int $userid, string $filename = '', bool $asstring = false): string {
 
         global $CFG;
 
@@ -441,13 +442,8 @@ class create_invoice {
 
         ob_end_clean();
 
-        // ob_start();
-
         $filename = $user->firstname . '_' . $user->lastname . '_' . $date . '.pdf';
         $returnstring = $pdf->Output($filename, $asstring ? 'S' : 'I');
-
-        // $returnstring = ob_get_contents();
-        // ob_end_clean();
 
         // Close and output PDF document.
         // This method has several options, check the source code documentation for more information.

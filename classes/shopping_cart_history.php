@@ -1012,6 +1012,11 @@ class shopping_cart_history {
         return $success;
     }
 
+    /**
+     * Get installmentdata.
+     * @param object $shistoryitem
+     * @return array
+     */
     public static function get_installmentdata($shistoryitem): array {
         global $DB;
             // If installments are given, modify the informations.
