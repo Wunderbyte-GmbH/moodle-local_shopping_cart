@@ -64,6 +64,8 @@ Feature: User cancellation after cash payment on the checkout page.
     Then I should see "Payment successful!"
     And I should see "my test item 1" in the ".payment-success ul.list-group" "css_element"
     And I should not see "my test item 2" in the ".payment-success ul.list-group" "css_element"
+    ## Verify downloaded receipt - should be about 115K on disk
+    And following "Receipt" should download between "114000" and "120000" bytes
     And I log out
     And I log in as "admin"
     And I visit "/local/shopping_cart/report.php"
