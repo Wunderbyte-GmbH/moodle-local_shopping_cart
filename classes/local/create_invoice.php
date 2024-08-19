@@ -103,9 +103,9 @@ class create_invoice {
         try {
             $dataroot = $CFG->dataroot;
             $datadir = $dataroot . '/'
-                . empty(get_config('local_shopping_cart', 'pathtoinvoices'))
+                . (empty(get_config('local_shopping_cart', 'pathtoinvoices'))
                     ? 'local_shopping_cart_invoices'
-                    : get_config('local_shopping_cart', 'pathtoinvoices');
+                    : get_config('local_shopping_cart', 'pathtoinvoices'));
             $filepath = $datadir . "/" . $filename;
             if (!is_dir($datadir)) {
                 // Create the directory if it doesn't exist.
