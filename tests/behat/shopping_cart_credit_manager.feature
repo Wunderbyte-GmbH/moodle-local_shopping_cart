@@ -209,3 +209,8 @@ Feature: Cashier manage credits in shopping cart
     And I should see "Credits paid back by cash" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
     And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    ## Force credits to 0 to avoid potential issues in other tests
+    And the following "local_shopping_cart > user credits" exist:
+      | user  | credit | currency |
+      | user1 | 0     | EUR      |
+    And I log out
