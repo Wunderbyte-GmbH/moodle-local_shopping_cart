@@ -45,7 +45,7 @@
 <div class="shopping-cart-price item-price">
 
     {{! prices have tax information }}
-    {{#taxesenabled}}<b class="pull-right">{{price_gross}} {{currency}}</b><br/><small>({{price_net}} {{currency}} + {{taxpercentage_visual}}%)</small>{{/taxesenabled}}
+    {{#taxesenabled}}<b class="pull-right">{{price_gross}} {{currency}}</b><br><small>({{price_net}} {{currency}} + {{taxpercentage_visual}}%)</small>{{/taxesenabled}}
 
     {{! prices without tax information }}
     {{^taxesenabled}}<b>{{price}} {{currency}}</b>{{/taxesenabled}}
