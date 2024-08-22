@@ -106,9 +106,10 @@ if (isset($success) && isset($historylist)) {
             echo json_encode(['status' => 0]);
             die;
         }
+
         if (
-            get_config('local_shopping_cart', 'startinvoicenumber') !== ''
-            && get_config('local_shopping_cart', 'startinvoicenumber') !== false
+            get_config('local_shopping_cart', 'invoicingplatform') === 'saveinvoicenumber'
+            && !empty(get_config('local_shopping_cart', 'startinvoicenumber'))
         ) {
             try {
                 create_invoice::create_invoice_files_from_identifier($identifier, $userid);

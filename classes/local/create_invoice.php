@@ -29,6 +29,7 @@ namespace local_shopping_cart\local;
 use context_system;
 use core_payment\account;
 use core_user;
+use Exception;
 use html_writer;
 use local_shopping_cart\addresses;
 use local_shopping_cart\invoice\invoicenumber;
@@ -109,7 +110,7 @@ class create_invoice {
             $filepath = $datadir . "/" . $filename;
             if (!is_dir($datadir)) {
                 // Create the directory if it doesn't exist.
-                if (!make_upload_directory('local_shopping_cart_invoices')) {
+                if (!make_upload_directory($datadir)) {
                     // Handle directory creation error (e.g., display an error message).
                     throw new moodle_exception('errorcreatingdirectory', 'local_shopping_cart');
                 }
@@ -121,7 +122,7 @@ class create_invoice {
             if (!$file->copy_content_to($filepath)) {
                 throw new moodle_exception('errorcopyingfiles', 'local_shopping_cart');
             }
-        } catch (moodle_exception $e) {
+        } catch (Exception $e) {
             // Exception handling.
             $message = $e->getMessage();
             $code = $e->getCode();
