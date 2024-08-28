@@ -114,15 +114,21 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                     // Set link to right receipt.
                     addPrintIdentifier(data.identifier, userid);
 
-                    document.getElementById('success-tab').classList.add('success');
-
-                    displayPaymentMessage('paymentsuccessful');
+                    const successtab = document.getElementById('success-tab');
+                    if (successtab) {
+                        successtab.classList.add('success');
+                        displayPaymentMessage('paymentsuccessful');
+                    }
                 }
 
             } else {
                 console.log('payment denied');
                 displayPaymentMessage('paymentdenied', false);
-                document.getElementById('success-tab').classList.add('error');
+
+                const successtab = document.getElementById('success-tab');
+                if (successtab) {
+                    successtab.classList.classList.add('error');
+                }
             }
         },
         fail: function(ex) {
