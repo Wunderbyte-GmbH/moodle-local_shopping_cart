@@ -266,8 +266,8 @@ class shopping_cart_credits {
         int $userid,
         float $credit,
         string $currency,
-        string $costcenter = '',
-        ): array {
+        string $costcenter = ''
+    ): array {
 
         global $DB, $USER;
 
