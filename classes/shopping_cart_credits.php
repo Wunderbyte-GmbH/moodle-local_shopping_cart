@@ -43,6 +43,7 @@ class shopping_cart_credits {
      * Returns the current balance of the given user.
      *
      * @param int $userid
+     * @param string $costcenter
      * @return array
      */
     public static function get_balance(int $userid, string $costcenter = ''): array {
@@ -62,12 +63,12 @@ class shopping_cart_credits {
         }
 
         $params = ['userid' => $userid];
-        if (!empty($samecostcenterforcredits) && !empty($costcenter)) {
-            $additionalsql = " AND costcenter = :costcenter ";
+        $additionalsql = '';
+        if (!empty($samecostcenterforcredits)) {
+            $additionalsql = " AND COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
             $params['costcenter'] = $costcenter;
-        } else {
-            $additionalsql = " AND costcenter IS NULL ";
         }
+
         $sql = 'SELECT balance, currency
         FROM {local_shopping_cart_credits}
         WHERE userid = :userid' . $additionalsql . '
@@ -83,20 +84,80 @@ class shopping_cart_credits {
             $currency = $balancerecord->currency;
         }
 
-        if ($CFG->debug == DEBUG_DEVELOPER) {
-            // Only in developer mode, we check if balance matches with total sum of credits.
-            if (!$sumofcredits = $DB->get_field_sql("SELECT SUM(credits) sumofcredits
-                FROM {local_shopping_cart_credits}
-                WHERE userid =:userid", ['userid' => $userid])) {
+        if (
+            $CFG->debug == DEBUG_DEVELOPER
+            && empty($samecostcenterforcredits)
+        ) {
 
+            $sql = "SELECT SUM(credits) sumofcredits
+            FROM {local_shopping_cart_credits}
+            WHERE userid =:userid";
+            // Only in developer mode, we check if balance matches with total sum of credits.
+            if (!$sumofcredits = $DB->get_field_sql($sql, ['userid' => $userid])) {
                 $sumofcredits = 0;
             }
             if (round($sumofcredits, 2) != round($balance, 2)) {
-                throw new moodle_exception(get_string('creditnotmatchbalance', 'local_shopping_cart', strval($userid)));
+                throw new moodle_exception(get_string(
+                    'creditnotmatchbalance',
+                    'local_shopping_cart',
+                    strval($userid)
+                ));
             }
         }
 
         return [round($balance, 2), $currency];
+    }
+
+
+    /**
+     * Returns the current balance of the given user.
+     *
+     * @param int $userid
+     * @return array
+     */
+    public static function get_balance_for_all_costcenters(int $userid): array {
+
+        global $CFG, $DB;
+
+        $params = ['userid' => $userid];
+        $sql = 'SELECT id, balance, currency, costcenter
+                FROM {local_shopping_cart_credits}
+                WHERE userid = 5
+                AND id IN (
+                    SELECT MAX(id)
+                    FROM {local_shopping_cart_credits}
+                    WHERE userid = :userid
+                    GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'\')
+                )
+                ORDER BY costcenter ASC';
+
+        // Get the latest balance of the given costcenter.
+        if (!$balancerecords = $DB->get_records_sql($sql, $params)) {
+            return [];
+        }
+
+        $translations = get_config('local_shopping_cart', 'costcenterstrings');
+        $translationsarray = [];
+        if (!empty($translations)) {
+            $translations = explode(PHP_EOL, $translations);
+
+            foreach ($translations as $translation) {
+                $kvpair = explode(',', $translation);
+
+                if (($kvpair[0] ?? false) && ($kvpair[1] ?? false)) {
+                    $translationsarray[$kvpair[0]] = $kvpair[1];
+                }
+            }
+        }
+
+        $returnarray = array_map(fn($a) => [
+            'id' => $a->id,
+            'costcenter' => $translationsarray[$a->costcenter] ?? $a->costcenter,
+            'balance' => round($a->balance, 2),
+            'currency' => $a->currency,
+        ], $balancerecords);
+
+        return $returnarray;
     }
 
     /**

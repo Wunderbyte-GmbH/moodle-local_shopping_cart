@@ -201,6 +201,16 @@ if ($hassiteconfig) {
                         PARAM_TEXT
                 )
             );
+
+        $settings->add(
+        new admin_setting_configtextarea(
+                $componentname . '/costcenterstrings',
+                get_string('costcenterstrings', $componentname),
+                get_string('costcenterstrings_desc', $componentname),
+                '',
+                PARAM_RAW
+        )
+        );
     }
 
     // Setting to activate manual rebooking for cashier.

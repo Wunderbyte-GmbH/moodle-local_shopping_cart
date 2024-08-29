@@ -220,6 +220,8 @@ $string['confirmzeropricecheckout'] = 'Bestätige';
 $string['confirmzeropricecheckoutbody'] = 'Für diese Buchung ist keine Zahlung notwendig.
 Wollen Sie fortfahren und direkt buchen?';
 $string['confirmzeropricecheckouttitle'] = 'Jetzt buchen';
+$string['costcenterstrings'] = 'Übersetzungen für Kostenstellen';
+$string['costcenterstrings_desc'] = 'Übersetzungen für Kostenstellen';
 $string['credit'] = 'Guthaben:';
 $string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
 Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';
@@ -390,6 +392,7 @@ $string['modulename'] = 'Warenkorb';
 $string['mt'] = "Malta";
 $string['mycart'] = 'Mein Warenkorb';
 $string['nl'] = "Niederlande";
+$string['nocostcenter'] = 'Keine Kostenstelle';
 $string['nofixedpercentage'] = 'Kein fixer Prozentsatz';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';

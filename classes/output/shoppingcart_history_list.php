@@ -29,6 +29,7 @@ use context_system;
 use local_shopping_cart\local\rebookings;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
 use moodle_url;
 use renderable;
@@ -69,6 +70,13 @@ class shoppingcart_history_list implements renderable, templatable {
      * @var float
      */
     private $credit = 0;
+
+    /**
+     * Costcenter credits.
+     *
+     * @var array
+     */
+    private $costcentercredits = [];
 
     /**
      * Currency.
@@ -252,9 +260,13 @@ class shoppingcart_history_list implements renderable, templatable {
             }
         }
 
-        $cartstore = cartstore::instance($userid);
-        $data = $cartstore->get_data();
-        $this->credit = $data['credit'];
+        if (!get_config('local_shopping_cart', 'samecostcenterforcredits')) {
+            $cartstore = cartstore::instance($userid);
+            $data = $cartstore->get_data();
+            $this->credit = $data['credit'];
+        } else {
+            $this->costcentercredits = shopping_cart_credits::get_balance_for_all_costcenters($userid);
+        }
     }
 
 
@@ -338,6 +350,14 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if (!empty($this->credit)) {
             $returnarray['credit'] = number_format(round((float) $this->credit ?? 0, 2), 2, '.', '');
+        }
+
+        if (!empty($this->costcentercredits)) {
+
+            foreach ($this->costcentercredits as $key => $value) {
+                $this->costcentercredits[$key]['balance'] = number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
+            }
+            $returnarray['costcentercredits'] = array_values($this->costcentercredits);
         }
 
         if (!empty($this->currency)) {

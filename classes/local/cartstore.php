@@ -98,6 +98,19 @@ class cartstore {
         $data['expirationtime'] = $expirationtime;
         $data['costcenter'] = $item->costcenter ?? "";
 
+        // When we add the first item, we need to reset credit...
+        // ... because we can only use the one from the correct cost center.
+
+        if (
+            get_config('local_shopping_cart', 'samecostcenterforcredits')
+            && !empty($data['costcenter'])
+        ) {
+            [$credit, $currency] = shopping_cart_credits::get_balance($this->userid, $data['costcenter']);
+            $data['credit'] = $credit;
+            $data['remainingcredit'] = $credit;
+            $data['currency'] = $currency;
+        }
+
         $this->set_cache($data);
 
         return $itemdata;
@@ -618,10 +631,11 @@ class cartstore {
         $cachedata = $cache->get($cachekey);
 
         if (empty($cachedata)) {
-
             $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
             $usecredit = 1;
-            list($credit, $currency) = shopping_cart_credits::get_balance($this->userid);
+
+            [$credit, $currency] = shopping_cart_credits::get_balance($this->userid);
+
             $cachedata = [
                 'userid' => $this->userid,
                 'credit' => $credit,

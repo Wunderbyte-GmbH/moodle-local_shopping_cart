@@ -140,7 +140,7 @@ class modal_creditsmanager extends dynamic_form {
         $mode = $data->creditsmanagermode;
         switch ($mode) {
             case 1: // Correct credits.
-                if (!shopping_cart_credits::creditsmanager_correct_credits($data)) {
+                if (!self::creditsmanager_correct_credits($data)) {
                     $data->error = 'notenoughcredits';
                 }
                 break;
