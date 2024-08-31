@@ -52,7 +52,6 @@ class dynamic_select_users extends dynamic_form {
 
         $mform->addElement('autocomplete', 'userid', get_string('selectuser', 'local_shopping_cart'), [], $options);
         $mform->addElement('submit', 'submitbutton', get_string('continue') . ' ❯❯');
-
     }
 
     /**
@@ -81,11 +80,13 @@ class dynamic_select_users extends dynamic_form {
 
         if ($data->userid) {
             $url = new moodle_url(
-                $CFG->wwwroot . '/local/shopping_cart/cashier.php', [
+                $CFG->wwwroot . '/local/shopping_cart/cashier.php',
+                [
                     'userid' => $data->userid,
                     'submit' => 'Choose',
-                ]);
-            redirect($url);
+                ]
+            );
+            $data->redirecturl = $url->out(false);
         }
 
         return $data;
@@ -149,7 +150,7 @@ class dynamic_select_users extends dynamic_form {
 
         $errors = [];
 
-        if (empty($data->userid)) {
+        if (empty($data['userid'])) {
             $errors['userid'] = get_string('selectuserfirst', 'local_shopping_cart');
         }
 

@@ -71,7 +71,7 @@ $data['userid'] = $userid;
 $data['wwwroot'] = $CFG->wwwroot;
 
 $selectuserform = new dynamic_select_users();
-$data['selectuserform'] = $selectuserform->render();
+$data['selectuserform'] = html_writer::div($selectuserform->render(), '', ['data-id' => 'sc-selectuserformcontainer']);
 
 // We only allow manual booking, if the user has the capability to do this.
 if (has_capability('local/shopping_cart:cashiermanualrebook', $context)
