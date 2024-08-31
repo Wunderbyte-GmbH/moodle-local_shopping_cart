@@ -256,11 +256,13 @@ class shopping_cart_credits {
      * Adds the given credit to the current users balance.
      * This is somewhat expensive, as we always run checks on the consistency of the ledger.
      * Returns the total balance of the user.
-     *
      * @param int $userid
      * @param float $credit
      * @param string $currency
+     * @param string $costcenter
+     *
      * @return array
+     *
      */
     public static function add_credit(
         int $userid,
