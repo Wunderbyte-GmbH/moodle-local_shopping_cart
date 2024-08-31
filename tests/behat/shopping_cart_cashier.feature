@@ -161,9 +161,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
     And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |
@@ -198,9 +195,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
     And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |
