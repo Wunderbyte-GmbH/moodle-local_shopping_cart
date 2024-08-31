@@ -50,7 +50,7 @@ if ($hassiteconfig) {
     if (empty($paymentaccounts)) {
 
         $moodleurl = new moodle_url('/payment/accounts.php');
-        $urlobject = new stdClass;
+        $urlobject = new stdClass();
         $urlobject->link = $moodleurl->out(false);
 
         // If we have no payment accounts then show a static text instead.

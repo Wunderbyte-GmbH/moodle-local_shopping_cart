@@ -110,7 +110,7 @@ class shopping_cart_history {
             $account = new \core_payment\account($accountid);
         } else {
             // If we have no payment accounts then print static text instead.
-            $urlobject = new stdClass;
+            $urlobject = new stdClass();
             $urlobject->link = (new moodle_url('/payment/accounts.php'))->out(false);
             $errmsg = get_string('nopaymentaccounts', 'local_shopping_cart');
             $errmsg .= ' '.get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject);

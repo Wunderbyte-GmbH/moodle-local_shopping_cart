@@ -271,7 +271,7 @@ class shopping_cart_credits {
 
         global $DB, $USER;
 
-        list($balance, $newcurrency) = self::get_balance($userid, $costcenter);
+        [$balance, $newcurrency] = self::get_balance($userid, $costcenter);
 
         $now = time();
 
@@ -293,7 +293,7 @@ class shopping_cart_credits {
             throw new moodle_exception('negativebalancenotallowed');
         }
 
-        list($newbalance, $currency) = self::get_balance($userid, $costcenter);
+        [$newbalance, $currency] = self::get_balance($userid, $costcenter);
 
         if ($newbalance >= 0) {
             // We add the right cache even if it is 0.
@@ -357,7 +357,7 @@ class shopping_cart_credits {
         self::use_credit($userid, $data);
 
         // Also record this in the ledger table.
-        $ledgerrecord = new stdClass;
+        $ledgerrecord = new stdClass();
         $now = time();
         $ledgerrecord->userid = $userid;
         $ledgerrecord->itemid = 0;

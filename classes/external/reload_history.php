@@ -51,7 +51,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reload_history extends external_api {
-
     /**
      * Describes the paramters for this service.
      *

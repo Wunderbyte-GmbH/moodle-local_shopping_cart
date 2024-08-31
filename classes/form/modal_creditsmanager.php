@@ -173,7 +173,7 @@ class modal_creditsmanager extends dynamic_form {
 
             // Log it to ledger.
             // Also record this in the ledger table.
-            $ledgerrecord = new stdClass;
+            $ledgerrecord = new stdClass();
             $now = time();
             $ledgerrecord->userid = $data->userid;
             $ledgerrecord->itemid = 0;
@@ -206,14 +206,14 @@ class modal_creditsmanager extends dynamic_form {
         $userid = $data->userid;
 
         // Get the current credit balance.
-        list($currentbalance, $currency) = shopping_cart_credits::get_balance($userid);
+        [$currentbalance, $currency] = shopping_cart_credits::get_balance($userid);
 
         $newbalance = $currentbalance - $data->creditsmanagercredits;
         if ($newbalance < 0) {
             return false;
         }
 
-        $creditrecord = new stdClass;
+        $creditrecord = new stdClass();
         $creditrecord->userid = $userid;
         $creditrecord->credits = -$data->creditsmanagercredits;
         $creditrecord->balance = $newbalance; // The new balance.
@@ -231,7 +231,7 @@ class modal_creditsmanager extends dynamic_form {
         $cartstore->set_credit($creditrecord->balance, $creditrecord->currency);
 
         // At last, we log it to ledger.
-        $ledgerrecord = new stdClass;
+        $ledgerrecord = new stdClass();
         $ledgerrecord->userid = $data->userid;
         $ledgerrecord->itemid = 0;
         $ledgerrecord->price = (float)(-1.0) * $data->creditsmanagercredits;
