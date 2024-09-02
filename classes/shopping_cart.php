@@ -60,7 +60,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart {
-
     /**
      * entities constructor.
      */
@@ -86,7 +85,8 @@ class shopping_cart {
         string $component,
         string $area,
         int $itemid,
-        int $userid): array {
+        int $userid
+    ): array {
 
         global $DB;
 
@@ -121,7 +121,6 @@ class shopping_cart {
             $cartitem = component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
 
             if (get_config('local_shopping_cart', 'samecostcenter')) {
-
                 $currentcostcenter = $cartitem['costcenter'] ?? '';
 
                 if (!$cartstore->same_costcenter($currentcostcenter)) {
@@ -154,14 +153,18 @@ class shopping_cart {
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_ERROR,
                     'itemname' => '',
                 ];
-            } else if (isset($cartitem['allow']) && $cartitem['allow'] == false
-                && isset($cartitem['info']) && $cartitem['info'] == "fullybooked") {
+            } else if (
+                isset($cartitem['allow']) && $cartitem['allow'] == false
+                && isset($cartitem['info']) && $cartitem['info'] == "fullybooked"
+            ) {
                 return [
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED,
                     'itemname' => $cartitem['itemname'] ?? '',
                 ];
-            } else if (isset($cartitem['allow']) && $cartitem['allow'] == false
-                && isset($cartitem['info']) && $cartitem['info'] == "alreadybooked") {
+            } else if (
+                isset($cartitem['allow']) && $cartitem['allow'] == false
+                && isset($cartitem['info']) && $cartitem['info'] == "alreadybooked"
+            ) {
                 return [
                     'success' => LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED,
                     'itemname' => $cartitem['itemname'] ?? '',
@@ -302,15 +305,18 @@ class shopping_cart {
             // If we have nothing in our cart and we are not about...
             // ... to add the booking fee...
             // ... we add the booking fee.
-            list($areatocheck) = explode('-', $area);
+            [$areatocheck] = explode('-', $area);
             if (
                 $addfee
-                && !in_array($areatocheck, [
-                    'bookingfee',
-                    'rebookingfee',
-                    'rebookingcredit',
-                    'rebookitem',
-                    'installments']
+                && !in_array(
+                    $areatocheck,
+                    [
+                        'bookingfee',
+                        'rebookingfee',
+                        'rebookingcredit',
+                        'rebookitem',
+                        'installments',
+                    ]
                 )
             ) {
                 // If we buy for user, we need to use -1 as userid.
@@ -395,7 +401,6 @@ class shopping_cart {
         int $userid,
         bool $unload = true
     ): bool {
-
         global $USER;
 
         $userid = $userid == 0 ? $USER->id : $userid;
@@ -452,9 +457,10 @@ class shopping_cart {
 
             if ($letsdelete) {
                 foreach ($items as $item) {
-                    if (($item['area'] == 'bookingfee' ||
-                        $item['area'] == 'rebookingcredit')
-                        && $item['componentname'] == 'local_shopping_cart') {
+                    if (
+                        ($item['area'] == 'bookingfee' || $item['area'] == 'rebookingcredit')
+                        && $item['componentname'] == 'local_shopping_cart'
+                    ) {
                         self::delete_all_items_from_cart($userid);
                     }
                 }
@@ -708,7 +714,6 @@ class shopping_cart {
 
         // When the function is called from webservice, we don't have a $datafromhistory array.
         if (!$data = $datafromhistory) {
-
             $cartstore = cartstore::instance($userid);
             $data = $cartstore->get_data();
 
@@ -795,7 +800,6 @@ class shopping_cart {
 
         // Run through all items still in the cart and confirm payment.
         foreach ($data['items'] as $item) {
-
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
             $item = (array) $item;
 
@@ -916,15 +920,16 @@ class shopping_cart {
 
         // In our ledger, the credits table, we add an entry and make sure we actually deduce any credit we might have.
         // Only do this, if credits have not been used yet.
-        if (!$creditsalreadyused && isset($data['usecredit'])
-                && $data['usecredit'] === true) {
+        if (
+            !$creditsalreadyused && isset($data['usecredit'])
+            && $data['usecredit'] === true
+        ) {
             shopping_cart_credits::use_credit($userid, $data);
         } else {
             $data['remainingcredit'] = 0;
         }
 
         if ($success) {
-
             if ($paymenttype == LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL) {
                 // Trigger manual rebook event, so we can react on it within other plugins.
                 $event = payment_rebooked::create([
@@ -1024,10 +1029,10 @@ class shopping_cart {
         ?int $historyid = null,
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
-        int $applytocomponent = 1): array {
+        int $applytocomponent = 1
+    ): array {
 
         global $USER;
-
         // A user can only cancel for herself, unless she is cashier.
         if ($USER->id != $userid) {
             $context = context_system::instance();
@@ -1048,7 +1053,8 @@ class shopping_cart {
                 $componentname,
                 $area,
                 $itemid,
-                $userid);
+                $userid
+            );
             $historyid = empty($record) ? 0 : $record->id;
         }
 
@@ -1080,14 +1086,22 @@ class shopping_cart {
             }
         }
 
-        list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase($itemid,
-            $userid, $componentname, $area, $historyid);
+        [$success, $error, $credit, $currency, $record]
+            = shopping_cart_history::cancel_purchase(
+                $itemid,
+                $userid,
+                $componentname,
+                $area,
+                $historyid
+            );
 
         // Only the Cashier can override the credit. If she has done so, we use it.
         // Else, we use the normal credit.
         $context = context_system::instance();
-        if (!has_capability('local/shopping_cart:cashier', $context)
-            || $userid == $USER->id) { // If the cashier is cancelling her own booking, whe also gets normal credit.
+        if (
+            !has_capability('local/shopping_cart:cashier', $context)
+            || $userid == $USER->id
+        ) { // If the cashier is cancelling her own booking, whe also gets normal credit.
             if (empty($customcredit)) {
                 $customcredit = $credit;
             }
@@ -1099,7 +1113,6 @@ class shopping_cart {
             /* If the user canceled herself and a cancelation fee is set in config settings
             we deduce this fee from the credit. */
             if ($userid == $USER->id) {
-
                 // The credit might be reduced by the consumption.
                 $consumption = get_config('local_shopping_cart', 'calculateconsumation');
                 if ($consumption == 1) {
@@ -1107,15 +1120,15 @@ class shopping_cart {
                     $customcredit = $quota['remainingvalue'];
                 }
 
-                if (($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
-                        && $cancelationfee > 0) {
+                if (
+                    ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
+                    && $cancelationfee > 0
+                ) {
                     $customcredit = $customcredit - $cancelationfee;
 
                 }
             }
-
             // Apply rounding to all relevant values.
-
             // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
 
@@ -1128,7 +1141,7 @@ class shopping_cart {
                 $customcredit = 0;
             }
             $costcenter = $record->costcenter ?? "";
-            list($newcredit) = shopping_cart_credits::add_credit($userid, $customcredit, $currency, $costcenter);
+            [$newcredit] = shopping_cart_credits::add_credit($userid, $customcredit, $currency, $costcenter);
 
             // We also need to insert a record into the ledger table.
             // First, add the prefix and annotation.
