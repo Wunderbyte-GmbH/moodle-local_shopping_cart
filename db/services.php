@@ -143,4 +143,10 @@ $functions = [
                 'capabilities' => '',
                 'ajax' => 1,
         ],
+        'local_shopping_cart_verify_purchase' => [
+                'classname' => 'local_shopping_cart\external\verify_purchase',
+                'description' => 'Verify a puchase',
+                'type' => 'read',
+                'capabilities' => '',
+        ],
 ];
