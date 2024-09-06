@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_shopping_cart\table;
+use html_writer;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -179,4 +181,30 @@ class cash_report_table extends wunderbyte_table {
 
         return "<div class='$classes'>$status</div>";
     }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'receipt' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string payment status
+     * @throws dml_exception
+     */
+    public function col_receipt(object $values): string {
+
+        if (!empty($values->identifier)) {
+            $url = new moodle_url(
+                '/local/shopping_cart/receipt.php',
+                [
+                    'success' => 1,
+                    'id' => $values->identifier,
+                    'userid' => $values->userid,
+                ]
+            );
+            $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), ['href' => $url->out(false)]);
+        }
+
+        return $out ?? '';
+    }
+
 }

@@ -217,6 +217,7 @@ if ($debug != 2) {
         get_string('orderid', 'local_shopping_cart'),
         get_string('annotation', 'local_shopping_cart'),
         get_string('cashier', 'local_shopping_cart'),
+        get_string('receipt', 'local_shopping_cart'),
     ];
     // Columns.
     $columns = [
@@ -249,6 +250,7 @@ if ($debug != 2) {
     }
     $columns[] = 'annotation';
     $columns[] = 'usermodified';
+    $columns[] = 'receipt';
 
     if (!$gatewaysupported) {
         // We remove orderid if no gateway is set or if gateway is not supported.
