@@ -171,9 +171,6 @@
         {{/show_selected_addresses}}
 
         <div>
-            {{^address_selection_required}}
-                {{> local_shopping_cart/checkout_payment_region }}
-            {{/address_selection_required}}
             {{#address_selection_required}}
                 <div class="pull-right mt-3">
                     <a
@@ -207,6 +204,9 @@
             </div>
         </div>
         {{/termsandconditions}}
+        {{^address_selection_required}}
+            {{> local_shopping_cart/checkout_payment_region }}
+        {{/address_selection_required}}
         {{#has_historyitems}}
             <div class="card mt-6">
                 <div class="card-header text-center bg-primary text-white">
