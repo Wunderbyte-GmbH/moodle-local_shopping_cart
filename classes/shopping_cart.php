@@ -1694,16 +1694,33 @@ class shopping_cart {
      */
     public static function add_quota_consumed_to_item(stdClass &$item, int $userid) {
 
+        global $DB;
+
         if (empty($item->componentname) || empty($item->area)) {
             return;
         }
 
         // If we have set a fixed percentage in settings, we use this one!
-        if (get_config('local_shopping_cart', 'calculateconsumation')
-            && get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0) {
-
+        if (
+            get_config('local_shopping_cart', 'calculateconsumation')
+            && get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0
+        ) {
             // We also check if the setting to only apply fixed percentage within service period is turned on.
             if (get_config('local_shopping_cart', 'fixedpercentageafterserviceperiodstart')) {
+
+                if (empty($item->serviceperiodstart)) {
+                    $serviceperiodstart = $DB->get_field(
+                        'local_shopping_cart_history',
+                        'serviceperiodstart',
+                        [
+                            'componentname' => $item->componentname,
+                            'itemid' => $item->itemid,
+                            'userid' => $item->userid,
+                            'identifier' => $item->identifier,
+                        ]
+                    );
+                    $item->serviceperiodstart = $serviceperiodstart ?? 0;
+                }
                 if (time() >= $item->serviceperiodstart) {
                     $item->quotaconsumed = (float) 0.01 * get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
                     return;
