@@ -29,6 +29,7 @@ namespace local_shopping_cart\external;
 use block_recentlyaccesseditems\external;
 use context_system;
 use external_api;
+use external_description;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
@@ -112,6 +113,13 @@ class reload_history extends external_api {
             'taxesenabled' => new external_value(PARAM_BOOL, 'Taxes enabled', VALUE_DEFAULT, false),
             'currency' => new external_value(PARAM_ALPHAEXT),
             'credit' => new external_value(PARAM_TEXT, 'Credit', VALUE_DEFAULT, ""),
+            'costcentercredits' => new external_multiple_structure(
+                new external_single_structure([
+                    'balance' => new external_value(PARAM_TEXT, 'balance', VALUE_DEFAULT, ""),
+                    'costcenter' => new external_value(PARAM_TEXT, 'costcenter', VALUE_DEFAULT, ""),
+                    'currency' => new external_value(PARAM_TEXT, 'currency', VALUE_DEFAULT, ""),
+                    ])
+                ),
             'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
         ]);
     }

@@ -116,14 +116,17 @@ class shopping_cart_credits {
 
         global $CFG, $DB;
 
-        $params = ['userid' => $userid];
+        $params = [
+            'userid' => $userid,
+            'userid1' => $userid,
+        ];
         $sql = 'SELECT id, balance, currency, costcenter
                 FROM {local_shopping_cart_credits}
-                WHERE userid = 5
+                WHERE userid = :userid
                 AND id IN (
                     SELECT MAX(id)
                     FROM {local_shopping_cart_credits}
-                    WHERE userid = :userid
+                    WHERE userid = :userid1
                     GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'\')
                 )
                 ORDER BY costcenter ASC';
