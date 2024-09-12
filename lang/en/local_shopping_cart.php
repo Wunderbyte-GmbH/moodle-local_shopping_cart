@@ -225,8 +225,8 @@ $string['confirmterms'] = "I accept the terms and conditions";
 $string['confirmzeropricecheckout'] = 'Confirm';
 $string['confirmzeropricecheckoutbody'] = 'You do not have to pay anything. Do you want to proceed and book?';
 $string['confirmzeropricecheckouttitle'] = 'Book now';
+$string['costcenterstrings_desc'] = 'Translations for costcenters. One line per costcenter in this format: <br>costcenter1,Readable string for costcenter 1<br>costcenter2,Readable string for costcenter 2';
 $string['costcenterstrings'] = 'Translations for costcenters';
-$string['costcenterstrings_desc'] = 'Translations for costcenters';
 $string['credit'] = 'Credit:';
 $string['creditnotmatchbalance'] = 'Sum of credits in table local_shopping_cart_credits does not match with latest balance!
                                     There might be duplicate entries or corrupted records in the credits table for userid {$a}';
