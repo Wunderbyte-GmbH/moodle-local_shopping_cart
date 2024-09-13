@@ -1,3 +1,36 @@
+## Version 0.9.22 (2024091300)
+* Improvement: Add example to costcenter strings
+* Bugfix: Use credits of right costcenter
+
+## Version 0.9.21 (2024091200)
+* Bugfix: handle multiple costcenters
+
+## Version 0.9.20 (2024091000)
+* Bugfix: As the item at this place might come from the ledger, we need a fallback to retrieve the serviceperiod.
+
+## Version 0.9.19 (2024090600)
+* Improvement: Add verify purchase webservice
+
+## Version 0.9.18 (2024090200)
+* Improvement: use dynamic form for user selector
+* Bugfix: syntax
+* Bugfix: reload history has now optional values
+* Bugfix: Small bugfixes in behat tests
+* Linting
+
+## Version 0.9.17 (2024082900)
+* Feature: Show costcenters including translations
+* GH-572 Add settings for costcenters
+* GH-572 save costcenters for credits
+
+## Versiion 0.9.16 (2024082600)
+* Bugfix: Don't create invoices when they are not really turned on
+* Bugfix: Protect js agains missing Dom elements
+* GitHub: fix mustache template
+
+## Version 0.9.15 (2024082000)
+*  GitHub: linting & adjustments
+
 ## Version 0.9.14 (2024080600)
 * Improvement: Add new field for costcenter in credits
 * Improvement: Enable events for booking rules
