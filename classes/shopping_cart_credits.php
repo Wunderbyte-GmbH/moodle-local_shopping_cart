@@ -322,6 +322,7 @@ class shopping_cart_credits {
         $data->userid = $userid;
         $data->credits = -$checkoutdata['deductible'];
         $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
+        $data->costcenter = $checkoutdata['costcenter'];
         $data->currency = $checkoutdata['currency'];
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
@@ -330,7 +331,7 @@ class shopping_cart_credits {
         $DB->insert_record('local_shopping_cart_credits', $data);
 
         $cartstore = cartstore::instance($userid);
-        $cartstore->set_credit($data->balance, $data->currency);
+        $cartstore->set_credit($data->balance, $data->currency, $data->costcenter);
     }
 
     /**

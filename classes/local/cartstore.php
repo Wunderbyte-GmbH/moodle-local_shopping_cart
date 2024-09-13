@@ -96,7 +96,8 @@ class cartstore {
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
         $data['expirationtime'] = $expirationtime;
-        $data['costcenter'] = $item->costcenter ?? "";
+
+        $data['costcenter'] = empty($data['costcenter']) ? $item->costcenter : '';
 
         // When we add the first item, we need to reset credit...
         // ... because we can only use the one from the correct cost center.
@@ -576,6 +577,28 @@ class cartstore {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns true when all the booked items have the same constcenter.
+     * @param string $currentcostcenter
+     * @return $string
+     * @throws coding_exception
+     */
+    public function get_costcenter() {
+        $costcenterincart = '';
+
+        $items = $this->get_items();
+        foreach ($items as $itemincart) {
+            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit') {
+                // We only need to check for "real" items, booking fee does not apply.
+                continue;
+            } else {
+                $costcenterincart = $itemincart['costcenter'] ?? '';
+                break;
+            }
+        }
+        return $costcenterincart;
     }
 
     /**
