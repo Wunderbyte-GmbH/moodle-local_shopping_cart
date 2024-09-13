@@ -322,7 +322,7 @@ class shopping_cart_credits {
         $data->userid = $userid;
         $data->credits = -$checkoutdata['deductible'];
         $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
-        $data->costcenter = $checkoutdata['costcenter'];
+        $data->costcenter = $checkoutdata['costcenter'] ?? '';
         $data->currency = $checkoutdata['currency'];
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
