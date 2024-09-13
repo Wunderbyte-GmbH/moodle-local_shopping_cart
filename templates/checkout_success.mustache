@@ -31,35 +31,52 @@
 
     Example context (json):
     {
-       "historyitems":[
-           {
-              "id":"3",
-              "userid":"2309",
-              "itemid":"2",
-              "itemname":"my test item 2",
-              "price":"10.00",
-              "discount":"0.00",
-              "currency":"EUR",
-              "componentname":"local_shopping_cart",
-              "area":"main",
-              "identifier":"1668028796",
-              "payment":"3",
-              "paymentstatus":"2",
-              "usermodified":"2",
-              "timecreated":"1668028796",
-              "timemodified":"1668028796",
-              "canceluntil":"1669238378",
-              "serviceperiodstart":"0",
-              "serviceperiodend":"0",
-              "gateway":null,
-              "date":"2022-11-09",
-              "canceled":false,
-              "canceluntilstring":"2022-11-23",
-              "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
-              "buttonclass":"disabled hidden",
-              "paymentstring":"in bar an der Kassa"
-           }
-       ]
+        "userid":"2309",
+        "historyitems":[
+            {
+                "id":"3",
+                "itemid":"2",
+                "itemname":"my test item 2",
+                "discount":"0.00",
+                "taxesenabled": true,
+                "itemid": "3",
+                "price_gross": "10.2",
+                "price_net": "10.0",
+                "price": "10.0",
+                "tax": "2.0",
+                "taxpercentage_visual": "20",
+                "currency": "EUR",
+                "componentname":"local_shopping_cart",
+                "area":"main",
+                "identifier":"1668028796",
+                "payment":"3",
+                "paymentstatus":"2",
+                "usermodified":"2",
+                "timecreated":"1668028796",
+                "timemodified":"1668028796",
+                "canceluntil":"1669238378",
+                "serviceperiodstart":"0",
+                "serviceperiodend":"0",
+                "gateway":null,
+                "date":"2022-11-09",
+                "canceled":false,
+                "canceluntilstring":"2022-11-23",
+                "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+                "buttonclass":"disabled hidden",
+                "paymentstring":"in bar an der Kassa"
+            }
+        ],
+        "selected_addresses": [
+            {
+                "label": "AddrLabel",
+                "name": "User Name",
+                "city": "City",
+                "zip": "1234",
+                "address": "123 Abc Street",
+                "country": "Country"
+            }
+        ],
+        "receipturl":"http://test.com/receipt/12346"
     }
 
 }}
@@ -72,26 +89,7 @@
         <p>{{#str}} paymentsuccessfultext, local_shopping_cart {{/str}}</p>
     </div>
 </div>
-<div class="col-md-12 mx-auto mt-5">
-    <div class="card payment payment-success">
-        <div class="card-body">
-                <h2>Order Details</h2>
-                <ul class="list-group">
-                    {{#historyitems}}
-                        <li class="list-group-item flex-column align-items-start text-dark">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5>{{itemname}}</h5>
-
-                                {{> local_shopping_cart/item_price }}
-                            </div>
-                            <div class="d-flex w-100 justify-content-between">
-                                <p><small>{{date}}</small>
-                            </div>
-                        </li>
-                    {{/historyitems}}
-                </ul>
-                <br>
-            <a href="../../my" class="btn btn-info">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
-        </div>
-    </div>
+{{> local_shopping_cart/checkout_success_content }}
+<div>
+    <a href="../../" class="btn btn-info">{{#str}} backtohome, local_shopping_cart {{/str}}</a>
 </div>

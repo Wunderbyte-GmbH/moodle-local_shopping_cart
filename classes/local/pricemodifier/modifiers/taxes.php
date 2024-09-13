@@ -27,7 +27,10 @@ namespace local_shopping_cart\local\pricemodifier\modifiers;
 
 use dml_exception;
 use coding_exception;
+use context_system;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\taxcategories;
 
@@ -61,7 +64,7 @@ abstract class taxes extends modifier_base {
                     get_config('local_shopping_cart', 'defaulttaxcategory'),
                     get_config('local_shopping_cart', 'taxcategories')
             );
-            $data['items'] = shopping_cart::update_item_price_data(array_values($data['items']), $taxcategories);
+            $data['items'] = self::update_item_price_data(array_values($data['items']), $data['userid'], $taxcategories);
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);
             $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
             $data['initialtotal'] = $data['price'];
@@ -71,5 +74,79 @@ abstract class taxes extends modifier_base {
         $data['taxesenabled'] = $taxesenabled;
 
         return $data;
+    }
+
+    /**
+     * Enriches the cart item with tax information if given
+     *
+     * @param array $items array of cart items
+     * @param int $userid
+     * @param taxcategories|null $taxcategories
+     * @return array
+     */
+    public static function update_item_price_data(
+            array $items,
+            int $userid,
+            ?taxcategories $taxcategories): array {
+
+        $cartstore = cartstore::instance($userid);
+        $countrycode = $cartstore->get_countrycode();
+        foreach ($items as $key => $item) {
+            if ($taxcategories) {
+                $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
+                if ($taxpercent >= 0) {
+                    $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
+                    $iseuropean = vatnrchecker::is_european($countrycode);
+                    $isowncountry = vatnrchecker::is_own_country($countrycode);
+                    $hasvarnr = $cartstore->has_vatnr_data();
+                    if ($itemisnet) {
+                        $netprice = $items[$key]['price']; // Price is now considered a net price.
+                        if (
+                            $iseuropean &&
+                            $hasvarnr &&
+                            !$isowncountry
+                        ) {
+                            $grossprice = $netprice;
+                            $taxpercent = 0;
+                        } else if ($item['area'] == "rebookitem") {
+                            // In rebooking, price is already gross.
+                            $grossprice = $items[$key]['price'];
+                            $netprice = round($grossprice / (1 + $taxpercent), 2);
+                        } else {
+                            $grossprice = round($netprice * (1 + $taxpercent), 2);
+                        }
+                        $items[$key]['price_net'] = $netprice;
+                        // Always use gross price in "price".
+                        $items[$key]['price'] = $grossprice; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    } else {
+                        $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
+                        if (
+                            $iseuropean &&
+                            $hasvarnr &&
+                            !$isowncountry
+                        ) {
+                            $grossprice = $netprice;
+                            $taxpercent = 0;
+                        } else {
+                            $grossprice = $items[$key]['price'];
+                        }
+
+                        $items[$key]['price_net'] = $netprice;
+                        $items[$key]['price'] = $grossprice; // Set back formatted price.
+                        // Add tax to price (= gross price).
+                        $items[$key]['price_gross'] = $grossprice;
+                        // And net tax info.
+                        $items[$key]['tax'] = $grossprice - $netprice;
+                    }
+                    $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
+                    $items[$key]['taxpercentage'] = round($taxpercent, 2);
+                }
+            }
+        }
+        return $items;
     }
 }

@@ -26,8 +26,8 @@ Feature: User cancellation after cash payment on the checkout page.
       | account  | gateway | enabled | config                                                                                |
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
     And the following "local_shopping_cart > user credits" exist:
-      | user  | credits | currency | balance |
-      | user1 | 50      | EUR      | 50      |
+      | user  | credit | currency |
+      | user1 | 50     | EUR      |
     And the following "local_shopping_cart > plugin setup" exist:
       | account  |
       | Account1 |
@@ -35,6 +35,7 @@ Feature: User cancellation after cash payment on the checkout page.
   @javascript
   Scenario: User select two items procedd to checkout cancel one than pay with credits
     Given I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
@@ -63,6 +64,8 @@ Feature: User cancellation after cash payment on the checkout page.
     Then I should see "Payment successful!"
     And I should see "my test item 1" in the ".payment-success ul.list-group" "css_element"
     And I should not see "my test item 2" in the ".payment-success ul.list-group" "css_element"
+    ## Verify downloaded receipt - should be about 115K on disk
+    And following "Receipt" should download between "114000" and "120000" bytes
     And I log out
     And I log in as "admin"
     And I visit "/local/shopping_cart/report.php"

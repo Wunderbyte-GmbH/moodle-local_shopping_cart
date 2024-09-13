@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\addresses;
 use local_shopping_cart\shopping_cart;
 use core_user_external;
 use local_shopping_cart\local\cartstore;
@@ -62,7 +63,8 @@ if (isset($success)) {
         $data['failed'] = 1;
     }
 }
-$data['additonalcashiersection'] = get_config('local_shopping_cart', 'additonalcashiersection');
+$data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
+$data['addresses_required'] = addresses::get_required_address_keys();
 
 $test = get_users(true, '', true, [], '', '', '', '', $recordsperpage = 21);
 

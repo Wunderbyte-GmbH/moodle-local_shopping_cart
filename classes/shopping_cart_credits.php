@@ -38,19 +38,20 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart_credits {
-
     /**
      * Returns the current balance of the given user.
      *
      * @param int $userid
+     * @param string $costcenter
      * @return array
      */
-    public static function get_balance(int $userid): array {
+    public static function get_balance(int $userid, string $costcenter = ''): array {
 
         global $CFG, $DB;
 
         // Just in case, we do not find it in credits table.
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
+        $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits') ?? 0;
 
         $currencies = self::credits_get_used_currencies($userid);
         if (empty($currencies)) {
@@ -60,33 +61,103 @@ class shopping_cart_credits {
             throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
         }
 
-        // Get the latest balance.
-        if (!$balancerecord = $DB->get_record_sql("SELECT balance, currency
-            FROM {local_shopping_cart_credits}
-            WHERE userid = :userid
-            ORDER BY id DESC
-            LIMIT 1", ['userid' => $userid])) {
+        $params = ['userid' => $userid];
+        $additionalsql = '';
+        if (!empty($samecostcenterforcredits)) {
+            $additionalsql = " AND COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
+            $params['costcenter'] = $costcenter;
+        }
 
+        $sql = 'SELECT balance, currency
+        FROM {local_shopping_cart_credits}
+        WHERE userid = :userid' . $additionalsql . '
+        ORDER BY id DESC
+        LIMIT 1';
+
+        // Get the latest balance of the given costcenter.
+        if (!$balancerecord = $DB->get_record_sql($sql, $params)) {
             $balance = 0;
         } else {
             $balance = $balancerecord->balance;
             $currency = $balancerecord->currency;
         }
 
-        if ($CFG->debug == DEBUG_DEVELOPER) {
+        if (
+            $CFG->debug == DEBUG_DEVELOPER
+            && empty($samecostcenterforcredits)
+        ) {
+            $sql = "SELECT SUM(credits) sumofcredits
+            FROM {local_shopping_cart_credits}
+            WHERE userid =:userid";
             // Only in developer mode, we check if balance matches with total sum of credits.
-            if (!$sumofcredits = $DB->get_field_sql("SELECT SUM(credits) sumofcredits
-                FROM {local_shopping_cart_credits}
-                WHERE userid =:userid", ['userid' => $userid])) {
-
+            if (!$sumofcredits = $DB->get_field_sql($sql, ['userid' => $userid])) {
                 $sumofcredits = 0;
             }
             if (round($sumofcredits, 2) != round($balance, 2)) {
-                throw new moodle_exception(get_string('creditnotmatchbalance', 'local_shopping_cart', strval($userid)));
+                throw new moodle_exception(get_string(
+                    'creditnotmatchbalance',
+                    'local_shopping_cart',
+                    strval($userid)
+                ));
             }
         }
 
         return [round($balance, 2), $currency];
+    }
+
+
+    /**
+     * Returns the current balance of the given user.
+     *
+     * @param int $userid
+     * @return array
+     */
+    public static function get_balance_for_all_costcenters(int $userid): array {
+
+        global $CFG, $DB;
+
+        $params = [
+            'userid' => $userid,
+            'userid1' => $userid,
+        ];
+        $sql = 'SELECT id, balance, currency, costcenter
+                FROM {local_shopping_cart_credits}
+                WHERE userid = :userid
+                AND id IN (
+                    SELECT MAX(id)
+                    FROM {local_shopping_cart_credits}
+                    WHERE userid = :userid1
+                    GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'\')
+                )
+                ORDER BY costcenter ASC';
+
+        // Get the latest balance of the given costcenter.
+        if (!$balancerecords = $DB->get_records_sql($sql, $params)) {
+            return [];
+        }
+
+        $translations = get_config('local_shopping_cart', 'costcenterstrings');
+        $translationsarray = [];
+        if (!empty($translations)) {
+            $translations = explode(PHP_EOL, $translations);
+
+            foreach ($translations as $translation) {
+                $kvpair = explode(',', $translation);
+
+                if (($kvpair[0] ?? false) && ($kvpair[1] ?? false)) {
+                    $translationsarray[$kvpair[0]] = $kvpair[1];
+                }
+            }
+        }
+
+        $returnarray = array_map(fn($a) => [
+            'id' => $a->id,
+            'costcenter' => $translationsarray[$a->costcenter] ?? $a->costcenter,
+            'balance' => round($a->balance, 2),
+            'currency' => $a->currency,
+        ], $balancerecords);
+
+        return $returnarray;
     }
 
     /**
@@ -108,7 +179,7 @@ class shopping_cart_credits {
             $usecredit = self::use_credit_fallback($usecredit, $userid);
         }
 
-        list($balance, $currency) = self::get_balance($userid);
+        [$balance, $currency] = self::get_balance($userid);
 
         // If there is no price key, we need to calculate it from items.
         if (!isset($data['price']) && isset($data['items'])) {
@@ -135,7 +206,6 @@ class shopping_cart_credits {
 
         // Now we account for discounts.
         if (isset($data['discount'])) {
-
             // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
             $data['discount'] = round($data['discount'], $discountprecision);
@@ -144,15 +214,15 @@ class shopping_cart_credits {
 
             $context = context_system::instance();
             // Right now, only the cashier has the right to use discounts.
-            if (!has_capability('local/shopping_cart:cashier', $context)) {
-
+            if (
+                !has_capability('local/shopping_cart:cashier', $context)
+            ) {
                 $data['price'] = $data['price'] + $data['discount'];
             }
         }
 
         // Only if the user has any credit at all, we apply the function.
         if ($balance > 0) {
-
             // We always calculate the deductible.
             if ($data['price'] <= $balance) {
                 $deductible = $data['price'];
@@ -162,12 +232,10 @@ class shopping_cart_credits {
 
             // We reduce the price if we use the credit.
             if ($usecredit) {
-
                 $remainingtotal = $data['price'] - $deductible;
                 $remainingcredit = $balance - $deductible;
 
                 $data['usecredit'] = true;
-
             } else {
                 $remainingcredit = $balance;
                 $remainingtotal = $data['price'];
@@ -185,17 +253,24 @@ class shopping_cart_credits {
      * Adds the given credit to the current users balance.
      * This is somewhat expensive, as we always run checks on the consistency of the ledger.
      * Returns the total balance of the user.
-     *
      * @param int $userid
      * @param float $credit
      * @param string $currency
+     * @param string $costcenter
+     *
      * @return array
+     *
      */
-    public static function add_credit(int $userid, float $credit, string $currency): array {
+    public static function add_credit(
+        int $userid,
+        float $credit,
+        string $currency,
+        string $costcenter = ''
+    ): array {
 
         global $DB, $USER;
 
-        list($balance, $newcurrency) = self::get_balance($userid);
+        [$balance, $newcurrency] = self::get_balance($userid, $costcenter);
 
         $now = time();
 
@@ -208,6 +283,7 @@ class shopping_cart_credits {
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
         $data->timecreated = $now;
+        $data->costcenter = $costcenter;
 
         if ($data->balance >= 0) {
             $DB->insert_record('local_shopping_cart_credits', $data);
@@ -216,17 +292,16 @@ class shopping_cart_credits {
             throw new moodle_exception('negativebalancenotallowed');
         }
 
-        list($newbalance, $currency) = self::get_balance($userid);
+        [$newbalance, $currency] = self::get_balance($userid, $costcenter);
 
-        if ($newbalance > 0) {
-            // We add the right cache.
+        if ($newbalance >= 0) {
+            // We add the right cache even if it is 0.
 
             $cartstore = cartstore::instance($userid);
-            $cartstore->set_credit($newbalance, $currency);
-
+            $cartstore->set_credit($newbalance, $currency, $costcenter);
         }
 
-        return [$newbalance, $currency];
+        return [$newbalance, $currency, $costcenter];
     }
 
     /**
@@ -247,6 +322,7 @@ class shopping_cart_credits {
         $data->userid = $userid;
         $data->credits = -$checkoutdata['deductible'];
         $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
+        $data->costcenter = $checkoutdata['costcenter'];
         $data->currency = $checkoutdata['currency'];
         $data->usermodified = $USER->id;
         $data->timemodified = $now;
@@ -255,7 +331,7 @@ class shopping_cart_credits {
         $DB->insert_record('local_shopping_cart_credits', $data);
 
         $cartstore = cartstore::instance($userid);
-        $cartstore->set_credit($data->balance, $data->currency);
+        $cartstore->set_credit($data->balance, $data->currency, $data->costcenter);
     }
 
     /**
@@ -265,11 +341,13 @@ class shopping_cart_credits {
      * @param int $method
      * @return bool
      */
-    public static function credit_paid_back(int $userid,
-        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH) {
+    public static function credit_paid_back(
+        int $userid,
+        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH
+    ) {
         global $USER;
 
-        list($balance, $currency) = self::get_balance($userid);
+        [$balance, $currency] = self::get_balance($userid);
 
         $data = [];
 
@@ -280,7 +358,7 @@ class shopping_cart_credits {
         self::use_credit($userid, $data);
 
         // Also record this in the ledger table.
-        $ledgerrecord = new stdClass;
+        $ledgerrecord = new stdClass();
         $now = time();
         $ledgerrecord->userid = $userid;
         $ledgerrecord->itemid = 0;
@@ -310,7 +388,7 @@ class shopping_cart_credits {
         $userid = 0;
         $currency = '';
         $data = [];
-        $data['price'] = $shoppingcart->price;
+        $data['price'] = $shoppingcart->initialtotal;
 
         if (isset($shoppingcart->items)) {
             foreach ($shoppingcart->items as $item) {

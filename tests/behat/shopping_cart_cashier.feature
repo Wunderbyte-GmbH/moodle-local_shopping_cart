@@ -115,7 +115,6 @@ Feature: Cashier actions in shopping cart.
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
-    And I wait "40" seconds
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
 
   @javascript
@@ -162,9 +161,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
     And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |
@@ -199,9 +195,6 @@ Feature: Cashier actions in shopping cart.
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
     And I reload the page
     And I wait until the page is ready
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
     And I press "Cancel purchase"
     And I set the following fields to these values:
       | cancelationfee | 2 |

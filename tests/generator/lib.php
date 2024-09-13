@@ -16,6 +16,7 @@
 
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_credits;
 
 /**
  * Class local_shopping_cart_generator for generation of dummy data
@@ -115,19 +116,14 @@ class local_shopping_cart_generator extends testing_module_generator {
      * Function to create a dummy user credit record.
      *
      * @param array|stdClass $record
-     * @return stdClass the booking campaign object
+     * @return array
      */
     public function create_user_credit($record = null) {
         global $DB, $USER;
 
         $record = (object) $record;
-        $record->usermodified = $USER->id;
-        $record->timecreated = time();
-        $record->timemodified = time();
-
-        $record->id = $DB->insert_record('local_shopping_cart_credits', $record);
-
-        return $record;
+        $res = shopping_cart_credits::add_credit($record->userid, $record->credit, $record->currency);
+        return $res;
     }
 
     /**
@@ -148,6 +144,24 @@ class local_shopping_cart_generator extends testing_module_generator {
         // Confirm cash payment.
         $res = shopping_cart::confirm_payment($record['userid'], LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH);
         return $res;
+    }
+
+    /**
+     * Function to create a dummy user address record.
+     *
+     * @param array|stdClass $record
+     * @return stdClass the address object
+     */
+    public function create_user_address($record = null) {
+        global $DB, $USER;
+
+        $record = (object) $record;
+        $record->address2 = $record->address2 ?? '';
+        $record->phone = $record->phone ?? '';
+
+        $record->id = $DB->insert_record('local_shopping_cart_address', $record, true);
+
+        return $record;
     }
 
     /**

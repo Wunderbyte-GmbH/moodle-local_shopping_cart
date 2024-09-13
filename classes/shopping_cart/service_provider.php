@@ -41,7 +41,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      */
     public static function load_cartitem(string $area, int $itemid, int $userid = 0): array {
 
-        global $DB;
+        global $DB, $USER;
 
         // We might need to add additional information to the area.
         // Therefore, we split it here.
@@ -54,11 +54,31 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         switch ($area) {
             case 'bookingfee':
+                $price = get_config('local_shopping_cart', 'bookingfee');
+
+                // Does the fee depend on costcenter?
+                if (!empty(get_config('local_shopping_cart', 'bookingfeevariable'))) {
+                    $cartstore = cartstore::instance($userid);
+                    $items = $cartstore->get_all_items();
+                    $item = reset($items);
+                    $costcenter = $item['costcenter'];
+                    $ccfees = get_config('local_shopping_cart', 'definefeesforcostcenters');
+                    $pairs = explode(PHP_EOL, $ccfees);
+                    $ccarray = [];
+                    foreach ($pairs as $pair) {
+                        list($key, $value) = explode(":", $pair);
+                        $ccarray[$key] = $value;
+                    }
+                    if (in_array($costcenter, array_keys($ccarray))) {
+                        $price = $ccarray[$costcenter];
+                    }
+                }
+
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('bookingfee', 'local_shopping_cart'),
-                    get_config('local_shopping_cart', 'bookingfee'),
+                    $price,
                     get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
                     'local_shopping_cart',
                     'bookingfee',
@@ -112,17 +132,18 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 $cartitem = new cartitem(
                     $itemid,
                     get_string('rebooking', 'local_shopping_cart') . ': ' . $record->itemname,
-                    - ((float)$record->price + (float)$record->tax),
+                    - ((float)$record->price),
                     $record->currency ?? 'EUR',
                     'local_shopping_cart',
                     'rebookitem',
                     '',  // No item description for rebookitem.
                     $imageurl->out(),
-                    time(),
+                    $record->canceluntil, // We use the same cancel until for rebooking check.
                     0,
                     0,
                     'A',
                     0, // Rebook items can be deleted again.
+                    $record->costcenter ?? null
                 );
                 return ['cartitem' => $cartitem];
             case 'installments':
@@ -238,6 +259,9 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         $canceluntil = strtotime('+14 days', $now);
         $serviceperiodestart = $now;
         $serviceperiodeend = strtotime('+100 days', $now);
+        $nodelete = 0;
+        $costcenter = '';
+        $installment = null;
 
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
@@ -254,6 +278,11 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 3:
                 $price = 13.8;
                 $tax = 'C';
+                break;
+            case 5:
+                $price = 42.42;
+                $tax = 'B';
+                $installment = 1;
                 break;
             default:
                 $price = 12.12;
@@ -273,7 +302,36 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             $serviceperiodestart,
             $serviceperiodeend,
             $tax,
+            $nodelete,
+            $costcenter,
+            $installment
             );
+
+        // Spoecial case to crate installment.
+        if ($itemid == 5) {
+
+            $jsonobject = (object) [
+                "allowinstallment" => "1",
+                "downpayment" => 20,
+                "numberofpayments" => "2",
+                "duedaysbeforecoursestart" => 0,
+                "duedatevariable" => 10,
+            ];
+
+            $iteminfo = new \stdClass;
+            $iteminfo->itemid = $itemid;
+            $iteminfo->area = $area;
+            $iteminfo->componentname = 'local_shopping_cart';
+            $iteminfo->json = json_encode($jsonobject);
+            $iteminfo->usermodified = $USER->id;
+            $iteminfo->allowinstallment = 1;
+            // Force record into local_shopping_cart_iteminfo table.
+            if ($iteminfo->id = $DB->get_field('local_shopping_cart_iteminfo', 'id', ['itemid' => $itemid], IGNORE_MISSING)) {
+                $DB->update_record('local_shopping_cart_iteminfo', $iteminfo);
+            } else {
+                $DB->insert_record('local_shopping_cart_iteminfo', $iteminfo);
+            }
+        }
 
         return ['cartitem' => $cartitem];
     }
@@ -343,7 +401,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 3:
                 return 1;
             default:
-                return 0;
+                return 0.0;
         }
     }
 

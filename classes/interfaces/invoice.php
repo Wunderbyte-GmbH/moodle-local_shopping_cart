@@ -55,13 +55,14 @@ interface invoice {
      * Prepare the data for the curl request as JSON string.
      *
      */
-    public function prepare_json_invoice_data(): void;
+    public function prepare_json_invoice_data(): bool;
 
     /**
      * Get an array of items for the invoice.
      *
      * @param string $response
+     * @param string $url
      * @return bool true if no error
      */
-    public function validate_response(string $response): bool;
+    public function validate_response(string $response, string $url): bool;
 }

@@ -1,3 +1,53 @@
+## Version 0.9.14 (2024080600)
+* Improvement: Add new field for costcenter in credits
+* Improvement: Enable events for booking rules
+* Improvement: Add support for Moodle 4.4
+
+## Version 0.9.13 (2024070600)
+* Bugfix: Add installmentdata to receipt
+
+## Version 0.9.12 (2024070600)
+* Improvement: Enable events for plugin mod_booking rules function
+* Improvement: Sort strings in alphabetical order to meet moodle 4.4 code style regulations
+
+## Version 0.9.11 (2024072400)
+* Bugfix: Safe shopping_cart history when no vatntnumber provided
+
+## Version 0.9.10 (2024071900)
+* Bugfix: Avoid double credit reduction in some cases
+* Bugfix: Default values for missing keys in webservice
+* Bugfix: Remove condition leading to incorrect userid
+
+## Version 0.9.9 (2024071800)
+* Improvement: enable filtered text display in additionalcashiersection
+* Improvement: Only show rebooking item if it's the same different costcenter
+* Improvement: Only accept rebooking items with with the same costcenter like in the cart
+* Improvement: Ajax reload for Shopping Cart history
+* Improvement: Enable variable bookingfees depending on costcenter
+* Bugfix: Fix different costcenter blocker
+
+## Version 0.9.8 (2024070400)
+* Improvement: Add more automatic tests
+
+## Version 0.9.7 (2024062800)
+* Feature: Add addresses for correct tax handling
+* Feature: Add support for automatic Invoice creation via ERP Next
+* Feature: Add VAt nr Checker
+
+## Version 0.9.6 (2024061200)
+* Bugfix: Small fix concerning paymentaccountid.
+
+## Version 0.9.5 (2024061000)
+* Improvement: Include billing and shipping adress.
+* Improvement: Setting to use prices as gross or net.
+* Improvement: Include tax categories and VAT checker.
+* Improvement: Add possibility to change payment accounts for individual items.
+* Bugfix: Price calculations for rebookings.
+* Bugfix: Price calculations for subbookings.
+
+## Version 0.9.3 (2024052101)
+* Bugfix: Fix incomplete ledger records.
+
 ## Version 0.9.0 (2024052101)
 * Bugfixes: Add creation date to ledger.
 * Bugfixes: Installment checkbox.

@@ -25,6 +25,7 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\interfaces\invoice;
+use local_shopping_cart\invoice\invoicenumber;
 
 /**
  * Event observer for local_shopping_cart.
@@ -75,11 +76,20 @@ class observer {
      *
      * @param \core\event\base $event
      */
-    public static function checkout_completed(\core\event\base $event): void {
+    public static function payment_confirmed(\core\event\base $event): void {
+
+        global $DB;
+
         $invoiceprovidername = get_config('local_shopping_cart', 'invoicingplatform');
         $invoiceproviderclass = "local_shopping_cart\\invoice\\" . $invoiceprovidername . "_invoice";
 
         if ($invoiceprovidername == 'noinvoice') {
+            return;
+        }
+
+        if ($invoiceprovidername == 'saveinvoicenumber') {
+
+            invoicenumber::save_invoice_number($event);
             return;
         }
 

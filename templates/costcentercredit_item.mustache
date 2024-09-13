@@ -1,0 +1,132 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template message_output_popup/shopping_cart_popover
+
+    This template will render the shopping_cart popover for the navigation bar.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+       "count":1,
+       "maxitems":"10",
+       "items":[
+          {
+             "itemid":1,
+             "itemname":"my test item 1",
+             "price":10,
+             "currency":"EUR",
+             "componentname":"local_shopping_cart",
+             "area":"main",
+             "description":"item description",
+             "imageurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/pix\/edu.png",
+             "canceluntil":1669192848,
+             "serviceperiodstart":1667983248,
+             "serviceperiodend":1670575248
+          }
+       ],
+       "price":10,
+       "initialtotal":10,
+       "deductible":0,
+       "checkboxid":"eacee3",
+       "usecredit":1,
+       "expirationtime":1667984148,
+       "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+       "currency":"EUR",
+       "credit":0,
+       "remainingcredit":0,
+       "discount":0,
+       "mail":"info@edulabs.org",
+       "name":"HeidelindeBogner",
+       "userid":"2",
+       "historyitems":[
+
+       ],
+       "canpayback":true,
+       "identifier":"1667983317",
+       "successurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php?success=1&identifier=1667983317"
+    }
+}}
+{{#costcentercredits.0}}
+<li class="list-group-item flex-column align-items-start text-dark bg-light shopping_cart_history_paidback">
+    {{#costcentercredits}}
+        <div class="d-flex w-100 justify-content-between">
+            <div>
+            {{#str}} paymentmethodcredits, local_shopping_cart {{/str}}:<br>
+            <span class="costcenter">
+                {{#costcenter}} {{.}} {{/costcenter}}
+                {{^costcenter}} {{#str}} nocostcenter, local_shopping_cart {{/str}} {{/costcenter}}
+            </span>
+            </div>
+            <div class="costcentercredits">
+                <h5>
+                    <span class="credit_total">
+                        {{balance}}
+                    </span>
+                    <span class="currency_credit">
+                        {{currency}}
+                    </span>
+                </h5>
+            </div>
+        </div>
+    {{/costcentercredits}}
+
+    {{#canpayback}}
+    <div class="btn-group mt-1 mb-2" role="group" aria-label="Buttons to pay back or add credits">
+        <button type="button" class="shopping_cart_history_creditsmanager btn btn-secondary btn-sm mr-1"
+            data-userid='{{userid}}'>
+            {{#str}} creditsmanager, local_shopping_cart {{/str}}
+        </button>
+        {{! LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH  in lib.php}}
+        <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm"
+            data-userid='{{userid}}'
+            data-method='6'>
+            {{#str}} deletecreditcash, local_shopping_cart {{/str}}
+        </button>
+        {{! LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH_BY_TRANSFER  in lib.php}}
+        <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm ml-1"
+            data-userid='{{userid}}'
+            data-method='8'>
+            {{#str}} deletecredittransfer, local_shopping_cart {{/str}}
+        </button>
+    </div>
+    {{/canpayback}}
+
+    {{^canpayback}}
+        <span class="getrefundforcredit">
+            {{#str}} getrefundforcredit, local_shopping_cart {{/str}}
+        </span>
+    {{/canpayback}}
+</li>
+{{/costcentercredits.0}}
+{{^costcentercredits.0}}
+    {{#canpayback}}
+        <button type="button" class="shopping_cart_history_creditsmanager btn btn-secondary m-1 btn-sm w-50"
+            data-userid='{{userid}}'>
+            {{#str}} creditsmanager, local_shopping_cart {{/str}}
+        </button>
+    {{/canpayback}}
+{{/costcentercredits.0}}

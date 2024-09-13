@@ -25,11 +25,15 @@
 
 namespace local_shopping_cart\payment;
 
+use context_system;
+use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
 use moodle_url;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -62,7 +66,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
         $cachedeleted = false;
 
         try {
-            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier, true);
+            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier);
         } catch (\Exception $e) {
             $cachedeleted = true;
         }
@@ -102,9 +106,20 @@ class service_provider implements \core_payment\local\callback\service_provider 
 
         }
 
-        if (!$accountid = get_config('local_shopping_cart', 'accountid')) {
-            $accountid = 1;
+        // We can only buy items with the same payment account. Therefore, we can just take the first and test it.
+        $record = reset($records);
+        $seachdata = [
+            'itemid' => $record->itemid,
+            'componentname' => $record->componentname,
+            'area' => $record->area,
+        ];
+        if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $seachdata)) {
+            $jsonobject = new stdClass();
+        } else {
+            $jsonobject = json_decode($record->json);
         }
+
+        $accountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?: 1;
 
         return new \core_payment\local\entities\payable($price, $currency, $accountid);
     }
@@ -114,12 +129,12 @@ class service_provider implements \core_payment\local\callback\service_provider 
      *
      * @param string $paymentarea Payment area
      * @param int $identifier The transaction id which was just successfully terminated.
-     * @return \moodle_url
+     * @return moodle_url
      */
     public static function get_success_url(string $paymentarea, int $identifier): moodle_url {
         global $DB;
 
-        return new \moodle_url('/local/shopping_cart/checkout.php', ['success' => 1, 'identifier' => $identifier]);
+        return new moodle_url('/local/shopping_cart/checkout.php', ['success' => 1, 'identifier' => $identifier]);
     }
 
     /**
@@ -132,7 +147,7 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * @return bool Whether successful or not
      */
     public static function deliver_order(string $paymentarea, int $identifier, int $paymentid, int $userid): bool {
-        global $DB;
+        global $DB, $USER;
 
          // First, look in shopping cart history to identify the payment and what users have bought.
          // Now run through all the optionids (itemids) and confirm payment.

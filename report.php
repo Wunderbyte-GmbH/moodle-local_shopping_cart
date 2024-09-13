@@ -87,12 +87,30 @@ if (!empty($account)) {
             $cols = $DB->get_columns($tablename);
             // Generate a select for each table.
             // Only do this, if an orderid exists.
+
+            $orderidexists = false;
+            $paymentbrandexists = false;
+
+            $select = "SELECT $gwname.id, $gwname.paymentid";
+            $from = "FROM {paygw_$gwname} $gwname";
+
             foreach ($cols as $key => $value) {
                 if (strpos($key, 'orderid') !== false) {
-                    $colselects[] =
-                        "SELECT $gwname.id, $gwname.paymentid, $gwname.$key orderid
-                        FROM {paygw_$gwname} $gwname";
+                    $orderidexists = true;
+
+                    $select .= ", $gwname.$key orderid ";
                 }
+                if (strpos($key, 'paymentbrand') !== false) {
+                    $paymentbrandexists = true;
+                    $select .= ", $gwname.$key paymentbrand ";
+                }
+            }
+            if ($orderidexists) {
+
+                if (!$paymentbrandexists) {
+                    $select .= ", '" . get_string('unknown', 'local_shopping_cart') . "' as paymentbrand ";
+                }
+                $colselects[] = "$select $from";
             }
         }
     }
@@ -120,7 +138,7 @@ if (!empty($colselects)) {
         // Sql_cast_to_char is available since Moodle 4.1.
         $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
             "COALESCE(CAST(pgw.id AS VARCHAR),'X')");
-    $selectorderidpart = ", pgw.orderid";
+    $selectorderidpart = ", pgw.orderid, pgw.paymentbrand";
     $colselectsstring = implode(' UNION ', $colselects);
     $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
 } else {
@@ -138,7 +156,7 @@ if (!empty($colselects)) {
 // ...unique in your call to get_records?" bug.
 $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
-        " AS uniqueid, scl.id, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
+        " AS uniqueid, scl.id, scl.userid, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
         $customorderid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
@@ -178,6 +196,7 @@ if ($debug != 2) {
     // Headers.
     $headers = [
         get_string('id', 'local_shopping_cart'),
+        get_string('userid', 'local_shopping_cart'),
         get_string('identifier', 'local_shopping_cart'),
         get_string('timecreated', 'local_shopping_cart'),
         get_string('timemodified', 'local_shopping_cart'),
@@ -192,15 +211,18 @@ if ($debug != 2) {
         get_string('itemid', 'local_shopping_cart'),
         get_string('itemname', 'local_shopping_cart'),
         get_string('payment', 'local_shopping_cart'),
+        get_string('paymentbrand', 'local_shopping_cart'),
         get_string('paymentstatus', 'local_shopping_cart'),
         get_string('gateway', 'local_shopping_cart'),
         get_string('orderid', 'local_shopping_cart'),
         get_string('annotation', 'local_shopping_cart'),
         get_string('cashier', 'local_shopping_cart'),
+        get_string('receipt', 'local_shopping_cart'),
     ];
     // Columns.
     $columns = [
         'id',
+        'userid',
         'identifier',
         'timecreated',
         'timemodified',
@@ -215,6 +237,7 @@ if ($debug != 2) {
         'itemid',
         'itemname',
         'payment',
+        'paymentbrand',
         'paymentstatus',
         'gateway',
     ];
@@ -227,6 +250,7 @@ if ($debug != 2) {
     }
     $columns[] = 'annotation';
     $columns[] = 'usermodified';
+    $columns[] = 'receipt';
 
     if (!$gatewaysupported) {
         // We remove orderid if no gateway is set or if gateway is not supported.
@@ -283,6 +307,8 @@ if ($debug != 2) {
             get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION =>
             get_string('paymentmethodcreditscorrection', 'local_shopping_cart'),
+        LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION =>
+            get_string('paymentmethodrebookingcreditscorrection', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH =>
             get_string('paymentmethodcashier:cash', 'local_shopping_cart'),
         LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD =>
@@ -326,6 +352,7 @@ if ($debug != 2) {
         'itemid',
         'itemname',
         'payment',
+        'paymentbrand',
         'paymentstatus',
         'gateway',
         'orderid',

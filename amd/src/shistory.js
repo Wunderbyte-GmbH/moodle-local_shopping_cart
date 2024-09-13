@@ -33,6 +33,8 @@ import {showNotification} from 'local_shopping_cart/notifications';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
+// As there is a dependency, we can load it like this.
+import {queries} from 'local_wunderbyte_table/init';
 
 const SELECTORS = {
     CANCELBUTTON: '.cashier-history-items .shopping_cart_history_cancel_button',
@@ -50,6 +52,9 @@ let notenoughcredits = 'notenoughcredits';
 })();
 
 export const init = (cancelationFee = null) => {
+
+    // eslint-disable-next-line no-console
+    console.log('init');
 
     const buttons = document.querySelectorAll(SELECTORS.CANCELBUTTON);
 
@@ -164,16 +169,23 @@ export function cancelPurchase(itemid, area, userid, componentname, historyid, c
                     console.log(e);
                 });
 
+                // When we have no button, this means that we
                 if (!button) {
                     import('local_wunderbyte_table/reload')
-                    // eslint-disable-next-line promise/always-return
                     .then(wbt => {
-                        wbt.reloadAllTables();
+                        // Look if there are tables on this page.
+                        if (queries && queries.length > 0) {
+                            wbt.reloadAllTables();
+                        } else {
+                            window.location.reload();
+                        }
+                        return;
                     })
                     .catch(err => {
                             // Handle any errors, including if the module doesn't exist
                             // eslint-disable-next-line no-console
                             console.log(err);
+                            window.location.reload();
                     });
                     return;
                 }
@@ -339,6 +351,7 @@ function confirmPaidBack(element) {
 
              // We also need to call the udpateTotalPrice function from this place to make sure everything is uptodate.
             updateTotalPrice();
+            reloadHistory(userid);
             return;
         },
         fail: function(ex) {
@@ -666,9 +679,54 @@ function markforrebooking(button) {
  * @param {*} userid
  */
 function reload(userid) {
-    const url = new URL(window.location.href);
 
-    url.searchParams.delete('userid');
-    url.searchParams.append('userid', userid);
-    window.location.href = url.toString();
+    reloadHistory(userid);
+    return;
+}
+
+/**
+ * Function to reload Shopping cart history with get param userid.
+ * @param {*} userid
+ */
+export function reloadHistory(userid) {
+
+    const histories
+        = document.querySelectorAll('[data-id="shopping-cart-history"][data-userid="' + userid + '"]');
+
+     // eslint-disable-next-line no-console
+     console.log(histories);
+
+    histories.forEach((history) => {
+
+        // eslint-disable-next-line no-console
+        console.log(history);
+
+        Ajax.call([{
+            methodname: "local_shopping_cart_reload_history",
+            args: {
+                'userid': userid,
+            },
+            done: function(data) {
+
+                // eslint-disable-next-line no-console
+                console.log(data);
+
+                Templates.renderForPromise('local_shopping_cart/history_card', data).then(({html, js}) => {
+
+                    Templates.replaceNode(history, html, js);
+
+                    return true;
+
+                    }).catch((e) => {
+                        // eslint-disable-next-line no-console
+                        console.log(e);
+                    });
+
+            },
+            fail: function(ex) {
+                // eslint-disable-next-line no-console
+                console.log("ex:" + ex);
+            },
+        }]);
+    });
 }

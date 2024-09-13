@@ -27,8 +27,7 @@ namespace local_shopping_cart\output;
 
 use core_user;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\shopping_cart;
-use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\shopping_cart_credits;
 use moodle_url;
 use renderable;
 use renderer_base;
@@ -53,7 +52,7 @@ class cashier implements renderable, templatable {
      * @param int|null $userid
      * @param int|null $usecredit
      */
-    public function __construct(int $userid = null, $usecredit = 0) {
+    public function __construct(?int $userid = null, ?int $usecredit = 0) {
 
         if (!empty($userid)) {
             $cartstore = cartstore::instance($userid);
@@ -75,6 +74,8 @@ class cashier implements renderable, templatable {
             $historylist = new shoppingcart_history_list($userid);
 
             $historylist->insert_list($data);
+            $data['costcentercredits'] =
+                array_values(shopping_cart_credits::get_balance_for_all_costcenters($userid));
 
             $this->data = $data;
         }

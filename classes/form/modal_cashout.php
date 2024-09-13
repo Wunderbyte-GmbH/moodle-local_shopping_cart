@@ -30,7 +30,8 @@ use moodle_url;
 use stdClass;
 
 /**
- * Dynamic cahout form.
+ * Dynamic cashout form.
+ *
  * @copyright Wunderbyte GmbH <info@wunderbyte.at>
  * @package local_shopping_cart
  * @author Georg Maißer
@@ -144,9 +145,9 @@ class modal_cashout extends dynamic_form {
 
     /**
      * Validate dates.
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 

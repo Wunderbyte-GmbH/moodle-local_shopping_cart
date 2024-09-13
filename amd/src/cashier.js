@@ -16,6 +16,8 @@
 /* eslint-disable no-console */
 
 /*
+ * The Cashier module.
+ *
  * @package    local_shopping_cart
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +30,11 @@ import ModalForm from 'core_form/modalform';
 import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
+import DynamicForm from 'core_form/dynamicform';
 
+const SELECTORS = {
+    USERSELECTORFORM: '[data-id="sc-selectuserformcontainer"]',
+};
 /**
  * Init function.
  * @param {*} userid the user id, 0 means logged-in USER
@@ -72,6 +78,8 @@ export const init = (userid = 0) => {
             console.log('click');
         });
     }
+
+    initUserSelectorForm();
 };
 
 export const confirmPayment = (userid, paymenttype, annotation = '') => {
@@ -112,15 +120,21 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                     // Set link to right receipt.
                     addPrintIdentifier(data.identifier, userid);
 
-                    document.getElementById('success-tab').classList.add('success');
-
-                    displayPaymentMessage('paymentsuccessful');
+                    const successtab = document.getElementById('success-tab');
+                    if (successtab) {
+                        successtab.classList.add('success');
+                        displayPaymentMessage('paymentsuccessful');
+                    }
                 }
 
             } else {
                 console.log('payment denied');
                 displayPaymentMessage('paymentdenied', false);
-                document.getElementById('success-tab').classList.add('error');
+
+                const successtab = document.getElementById('success-tab');
+                if (successtab) {
+                    successtab.classList.classList.add('error');
+                }
             }
         },
         fail: function(ex) {
@@ -258,4 +272,35 @@ export function rebookOrderidModal(userid, identifier) {
     // Show the form.
     modalForm.show();
 
+}
+
+/**
+ * Init the user selector form.
+ *
+ */
+function initUserSelectorForm() {
+
+    const element = document.querySelector(SELECTORS.USERSELECTORFORM);
+
+    // Initialize the form.
+    const dynamicForm = new DynamicForm(
+        element,
+        'local_shopping_cart\\form\\dynamic_select_users'
+    );
+
+    console.log(dynamicForm);
+    // When form is submitted - remove it from DOM:
+    dynamicForm.addEventListener(dynamicForm.events.FORM_SUBMITTED, e => {
+        const response = e.detail;
+        console.log(response);
+
+        if (response.redirecturl) {
+            location.href = response.redirecturl;
+        } else {
+            showNotification('no user found', "error");
+            dynamicForm.load();
+        }
+    });
+
+    dynamicForm.load();
 }

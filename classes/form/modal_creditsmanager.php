@@ -87,6 +87,14 @@ class modal_creditsmanager extends dynamic_form {
         $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'eq', 0);
 
+        if (!empty(get_config('local_shopping_cart', 'samecostcenterforcredits'))) {
+            $mform->addElement('text', 'creditsmanagercreditscostcenter',
+            get_string('creditsmanagercreditscostcenter', 'local_shopping_cart'));
+            $mform->setDefault('creditsmanagercreditscostcenter', '');
+            $mform->addHelpButton('creditsmanagercreditscostcenter', 'creditsmanagercreditscostcenter', 'local_shopping_cart');
+            $mform->hideIf('creditsmanagercreditscostcenter', 'creditsmanagermode', 'eq', 0);
+        }
+
         $paymentmethods = [
             0 => get_string('choose...', 'local_shopping_cart'),
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH =>
@@ -153,14 +161,19 @@ class modal_creditsmanager extends dynamic_form {
         global $USER;
 
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-
+        $costcenter = isset($data->creditsmanagercreditscostcenter) ? $data->creditsmanagercreditscostcenter : "";
         // Add credits.
         try {
-            shopping_cart_credits::add_credit($data->userid, $data->creditsmanagercredits, $currency);
+            shopping_cart_credits::add_credit(
+                $data->userid,
+                $data->creditsmanagercredits,
+                $currency,
+                $costcenter
+            );
 
             // Log it to ledger.
             // Also record this in the ledger table.
-            $ledgerrecord = new stdClass;
+            $ledgerrecord = new stdClass();
             $now = time();
             $ledgerrecord->userid = $data->userid;
             $ledgerrecord->itemid = 0;
@@ -174,6 +187,7 @@ class modal_creditsmanager extends dynamic_form {
             $ledgerrecord->timemodified = $now;
             $ledgerrecord->timecreated = $now;
             $ledgerrecord->annotation = $data->creditsmanagerreason;
+            $ledgerrecord->costcenter = $costcenter;
             shopping_cart::add_record_to_ledger_table($ledgerrecord);
         } catch (moodle_exception $e) {
             return false;
@@ -192,14 +206,14 @@ class modal_creditsmanager extends dynamic_form {
         $userid = $data->userid;
 
         // Get the current credit balance.
-        list($currentbalance, $currency) = shopping_cart_credits::get_balance($userid);
+        [$currentbalance, $currency] = shopping_cart_credits::get_balance($userid);
 
         $newbalance = $currentbalance - $data->creditsmanagercredits;
         if ($newbalance < 0) {
             return false;
         }
 
-        $creditrecord = new stdClass;
+        $creditrecord = new stdClass();
         $creditrecord->userid = $userid;
         $creditrecord->credits = -$data->creditsmanagercredits;
         $creditrecord->balance = $newbalance; // The new balance.
@@ -217,7 +231,7 @@ class modal_creditsmanager extends dynamic_form {
         $cartstore->set_credit($creditrecord->balance, $creditrecord->currency);
 
         // At last, we log it to ledger.
-        $ledgerrecord = new stdClass;
+        $ledgerrecord = new stdClass();
         $ledgerrecord->userid = $data->userid;
         $ledgerrecord->itemid = 0;
         $ledgerrecord->price = (float)(-1.0) * $data->creditsmanagercredits;
@@ -280,9 +294,9 @@ class modal_creditsmanager extends dynamic_form {
 
     /**
      * Validate dates.
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
 

@@ -57,9 +57,9 @@ class daily_sums_date_selector_form extends moodleform {
 
     /**
      * Custom validation can be added here.
-     * @param stdClass $data
+     * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
         return [];

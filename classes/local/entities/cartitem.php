@@ -138,6 +138,14 @@ class cartitem {
     private $installment; // Needs to be public!
 
     /**
+     * Linkeditem identifiers define items that are connected.
+     * This information is used eg to calculate installments.
+     *
+     * @var ?string
+     */
+    private $linkeditem;
+
+    /**
      * Constructor for creating a cartitem.
      *
      * @param int $itemid id of cartitem
@@ -155,6 +163,7 @@ class cartitem {
      * @param int $nodelete if item can't bedeleted from cart by user.
      * @param string|null $costcenter The cost center of this item.
      * @param string|null $installment The identifier (unixtimestamp) of the installment.
+     * @param string|null $linkeditem The identifier of linked items.
      */
     public function __construct(int $itemid,
             string $itemname,
@@ -170,7 +179,8 @@ class cartitem {
             ?string $taxcategory = null,
             int $nodelete = 0,
             ?string $costcenter = null,
-            ?string $installment = null) {
+            ?string $installment = null,
+            ?string $linkeditem = null) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
@@ -186,6 +196,7 @@ class cartitem {
         $this->nodelete = $nodelete;
         $this->costcenter = $costcenter;
         $this->installment = $installment;
+        $this->linkeditem = $linkeditem;
     }
 
     /**
@@ -210,6 +221,7 @@ class cartitem {
         $item['nodelete'] = $this->nodelete;
         $item['costcenter'] = $this->costcenter;
         $item['installment'] = $this->installment;
+        $item['linkeditem'] = $this->linkeditem;
         return $item;
     }
 
@@ -259,7 +271,7 @@ class cartitem {
     }
 
     /**
-     *  Returns imageurl
+     * Returns imageurl.
      *
      * @return string|null
      */
