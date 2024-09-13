@@ -579,6 +579,28 @@ class cartstore {
     }
 
     /**
+     * Returns true when all the booked items have the same constcenter.
+     * @param string $currentcostcenter
+     * @return $string
+     * @throws coding_exception
+     */
+    public function get_costcenter() {
+        $costcenterincart = '';
+
+        $items = $this->get_items();
+        foreach ($items as $itemincart) {
+            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit') {
+                // We only need to check for "real" items, booking fee does not apply.
+                continue;
+            } else {
+                $costcenterincart = $itemincart['costcenter'] ?? '';
+                break;
+            }
+        }
+        return $costcenterincart;
+    }
+
+    /**
      * Returns the value for use credit from cache.
      * @return mixed
      * @throws coding_exception
