@@ -96,7 +96,8 @@ class cartstore {
         $cacheitemkey = $item->itemkey();
         $data['items'][$cacheitemkey] = $itemdata;
         $data['expirationtime'] = $expirationtime;
-        $data['costcenter'] = $item->costcenter ?? "";
+
+        $data['costcenter'] = empty($data['costcenter']) ? $item->costcenter : '';
 
         // When we add the first item, we need to reset credit...
         // ... because we can only use the one from the correct cost center.

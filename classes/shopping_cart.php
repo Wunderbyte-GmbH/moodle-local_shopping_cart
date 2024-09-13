@@ -716,6 +716,7 @@ class shopping_cart {
         if (!$data = $datafromhistory) {
             $cartstore = cartstore::instance($userid);
             $data = $cartstore->get_data();
+            $data['costcenter'] = $cartstore->get_costcenter();
 
             // If the price is not null, user has to have cashier rights to proceed here.
             if (
