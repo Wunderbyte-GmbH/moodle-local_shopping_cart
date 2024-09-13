@@ -1179,10 +1179,14 @@ class shopping_cart {
      *
      * @param int $userid
      * @param int $method
+     * @param string $costcenter
      * @return array
      */
-    public static function credit_paid_back(int $userid,
-        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH): array {
+    public static function credit_paid_back(
+        int $userid,
+        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+        string $costcenter = ''
+    ): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -1192,7 +1196,7 @@ class shopping_cart {
             ];
         }
 
-        if (!shopping_cart_credits::credit_paid_back($userid, $method)) {
+        if (!shopping_cart_credits::credit_paid_back($userid, $method, $costcenter)) {
             return [
                     'status' => 0,
                     'error' => 'couldntpayback',

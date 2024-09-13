@@ -59,6 +59,7 @@ class credit_paid_back extends external_api {
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
             'method' => new external_value(PARAM_INT, 'method', VALUE_DEFAULT,
                 LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
+            'costcenter' => new external_value(PARAM_TEXT, 'costcenter', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -66,13 +67,15 @@ class credit_paid_back extends external_api {
      * Excecute this websrvice.
      * @param int $userid
      * @param int $method
+     * @param string $costcenter
      * @return array
      */
-    public static function execute(int $userid, int $method) {
+    public static function execute(int $userid, int $method, string $costcenter) {
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'userid' => $userid,
             'method' => $method,
+            'costcenter' => $costcenter,
         ]);
 
         require_login();
@@ -85,7 +88,7 @@ class credit_paid_back extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::credit_paid_back($params['userid'], $params['method']);
+        return shopping_cart::credit_paid_back($params['userid'], $params['method'], $params['costcenter']);
     }
 
     /**

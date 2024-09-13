@@ -319,11 +319,13 @@ function showCredit(credit, currency, userid) {
 function confirmPaidBack(element) {
     const userid = element.dataset.userid;
     const method = element.dataset.method;
+    const costcenter = element.dataset.costcenter;
     Ajax.call([{
         methodname: "local_shopping_cart_credit_paid_back",
         args: {
             userid,
-            method
+            method,
+            costcenter
         },
         done: function(data) {
 

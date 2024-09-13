@@ -343,17 +343,22 @@ class shopping_cart_credits {
      */
     public static function credit_paid_back(
         int $userid,
-        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH
+        int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+        string $costcenter = ''
     ) {
         global $USER;
 
-        [$balance, $currency] = self::get_balance($userid);
+        [$balance, $currency] = self::get_balance($userid, $costcenter);
 
         $data = [];
 
         $data['deductible'] = round($balance, 2);
         $data['remainingcredit'] = 0;
         $data['currency'] = $currency;
+
+        if (!empty($costcenter)) {
+            $data['costcenter'] = $costcenter;
+        }
 
         self::use_credit($userid, $data);
 
@@ -365,6 +370,7 @@ class shopping_cart_credits {
         $ledgerrecord->price = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->currency = $currency;
+        $ledgerrecord->costcenter = $costcenter;
         $ledgerrecord->componentname = 'local_shopping_cart';
         $ledgerrecord->payment = $method;
         $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
