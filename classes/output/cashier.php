@@ -87,6 +87,20 @@ class cashier implements renderable, templatable {
      * @return array
      */
     public function returnaslist() {
+
+        if (!empty($this->data['credit'])) {
+            $this->data['credit'] = number_format(round((float) $this->data['credit'] ?? 0, 2), 2, '.', '');
+        }
+        if (!empty($this->data['remainingcredit'])) {
+            $this->data['remainingcredit'] = number_format(round((float) $this->data['remainingcredit'] ?? 0, 2), 2, '.', '');
+        }
+        if (!empty($this->data['costcentercredits'])) {
+
+            foreach ($this->data['costcentercredits'] as $key => $value) {
+                $this->data['costcentercredits'][$key]['balance'] = number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
+            }
+        }
+
         return $this->data;
     }
 
