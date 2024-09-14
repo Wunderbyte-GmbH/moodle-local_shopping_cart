@@ -111,15 +111,19 @@ class reload_history extends external_api {
             'has_historyitems' => new external_value(PARAM_BOOL, 'Has history items marker', VALUE_DEFAULT, false),
             'canpayback' => new external_value(PARAM_BOOL, 'Can pay back', VALUE_DEFAULT, false),
             'taxesenabled' => new external_value(PARAM_BOOL, 'Taxes enabled', VALUE_DEFAULT, false),
-            'currency' => new external_value(PARAM_ALPHAEXT),
+            'currency' => new external_value(PARAM_TEXT),
             'credit' => new external_value(PARAM_TEXT, 'Credit', VALUE_DEFAULT, ""),
             'costcentercredits' => new external_multiple_structure(
                 new external_single_structure([
                     'balance' => new external_value(PARAM_TEXT, 'balance', VALUE_DEFAULT, ""),
                     'costcenter' => new external_value(PARAM_TEXT, 'costcenter', VALUE_DEFAULT, ""),
                     'currency' => new external_value(PARAM_TEXT, 'currency', VALUE_DEFAULT, ""),
-                    ])
-                ),
+                ]),
+                'Credits per costcenters',
+                VALUE_OPTIONAL,
+                null,
+                NULL_ALLOWED
+            ),
             'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
         ]);
     }
