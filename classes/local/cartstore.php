@@ -690,7 +690,7 @@ class cartstore {
      * @return array
      * @throws coding_exception
      */
-    public function get_items(): mixed {
+    public function get_items(): array {
 
         $data = $this->get_cache();
 
