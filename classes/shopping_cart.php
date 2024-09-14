@@ -1180,6 +1180,7 @@ class shopping_cart {
      * @param int $userid
      * @param int $method
      * @param string $costcenter
+     *
      * @return array
      */
     public static function credit_paid_back(

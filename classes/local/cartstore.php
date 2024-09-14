@@ -581,11 +581,11 @@ class cartstore {
 
     /**
      * Returns true when all the booked items have the same constcenter.
-     * @param string $currentcostcenter
+     *
      * @return $string
      * @throws coding_exception
      */
-    public function get_costcenter() {
+    public function get_costcenter(): string {
         $costcenterincart = '';
 
         $items = $this->get_items();
@@ -690,7 +690,7 @@ class cartstore {
      * @return array
      * @throws coding_exception
      */
-    public function get_items() {
+    public function get_items(): mixed {
 
         $data = $this->get_cache();
 

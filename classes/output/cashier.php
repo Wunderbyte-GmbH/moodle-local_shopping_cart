@@ -97,7 +97,8 @@ class cashier implements renderable, templatable {
         if (!empty($this->data['costcentercredits'])) {
 
             foreach ($this->data['costcentercredits'] as $key => $value) {
-                $this->data['costcentercredits'][$key]['balance'] = number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
+                $this->data['costcentercredits'][$key]['balance'] =
+                    number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
             }
         }
 

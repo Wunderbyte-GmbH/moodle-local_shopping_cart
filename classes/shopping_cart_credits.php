@@ -339,6 +339,8 @@ class shopping_cart_credits {
      *
      * @param int $userid
      * @param int $method
+     * @param string $costcenter
+     *
      * @return bool
      */
     public static function credit_paid_back(
