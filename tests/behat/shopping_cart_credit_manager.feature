@@ -126,16 +126,17 @@ Feature: Cashier manage credits in shopping cart
     And I wait until the page is ready
     ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Pay back credits"
-    And I set the field "Correction value or credits to pay back" to "20"
     And I set the field "Payment method" to "Credits paid back by transfer"
     And I set the field "Reason" to "Pay back by transfer"
     And I press "Save changes"
     And I wait until the page is ready
-    Then I should see "5.00" in the ".cashier-history-items .credit_total" "css_element"
+    And I wait "2" seconds
+    # Credit element should not be there anymore
+    Then ".cashier-history-items .credit_total" "css_element" should not exist
     And I follow "Cash report"
     And I wait until the page is ready
-    And I should see "-20.00" in the "#cash_report_table_r1" "css_element"
-    And I should see "Pay back by transfer" in the "#cash_report_table_r1" "css_element"
+    And I should see "-25.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
     And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
 
