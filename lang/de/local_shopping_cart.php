@@ -286,7 +286,7 @@ Liegt das Datum 100 Tage in der Zukunft und es sind zwei Teilzalungen eingestell
 muss - nach der ersten Zahlung - die Hälfte des offenen Betrags nach 50 Tagen
 und der Rest nach 100 Tagen bezahlt werden.';
 $string['duedatevariable'] = 'Fällig N Tage nach erster Anzahlung';
-$string['duedatevariable_help'] = 'Anzahl Tage NACH der ersten Anzahlung nach denen der volle Betrag überwiesen worden sein muss.';
+$string['duedatevariable_help'] = 'Anzahl Tage NACH der ersten Anzahlung nach denen der volle Betrag überwiesen worden sein muss. Achtung: Der Kursstart kann auch der Start des Semesters sein, je nach Plugin-Einstellung "canceldependenton"';
 $string['ee'] = "Estland";
 $string['el'] = "Griechenland";
 $string['email'] = 'E-Mail';

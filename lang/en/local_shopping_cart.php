@@ -288,7 +288,7 @@ $string['duedate_help'] = 'The full amount must be paid by this date. If the dat
 and two installment payments are set, half of the remaining amount must be paid after 50 days following the
 first payment, and the rest after 100 days.';
 $string['duedatevariable'] = 'Due nr. of days after initial purchase';
-$string['duedatevariable_help'] = 'Enter the number of days after initial purchase when last payment is due. ';
+$string['duedatevariable_help'] = 'Enter the number of days after initial purchase when last payment is due. Caution: Coursestart can also be the start of semester, depending on the plugin-setting "canceldependenton".';
 $string['duedaysbeforecoursestart'] = 'Due nr. of days before coursestart';
 $string['duedaysbeforecoursestart_help'] = 'Enter the number of days before course start when last payment is due';
 $string['ee'] = "Estonia";
