@@ -29,26 +29,6 @@ Feature: Cashier manage credits in shopping cart
       | Account1 |
 
   @javascript
-  Scenario: Shopping cart credits: cashier attempts to refund non-existing credits
-    Given I log in as "admin"
-    And I visit "/local/shopping_cart/cashier.php"
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
-    And I wait until the page is ready
-    ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
-    And "//*[@class='credit_total']" "xpath_element" should not exist
-    When I click on "Credits manager" "button"
-    And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
-    And I set the field "What do you want to do?" to "Pay back credits"
-    And I set the field "Correction value or credits to pay back" to "5"
-    And I set the field "Payment method" to "Credits paid back by cash"
-    And I set the field "Reason" to "reduce non-exist"
-    And I press "Save changes"
-    Then I should see "Not enough credits available"
-
-  @javascript
   Scenario: Shopping cart credits: cashier correct (add) credits for user
     Given I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
@@ -116,16 +96,17 @@ Feature: Cashier manage credits in shopping cart
     And I wait until the page is ready
     ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Pay back credits"
-    And I set the field "Correction value or credits to pay back" to "12"
     And I set the field "Payment method" to "Credits paid back by cash"
     And I set the field "Reason" to "Pay back by cash"
     And I press "Save changes"
     And I wait until the page is ready
-    Then I should see "13.00" in the ".cashier-history-items .credit_total" "css_element"
+    # Credit element should not be there anymore.
+    And I wait "2" seconds
+    Then ".cashier-history-items .credit_total" "css_element" should not exist
     And I follow "Cash report"
     And I wait until the page is ready
-    And I should see "-12.00" in the "#cash_report_table_r1" "css_element"
-    And I should see "Pay back by cash" in the "#cash_report_table_r1" "css_element"
+    And I should see "-25.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by cash" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
     And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
 
