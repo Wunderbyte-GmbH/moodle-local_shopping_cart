@@ -85,7 +85,7 @@ class modal_creditsmanager extends dynamic_form {
             get_string('creditsmanagercredits', 'local_shopping_cart'));
         $mform->setDefault('creditsmanagercredits', 0.00);
         $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
-        $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'eq', 0);
+        $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'neq', 1);
 
         if (!empty(get_config('local_shopping_cart', 'samecostcenterforcredits'))) {
             $mform->addElement('text', 'creditsmanagercreditscostcenter',
@@ -145,7 +145,13 @@ class modal_creditsmanager extends dynamic_form {
                 }
                 break;
             case 2: // Pay back credits.
-                if (!self::creditsmanager_payback_credits($data)) {
+                if (
+                    !$result = shopping_cart_credits::credit_paid_back(
+                        $data->userid,
+                        $data->creditsmanagerpaymentmethod,
+                        $data->creditsmanagercreditscostcenter
+                    )
+                ) {
                     $data->error = 'notenoughcredits';
                 }
                 break;
@@ -192,60 +198,6 @@ class modal_creditsmanager extends dynamic_form {
         } catch (moodle_exception $e) {
             return false;
         }
-        return true;
-    }
-
-    /**
-     * Pay back credits.
-     * @param stdClass $data the form data
-     * @return bool true if successful, false if not
-     */
-    public static function creditsmanager_payback_credits(stdClass $data): bool {
-        global $DB, $USER;
-        $now = time();
-        $userid = $data->userid;
-
-        // Get the current credit balance.
-        [$currentbalance, $currency] = shopping_cart_credits::get_balance($userid);
-
-        $newbalance = $currentbalance - $data->creditsmanagercredits;
-        if ($newbalance < 0) {
-            return false;
-        }
-
-        $creditrecord = new stdClass();
-        $creditrecord->userid = $userid;
-        $creditrecord->credits = -$data->creditsmanagercredits;
-        $creditrecord->balance = $newbalance; // The new balance.
-        $creditrecord->currency = $currency;
-        $creditrecord->usermodified = $USER->id;
-        $creditrecord->timemodified = $now;
-        $creditrecord->timecreated = $now;
-
-        if (!$DB->insert_record('local_shopping_cart_credits', $creditrecord)) {
-            return false;
-        }
-
-        // We always have to add the cache.
-        $cartstore = cartstore::instance($userid);
-        $cartstore->set_credit($creditrecord->balance, $creditrecord->currency);
-
-        // At last, we log it to ledger.
-        $ledgerrecord = new stdClass();
-        $ledgerrecord->userid = $data->userid;
-        $ledgerrecord->itemid = 0;
-        $ledgerrecord->price = (float)(-1.0) * $data->creditsmanagercredits;
-        $ledgerrecord->credits = (float)(-1.0) * $data->creditsmanagercredits;
-        $ledgerrecord->currency = $currency;
-        $ledgerrecord->componentname = 'local_shopping_cart';
-        $ledgerrecord->payment = $data->creditsmanagerpaymentmethod;
-        $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
-        $ledgerrecord->usermodified = $USER->id;
-        $ledgerrecord->timemodified = $now;
-        $ledgerrecord->timecreated = $now;
-        $ledgerrecord->annotation = $data->creditsmanagerreason;
-        shopping_cart::add_record_to_ledger_table($ledgerrecord);
-
         return true;
     }
 
@@ -305,8 +257,7 @@ class modal_creditsmanager extends dynamic_form {
         if (empty($data['creditsmanagermode'])) {
             $errors['creditsmanagermode'] = get_string('error:choosevalue', 'local_shopping_cart');
         }
-        if (empty($data['creditsmanagercredits']) ||
-            ($data['creditsmanagermode'] == 2 && $data['creditsmanagercredits'] <= 0)) {
+        if ($data['creditsmanagermode'] == 1 && empty($data['creditsmanagercredits'])) {
             $errors['creditsmanagercredits'] = get_string('error:notpositive', 'local_shopping_cart');
         }
         if (isset($data['creditsmanagermode']) && $data['creditsmanagermode'] == 2 && empty($data['creditsmanagerpaymentmethod'])) {
