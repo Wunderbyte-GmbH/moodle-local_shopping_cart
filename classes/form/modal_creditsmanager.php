@@ -149,7 +149,7 @@ class modal_creditsmanager extends dynamic_form {
                     !$result = shopping_cart_credits::credit_paid_back(
                         $data->userid,
                         $data->creditsmanagerpaymentmethod,
-                        $data->creditsmanagercreditscostcenter
+                        $data->creditsmanagercreditscostcenter ?? ''
                     )
                 ) {
                     $data->error = 'notenoughcredits';
