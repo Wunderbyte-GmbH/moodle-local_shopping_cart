@@ -662,6 +662,7 @@ class shopping_cart_history {
                 $newrecord->tax += $record->tax;
                 $newrecord->timemodified = $record->timemodified;
                 $newrecord->installments--;
+                $newrecord->paymentstatus = $record->paymentstatus;
                 $newrecord->json = json_encode($jsonobject);
 
                 $record = $newrecord;
