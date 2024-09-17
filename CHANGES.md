@@ -1,3 +1,10 @@
+## Version 0.9.24 (2024091700)
+* Improvement: Add description about coursestart used for installments
+* Bugfix: Pay back via credit manager works again. Payback is streamlined.
+* Bugfix: Fix bug when no costcenters are used
+* Tests: Adapt behat tests to new creditmanager
+* Tests: Fix behat test for new creditmanager functionality
+
 ## Version 0.9.23 (2024091600)
 * Improvement: Add refund with cash and refund via transfer buttons to costcenter (sytling still needed)
 * Bugfix: Handling for empty costcenter
