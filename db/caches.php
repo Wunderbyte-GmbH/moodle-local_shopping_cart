@@ -57,4 +57,3 @@ $definitions = [
         'staticaccelerationsize' => 1,
     ],
 ];
-

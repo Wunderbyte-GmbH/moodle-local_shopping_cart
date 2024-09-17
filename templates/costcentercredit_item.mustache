@@ -92,19 +92,21 @@
                 </h5>
             </div>
         </div>
-        <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm"
-            data-userid='{{userid}}'
-            data-method='6'
-            data-costcenter='{{costcenter}}'>
-            {{#str}} deletecreditcash, local_shopping_cart {{/str}}
-        </button>
-        {{! LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH_BY_TRANSFER  in lib.php}}
-        <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm ml-1"
-            data-userid='{{userid}}'
-            data-method='8'
-            data-costcenter='{{costcenter}}'>
-            {{#str}} deletecredittransfer, local_shopping_cart {{/str}}
-        </button>
+        <div class="shopping_cart_history_payback_buttons">
+            <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm"
+                data-userid='{{userid}}'
+                data-method='6'
+                data-costcenter='{{costcenter}}'>
+                {{#str}} deletecreditcash, local_shopping_cart {{/str}}
+            </button>
+            {{! LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH_BY_TRANSFER  in lib.php}}
+            <button type="button" class="shopping_cart_history_paidback_button btn btn-secondary btn-sm ml-1"
+                data-userid='{{userid}}'
+                data-method='8'
+                data-costcenter='{{costcenter}}'>
+                {{#str}} deletecredittransfer, local_shopping_cart {{/str}}
+            </button>
+        </div>
     {{/costcentercredits}}
 
     {{#canpayback}}
