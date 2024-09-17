@@ -1,3 +1,8 @@
+## Version 0.9.23 (2024091600)
+* Improvement: Add refund with cash and refund via transfer buttons to costcenter (sytling still needed)
+* Bugfix: Handling for empty costcenter
+* Bugfix: Number format for the credit on the cachier page
+
 ## Version 0.9.22 (2024091300)
 * Improvement: Add example to costcenter strings
 * Bugfix: Use credits of right costcenter
