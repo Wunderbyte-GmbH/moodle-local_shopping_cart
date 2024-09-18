@@ -72,6 +72,9 @@
 }}
 {{#costcentercredits.0}}
 <li class="list-group-item flex-column align-items-start text-dark bg-light shopping_cart_history_paidback">
+
+    {{#canpayback}}
+
     {{#costcentercredits}}
         <div class="d-flex w-100 justify-content-between">
             <div>
@@ -109,7 +112,6 @@
         </div>
     {{/costcentercredits}}
 
-    {{#canpayback}}
     <div class="btn-group mt-1 mb-2" role="group" aria-label="Buttons to pay back or add credits">
         <button type="button" class="shopping_cart_history_creditsmanager btn btn-secondary btn-sm mr-1"
             data-userid='{{userid}}'>
