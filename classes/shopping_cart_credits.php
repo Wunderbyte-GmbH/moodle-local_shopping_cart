@@ -64,15 +64,30 @@ class shopping_cart_credits {
         $params = ['userid' => $userid];
         $additionalsql = '';
         if (!empty($samecostcenterforcredits)) {
-            $additionalsql = " AND COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
+            $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
             $params['costcenter'] = $costcenter;
+
+            $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+            if (empty($defaultcostcenter) || $defaultcostcenter == $costcenter) {
+                $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
+            } else {
+                $defaultcostcentersql = '';
+            }
+        } else {
+            $additionalsql = " 1 = 1 ";
         }
 
-        $sql = 'SELECT balance, currency
-        FROM {local_shopping_cart_credits}
-        WHERE userid = :userid' . $additionalsql . '
-        ORDER BY id DESC
-        LIMIT 1';
+        $sql = 'SELECT SUM(balance) AS balance, MAX(currency) as currency
+                FROM {local_shopping_cart_credits}
+                WHERE userid = 5
+                AND id IN (
+                    SELECT MAX(id)
+                    FROM {local_shopping_cart_credits}
+                    WHERE userid = 5
+                    AND ( ' . $additionalsql .
+                        $defaultcostcentersql . ' )
+                    GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'nocostcenter\')
+                )';
 
         // Get the latest balance of the given costcenter.
         if (!$balancerecord = $DB->get_record_sql($sql, $params)) {
@@ -129,6 +144,7 @@ class shopping_cart_credits {
                     WHERE userid = :userid1
                     GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'\')
                 )
+
                 ORDER BY costcenter ASC';
 
         // Get the latest balance of the given costcenter.
@@ -316,22 +332,82 @@ class shopping_cart_credits {
 
         global $DB, $USER;
 
+        // Before adding this, we need to make sure that the we use the right costcenter.
+        if (!empty($checkoutdata['costcenter'])) {
+            // When we use a costcenter, the credit might come from the empty costcenter.
+            // This is the credit we need to use first.
+            $balances = self::get_balance_for_all_costcenters($userid);
+
+            foreach ($balances as $balance) {
+                if (empty($balance['costcenter'])) {
+                    $emptycostcenterbalance = $balance['balance'];
+                    continue;
+                }
+                if ($balance['costcenter'] == ($checkoutdata['costcenter'] ?? '')) {
+                    $matchingcostcenterbalance = $balance['balance'];
+                    continue;
+                }
+            }
+        }
+
         $now = time();
-        $data = new stdClass();
 
-        $data->userid = $userid;
-        $data->credits = -$checkoutdata['deductible'];
-        $data->balance = $checkoutdata['remainingcredit']; // Balance hold the new balance after this transaction.
-        $data->costcenter = $checkoutdata['costcenter'] ?? '';
-        $data->currency = $checkoutdata['currency'];
-        $data->usermodified = $USER->id;
-        $data->timemodified = $now;
-        $data->timecreated = $now;
+        // If we have a balance for the empty costcenter, we use this first.
+        $sumtodeduct = $checkoutdata['deductible'];
 
-        $DB->insert_record('local_shopping_cart_credits', $data);
+        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
 
-        $cartstore = cartstore::instance($userid);
-        $cartstore->set_credit($data->balance, $data->currency, $data->costcenter);
+        if (
+            $emptycostcenterbalance > 0
+            && !empty($checkoutdata['costcenter'])
+            && (empty($defaultcostcenter) || $defaultcostcenter == $checkoutdata['costcenter'])
+        ) {
+            // First check if we can deduct from the empty costcenter.
+            $sumtodeduct = $emptycostcenterbalance - $sumtodeduct;
+
+            $data = new stdClass();
+
+            $data->userid = $userid;
+            $data->costcenter = '';
+            $data->currency = $checkoutdata['currency'];
+            $data->usermodified = $USER->id;
+            $data->timemodified = $now;
+            $data->timecreated = $now;
+
+            if ($sumtodeduct < 0) {
+                // We want to deduct more than we have from the empty costcenter. Therefore we set it to 0.
+                $data->credits = -$emptycostcenterbalance;
+                $data->balance = 0;
+                // We need to move the sumtoduct in the positive range again.
+                $sumtodeduct *= -1;
+            } else {
+                // We have enough in the empty costcenter.
+                $data->credits = -$checkoutdata['deductible'];
+                $data->balance = $emptycostcenterbalance - $checkoutdata['deductible'];
+            }
+
+            $DB->insert_record('local_shopping_cart_credits', $data);
+            $cartstore = cartstore::instance($userid);
+            $cartstore->set_credit($data->balance, $data->currency);
+        }
+
+        if ($sumtodeduct > 0) {
+            $data = new stdClass();
+
+            $data->userid = $userid;
+            $data->credits = -$sumtodeduct;
+            $data->balance = !empty($matchingcostcenterbalance)
+                ? ($matchingcostcenterbalance - $sumtodeduct) : $checkoutdata['remainingcredit'];
+            $data->costcenter = $checkoutdata['costcenter'] ?? '';
+            $data->currency = $checkoutdata['currency'];
+            $data->usermodified = $USER->id;
+            $data->timemodified = $now;
+            $data->timecreated = $now;
+
+            $DB->insert_record('local_shopping_cart_credits', $data);
+            $cartstore = cartstore::instance($userid);
+            $cartstore->set_credit($data->balance, $data->currency, $data->costcenter);
+        }
     }
 
     /**
