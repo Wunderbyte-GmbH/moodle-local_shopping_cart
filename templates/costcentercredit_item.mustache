@@ -80,8 +80,8 @@
             <div>
             {{#str}} paymentmethodcredits, local_shopping_cart {{/str}}:<br>
             <span class="costcenter">
-                {{#costcenter}} {{.}} {{/costcenter}}
-                {{^costcenter}} {{#str}} nocostcenter, local_shopping_cart {{/str}} {{/costcenter}}
+                {{#costcenterlabel}} {{.}} {{/costcenterlabel}}
+                {{^costcenterlabel}} {{#str}} nocostcenter, local_shopping_cart {{/str}} {{/costcenterlabel}}
             </span>
             </div>
             <div class="costcentercredits">

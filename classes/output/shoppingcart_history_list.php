@@ -353,7 +353,6 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         if (!empty($this->costcentercredits)) {
-
             foreach ($this->costcentercredits as $key => $value) {
                 $this->costcentercredits[$key]['balance'] = number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
             }

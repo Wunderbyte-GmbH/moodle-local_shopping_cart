@@ -168,7 +168,8 @@ class shopping_cart_credits {
 
         $returnarray = array_map(fn($a) => [
             'id' => $a->id,
-            'costcenter' => $translationsarray[$a->costcenter] ?? $a->costcenter,
+            'costcenter' => $a->costcenter,
+            'costcenterlabel' => $translationsarray[$a->costcenter] ?? $a->costcenter,
             'balance' => round($a->balance, 2),
             'currency' => $a->currency,
         ], $balancerecords);
