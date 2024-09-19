@@ -75,6 +75,7 @@ class shopping_cart_credits {
             }
         } else {
             $additionalsql = " 1 = 1 ";
+            $$defaultcostcentersql = '';
         }
 
         $sql = 'SELECT SUM(balance) AS balance, MAX(currency) as currency
