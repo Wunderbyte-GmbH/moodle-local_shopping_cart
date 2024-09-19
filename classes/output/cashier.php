@@ -74,6 +74,7 @@ class cashier implements renderable, templatable {
             $historylist = new shoppingcart_history_list($userid);
 
             $historylist->insert_list($data);
+
             $data['costcentercredits'] =
                 array_values(shopping_cart_credits::get_balance_for_all_costcenters($userid));
 

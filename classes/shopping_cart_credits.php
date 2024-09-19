@@ -61,11 +61,14 @@ class shopping_cart_credits {
             throw new moodle_exception('nomulticurrencysupportyet', 'local_shopping_cart');
         }
 
-        $params = ['userid' => $userid];
-        $additionalsql = '';
+        $params = [
+            'userid1' => $userid,
+            'userid2' => $userid,
+        ];
+        $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
+        $params['costcenter'] = $costcenter;
         if (!empty($samecostcenterforcredits)) {
-            $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
-            $params['costcenter'] = $costcenter;
+
 
             $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
             if (empty($defaultcostcenter) || $defaultcostcenter == $costcenter) {
@@ -74,17 +77,16 @@ class shopping_cart_credits {
                 $defaultcostcentersql = '';
             }
         } else {
-            $additionalsql = " 1 = 1 ";
-            $$defaultcostcentersql = '';
+            $defaultcostcentersql = '';
         }
 
         $sql = 'SELECT SUM(balance) AS balance, MAX(currency) as currency
                 FROM {local_shopping_cart_credits}
-                WHERE userid = 5
+                WHERE userid = :userid1
                 AND id IN (
                     SELECT MAX(id)
                     FROM {local_shopping_cart_credits}
-                    WHERE userid = 5
+                    WHERE userid = :userid2
                     AND ( ' . $additionalsql .
                         $defaultcostcentersql . ' )
                     GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'nocostcenter\')
@@ -94,28 +96,8 @@ class shopping_cart_credits {
         if (!$balancerecord = $DB->get_record_sql($sql, $params)) {
             $balance = 0;
         } else {
-            $balance = $balancerecord->balance;
-            $currency = $balancerecord->currency;
-        }
-
-        if (
-            $CFG->debug == DEBUG_DEVELOPER
-            && empty($samecostcenterforcredits)
-        ) {
-            $sql = "SELECT SUM(credits) sumofcredits
-            FROM {local_shopping_cart_credits}
-            WHERE userid =:userid";
-            // Only in developer mode, we check if balance matches with total sum of credits.
-            if (!$sumofcredits = $DB->get_field_sql($sql, ['userid' => $userid])) {
-                $sumofcredits = 0;
-            }
-            if (round($sumofcredits, 2) != round($balance, 2)) {
-                throw new moodle_exception(get_string(
-                    'creditnotmatchbalance',
-                    'local_shopping_cart',
-                    strval($userid)
-                ));
-            }
+            $balance = $balancerecord->balance ?? 0;
+            $currency = $balancerecord->currency ?? 0;
         }
 
         return [round($balance, 2), $currency];
@@ -350,6 +332,10 @@ class shopping_cart_credits {
                     continue;
                 }
             }
+        }
+
+        if (empty($emptycostcenterbalance)) {
+            $emptycostcenterbalance = 0;
         }
 
         $now = time();
