@@ -200,7 +200,7 @@ class shopping_cart_history {
                 WHERE sch.userid = :userid
                 AND sch.paymentstatus >= :paymentstatus
                 AND NOT (sch.componentname LIKE 'local_shopping_cart' AND sch.area LIKE 'installments%' )
-                ORDER BY sch.timemodified DESC";
+                ORDER BY sch.timecreated DESC";
 
         $records = $DB->get_records_sql($sql, ['userid' => $userid, 'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]);
 
