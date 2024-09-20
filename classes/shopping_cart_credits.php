@@ -68,8 +68,6 @@ class shopping_cart_credits {
         $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
         $params['costcenter'] = $costcenter;
         if (!empty($samecostcenterforcredits)) {
-
-
             $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
             if (empty($defaultcostcenter) || $defaultcostcenter == $costcenter) {
                 $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
@@ -179,7 +177,14 @@ class shopping_cart_credits {
             $usecredit = self::use_credit_fallback($usecredit, $userid);
         }
 
-        [$balance, $currency] = self::get_balance($userid);
+        if (empty($data['costcenter'])) {
+            foreach ($data['items'] as $item) {
+                $item = (array)$item;
+                $data['costcenter'] = empty($data['costcenter']) ? ($item['costcenter'] ?? '') : $data['costcenter'];
+            }
+        }
+
+        [$balance, $currency] = self::get_balance($userid, $data['costcenter']);
 
         // If there is no price key, we need to calculate it from items.
         if (!isset($data['price']) && isset($data['items'])) {
@@ -461,16 +466,19 @@ class shopping_cart_credits {
         $currency = '';
         $data = [];
         $data['price'] = $shoppingcart->initialtotal;
-
+        $costcenter = '';
         if (isset($shoppingcart->items)) {
             foreach ($shoppingcart->items as $item) {
                 if (!empty($item['userid'])) {
                     $userid = $item['userid'];
                     $currency = $item['currency'];
+                    $costcenter = empty($costcenter) ? ($item['costcenter'] ?? '') : $costcenter;
                     break;
                 }
             }
         }
+
+        $data['costcenter'] = $costcenter;
 
         if ($userid != 0) {
             $data['currency'] = $currency;

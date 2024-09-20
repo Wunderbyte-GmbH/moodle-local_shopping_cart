@@ -80,20 +80,21 @@ class service_provider implements \core_payment\local\callback\service_provider 
         }
 
         if ($cachedeleted) {
-
             // We have no good function to recreate cache from DB.
             // So, we need to do this manually.
             $price = 0;
+            $costcenter = '';
             foreach ($records as $record) {
                 $price = $price + $record->price;
                 $currency = $record->currency;
                 $usecredit  = $record->usecredit;
                 $userid = $record->userid;
+                $costcenter = empty($costcenter) ? ($record->costcenter ?? '') : $costcenter;
             }
 
             if (!empty($price) && !empty($usecredit)) {
                 // We will reduce the price for the existing credit.
-                list($credit, $currency) = shopping_cart_credits::get_balance($userid);
+                list($credit, $currency) = shopping_cart_credits::get_balance($userid, $costcenter);
                 $price = (float)$price - (float)$credit;
             }
 
