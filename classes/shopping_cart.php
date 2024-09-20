@@ -963,6 +963,7 @@ class shopping_cart {
                     'timemodified' => $now,
                     'timecreated' => $now,
                     'identifier' => $data['identifier'],
+                    'costcenter' => $data['costcenter'] ?? '',
                 ];
                 shopping_cart_credits::creditsmanager_correct_credits($correctiondata);
             }

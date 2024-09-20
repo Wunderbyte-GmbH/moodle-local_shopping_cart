@@ -117,6 +117,7 @@ class reload_history extends external_api {
                 new external_single_structure([
                     'balance' => new external_value(PARAM_TEXT, 'balance', VALUE_DEFAULT, ""),
                     'costcenter' => new external_value(PARAM_TEXT, 'costcenter', VALUE_DEFAULT, ""),
+                    'costcenterlabel' => new external_value(PARAM_TEXT, 'costcenter label', VALUE_DEFAULT, ""),
                     'currency' => new external_value(PARAM_TEXT, 'currency', VALUE_DEFAULT, ""),
                 ]),
                 'Credits per costcenters',

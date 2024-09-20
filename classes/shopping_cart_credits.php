@@ -533,4 +533,47 @@ class shopping_cart_credits {
         }
         return $currencies;
     }
+
+    /**
+     * Correct credits.
+     * @param stdClass $data the form data
+     */
+    public static function creditsmanager_correct_credits(stdClass $data) {
+        global $USER;
+
+        $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
+        $costcenter = $data->creditsmanagercreditscostcenter ?? $data->costcenter ?? "";
+        // Add credits.
+        try {
+            self::add_credit(
+                $data->userid,
+                $data->creditsmanagercredits,
+                $currency,
+                $costcenter
+            );
+
+            // Log it to ledger.
+            // Also record this in the ledger table.
+            $ledgerrecord = new stdClass();
+            $now = time();
+            $ledgerrecord->userid = $data->userid;
+            $ledgerrecord->itemid = 0;
+            $ledgerrecord->price = 0;
+            $ledgerrecord->credits = (float) $data->creditsmanagercredits;
+            $ledgerrecord->currency = $currency;
+            $ledgerrecord->componentname = 'local_shopping_cart';
+            $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
+            $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+            $ledgerrecord->usermodified = $USER->id;
+            $ledgerrecord->timemodified = $now;
+            $ledgerrecord->timecreated = $now;
+            $ledgerrecord->annotation = $data->creditsmanagerreason;
+            $ledgerrecord->costcenter = $costcenter;
+            shopping_cart::add_record_to_ledger_table($ledgerrecord);
+        } catch (moodle_exception $e) {
+            return false;
+        }
+        return true;
+    }
+
 }
