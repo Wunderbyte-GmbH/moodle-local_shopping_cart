@@ -124,6 +124,27 @@
         <span class="getrefundforcredit">
             {{#str}} getrefundforcredit, local_shopping_cart {{/str}}
         </span>
+            {{#costcentercredits}}
+                <div class="d-flex w-100 justify-content-between">
+                    <div>
+                    {{#str}} paymentmethodcredits, local_shopping_cart {{/str}}:<br>
+                    <span class="costcenter">
+                        {{#costcenterlabel}} {{.}} {{/costcenterlabel}}
+                        {{^costcenterlabel}} {{#str}} nocostcenter, local_shopping_cart {{/str}} {{/costcenterlabel}}
+                    </span>
+                    </div>
+                    <div class="costcentercredits">
+                        <h5>
+                            <span class="credit_total">
+                                {{balance}}
+                            </span>
+                            <span class="currency_credit">
+                                {{currency}}
+                            </span>
+                        </h5>
+                    </div>
+                </div>
+            {{/costcentercredits}}
     {{/canpayback}}
 </li>
 {{/costcentercredits.0}}
