@@ -31,6 +31,7 @@ import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
 import DynamicForm from 'core_form/dynamicform';
+import { reloadHistory } from './shistory';
 
 const SELECTORS = {
     USERSELECTORFORM: '[data-id="sc-selectuserformcontainer"]',
@@ -74,8 +75,6 @@ export const init = (userid = 0) => {
         checkoutbutton.addEventListener('click', function() {
 
             document.getElementById('checkout-tab').classList.add('success');
-
-            console.log('click');
         });
     }
 
@@ -95,6 +94,7 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
             if (data.status === 1) {
 
                 console.log('payment confirmed', data);
+                reloadHistory(userid);
 
                 // The function can be called via cashier, or because a user pays via credits.
                 // If that's the case, we are not on the cashier site.
@@ -125,6 +125,7 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                         successtab.classList.add('success');
                         displayPaymentMessage('paymentsuccessful');
                     }
+
                 }
 
             } else {
