@@ -1,3 +1,21 @@
+## Version 0.9.28 (2024092000)
+* Improvement: Make sure history list is correctly sorted
+* Bugfix: Correct handling of used credits in multi ccostcenter environment.
+* Bugfix: correctly attribute Credit after rebooking
+
+## Version 0.9.27 (2024091900)
+* Improvement: Fallback on empty costcenter
+* Bugfix: Costcenterlabel
+* Bugfix: Add missing variable
+* Bugfix: Make sure costcenter also works with single costcenter
+
+## Version 0.9.26 (2024091800)
+* Bugfix: Don't show payback buttons to normal users
+
+## Version 0.9.25 (2024091701)
+* Bugfix: Correct paymentstatus for installmentpayments
+* Bugfix: Switch between different costcenters led to wrong credit usage.
+
 ## Version 0.9.24 (2024091700)
 * Improvement: Add description about coursestart used for installments
 * Bugfix: Pay back via credit manager works again. Payback is streamlined.
