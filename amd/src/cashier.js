@@ -31,7 +31,7 @@ import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
 import DynamicForm from 'core_form/dynamicform';
-import { reloadHistory } from './shistory';
+import {reloadHistory} from './shistory';
 
 const SELECTORS = {
     USERSELECTORFORM: '[data-id="sc-selectuserformcontainer"]',
