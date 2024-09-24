@@ -1,3 +1,7 @@
+## Version 0.9.29 (2024092400)
+* Bugfix: Refresh history after purchase in cashier.php
+* Bugfix: Display credits for customers in shoppingcarthistory
+
 ## Version 0.9.28 (2024092000)
 * Improvement: Make sure history list is correctly sorted
 * Bugfix: Correct handling of used credits in multi ccostcenter environment.
