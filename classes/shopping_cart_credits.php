@@ -95,7 +95,7 @@ class shopping_cart_credits {
             $balance = 0;
         } else {
             $balance = $balancerecord->balance ?? 0;
-            $currency = $balancerecord->currency ?? 0;
+            $currency = $balancerecord->currency ?? 'EUR';
         }
 
         return [round($balance, 2), $currency];
