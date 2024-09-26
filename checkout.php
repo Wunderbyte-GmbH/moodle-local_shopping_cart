@@ -125,7 +125,7 @@ if (isset($success) && isset($historylist)) {
     }
 } else {
     $cartstore = cartstore::instance($userid);
-    $data = $cartstore->get_data();
+    $data = $cartstore->get_localized_data();
 
     $data["mail"] = $USER->email;
     $data["name"] = $USER->firstname . $USER->lastname;
