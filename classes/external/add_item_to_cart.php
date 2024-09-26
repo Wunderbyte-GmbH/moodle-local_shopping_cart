@@ -95,7 +95,9 @@ class add_item_to_cart extends external_api {
 
         // The transformation of the userid will be done in the add_item_to_cart function.
 
-        return shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
+        $item = shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
+        $item['itemname'] = format_string($item['itemname']);
+        return $item;
     }
 
     /**

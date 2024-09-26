@@ -251,6 +251,8 @@ class shoppingcart_history_list implements renderable, templatable {
                 }
             }
 
+            $item->itemname = format_string($item->itemname);
+
             $this->historyitems[] = (array)$item;
         }
 

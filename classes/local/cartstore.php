@@ -488,6 +488,22 @@ class cartstore {
         return $data;
     }
 
+    /**
+     * Return the data with localized strings.
+     *
+     * @return mixed
+     */
+    public function get_localized_data() {
+        $data = self::get_data();
+
+        if (!empty($data['items'])) {
+            foreach ($data['items'] as $key => $item) {
+                $data['items'][$key]['itemname'] = format_string($item['itemname']);
+            }
+        }
+        return $data;
+    }
+
 
     /**
      * Reset the singleton to force new build from cache and price modifiers.

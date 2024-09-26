@@ -90,7 +90,7 @@ class get_shopping_cart_items extends external_api {
         }
 
         $cartstore = cartstore::instance($userid);
-        $data = $cartstore->get_data();
+        $data = $cartstore->get_localized_data();
 
         return $data;
     }
