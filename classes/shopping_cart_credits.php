@@ -177,7 +177,7 @@ class shopping_cart_credits {
             $usecredit = self::use_credit_fallback($usecredit, $userid);
         }
 
-        if (empty($data['costcenter'])) {
+        if (empty($data['costcenter']) && !empty($data['items'] )) {
             foreach ($data['items'] as $item) {
                 $item = (array)$item;
                 $data['costcenter'] = empty($data['costcenter']) ? ($item['costcenter'] ?? '') : $data['costcenter'];
