@@ -261,6 +261,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         $serviceperiodeend = strtotime('+100 days', $now);
         $nodelete = 0;
         $costcenter = '';
+        $description = 'dummy item description';
         $installment = null;
 
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
@@ -270,19 +271,26 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 1:
                 $price = 10.00;
                 $tax = 'A';
+                $costcenter = 'CostCenter1';
+                $description = '('. $costcenter .')';
                 break;
             case 2:
                 $price = 20.30;
                 $tax = 'B';
+                $costcenter = 'CostCenter2';
+                $description = '('. $costcenter .')';
                 break;
             case 3:
                 $price = 13.8;
                 $tax = 'C';
+                $costcenter = 'CostCenter3';
+                $description = '('. $costcenter .')';
                 break;
             case 5:
                 $price = 42.42;
                 $tax = 'B';
                 $installment = 1;
+                $description = '(installment enabled)';
                 break;
             default:
                 $price = 12.12;
@@ -291,12 +299,12 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         }
 
         $cartitem = new cartitem($itemid,
-            'my test item ' . $itemid,
+            'Test item ' . $itemid,
             $price,
             get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',
             $area,
-            'item description',
+            $description,
             $imageurl->out(),
             $canceluntil,
             $serviceperiodestart,
