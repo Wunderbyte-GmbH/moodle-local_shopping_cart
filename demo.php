@@ -24,12 +24,14 @@
 
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\output\button;
+use local_shopping_cart\shopping_cart\service_provider;
 use local_shopping_cart\shopping_cart_history;
 
 require_once(__DIR__ . '/../../config.php');
 require_login();
 
 global $PAGE, $OUTPUT, $CFG;
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 $PAGE->set_url("{$CFG->wwwroot}/local/shopping_cart/demo.php");
@@ -45,121 +47,69 @@ $canceluntil = strtotime('+14 days', $now);
 $serviceperiodestart = $now;
 $serviceperiodeend = strtotime('+100 days', $now);
 
-// This cartitem data is not really used (except for itemid), because data is fetched from service_provider.
-// See \local_shopping_cart\shopping_cart\service_provider for real values.
-$item = new cartitem(
-        1,
-        '1',
-        10.00,
-        get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-        'local_shopping_cart',
-        'main',
-        '',
-        '',
-        $canceluntil,
-        $serviceperiodestart,
-        $serviceperiodeend,
-        'A');
-$button = new button($item->as_array());
-
 echo $OUTPUT->header();
+
 echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 'alert alert-info',
         ['style' => 'width: 500px;']);
 
+// Cartitem's demo data is fetched from service_provider.
+// See \local_shopping_cart\shopping_cart\service_provider for values.
+$item = service_provider::load_cartitem('main', 1);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
+
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 1', 'h4');
-echo html_writer::div("10.00 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = new cartitem(
-        2,
-        '2',
-        20.30,
-        get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-        'local_shopping_cart',
-        'main',
-        '',
-        '',
-        $canceluntil,
-        $serviceperiodestart,
-        $serviceperiodeend,
-        'B');
-$button = new button($item->as_array());
+$item = service_provider::load_cartitem('main', 2);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 2', 'h4');
-echo html_writer::div("20.30 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = new cartitem(
-        3,
-        '3',
-        13.8,
-        get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-        'local_shopping_cart',
-        'main',
-        '',
-        '',
-        $canceluntil,
-        $serviceperiodestart,
-        $serviceperiodeend,
-        'C');
-$button = new button($item->as_array());
+$item = service_provider::load_cartitem('main', 3);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 3', 'h4');
-echo html_writer::div("13.80 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = new cartitem(
-    4,
-    '4',
-    12.12,
-    get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-    'local_shopping_cart',
-    'main',
-    '',
-    '',
-    $canceluntil,
-    $serviceperiodestart,
-    $serviceperiodeend,
-    '');
-$button = new button($item->as_array());
+$item = service_provider::load_cartitem('main', 4);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 4', 'h4');
-echo html_writer::div("12.12 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = new cartitem(
-    5,
-    '5',
-    42.42,
-    get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-    'local_shopping_cart',
-    'main',
-    '',
-    '',
-    $canceluntil,
-    $serviceperiodestart,
-    $serviceperiodeend,
-    'B',
-    0,
-    '',
-    1);
-$button = new button($item->as_array());
+$item = service_provider::load_cartitem('main', 5);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 5 (installment)', 'h4');
-echo html_writer::div("42.42 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
