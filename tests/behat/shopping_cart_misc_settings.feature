@@ -41,7 +41,7 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     And I click on "Proceed to checkout" "link"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".shopping-cart-checkout-items-container" "css_element"
+    And I should see "Test item 1" in the ".shopping-cart-checkout-items-container" "css_element"
     And the "Checkout" "button" should be disabled
     And I should see "Are you agree with conditions?" in the ".form_termsandconditions" "css_element"
     ## Access by "name" attribute because "id" does not work for some strange reasons

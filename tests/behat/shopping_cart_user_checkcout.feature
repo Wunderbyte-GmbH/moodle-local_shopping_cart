@@ -41,13 +41,13 @@ Feature: User cancellation after cash payment on the checkout page.
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
     And I should see "Your shopping cart"
-    And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    And I should see "my test item 2" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2" "css_element"
+    And I should see "Test item 2" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2" "css_element"
     And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2 .item-price" "css_element"
     And I click on ".checkoutgrid [data-itemid=\"2\"] i.fa.fa-trash-o" "css_element"
     And I wait "1" seconds
-    And I should not see "my test item 2" in the "div.shopping-cart-items" "css_element"
+    And I should not see "Test item 2" in the "div.shopping-cart-items" "css_element"
     ## Price
     And I should see "10.00 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
     ## Used credit
@@ -62,8 +62,8 @@ Feature: User cancellation after cash payment on the checkout page.
     And I press "Confirm"
     And I wait until the page is ready
     Then I should see "Payment successful!"
-    And I should see "my test item 1" in the ".payment-success ul.list-group" "css_element"
-    And I should not see "my test item 2" in the ".payment-success ul.list-group" "css_element"
+    And I should see "Test item 1" in the ".payment-success ul.list-group" "css_element"
+    And I should not see "Test item 2" in the ".payment-success ul.list-group" "css_element"
     ## Verify downloaded receipt - should be about 115K on disk
     And following "Receipt" should download between "114000" and "120000" bytes
     And I log out
@@ -71,5 +71,5 @@ Feature: User cancellation after cash payment on the checkout page.
     And I visit "/local/shopping_cart/report.php"
     And the following should exist in the "cash_report_table" table:
       | Paid  | Item name      | E-Mail                     | Status  |
-      | 10.00 | my test item 1 | toolgenerator1@example.com | Success |
+      | 10.00 | Test item 1 | toolgenerator1@example.com | Success |
     And I log out

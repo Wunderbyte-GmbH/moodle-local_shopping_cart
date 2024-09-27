@@ -43,7 +43,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I should see "10.00 EUR" in the "#shopping_cart-cashiers-cart .item-price" "css_element"
 
   @javascript
@@ -61,7 +61,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    And I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    And I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
@@ -84,7 +84,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    And I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    And I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
@@ -107,7 +107,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
@@ -132,7 +132,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
@@ -154,7 +154,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
     Then I should see "10.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
@@ -166,7 +166,7 @@ Feature: Cashier actions in shopping cart.
       | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "8" in the "ul.cashier-history-items span.credit_total" "css_element"
-    And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
 
   @javascript
@@ -184,7 +184,7 @@ Feature: Cashier actions in shopping cart.
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
-    Then I should see "my test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
     And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 2.5 |
@@ -200,5 +200,5 @@ Feature: Cashier actions in shopping cart.
       | cancelationfee | 2 |
     And I press "Save changes"
     Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
-    And I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"

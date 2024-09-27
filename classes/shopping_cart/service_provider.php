@@ -299,7 +299,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         }
 
         $cartitem = new cartitem($itemid,
-            'Test item ' . $itemid,
+            get_string('testing:item', 'local_shopping_cart') . ' ' . $itemid,
             $price,
             get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
             'local_shopping_cart',

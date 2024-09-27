@@ -37,16 +37,16 @@ Feature: Test purchase process in shopping cart.
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "div.shopping-cart-items" "css_element"
+    Then I should see "Test item 1" in the "div.shopping-cart-items" "css_element"
     And I should see "10.00" in the "div.shopping-cart-items" "css_element"
     And I reload the page
     And I wait until the page is ready
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "div.shopping-cart-items" "css_element"
+    Then I should see "Test item 1" in the "div.shopping-cart-items" "css_element"
     And I should see "10.00" in the "div.shopping-cart-items" "css_element"
     And I wait "1" seconds
     And I click on ".popover-region-content-container a" "css_element"
-    Then I should see "my test item 1" in the "div.checkoutgrid" "css_element"
+    Then I should see "Test item 1" in the "div.checkoutgrid" "css_element"
     And I should see "10.00" in the "div.checkoutgrid" "css_element"
 
   @javascript
@@ -56,12 +56,12 @@ Feature: Test purchase process in shopping cart.
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "my test item 1" in the "div.shopping-cart-items" "css_element"
+    Then I should see "Test item 1" in the "div.shopping-cart-items" "css_element"
     ## And I click on "[data-item=\"shopping_cart_item\"] i.fa.fa-trash-o" "css_element"
     And I click on "[data-itemid=\"1\"] i.fa.fa-trash-o" "css_element"
     And I wait "1" seconds
-    Then I should not see "my test item 1" in the "div.shopping-cart-items" "css_element"
+    Then I should not see "Test item 1" in the "div.shopping-cart-items" "css_element"
     And I reload the page
     And I wait until the page is ready
     And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should not see "my test item 1" in the "div.shopping-cart-items" "css_element"
+    Then I should not see "Test item 1" in the "div.shopping-cart-items" "css_element"

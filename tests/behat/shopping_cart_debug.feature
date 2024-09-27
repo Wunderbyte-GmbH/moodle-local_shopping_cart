@@ -39,5 +39,5 @@ Feature: As admin I debug custom steps in shopping cart
     And I should see "Username2 Test"
     When I click on "Continue" "button"
     And I wait "1" seconds
-    Then I should see "my test item 1" in the "ul.cashier-history-items" "css_element"
-    And I should see "my test item 2" in the "ul.cashier-history-items" "css_element"
+    Then I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Test item 2" in the "ul.cashier-history-items" "css_element"

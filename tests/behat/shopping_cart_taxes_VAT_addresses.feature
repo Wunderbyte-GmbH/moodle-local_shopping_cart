@@ -54,7 +54,7 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
@@ -88,7 +88,7 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
@@ -123,7 +123,7 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"

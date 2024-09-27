@@ -42,11 +42,11 @@ Feature: User cancellation after cash payment with consumption and discount roun
     When I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 1" in the ".cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the ".cashier-history-items" "css_element"
-    And I should see "my test item 2" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 2" in the ".cashier-history-items" "css_element"
     And I should see "20.30 EUR" in the ".cashier-history-items" "css_element"
-    And I should see "my test item 3" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 3" in the ".cashier-history-items" "css_element"
     And I should see "13.80 EUR" in the ".cashier-history-items" "css_element"
     And I click on "[data-quotaconsumed=\"0.67\"]" "css_element"
     And I wait "1" seconds
@@ -91,11 +91,11 @@ Feature: User cancellation after cash payment with consumption and discount roun
     When I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
-    And I should see "my test item 1" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 1" in the ".cashier-history-items" "css_element"
     And I should see "10.00 EUR" in the ".cashier-history-items" "css_element"
-    And I should see "my test item 2" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 2" in the ".cashier-history-items" "css_element"
     And I should see "20.30 EUR" in the ".cashier-history-items" "css_element"
-    And I should see "my test item 3" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 3" in the ".cashier-history-items" "css_element"
     And I should see "13.80 EUR" in the ".cashier-history-items" "css_element"
     And I click on "[data-quotaconsumed=\"0.67\"]" "css_element"
     And I wait "1" seconds
