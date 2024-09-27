@@ -114,6 +114,42 @@ echo html_writer::div($renderer->render_button($button), 'testbutton-container m
         ['style' => 'width: 300px;']);
 echo '</div>';
 
+$item = service_provider::load_cartitem('main', 6);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
+
+$item = service_provider::load_cartitem('main', 7);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
+
+$item = service_provider::load_cartitem('main', 8);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
+
+echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
+echo html_writer::div($item['itemname'], 'h4');
+echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
+echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
+        ['style' => 'width: 300px;']);
+echo '</div>';
+
 echo '<div style="width: 300px" class="mt-3">';
 $data = [
         'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
