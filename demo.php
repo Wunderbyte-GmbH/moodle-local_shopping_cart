@@ -42,30 +42,47 @@ $PAGE->navbar->add(get_string('testing:title', 'local_shopping_cart'), new moodl
 
 $renderer = $PAGE->get_renderer('local_shopping_cart');
 
-$now = time();
-$canceluntil = strtotime('+14 days', $now);
-$serviceperiodestart = $now;
-$serviceperiodeend = strtotime('+100 days', $now);
-
 echo $OUTPUT->header();
 
 echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 'alert alert-info',
         ['style' => 'width: 500px;']);
 
-// Cartitem's demo data is fetched from service_provider.
-// See \local_shopping_cart\shopping_cart\service_provider for values.
-$item = service_provider::load_cartitem('main', 1);
-$item = $item['cartitem']->as_array();
-$button = new button($item);
+// This cartitem data is not really used (except for itemid), because data is fetched from service_provider.
+// See \local_shopping_cart\shopping_cart\service_provider for real values.
+$now = time();
+$canceluntil = strtotime('+14 days', $now);
+$serviceperiodestart = $now;
+$serviceperiodeend = strtotime('+100 days', $now);
+$item = new cartitem(
+        1,
+        '1',
+        10.00,
+        get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+        'local_shopping_cart',
+        'main',
+        '',
+        '',
+        $canceluntil,
+        $serviceperiodestart,
+        $serviceperiodeend,
+        'A',
+        0,
+        '');
+$button = new button($item->as_array());
+
+echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 'alert alert-info',
+        ['style' => 'width: 500px;']);
 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
-echo html_writer::div($item['itemname'], 'h4');
-echo html_writer::div('Price: ' . $item['price'] . ' '. get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
-echo html_writer::div('Description: ' . $item['description'], 'h6');
+echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 1', 'h4');
+echo html_writer::div("10.00 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
+echo html_writer::div('Description: dummy item description', 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
 
+// Cartitem's demo data is fetched from service_provider.
+// See \local_shopping_cart\shopping_cart\service_provider for values.
 $item = service_provider::load_cartitem('main', 2);
 $item = $item['cartitem']->as_array();
 $button = new button($item);
