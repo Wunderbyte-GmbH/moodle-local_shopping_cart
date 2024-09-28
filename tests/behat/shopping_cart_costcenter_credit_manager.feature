@@ -29,7 +29,7 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
       | Account1 |
 
   @javascript
-  Scenario: Shopping cart costcenter credits: cashier correct (add) credits for user
+  Scenario: Shopping cart costcenter credits: cashier correct (add) credits for user and refund some
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
       | samecostcenterforcredits    | 1           | local_shopping_cart |
@@ -44,8 +44,8 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I wait until the page is ready
-    And I should see "21" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And I should see "32" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    And I should see "21" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
+    And I should see "32" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
     ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
     ##And "//*[@class='credit_total']" "xpath_element" should not exist
     ## Add credits to the CostCenter1
@@ -61,7 +61,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Add "no costcenter" credits
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "17"
     And I set the field "Costcenter to which the credit is assigned to" to ""
@@ -71,7 +70,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Add credits to the CostCenter2
     And I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "25.53"
     And I set the field "Costcenter to which the credit is assigned to" to "CostCenter2"
@@ -79,21 +77,44 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I press "Save changes"
     And I wait until the page is ready
     ## Verify credits per costcenters
-    Then I should see "38.00" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And I should see "48.35" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    And I should see "25.53" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    And I should see "38.00" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
+    And I should see "48.35" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
+    And I should see "25.53" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
+    ## Payback credits of the CostCenter2 by cache via credit manager
+    And I click on "Credits manager" "button"
+    And I wait until the page is ready
+    And I set the field "What do you want to do?" to "Pay back credits"
+    And I set the field "Payment method" to "Credits paid back by cash"
+    And I set the field "Costcenter to which the credit is assigned to" to "CostCenter2"
+    And I set the field "Reason" to "Pay back by cash CostCenter2"
+    And I press "Save changes"
+    And I wait until the page is ready
+    ## Payback credits of the "No costcenter" by thansfer directly
+    And I click on "Refunded via transfer" "button" in the "[data-costcenter=\"No costcenter\"].shopping_cart_history_payback_buttons" "css_element"
+    And I wait until the page is ready
+    And I should see "This will set her credit to 0" in the ".modal-body" "css_element"
+    And I click on "button[data-action=\"save\"]" "css_element"
+    And I wait until the page is ready
+    ## Verify credits per costcenters and report
+    Then I should see "0.00" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
+    And I should see "48.35" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
+    And I should see "0.00" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
-    And I should see "25.53" in the "#cash_report_table_r1" "css_element"
-    And I should see "add credits CostCenter2" in the "#cash_report_table_r1" "css_element"
-    And I should see "17" in the "#cash_report_table_r2" "css_element"
-    And I should see "add no costcenter credits" in the "#cash_report_table_r2" "css_element"
-    And I should see "16.35" in the "#cash_report_table_r3" "css_element"
-    And I should see "add credits CostCenter1" in the "#cash_report_table_r3" "css_element"
-    And "//*[@id='cash_report_table_r4']" "xpath_element" should not exist
+    And I should see "-38.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
+    And I should see "-25.53" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits paid back by cash" in the "#cash_report_table_r2" "css_element"
+    And I should see "25.53" in the "#cash_report_table_r3" "css_element"
+    And I should see "add credits CostCenter2" in the "#cash_report_table_r3" "css_element"
+    And I should see "17" in the "#cash_report_table_r4" "css_element"
+    And I should see "add no costcenter credits" in the "#cash_report_table_r4" "css_element"
+    And I should see "16.35" in the "#cash_report_table_r5" "css_element"
+    And I should see "add credits CostCenter1" in the "#cash_report_table_r5" "css_element"
+    And "//*[@id='cash_report_table_r6']" "xpath_element" should not exist
 
   @javascript
-  Scenario: Shopping cart costcenter credits: cashier correct (reduce) credits for user
+  Scenario: Shopping cart costcenter credits: cashier correct (reduce) credits for user and refund some
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
       | samecostcenterforcredits    | 1           | local_shopping_cart |
@@ -143,15 +164,38 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I press "Save changes"
     And I wait until the page is ready
     ## Verify credits per costcenters
-    Then I should see "19.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    And I should see "19.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "28.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And I should see "42.00" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    ## Payback credits of the "No costcenter" by cache via credit manager
+    And I click on "Credits manager" "button"
+    And I wait until the page is ready
+    And I set the field "What do you want to do?" to "Pay back credits"
+    And I set the field "Payment method" to "Credits paid back by cash"
+    And I set the field "Costcenter to which the credit is assigned to" to ""
+    And I set the field "Reason" to "Pay back no costcenter by cash"
+    And I press "Save changes"
+    And I wait until the page is ready
+    ## Payback credits of the "CostCenter1" by thansfer directly
+    And I click on "Refunded via transfer" "button" in the "[data-costcenter=\"CostCenter1\"].shopping_cart_history_payback_buttons" "css_element"
+    And I wait until the page is ready
+    And I should see "This will set her credit to 0" in the ".modal-body" "css_element"
+    And I click on "button[data-action=\"save\"]" "css_element"
+    And I wait until the page is ready
+    ## Verify credits per costcenters and report
+    Then I should see "0.00" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
+    And I should see "0.00" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
+    And I should see "28.00" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
-    And I should see "-12.00" in the "#cash_report_table_r1" "css_element"
-    And I should see "cc2 reduce credits" in the "#cash_report_table_r1" "css_element"
-    And I should see "-11.00" in the "#cash_report_table_r2" "css_element"
-    And I should see "cc1 reduce credits" in the "#cash_report_table_r2" "css_element"
-    And I should see "-8.00" in the "#cash_report_table_r3" "css_element"
-    And I should see "reduce no costcenter credits" in the "#cash_report_table_r3" "css_element"
-    And "//*[@id='cash_report_table_r4']" "xpath_element" should not exist
+    And I should see "-19.00" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
+    And I should see "-42.00" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits paid back by cash" in the "#cash_report_table_r2" "css_element"
+    And I should see "-12.00" in the "#cash_report_table_r3" "css_element"
+    And I should see "cc2 reduce credits" in the "#cash_report_table_r3" "css_element"
+    And I should see "-11.00" in the "#cash_report_table_r4" "css_element"
+    And I should see "cc1 reduce credits" in the "#cash_report_table_r4" "css_element"
+    And I should see "-8.00" in the "#cash_report_table_r5" "css_element"
+    And I should see "reduce no costcenter credits" in the "#cash_report_table_r5" "css_element"
+    And "//*[@id='cash_report_table_r6']" "xpath_element" should not exist
