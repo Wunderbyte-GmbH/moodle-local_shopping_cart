@@ -319,9 +319,10 @@ class shopping_cart_credits {
      *
      * @param int $userid
      * @param array $checkoutdata
+     * @param bool $fallbackonempty
      * @return void
      */
-    public static function use_credit(int $userid, $checkoutdata) {
+    public static function use_credit(int $userid, $checkoutdata, $fallbackonempty = true) {
 
         global $DB, $USER;
 
@@ -332,9 +333,11 @@ class shopping_cart_credits {
             $balances = self::get_balance_for_all_costcenters($userid);
 
             foreach ($balances as $balance) {
-                if (empty($balance['costcenter'])) {
-                    $emptycostcenterbalance = $balance['balance'];
-                    continue;
+                if ($fallbackonempty) {
+                    if (empty($balance['costcenter'])) {
+                        $emptycostcenterbalance = $balance['balance'];
+                        continue;
+                    }
                 }
                 if ($balance['costcenter'] == ($checkoutdata['costcenter'] ?? '')) {
                     $matchingcostcenterbalance = $balance['balance'];
@@ -423,7 +426,7 @@ class shopping_cart_credits {
     ) {
         global $USER;
 
-        [$balance, $currency] = self::get_balance($userid, $costcenter);
+        [$balance, $currency] = self::get_balance($userid, $costcenter, false);
 
         $data = [];
 
@@ -435,7 +438,7 @@ class shopping_cart_credits {
             $data['costcenter'] = $costcenter;
         }
 
-        self::use_credit($userid, $data);
+        self::use_credit($userid, $data, false);
 
         // Also record this in the ledger table.
         $ledgerrecord = new stdClass();
