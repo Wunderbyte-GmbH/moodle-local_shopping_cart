@@ -123,13 +123,13 @@ class shopping_cart_credits {
         $sql = 'SELECT id, balance, currency, costcenter
                 FROM {local_shopping_cart_credits}
                 WHERE userid = :userid
+                AND balance <> 0
                 AND id IN (
                     SELECT MAX(id)
                     FROM {local_shopping_cart_credits}
                     WHERE userid = :userid1
                     GROUP BY COALESCE(NULLIF(costcenter, \'\'), \'\')
                 )
-
                 ORDER BY costcenter ASC';
 
         // Get the latest balance of the given costcenter.
