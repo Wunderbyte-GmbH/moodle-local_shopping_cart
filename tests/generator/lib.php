@@ -122,7 +122,12 @@ class local_shopping_cart_generator extends testing_module_generator {
         global $DB, $USER;
 
         $record = (object) $record;
-        $res = shopping_cart_credits::add_credit($record->userid, $record->credit, $record->currency);
+        $res = shopping_cart_credits::add_credit(
+            $record->userid,
+            $record->credit,
+            $record->currency,
+            $record->costcenter ?? ''
+        );
         return $res;
     }
 
