@@ -33,14 +33,21 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
       | samecostcenterforcredits    | 1           | local_shopping_cart |
+      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
+    And the following "local_shopping_cart > user credits" exist:
+      | user  | credit | currency | costcenter  |
+      | user1 | 21     | EUR      |             |
+      | user1 | 32     | EUR      | CostCenter1 |
     And I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I wait until the page is ready
+    And I should see "21" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    And I should see "32" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
-    And "//*[@class='credit_total']" "xpath_element" should not exist
+    ##And "//*[@class='credit_total']" "xpath_element" should not exist
     ## Add credits to the CostCenter1
     When I click on "Credits manager" "button"
     And I wait until the page is ready
@@ -49,6 +56,16 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I set the field "Correction value or credits to pay back" to "16.35"
     And I set the field "Costcenter to which the credit is assigned to" to "CostCenter1"
     And I set the field "Reason" to "add credits CostCenter1"
+    And I press "Save changes"
+    And I wait until the page is ready
+    ## Add "no costcenter" credits
+    When I click on "Credits manager" "button"
+    And I wait until the page is ready
+    ## Dynamic fields - step-by-step proceeding required
+    And I set the field "What do you want to do?" to "Correct credits"
+    And I set the field "Correction value or credits to pay back" to "17"
+    And I set the field "Costcenter to which the credit is assigned to" to ""
+    And I set the field "Reason" to "add no costcenter credits"
     And I press "Save changes"
     And I wait until the page is ready
     ## Add credits to the CostCenter2
@@ -62,33 +79,49 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I press "Save changes"
     And I wait until the page is ready
     ## Verify credits per costcenters
-    Then I should see "16.35" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    Then I should see "38.00" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    And I should see "48.35" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "25.53" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
     And I should see "25.53" in the "#cash_report_table_r1" "css_element"
     And I should see "add credits CostCenter2" in the "#cash_report_table_r1" "css_element"
-    And I should see "16.35" in the "#cash_report_table_r2" "css_element"
-    And I should see "add credits CostCenter1" in the "#cash_report_table_r2" "css_element"
-    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
+    And I should see "17" in the "#cash_report_table_r2" "css_element"
+    And I should see "add no costcenter credits" in the "#cash_report_table_r2" "css_element"
+    And I should see "16.35" in the "#cash_report_table_r3" "css_element"
+    And I should see "add credits CostCenter1" in the "#cash_report_table_r3" "css_element"
+    And "//*[@id='cash_report_table_r4']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart costcenter credits: cashier correct (reduce) credits for user
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |   
+      | samecostcenterforcredits    | 1           | local_shopping_cart |
+      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |
       | user1 | 30     | EUR      | CostCenter1 |
       | user1 | 40     | EUR      | CostCenter2 |
+      | user1 | 50     | EUR      |             |
     And I log in as "admin"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I wait until the page is ready
-    And I should see "30" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    And I should see "40" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    And I should see "30.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    And I should see "40.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    And I should see "50.00" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    ## Reduce "no costcenter" credits
+    When I click on "Credits manager" "button"
+    And I wait until the page is ready
+    ## Dynamic fields - step-by-step proceeding required
+    And I set the field "What do you want to do?" to "Correct credits"
+    And I set the field "Correction value or credits to pay back" to "-8"
+    And I set the field "Costcenter to which the credit is assigned to" to ""
+    And I set the field "Reason" to "reduce no costcenter credits"
+    And I press "Save changes"
+    And I wait until the page is ready
     ## Reduce credits to the CostCenter1
     When I click on "Credits manager" "button"
     And I wait until the page is ready
@@ -112,66 +145,13 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Verify credits per costcenters
     Then I should see "19.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "28.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    And I should see "42.00" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
     And I should see "-12.00" in the "#cash_report_table_r1" "css_element"
     And I should see "cc2 reduce credits" in the "#cash_report_table_r1" "css_element"
     And I should see "-11.00" in the "#cash_report_table_r2" "css_element"
     And I should see "cc1 reduce credits" in the "#cash_report_table_r2" "css_element"
-    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
-
-  @javascript
-  Scenario: Shopping cart costcenter credits: cashier correct credits with different settings with default costcenter given
-    Given the following config values are set as admin:
-      | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |
-      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
-    And the following "local_shopping_cart > user credits" exist:
-      | user  | credit | currency | costcenter  |
-      | user1 | 31     | EUR      |             |
-      | user1 | 42     | EUR      | CostCenter1 |
-      ## Combination below is passing OK
-      ## | user1 | 42     | EUR      | CostCenter1 |
-      ## | user1 | 31     | EUR      |             |
-    And I log in as "admin"
-    And I visit "/local/shopping_cart/cashier.php"
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
-    And I wait until the page is ready
-    And I should see "31" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And I should see "42" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    ## Add credits with no costcenter - should be assigned to "No costcenter"
-    When I click on "Credits manager" "button"
-    And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
-    And I set the field "What do you want to do?" to "Correct credits"
-    And I set the field "Correction value or credits to pay back" to "12"
-    And I set the field "Costcenter to which the credit is assigned to" to ""
-    And I set the field "Reason" to "add credits with bo cc"
-    And I press "Save changes"
-    And I wait until the page is ready
-    And I should see "43" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    ## Force CostCenter1 as default
-    And the following config values are set as admin:
-      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
-    ## Reduce credits to the with no costcenter - "CostCenter1" should be affected
-    And I click on "Credits manager" "button"
-    And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
-    And I set the field "What do you want to do?" to "Correct credits"
-    And I set the field "Correction value or credits to pay back" to "-7"
-    And I set the field "Costcenter to which the credit is assigned to" to ""
-    And I set the field "Reason" to "reduce credits wint no cc"
-    And I press "Save changes"
-    And I wait until the page is ready
-    ## Verify credits per costcenters
-    Then I should see "36" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And I should see "42" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    And I follow "Cash report"
-    And I wait until the page is ready
-    And I should see "-7" in the "#cash_report_table_r1" "css_element"
-    And I should see "reduce credits wint no cc" in the "#cash_report_table_r1" "css_element"
-    And I should see "12" in the "#cash_report_table_r2" "css_element"
-    And I should see "add credits with bo cc" in the "#cash_report_table_r2" "css_element"
-    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
+    And I should see "-8.00" in the "#cash_report_table_r3" "css_element"
+    And I should see "reduce no costcenter credits" in the "#cash_report_table_r3" "css_element"
+    And "//*[@id='cash_report_table_r4']" "xpath_element" should not exist
