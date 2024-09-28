@@ -43,9 +43,10 @@ class shopping_cart_credits {
      *
      * @param int $userid
      * @param string $costcenter
+     * @param bool $withempty
      * @return array
      */
-    public static function get_balance(int $userid, string $costcenter = ''): array {
+    public static function get_balance(int $userid, string $costcenter = '', $withempty = true): array {
 
         global $CFG, $DB;
 
@@ -69,7 +70,10 @@ class shopping_cart_credits {
         $params['costcenter'] = $costcenter;
         if (!empty($samecostcenterforcredits)) {
             $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
-            if (empty($defaultcostcenter) || $defaultcostcenter == $costcenter) {
+            if (
+                $withempty
+                && (empty($defaultcostcente) || ($defaultcostcenter == $costcenter))
+            ) {
                 $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
             } else {
                 $defaultcostcentersql = '';
@@ -275,7 +279,7 @@ class shopping_cart_credits {
 
         global $DB, $USER;
 
-        [$balance, $newcurrency] = self::get_balance($userid, $costcenter);
+        [$balance, $newcurrency] = self::get_balance($userid, $costcenter, false);
 
         $now = time();
 
