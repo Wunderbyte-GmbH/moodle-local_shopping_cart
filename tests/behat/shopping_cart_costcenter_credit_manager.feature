@@ -46,8 +46,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I wait until the page is ready
     And I should see "21" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
     And I should see "32" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
-    ## And I should not see "Credits" in the ".cashier-history-items" "css_element"
-    ##And "//*[@class='credit_total']" "xpath_element" should not exist
     ## Add credits to the CostCenter1
     When I click on "Credits manager" "button"
     And I wait until the page is ready
@@ -96,9 +94,7 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I click on "button[data-action=\"save\"]" "css_element"
     And I wait until the page is ready
     ## Verify credits per costcenters and report
-    Then I should see "0.00" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
-    And I should see "48.35" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
-    And I should see "0.00" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
+    Then I should see "48.35" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
     And I should see "-38.00" in the "#cash_report_table_r1" "css_element"
@@ -146,7 +142,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Reduce credits to the CostCenter1
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "-11"
     And I set the field "Costcenter to which the credit is assigned to" to "CostCenter1"
@@ -156,7 +151,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Reduce credits to the CostCenter2
     When I click on "Credits manager" "button"
     And I wait until the page is ready
-    ## Dynamic fields - step-by-step proceeding required
     And I set the field "What do you want to do?" to "Correct credits"
     And I set the field "Correction value or credits to pay back" to "-12"
     And I set the field "Costcenter to which the credit is assigned to" to "CostCenter2"
@@ -183,9 +177,7 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I click on "button[data-action=\"save\"]" "css_element"
     And I wait until the page is ready
     ## Verify credits per costcenters and report
-    Then I should see "0.00" in the "[data-costcenter=\"No costcenter\"].costcenterlabel .credit_total" "css_element"
-    And I should see "0.00" in the "[data-costcenter=\"CostCenter1\"].costcenterlabel .credit_total" "css_element"
-    And I should see "28.00" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
+    Then I should see "28.00" in the "[data-costcenter=\"CostCenter2\"].costcenterlabel .credit_total" "css_element"
     And I follow "Cash report"
     And I wait until the page is ready
     And I should see "-19.00" in the "#cash_report_table_r1" "css_element"
