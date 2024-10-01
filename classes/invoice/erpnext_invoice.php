@@ -187,12 +187,14 @@ class erpnext_invoice implements invoice {
      * @return bool true if invoice was send, false if not
      */
     public function send_invoice($invoicename, $customeremail): bool {
+
+        global $SESSION;
         // Prepare the email parameters.
         $invoicepdf = $this->get_invoice_pdf($invoicename);
         if (!$invoicepdf) {
             return false;
         }
-        $currentlang = current_language();
+        $currentlang = $SESSION->lang;
         force_current_language($this->user->lang);
         $emailparams = [
             "recipients" => $customeremail,
