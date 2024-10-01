@@ -108,7 +108,7 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     $output = '';
 
     $cartstore = cartstore::instance($USER->id);
-    $data = $cartstore->get_data();
+    $data = $cartstore->get_localized_data();
 
     $dueinstallments = $cartstore->get_due_installments();
 
