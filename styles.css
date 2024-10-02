@@ -460,3 +460,7 @@ div.shopping-cart-items-container div.item-description {
     /* stylelint-disable-next-line declaration-no-important */
     width: 100% !important;
 }
+
+#page-local-shopping_cart-cashier .shopping-cart-cashier-items-container img.sc-cart-item-image {
+    width: 100px;
+}
