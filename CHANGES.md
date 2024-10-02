@@ -1,3 +1,11 @@
+## Version 0.9.31 (2024100200)
+* Bugfix: Enable correct language switching
+* Bugfix: Fix localized navbar cart on page reload
+
+## Version 0.9.30 (2024093000)
+* Improvement: Use localized cart
+* Bugfixes: for costcenters and credits
+
 ## Version 0.9.29 (2024092400)
 * Bugfix: Refresh history after purchase in cashier.php
 * Bugfix: Display credits for customers in shoppingcarthistory
