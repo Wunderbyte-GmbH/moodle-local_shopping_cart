@@ -111,7 +111,12 @@ class shopping_cart_handler {
                         'select',
                         'sch_paymentaccountid',
                         get_string('sch_paymentaccountid', 'local_shopping_cart'),
-                        $paymentaccounts);
+                        $paymentaccounts
+                    );
+
+                    if (!empty(get_config('local_shopping_cart', 'accountid'))) {
+                        $mform->setDefault('sch_paymentaccountid', get_config('local_shopping_cart', 'accountid'));
+                    }
                 }
             }
         }
