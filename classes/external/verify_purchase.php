@@ -95,36 +95,6 @@ class verify_purchase extends external_api {
 
         $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
-        if (!$success && !empty($params['paymentgateway'])) {
-            // If the payment is not successful yet, we can call transaction complete with the data we have here.
-            $transactioncompletestring = 'paygw_' . $params['paymentgateway'] . '\external\transaction_complete';
-            if (class_exists($transactioncompletestring)) {
-                try {
-                    $transactioncomplete = new $transactioncompletestring();
-                    if ($transactioncomplete instanceof interface_transaction_complete) {
-                        $response = $transactioncomplete::execute(
-                            'local_shopping_cart',
-                            '',
-                            $params['identifier'],
-                            $params['tid'],
-                            '',
-                            '',
-                            true,
-                            '',
-                            $params['userid'],
-                        );
-                        $success = $response['success'] ?? false;
-                    } else {
-                        throw new moodle_exception(
-                            'ERROR: transaction_complete does not implement transaction_complete interface!'
-                        );
-                    }
-                } catch (\Throwable $e) {
-                    $success = false;
-                }
-            }
-        }
-
         // Translate success.
         // Success 1 means here not ok.
         $success = $success ? 0 : 1;
