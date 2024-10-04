@@ -523,6 +523,7 @@ $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
 $string['selectuserfirst'] = 'Wähle zuerst eine Nutzerin.';
 $string['sendpaymentbutton'] = 'Zur Bezahlung';
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
+$string['shopping_cart:canverifypayments'] = 'Kann Zahlungen verifizieren';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
 $string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine andere Kassa umbuchen';

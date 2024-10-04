@@ -592,6 +592,7 @@ $string['selectuser'] = 'Select a user...';
 $string['selectuserfirst'] = 'Select user first';
 $string['sendpaymentbutton'] = 'Checkout';
 $string['shopping_cart:canbuy'] = 'Can buy';
+$string['shopping_cart:canverifypayments'] = 'Can verify payments';
 $string['shopping_cart:cashier'] = 'Is a cashier';
 $string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';
 $string['shopping_cart:cashtransfer'] = 'Can transfer cash from one cashier to another';
