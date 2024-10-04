@@ -35,7 +35,6 @@ use local_shopping_cart\interfaces\interface_transaction_complete;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
-use paygw_unigraz\external\transaction_complete;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -120,7 +119,6 @@ class verify_purchase extends external_api {
                             'ERROR: transaction_complete does not implement transaction_complete interface!'
                         );
                     }
-
                 } catch (\Throwable $e) {
                     $success = false;
                 }
