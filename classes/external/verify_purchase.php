@@ -31,9 +31,11 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\interfaces\interface_transaction_complete;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
+use paygw_unigraz\external\transaction_complete;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -55,7 +57,10 @@ class verify_purchase extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'identifier'  => new external_value(PARAM_INT, 'identifier', VALUE_DEFAULT, ''),
+            'identifier'  => new external_value(PARAM_INT, 'identifier', VALUE_DEFAULT, 0),
+            'tid'  => new external_value(PARAM_TEXT, 'tid', VALUE_DEFAULT, ''),
+            'paymentgateway'  => new external_value(PARAM_TEXT, 'paymentgateway', VALUE_DEFAULT, ''),
+            'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             ]);
     }
 
@@ -63,12 +68,18 @@ class verify_purchase extends external_api {
      * Webservice for shopping_cart class to add a new item to the cart.
      *
      * @param int $identifier
+     * @param string $tid
+     * @param string $paymentgateway
+     * @param int $userid
      *
      * @return array
      */
-    public static function execute(int $identifier): array {
+    public static function execute(int $identifier, string $tid, string $paymentgateway, int $userid): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'identifier' => $identifier,
+            'tid' => $tid,
+            'paymentgateway' => $paymentgateway,
+            'userid' => $userid,
         ]);
 
         global $USER;
@@ -79,13 +90,46 @@ class verify_purchase extends external_api {
 
         self::validate_context($context);
 
-        if (!has_capability('local/shopping_cart:canbuy', $context)) {
+        if (!has_capability('local/shopping_cart:canverifypayments', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        $success = shopping_cart_history::has_successful_checkout($params['identifier']) ? 0 : 1;
+        $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
-        // The transformation of the userid will be done in the add_item_to_cart function.
+        if (!$success && !empty($params['paymentgateway'])) {
+            // If the payment is not successful yet, we can call transaction complete with the data we have here.
+            $transactioncompletestring = 'paygw_' . $params['paymentgateway'] . '\external\transaction_complete';
+            if (class_exists($transactioncompletestring)) {
+                try {
+                    $transactioncomplete = new $transactioncompletestring();
+                    if ($transactioncomplete instanceof interface_transaction_complete) {
+                        $response = $transactioncomplete::execute(
+                            'local_shopping_cart',
+                            '',
+                            $params['identifier'],
+                            $params['tid'],
+                            '',
+                            '',
+                            true,
+                            '',
+                            $params['userid'],
+                        );
+                        $success = $response['success'] ?? false;
+                    } else {
+                        throw new moodle_exception(
+                            'ERROR: transaction_complete does not implement transaction_complete interface!'
+                        );
+                    }
+
+                } catch (\Throwable $e) {
+                    $success = false;
+                }
+            }
+        }
+
+        // Translate success.
+        // Success 1 means here not ok.
+        $success = $success ? 0 : 1;
 
         return ['status' => $success];
     }
