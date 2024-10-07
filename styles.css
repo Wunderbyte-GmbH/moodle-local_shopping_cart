@@ -419,7 +419,8 @@ div.shopping-cart-items-container div.item-description {
     border: 1px dashed #ccc;
 }
 
-#page-local-shopping_cart-checkout .shopping-cart-items .shopping-cart-item[data-area="option"] img {
+#page-local-shopping_cart-checkout .shopping-cart-items .shopping-cart-item[data-area="option"] img,
+#page-local-shopping_cart-checkout .shopping-cart-items .shopping-cart-item[data-area="main"] img {
     max-width: 200px;
 }
 
