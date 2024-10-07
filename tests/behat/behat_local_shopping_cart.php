@@ -60,7 +60,8 @@ class behat_local_shopping_cart extends behat_base {
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
         $cartstore = cartstore::instance($userid);
-        $data = shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
+        $area = $itemid < 6 ? 'main' : 'option'; // We must use option area to test costcenters and credits features.
+        $data = shopping_cart::add_item_to_cart('local_shopping_cart', $area, $itemid, -1);
         $data = $cartstore->get_data();
     }
 
@@ -77,7 +78,8 @@ class behat_local_shopping_cart extends behat_base {
         shopping_cart::delete_all_items_from_cart($userid);
         // Put item in cart.
         shopping_cart::buy_for_user($userid);
-        shopping_cart::add_item_to_cart('local_shopping_cart', 'main', $itemid, -1);
+        $area = $itemid < 6 ? 'main' : 'option'; // We must use option area to test costcenters and credits features.
+        shopping_cart::add_item_to_cart('local_shopping_cart', $area, $itemid, -1);
         // Confirm purchase.
         shopping_cart::confirm_payment($userid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH);
     }

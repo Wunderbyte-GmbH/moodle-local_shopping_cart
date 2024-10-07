@@ -131,7 +131,8 @@ echo html_writer::div($renderer->render_button($button), 'testbutton-container m
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = service_provider::load_cartitem('main', 6);
+// We must use the 'option' area to test costcenters and credits features.
+$item = service_provider::load_cartitem('option', 6);
 $item = $item['cartitem']->as_array();
 $button = new button($item);
 
@@ -143,7 +144,7 @@ echo html_writer::div($renderer->render_button($button), 'testbutton-container m
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = service_provider::load_cartitem('main', 7);
+$item = service_provider::load_cartitem('option', 7);
 $item = $item['cartitem']->as_array();
 $button = new button($item);
 
@@ -155,7 +156,7 @@ echo html_writer::div($renderer->render_button($button), 'testbutton-container m
         ['style' => 'width: 300px;']);
 echo '</div>';
 
-$item = service_provider::load_cartitem('main', 8);
+$item = service_provider::load_cartitem('option', 8);
 $item = $item['cartitem']->as_array();
 $button = new button($item);
 

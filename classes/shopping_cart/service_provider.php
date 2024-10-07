@@ -301,7 +301,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 8:
                 $price = 13.8;
                 $tax = 'C';
-                $costcenter = 'CostCenter3';
+                $costcenter = 'CostCenter2';
                 $description = '('. $costcenter .')';
                 break;
             default:
