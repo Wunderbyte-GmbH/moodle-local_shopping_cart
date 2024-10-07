@@ -1,3 +1,12 @@
+## Version 0.9.33 (2024100700)
+* Improvement: Server callback verify_purchase improvement, triggers now transaction_complete
+* Bugfix: User Serverside callback only for checking, not actual verification
+
+## Version 0.9.32 (2024100400)
+* Bugfix: Make sure that default payment account on new option is actually the default one.
+* Bugfix: Fix image size on checkout page
+* Bugfix: If no rebooking information is stored, we don't allow rebooking.
+
 ## Version 0.9.31 (2024100200)
 * Bugfix: Enable correct language switching
 * Bugfix: Fix localized navbar cart on page reload
