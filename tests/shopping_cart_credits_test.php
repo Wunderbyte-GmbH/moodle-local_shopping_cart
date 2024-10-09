@@ -25,24 +25,31 @@
 
 namespace local_shopping_cart;
 
-use local_shopping_cart\local\cartstore;
-use PHPUnit\Framework\TestCase;
-use phpunit_util;
+use advanced_testcase;
+use local_shopping_cart_generator;
 
 /**
  * Test for shopping_cart_credits
  * @covers \shopping_cart_credits
  */
-final class shopping_cart_credits_test extends TestCase {
+final class shopping_cart_credits_test extends advanced_testcase {
 
     /**
      * Test shopping_cart_credits - single
+     *
      * @covers \shopping_cart_credits::add_credit
      * @covers \shopping_cart_credits::get_balance
+     * @covers \shopping_cart_credits::get_balance_for_all_costcenters
+     *
+     * @return void
+     *
      */
     public function test_shopping_cart_credits_simple_credits(): void {
 
-        $user1 = $this->get_data_generator()->create_user();
+        parent::setUp();
+        $this->resetAfterTest(true);
+
+        $user1 = $this->getDataGenerator()->create_user();
 
         $balance0 = shopping_cart_credits::add_credit($user1->id, 10.10, 'EUR', '');
 
@@ -77,9 +84,22 @@ final class shopping_cart_credits_test extends TestCase {
         $this->assertEquals($balance0[1], $balance2['currency']);
     }
 
+    /**
+     * Test shopping_cart_credits - per costcenters
+     *
+     * @covers \shopping_cart_credits::add_credit
+     * @covers \shopping_cart_credits::get_balance
+     * @covers \shopping_cart_credits::get_balance_for_all_costcenters
+     *
+     * @return void
+     *
+     */
     public function test_shopping_cart_credits_costcenter_credits(): void {
 
-        $user1 = $this->get_data_generator()->create_user();
+        parent::setUp();
+        $this->resetAfterTest(true);
+
+        $user1 = $this->getDataGenerator()->create_user();
 
         $balance01 = shopping_cart_credits::add_credit($user1->id, 11.10, 'EUR', 'CC1');
         $balance02 = shopping_cart_credits::add_credit($user1->id, 22.20, 'EUR', 'CC2');
@@ -137,6 +157,99 @@ final class shopping_cart_credits_test extends TestCase {
     }
 
     /**
+     * Test shopping_cart_credits refund by cache
+     *
+     * @covers \shopping_cart_credits::add_credit
+     * @covers \shopping_cart_credits::get_balance
+     * @covers \shopping_cart_credits::credit_paid_back
+     *
+     * @return void
+     *
+     */
+    public function test_shopping_cart_credits_refund(): void {
+
+        parent::setUp();
+        $this->resetAfterTest(true);
+
+        $user1 = $this->getDataGenerator()->create_user();
+
+        // Test refund by cache - no costcenter.
+        $balance1 = shopping_cart_credits::add_credit($user1->id, 100, 'EUR', '');
+
+        $this->assertIsArray($balance1);
+        $this->assertEquals(100, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertEquals('', $balance1[2]);
+
+        shopping_cart_credits::credit_paid_back($user1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH);
+
+        $balance1 = shopping_cart_credits::get_balance($user1->id);
+        $this->assertIsArray($balance1);
+        $this->assertEquals(0, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertArrayNotHasKey(2, $balance1);
+
+        // Test refund by transfer - no costcenter.
+        $balance1 = shopping_cart_credits::add_credit($user1->id, 120, 'EUR', '');
+
+        $this->assertIsArray($balance1);
+        $this->assertEquals(120, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertEquals('', $balance1[2]);
+
+        shopping_cart_credits::credit_paid_back($user1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER);
+
+        $balance1 = shopping_cart_credits::get_balance($user1->id);
+        $this->assertIsArray($balance1);
+        $this->assertEquals(0, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertArrayNotHasKey(2, $balance1);
+
+        // Test refund by cache - costcenter given.
+        $balance1 = shopping_cart_credits::add_credit($user1->id, 130, 'EUR', 'CC1');
+
+        $this->assertIsArray($balance1);
+        $this->assertEquals(130, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertEquals('CC1', $balance1[2]);
+
+        shopping_cart_credits::credit_paid_back(
+            $user1->id,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+            'CC1'
+        );
+
+        $balance1 = shopping_cart_credits::get_balance($user1->id);
+        $this->assertIsArray($balance1);
+        $this->assertEquals(0, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertArrayNotHasKey(2, $balance1);
+
+        // Test refund by transfer - costcenter given.
+        $balance1 = shopping_cart_credits::add_credit($user1->id, 140, 'EUR', 'CC2');
+
+        $this->assertIsArray($balance1);
+        $this->assertEquals(140, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertEquals('CC2', $balance1[2]);
+
+        shopping_cart_credits::credit_paid_back(
+            $user1->id,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER,
+            'CC2'
+        );
+
+        $balance1 = shopping_cart_credits::get_balance($user1->id);
+        $this->assertIsArray($balance1);
+        $this->assertEquals(0, $balance1[0]);
+        $this->assertEquals('EUR', $balance1[1]);
+        $this->assertArrayNotHasKey(2, $balance1);
+
+        $balance2 = shopping_cart_credits::get_balance_for_all_costcenters($user1->id);
+        $this->assertEmpty($balance2);
+    }
+
+    /**
      * Data provider for test_shopping_cart_credits_get_data
      *
      * @return array
@@ -158,13 +271,5 @@ final class shopping_cart_credits_test extends TestCase {
             ['nowdate'],
             ['checkouturl'],
         ];
-    }
-
-    /**
-     * Get data generator
-     * @return \testing_data_generator
-     */
-    public static function get_data_generator() {
-        return phpunit_util::get_data_generator();
     }
 }
