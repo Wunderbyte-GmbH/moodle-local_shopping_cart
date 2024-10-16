@@ -27,6 +27,7 @@ import Ajax from 'core/ajax';
 import Url from 'core/url';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
+import ModalFactory from 'core/modal_factory';
 import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
@@ -116,7 +117,6 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                     location.href = newurl;
 
                 } else {
-
                     // Set link to right receipt.
                     addPrintIdentifier(data.identifier, userid);
 
@@ -130,11 +130,13 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
 
             } else {
                 console.log('payment denied');
+                console.log(data);
+                displayErrorModal(data);
                 displayPaymentMessage('paymentdenied', false);
 
                 const successtab = document.getElementById('success-tab');
                 if (successtab) {
-                    successtab.classList.classList.add('error');
+                    successtab.classList.add('error');
                 }
             }
         },
@@ -235,6 +237,32 @@ function displayPaymentMessage(message, success = true) {
             showNotification(`Error: ${e}`, "error");
         });
     }
+}
+
+/**
+ * If the error returned contains a message, display it in a modal.
+ * @param {object} data
+ */
+function displayErrorModal(data) {
+
+    if (typeof data.error !== "string") {
+        return;
+    }
+
+    let modaltitle = getString('checkouterrormodaltitle', 'local_shopping_cart');
+    ModalFactory.create({
+        type: ModalFactory.types.ALERT,
+        title: modaltitle,
+        body: data.error,
+        removeOnClose: true,
+    }).then(modal => {
+        modal.show();
+        return modal;
+    }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log(e);
+    });
+
 }
 
 /**

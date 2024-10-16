@@ -764,6 +764,14 @@ class shopping_cart {
         $success = true;
         $error = [];
 
+        if (!shopping_cart_rebookingcredit::check_if_enough_items_for_rebooking($data)) {
+            return [
+                'status' => 0,
+                'error' => get_string('rebookingnonewitemselected', 'local_shopping_cart'),
+                'credit' => 0.0,
+                'identifier' => $identifier,
+            ];
+        }
         // When we come from rebooking, we need to correct the price of the rebooking item.
         // The total price can't be below 0.
         shopping_cart_rebookingcredit::correct_item_price_for_rebooking($data);

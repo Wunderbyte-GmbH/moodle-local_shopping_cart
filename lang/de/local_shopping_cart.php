@@ -158,6 +158,7 @@ $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> We
 $string['checkout_completed'] = 'Checkout abgeschlossen';
 $string['checkout_completed_desc'] = 'Der Benutzer mit der ID {$a->userid} hat den Checkout mit identifier {$a->identifier}
  erfolgreich abgeschlossen';
+$string['checkouterrormodaltitle'] = "Es gibt ein Problem mit Ihrer Bestellung:";
 $string['checkvatnrcountrycode'] = "Wählen Sie Ihr Land";
 $string['checkvatnrnumber'] = "Geben Sie Ihre UID Nummer";
 $string['choose'] = 'Auswählen';
@@ -484,6 +485,7 @@ $string['rebookingheadingdescription'] = "Käufe können unter gewissen Umständ
 $string['rebookingidentifier'] = 'Guthaben für Umbuchung mit identifer {$a}';
 $string['rebookingmaxnumber'] = "Maximale Anzahl an Umbuchungen";
 $string['rebookingmaxnumberdesc'] = "Es werden zum Beispiel nur 3 Umbuchungen innerhalb von 100 Tagen erlaubt";
+$string['rebookingnonewitemselected'] = "Sie müssen mindestens ein neues Item wählen, um die Umbuchung zu erlauben.";
 $string['rebookingperiod'] = "Umbuchungsperiode";
 $string['rebookingperioddesc'] = "Die Zeit, in der die maximale Anzahl von Umbuchungen beschränkt werden kann. Typischerweise die Dauer eines Semesters. Wert in Tagen.";
 $string['receipt'] = 'Buchungsbestätigung';

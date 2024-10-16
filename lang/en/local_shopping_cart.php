@@ -157,6 +157,7 @@ $string['cashtransfersuccess'] = 'Cash transfer successful';
 $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout ❯❯';
 $string['checkout_completed'] = 'Checkout Completed';
 $string['checkout_completed_desc'] = 'The user with userid {$a->userid} successfully completed the checkout with identifier {$a->identifier}';
+$string['checkouterrormodaltitle'] = "There is a problem with your order:";
 $string['checkvatnrcountrycode'] = "Select your country";
 $string['checkvatnrnumber'] = "Enter your VAT number";
 $string['choose'] = 'Choose';
@@ -553,6 +554,7 @@ $string['rebookingheadingdescription'] = "Purchases can be rebooked under certai
 $string['rebookingidentifier'] = 'Credit for rebooking with identifer {$a}';
 $string['rebookingmaxnumber'] = "Maximum Number of Rebookings";
 $string['rebookingmaxnumberdesc'] = "For example, only 3 rebookings are allowed within 100 days";
+$string['rebookingnonewitemselected'] = "You have to choose at least one new item to allow rebooking.";
 $string['rebookingperiod'] = "Rebooking Period";
 $string['rebookingperioddesc'] = "The time during which the maximum number of rebookings can be restricted. Typically the duration of a semester. Value in days.";
 $string['receipt'] = 'Receipt';
