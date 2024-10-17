@@ -259,7 +259,6 @@ function displayErrorModal(data) {
         modal.show();
         return modal;
     }).catch(e => {
-        // eslint-disable-next-line no-console
         console.log(e);
     });
 
