@@ -851,6 +851,7 @@ class shopping_cart {
                         'component' => $item['componentname'],
                     ],
                 ]);
+                $event->trigger();
             }
 
             if ($success == true) {
