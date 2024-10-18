@@ -344,7 +344,10 @@ class cartstore {
 
         // If the paymentaccountid is not set yet, we just use the one we transmitted here.
         $storedpaymentaccountid = $data['paymentaccountid'] ?? $paymentaccountid;
-        if ($storedpaymentaccountid != $paymentaccountid) {
+        if (
+            !empty($data['items'])
+            && ($storedpaymentaccountid != $paymentaccountid)
+        ) {
             return false;
         }
         $data['paymentaccountid'] = $paymentaccountid;
