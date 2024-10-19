@@ -262,13 +262,7 @@ class shoppingcart_history_list implements renderable, templatable {
             }
         }
 
-        if (!get_config('local_shopping_cart', 'samecostcenterforcredits')) {
-            $cartstore = cartstore::instance($userid);
-            $data = $cartstore->get_data();
-            $this->credit = $data['credit'];
-        } else {
-            $this->costcentercredits = shopping_cart_credits::get_balance_for_all_costcenters($userid);
-        }
+        $this->costcentercredits = shopping_cart_credits::get_balance_for_all_costcenters($userid);
     }
 
 
