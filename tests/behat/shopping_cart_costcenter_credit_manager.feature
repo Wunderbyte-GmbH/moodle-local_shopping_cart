@@ -238,3 +238,53 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "7.90" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
     And I log out
+
+  @javascript
+  Scenario: User selects two items than proceed to checkout with no costcenter credits and default costcenter credits
+    Given the following config values are set as admin:
+      | config                      | value       | plugin              |
+      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
+    And the following "local_shopping_cart > user credits" exist:
+      | user  | credit | currency | costcenter  |
+      | user1 | 50     | EUR      |             |
+      | user1 | 13     | EUR      | CostCenter1 |
+      | user1 | 14     | EUR      | CostCenter2 |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "7" has been put in shopping cart of user "user1"
+    And Testitem "8" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I wait until the page is ready
+    And I should see "Your shopping cart"
+    And I should see "(CostCenter2)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7" "css_element"
+    And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7 .item-price" "css_element"
+    And I should see "(CostCenter2)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8" "css_element"
+    And I should see "13.80 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8 .item-price" "css_element"
+    ## Price
+    And I should see "34.10 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
+    ## Used credit - should be all from unnamed costcenter!
+    And I should see "Use credit: 64.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
+    ## Deductible
+    And I should see "34.10 EUR" in the ".sc_price_label .sc_deductible" "css_element"
+    ## Remaining credit
+    And I should see "29.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
+    And I should see "0 EUR" in the ".sc_totalprice" "css_element"
+    When I press "Checkout"
+    And I wait "1" seconds
+    And I press "Confirm"
+    And I wait until the page is ready
+    Then I should see "Payment successful!"
+    And I should see "Test item 7" in the ".payment-success ul.list-group" "css_element"
+    And I should see "Test item 8" in the ".payment-success ul.list-group" "css_element"
+    ## Verify by admin
+    And I log out
+    And I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "13.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    And I should see "29.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    And "cashier-history-items [data-costcenter=\"CostCenter2\"]" "css_element" should not exist
+    And I log out
