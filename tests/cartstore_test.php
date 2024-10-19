@@ -85,7 +85,7 @@ final class cartstore_test extends TestCase {
         // Check total price.
         $this->assertEquals($data['price'], 44.1);
 
-        $cartstore->set_credit(14.1, 'EUR');
+        shopping_cart_credits::add_credit($user1->id, 14.1, 'EUR', '');
 
         $data = $cartstore->get_data();
 

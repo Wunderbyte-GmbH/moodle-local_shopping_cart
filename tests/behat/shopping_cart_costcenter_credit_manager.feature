@@ -1,4 +1,4 @@
-@local @local_shopping_cart @javascript
+@local @local_shopping_cart @local_shopping_cart_credits @javascript
 
 Feature: Cashier manage credits with costcenters enabled in shopping cart
   In order to manage credits with costcenters enabled as a cashier I add / reduce / refund credits for students.
@@ -32,8 +32,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
   Scenario: Shopping cart costcenter credits: cashier correct (add) credits for user and refund some
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |
-      | samecostcenter              | 1           | local_shopping_cart |
       | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |
@@ -114,8 +112,6 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
   Scenario: Shopping cart costcenter credits: cashier correct (reduce) credits for user and refund some
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |
-      | samecostcenter              | 1           | local_shopping_cart |
       | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |
@@ -195,67 +191,9 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And "//*[@id='cash_report_table_r6']" "xpath_element" should not exist
 
   @javascript
-  Scenario: User selects three items than proceed to checkout with credits enforced per costcenter
-    Given the following config values are set as admin:
-      | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |
-      | samecostcenter              | 1           | local_shopping_cart |
-      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
-    And the following "local_shopping_cart > user credits" exist:
-      | user  | credit | currency | costcenter  |
-      | user1 | 31     | EUR      | CostCenter1 |
-      | user1 | 41     | EUR      | CostCenter2 |
-      ##| user1 | 51     | EUR      |             |
-    And I log in as "user1"
-    And Shopping cart has been cleaned for user "user1"
-    And Testitem "4" has been put in shopping cart of user "user1"
-    And Testitem "7" has been put in shopping cart of user "user1"
-    And Testitem "8" has been put in shopping cart of user "user1"
-    And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
-    And I should see "Your shopping cart"
-    And I should see "dummy item description" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-4" "css_element"
-    And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-4 .item-price" "css_element"
-    And I should see "(CostCenter2)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7" "css_element"
-    And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7 .item-price" "css_element"
-    And I should see "(CostCenter3)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8" "css_element"
-    And I should see "13.80 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8 .item-price" "css_element"
-    ## Price
-    And I should see "44.10 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
-    ## Used credit - should be all from unnamed costcenter!
-    And I should see "Use credit: 51.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
-    ## Deductible
-    And I should see "44.10 EUR" in the ".sc_price_label .sc_deductible" "css_element"
-    ## Remaining credit
-    And I should see "6.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
-    And I should see "0 EUR" in the ".sc_totalprice" "css_element"
-    When I press "Checkout"
-    And I wait "1" seconds
-    And I press "Confirm"
-    And I wait until the page is ready
-    Then I should see "Payment successful!"
-    And I should see "Test item 6" in the ".payment-success ul.list-group" "css_element"
-    And I should see "Test item 7" in the ".payment-success ul.list-group" "css_element"
-    And I should see "Test item 8" in the ".payment-success ul.list-group" "css_element"
-    ## Verify by admin
-    And I log out
-    And I log in as "admin"
-    And I visit "/local/shopping_cart/cashier.php"
-    And I set the field "Select a user..." to "Username1"
-    And I should see "Username1 Test"
-    And I click on "Continue" "button"
-    And I wait until the page is ready
-    And I should see "6.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And I should see "41.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
-    And I should see "31.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    And I log out
-
-  @javascript
   Scenario: User selects two items than proceed to checkout with credits enforced per costcenter
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
-      | samecostcenterforcredits    | 1           | local_shopping_cart |
-      | samecostcenter              | 1           | local_shopping_cart |
       | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |

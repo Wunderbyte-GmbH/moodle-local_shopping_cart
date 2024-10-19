@@ -1,4 +1,4 @@
-@local @local_shopping_cart @javascript
+@local @local_shopping_cart @local_shopping_cart_credits @javascript
 
 Feature: User cancellation after cash payment on the checkout page.
   In order to cancel purchase as a user

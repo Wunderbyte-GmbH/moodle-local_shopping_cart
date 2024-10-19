@@ -1,4 +1,4 @@
-@local @local_shopping_cart @javascript
+@local @local_shopping_cart @local_shopping_cart_credits @javascript
 
 Feature: Cashier manage credits in shopping cart
   In order to manage credits as a cashier I add / reduce / refund credits for students.
