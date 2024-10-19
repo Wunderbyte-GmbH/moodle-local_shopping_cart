@@ -52,7 +52,6 @@ class shopping_cart_credits {
 
         // Just in case, we do not find it in credits table.
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-        $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits') ?? 0;
 
         $currencies = self::credits_get_used_currencies($userid);
         if (empty($currencies)) {
@@ -68,16 +67,12 @@ class shopping_cart_credits {
         ];
         $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
         $params['costcenter'] = $costcenter;
-        if (!empty($samecostcenterforcredits)) {
-            $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
-            if (
-                $withempty
-                && (empty($defaultcostcente) || ($defaultcostcenter == $costcenter))
-            ) {
-                $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
-            } else {
-                $defaultcostcentersql = '';
-            }
+        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+        if (
+            $withempty
+            && (empty($defaultcostcente) || ($defaultcostcenter == $costcenter))
+        ) {
+            $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
         } else {
             $defaultcostcentersql = '';
         }

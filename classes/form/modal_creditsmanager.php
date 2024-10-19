@@ -87,13 +87,11 @@ class modal_creditsmanager extends dynamic_form {
         $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'neq', 1);
 
-        if (!empty(get_config('local_shopping_cart', 'samecostcenterforcredits'))) {
-            $mform->addElement('text', 'creditsmanagercreditscostcenter',
+        $mform->addElement('text', 'creditsmanagercreditscostcenter',
             get_string('creditsmanagercreditscostcenter', 'local_shopping_cart'));
-            $mform->setDefault('creditsmanagercreditscostcenter', '');
-            $mform->addHelpButton('creditsmanagercreditscostcenter', 'creditsmanagercreditscostcenter', 'local_shopping_cart');
-            $mform->hideIf('creditsmanagercreditscostcenter', 'creditsmanagermode', 'eq', 0);
-        }
+        $mform->setDefault('creditsmanagercreditscostcenter', '');
+        $mform->addHelpButton('creditsmanagercreditscostcenter', 'creditsmanagercreditscostcenter', 'local_shopping_cart');
+        $mform->hideIf('creditsmanagercreditscostcenter', 'creditsmanagermode', 'eq', 0);
 
         $paymentmethods = [
             0 => get_string('choose...', 'local_shopping_cart'),
