@@ -177,20 +177,7 @@ if ($hassiteconfig) {
                             'shipping' => ucfirst(new lang_string('addresses:shipping', 'local_shopping_cart')),
                     ]
             ));
-    // If this setting is turned on, all payment items in shopping cart need to have the same cost center.
-    $settings->add(
-        new admin_setting_configcheckbox($componentname . '/samecostcenter',
-                get_string('samecostcenter', 'local_shopping_cart'),
-                get_string('samecostcenter_desc', 'local_shopping_cart'), 0));
 
-    // If this setting is turned on and a user receives credits, they can later only be used for items with the same costcenter.
-    $settings->add(
-        new admin_setting_configcheckbox($componentname . '/samecostcenterforcredits',
-                get_string('samecostcenterforcredits', 'local_shopping_cart'),
-                get_string('samecostcenterforcredits_desc', 'local_shopping_cart'), 0));
-
-    $samecostcenterforcredits = get_config('local_shopping_cart', 'samecostcenterforcredits');
-    if ($samecostcenterforcredits) {
         // If no costcenter is specified in credits, they can be redeemed for items from this costcenter.
         $settings->add(
                 new admin_setting_configtext(
@@ -211,7 +198,6 @@ if ($hassiteconfig) {
                 PARAM_RAW
         )
         );
-    }
 
     // Setting to activate manual rebooking for cashier.
     $settings->add(

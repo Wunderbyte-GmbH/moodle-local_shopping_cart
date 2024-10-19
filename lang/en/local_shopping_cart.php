@@ -581,11 +581,6 @@ $string['restart'] = 'Next customer';
 $string['ro'] = "Romania";
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
-$string['samecostcenter'] = 'Only one cost center per payment';
-$string['samecostcenter_desc'] = 'All payment items in shopping cart need to have the same cost center.
-Items with different cost centers need to be booked separately.';
-$string['samecostcenterforcredits'] = 'Use credits only for the same costcenter';
-$string['samecostcenterforcredits_desc'] = 'If this setting is turned on and a user receives credits, these credits can only be used for items with the same costcenter.';
 $string['saveinvoicenumber'] = 'Just save invoice number';
 $string['sch_paymentaccountid'] = "Change the payment account";
 $string['se'] = "Sweden";

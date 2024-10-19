@@ -512,11 +512,6 @@ $string['restart'] = 'Nächste/r KundIn';
 $string['ro'] = "Rumänien";
 $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
-$string['samecostcenter'] = 'Nur eine Kostenstelle pro Zahlungsvorgang';
-$string['samecostcenter_desc'] = 'Alle Items im Warenkorb müssen die selbe Kostenstelle haben.
-Items mit unterschiedlichen Kostenstellen müssen separat gebucht werden.';
-$string['samecostcenterforcredits'] = 'Guthaben nur für selbe Kostenstellen verwenden';
-$string['samecostcenterforcredits_desc'] = 'Wenn diese Einstellung aktiviert ist und einE NutzerIn Guthaben erhält, so kann dieses Guthaben nur für Artikel der selben Kostenstelle verwendet werden.';
 $string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
 $string['se'] = "Schweden";
