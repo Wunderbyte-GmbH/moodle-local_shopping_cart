@@ -68,11 +68,9 @@ class rebookings {
         }
 
         $cartstore = cartstore::instance($userid);
-        if (get_config('local_shopping_cart', 'samecostcenter')) {
-            $currentcostcenter = $item->costcenter ?? '';
-            if (!$cartstore->same_costcenter($currentcostcenter)) {
-                return false;
-            }
+        $currentcostcenter = $item->costcenter ?? '';
+        if (!$cartstore->same_costcenter($currentcostcenter)) {
+            return false;
         }
 
         // If the rebooking period is not empty, we check the rest.

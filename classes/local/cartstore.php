@@ -101,16 +101,10 @@ class cartstore {
 
         // When we add the first item, we need to reset credit...
         // ... because we can only use the one from the correct cost center.
-
-        if (
-            get_config('local_shopping_cart', 'samecostcenterforcredits')
-            && !empty($data['costcenter'])
-        ) {
-            [$credit, $currency] = shopping_cart_credits::get_balance($this->userid, $data['costcenter']);
-            $data['credit'] = $credit;
-            $data['remainingcredit'] = $credit;
-            $data['currency'] = $currency;
-        }
+        [$credit, $currency] = shopping_cart_credits::get_balance($this->userid, $data['costcenter']);
+        $data['credit'] = $credit;
+        $data['remainingcredit'] = $credit;
+        $data['currency'] = $currency;
 
         $this->set_cache($data);
 

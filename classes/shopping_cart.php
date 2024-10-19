@@ -115,21 +115,19 @@ class shopping_cart {
         }
 
         if ($area == "option" || $area == "rebookitem") {
-            // If the setting 'samecostcenter' ist turned on...
+            // Such as 'samecostcenter' is always enforced...
             // ... then we do not allow to add items with different cost centers.
             $providerclass = static::get_service_provider_classname($component);
             $cartitem = component_class_callback($providerclass, 'allow_add_item_to_cart', [$area, $itemid, $userid]);
 
-            if (get_config('local_shopping_cart', 'samecostcenter')) {
-                $currentcostcenter = $cartitem['costcenter'] ?? '';
-
-                if (!$cartstore->same_costcenter($currentcostcenter)) {
-                    return [
-                        'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
-                        'itemname' => $cartitem['itemname'] ?? '',
-                    ];
-                }
+            $currentcostcenter = $cartitem['costcenter'] ?? '';
+            if (!$cartstore->same_costcenter($currentcostcenter)) {
+                return [
+                    'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
+                    'itemname' => $cartitem['itemname'] ?? '',
+                ];
             }
+
             if (get_config('local_shopping_cart', 'allowchooseaccount')) {
 
                 $searchdata = [
