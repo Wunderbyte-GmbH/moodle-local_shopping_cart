@@ -70,7 +70,7 @@ class shopping_cart_credits {
         $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
         if (
             $withempty
-            && (empty($defaultcostcente) || ($defaultcostcenter == $costcenter))
+            && (empty($defaultcostcenter) || ($defaultcostcenter == $costcenter))
         ) {
             $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
         } else {
