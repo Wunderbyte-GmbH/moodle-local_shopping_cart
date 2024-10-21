@@ -33,8 +33,16 @@ require_login();
 $id = required_param('id', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
 
-$PAGE->set_context(context_system::instance());
-$PAGE->set_url('/receipt.php');
+$context = context_system::instance();
+
+if (
+    $userid !== $USER->id
+) {
+    require_capability('local/shopping_cart:cashier', $context);
+}
+
+$PAGE->set_context($context);
+$PAGE->set_url('/local_shopping_cart/receipt.php');
 
 $PAGE->set_title('Receipt');
 $PAGE->set_heading('Receipt');
