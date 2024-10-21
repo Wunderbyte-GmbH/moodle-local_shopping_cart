@@ -95,6 +95,33 @@ class verify_purchase extends external_api {
 
         $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
+        $transactioncompletestring = 'paygw_' . $paymentgateway . '\external\transaction_complete';
+
+        try {
+            $transactioncomplete = new $transactioncompletestring();
+            if ($transactioncomplete instanceof interface_transaction_complete) {
+                $response = $transactioncomplete::execute(
+                    'local_shopping_cart',
+                    '',
+                    $params['identifier'],
+                    $params['tid'],
+                    '',
+                    '',
+                    true,
+                    '',
+                    $userid,
+                );
+                $success = $response['success'];
+            } else {
+                throw new moodle_exception(
+                    'ERROR: transaction_complete does not implement transaction_complete interface!'
+                );
+            }
+        } catch (\Throwable $e) {
+            $success = false;
+            echo "ERROR: " . $e;
+        }
+
         // Translate success.
         // Success 1 means here not ok.
         $success = $success ? 0 : 1;
