@@ -582,7 +582,7 @@ class cartstore {
 
         $items = $this->get_items();
         foreach ($items as $itemincart) {
-            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit') {
+            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit' || $itemincart['area'] == 'rebookingfee') {
                 // We only need to check for "real" items, booking fee does not apply.
                 continue;
             } else {
