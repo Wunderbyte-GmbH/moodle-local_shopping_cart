@@ -583,9 +583,10 @@ class cartstore {
     public function same_costcenter(string $currentcostcenter) {
         $costcenterincart = '';
 
+        $escapeitems = ['bookingfee', 'rebookingcredit', 'rebookingfee'];
         $items = $this->get_items();
         foreach ($items as $itemincart) {
-            if ($itemincart['area'] == 'bookingfee' || $itemincart['area'] == 'rebookingcredit' || $itemincart['area'] == 'rebookingfee') {
+            if (in_array($itemincart['area'], $escapeitems)) {
                 // We only need to check for "real" items, booking fee does not apply.
                 continue;
             } else {
