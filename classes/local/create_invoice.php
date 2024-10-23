@@ -357,6 +357,9 @@ class create_invoice {
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
                 $tmp = str_replace("[[location]]", $optionsettings->location ?? '', $tmp); // Add location.
                 $tmp = str_replace("[[dayofweektime]]", $optionsettings->dayofweektime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
+                $coursestarttime = !empty($optionsettings->coursestarttime)
+                    ? date($dateformat, $optionsettings->coursestarttime) : $date;
+                $tmp = str_replace("[[coursestarttime]]", $coursestarttime, $tmp); // E.g. "Mo, 10:00 - 12:00".
             } else {
                 // It should still be replaced with an empty string in case it's no booking option.
                 $tmp = str_replace("[[location]]", '', $tmp);
