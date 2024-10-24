@@ -22,6 +22,7 @@
  */
 
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\modechecker;
 use local_shopping_cart\shopping_cart;
 
 // Define constants.
@@ -107,7 +108,10 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
 
     $url = $PAGE->url;
 
-    if (!$url->compare(new moodle_url('/local/shopping_cart/cashier.php'), URL_MATCH_BASE)) {
+    if (
+        !$url->compare(new moodle_url('/local/shopping_cart/cashier.php'), URL_MATCH_BASE)
+        && !modechecker::is_ajax_or_webservice_request()
+    ) {
         shopping_cart::buy_for_user($USER->id);
     }
 
