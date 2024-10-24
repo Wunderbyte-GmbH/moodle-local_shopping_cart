@@ -60,7 +60,16 @@ class dynamic_select_users extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-        require_capability('local/shopping_cart:cashier', $this->get_context_for_dynamic_submission());
+
+        $context = $this->get_context_for_dynamic_submission();
+        if (
+            !(
+                has_capability('local/shopping_cart:cansearchusers', $context)
+                || has_capability('local/shopping_cart:cashier', $context)
+            )
+        ) {
+            require_capability('local/shopping_cart:cashier', $context);
+        }
     }
 
     /**
