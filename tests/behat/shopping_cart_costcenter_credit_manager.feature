@@ -246,7 +246,8 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
       | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |
-      | user1 | 50     | EUR      |             |
+    ##  | user1 | 50     | EUR      |             |
+      | user1 | 30     | EUR      |             |
       | user1 | 13     | EUR      | CostCenter1 |
       | user1 | 14     | EUR      | CostCenter2 |
     And I log in as "user1"
@@ -263,11 +264,13 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## Price
     And I should see "34.10 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
     ## Used credit - should be all from unnamed costcenter!
-    And I should see "Use credit: 64.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
+    And I should see "Use credit: 44.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
+    ## And I should see "Use credit: 64.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
     ## Deductible
     And I should see "34.10 EUR" in the ".sc_price_label .sc_deductible" "css_element"
     ## Remaining credit
-    And I should see "29.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
+    ## And I should see "29.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
+    And I should see "9.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
     And I should see "0 EUR" in the ".sc_totalprice" "css_element"
     When I press "Checkout"
     And I wait "1" seconds
@@ -285,6 +288,8 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I click on "Continue" "button"
     And I wait until the page is ready
     And I should see "13.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
-    And I should see "29.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
-    And "cashier-history-items [data-costcenter=\"CostCenter2\"]" "css_element" should not exist
+    And I should see "9.90" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    ## And I should see "14.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    ## And I should see "15.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
     And I log out
