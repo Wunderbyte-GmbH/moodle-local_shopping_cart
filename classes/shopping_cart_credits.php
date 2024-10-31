@@ -351,10 +351,8 @@ class shopping_cart_credits {
 
         if ($emptycostcenterbalance > 0) {
             // First check if we can deduct from the empty costcenter.
-            $sumtodeduct = $emptycostcenterbalance - $sumtodeduct;
 
             $data = new stdClass();
-
             $data->userid = $userid;
             $data->costcenter = '';
             $data->currency = $checkoutdata['currency'];
@@ -362,16 +360,17 @@ class shopping_cart_credits {
             $data->timemodified = $now;
             $data->timecreated = $now;
 
-            if ($sumtodeduct < 0) {
+            if ($sumtodeduct > $emptycostcenterbalance) {
                 // We want to deduct more than we have from the empty costcenter. Therefore we set it to 0.
                 $data->credits = -$emptycostcenterbalance;
                 $data->balance = 0;
-                // We need to move the sumtoduct in the positive range again.
-                $sumtodeduct *= -1;
+                // Calculate remaining sumtoduct.
+                $sumtodeduct = $sumtodeduct - $emptycostcenterbalance;
             } else {
                 // We have enough in the empty costcenter.
                 $data->credits = -$checkoutdata['deductible'];
                 $data->balance = $emptycostcenterbalance - $checkoutdata['deductible'];
+                $sumtodeduct = 0;
             }
 
             $DB->insert_record('local_shopping_cart_credits', $data);
@@ -384,6 +383,7 @@ class shopping_cart_credits {
 
             $data->userid = $userid;
             $data->credits = -$sumtodeduct;
+            // TODO: should we use defaultcostcenter there too?
             $data->balance = !empty($matchingcostcenterbalance)
                 ? ($matchingcostcenterbalance - $sumtodeduct) : $checkoutdata['remainingcredit'];
             $data->costcenter = $checkoutdata['costcenter'] ?? '';
