@@ -68,10 +68,7 @@ class shopping_cart_credits {
         $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
         $params['costcenter'] = $costcenter;
         $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
-        if (
-            $withempty
-            && (empty($defaultcostcenter) || ($defaultcostcenter == $costcenter))
-        ) {
+        if ($withempty) {
             $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
         } else {
             $defaultcostcentersql = '';
@@ -352,11 +349,7 @@ class shopping_cart_credits {
 
         $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
 
-        if (
-            $emptycostcenterbalance > 0
-            && !empty($checkoutdata['costcenter'])
-            && (empty($defaultcostcenter) || $defaultcostcenter == $checkoutdata['costcenter'])
-        ) {
+        if ($emptycostcenterbalance > 0) {
             // First check if we can deduct from the empty costcenter.
             $sumtodeduct = $emptycostcenterbalance - $sumtodeduct;
 
