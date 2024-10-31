@@ -364,7 +364,7 @@ class shopping_cart_credits {
                 // We want to deduct more than we have from the empty costcenter. Therefore we set it to 0.
                 $data->credits = -$emptycostcenterbalance;
                 $data->balance = 0;
-                // Calculate remaining sumtoduct.
+                // Calculate remaining sumtodeduct.
                 $sumtodeduct = $sumtodeduct - $emptycostcenterbalance;
             } else {
                 // We have enough in the empty costcenter.
@@ -379,18 +379,32 @@ class shopping_cart_credits {
         }
 
         if ($sumtodeduct > 0) {
+            // TODO: should we use defaultcostcenter there first?
             $data = new stdClass();
-
             $data->userid = $userid;
-            $data->credits = -$sumtodeduct;
-            // TODO: should we use defaultcostcenter there too?
-            $data->balance = !empty($matchingcostcenterbalance)
-                ? ($matchingcostcenterbalance - $sumtodeduct) : $checkoutdata['remainingcredit'];
             $data->costcenter = $checkoutdata['costcenter'] ?? '';
             $data->currency = $checkoutdata['currency'];
             $data->usermodified = $USER->id;
             $data->timemodified = $now;
             $data->timecreated = $now;
+
+            if (!empty($matchingcostcenterbalance)) {
+                if ($sumtodeduct > $matchingcostcenterbalance) {
+                    // We want to deduct more than we have from the matching costcenter. Therefore we set it to 0.
+                    $data->credits = -$matchingcostcenterbalance;
+                    $data->balance = 0;
+                    // Calculate remaining sumtodeduct.
+                    $sumtodeduct = $sumtodeduct - $matchingcostcenterbalance;
+                } else {
+                    // We have enough in the empty costcenter.
+                    $data->credits = -$sumtodeduct;
+                    $data->balance = $matchingcostcenterbalance - $sumtodeduct;
+                    $sumtodeduct = 0;
+                }
+            } else {
+                $data->credits = 0;
+                $data->balance = $checkoutdata['remainingcredit'];
+            }
 
             $DB->insert_record('local_shopping_cart_credits', $data);
             $cartstore = cartstore::instance($userid);
