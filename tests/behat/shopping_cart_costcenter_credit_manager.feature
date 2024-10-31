@@ -293,3 +293,31 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     ## And I should see "15.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
     And I log out
+
+  @javascript
+  Scenario: User selects two items than proceed to checkout with no enough credits in both empty and dedicated costcenters and no default costcenter
+    Given the following "local_shopping_cart > user credits" exist:
+      | user  | credit | currency | costcenter  |
+      | user1 | 15     | EUR      |             |
+      | user1 | 13     | EUR      | CostCenter1 |
+      | user1 | 14     | EUR      | CostCenter2 |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "7" has been put in shopping cart of user "user1"
+    And Testitem "8" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I wait until the page is ready
+    And I should see "Your shopping cart"
+    And I should see "(CostCenter2)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7" "css_element"
+    And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-7 .item-price" "css_element"
+    And I should see "(CostCenter2)" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8" "css_element"
+    And I should see "13.80 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-option-8 .item-price" "css_element"
+    ## Price
+    And I should see "34.10 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
+    ## Used credit - should be all from unnamed costcenter!
+    And I should see "Use credit: 29.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
+    ## Deductible
+    And I should see "29.00 EUR" in the ".sc_price_label .sc_deductible" "css_element"
+    ## Remaining credit
+    And I should see "0 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
+    And I should see "5.10 EUR" in the ".sc_totalprice" "css_element"
