@@ -35,9 +35,7 @@ $userid = required_param('userid', PARAM_INT);
 
 $context = context_system::instance();
 
-if (
-    $userid !== $USER->id
-) {
+if ($userid !== (int) $USER->id) {
     require_capability('local/shopping_cart:cashier', $context);
 }
 
