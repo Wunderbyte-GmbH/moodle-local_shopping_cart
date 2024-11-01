@@ -97,7 +97,9 @@ class cartstore {
         $data['items'][$cacheitemkey] = $itemdata;
         $data['expirationtime'] = $expirationtime;
 
-        $data['costcenter'] = !empty($item->costcenter) ? $item->costcenter : ($data['costcenter'] ?? '');
+        // Use ot item ot default costcenter.
+        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+        $data['costcenter'] = !empty($item->costcenter) ? $item->costcenter : ($defaultcostcenter ?? '');
 
         // When we add the first item, we need to reset credit...
         // ... because we can only use the one from the correct cost center.
@@ -601,6 +603,7 @@ class cartstore {
      */
     public function get_costcenter(): string {
         $costcenterincart = '';
+        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
 
         $items = $this->get_items();
         foreach ($items as $itemincart) {
@@ -608,7 +611,8 @@ class cartstore {
                 // We only need to check for "real" items, booking fee does not apply.
                 continue;
             } else {
-                $costcenterincart = $itemincart['costcenter'] ?? '';
+                // Use ot item ot default costcenter.
+                $costcenterincart = !empty($itemincart['costcenter']) ? $itemincart['costcenter'] : ($defaultcostcenter ?? '');
                 break;
             }
         }
