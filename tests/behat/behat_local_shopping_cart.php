@@ -46,6 +46,7 @@ class behat_local_shopping_cart extends behat_base {
     public function i_clean_users_cart(string $username) {
         $userid = $this->get_user_id_by_identifier($username);
         shopping_cart::delete_all_items_from_cart($userid);
+        shopping_cart::buy_for_user(0);
     }
 
     /**
