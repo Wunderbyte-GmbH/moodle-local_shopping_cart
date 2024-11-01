@@ -67,11 +67,18 @@ class shopping_cart_credits {
         ];
         $additionalsql = " COALESCE(NULLIF(costcenter, ''), '') = :costcenter ";
         $params['costcenter'] = $costcenter;
-        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+
+        $defaultcostcentersql = '';
+
         if ($withempty) {
-            $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
-        } else {
-            $defaultcostcentersql = '';
+            // Get balance for costcenter without name ("no costcenter").
+            $defaultcostcentersql .= " OR COALESCE(NULLIF(costcenter, ''), '') = '' ";
+            // Inclide balance for default costcenter if costcenter not provided explicitly.
+            $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+            if (!empty($defaultcostcenter) && $defaultcostcenter == $costcenter) {
+                $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = :defaultcostcenter ";
+                $params['defaultcostcenter'] = $defaultcostcenter;
+            }
         }
 
         $sql = 'SELECT SUM(balance) AS balance, MAX(currency) as currency
