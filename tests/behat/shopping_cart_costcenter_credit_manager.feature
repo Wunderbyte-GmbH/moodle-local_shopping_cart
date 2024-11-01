@@ -233,6 +233,53 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I log out
 
   @javascript
+  Scenario: User select two items without costcenters and default costcenter is being set than make checkout
+    Given the following config values are set as admin:
+      | config                      | value       | plugin              |
+      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
+    And the following "local_shopping_cart > user credits" exist:
+      | user  | credit | currency | costcenter  |
+      | user1 | 53     | EUR      | CostCenter1 |
+      | user1 | 43     | EUR      | CostCenter2 |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I wait until the page is ready
+    And I should see "Your shopping cart"
+    And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2 .item-price" "css_element"
+    And I should see "13.80 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3 .item-price" "css_element"
+    ## Price
+    And I should see "34.10 EUR" in the ".sc_price_label .sc_initialtotal" "css_element"
+    ## Used credit - should be all from unnamed costcenter!
+    And I should see "Use credit: 53.00 EUR" in the ".sc_price_label .sc_credit" "css_element"
+    ## Deductible
+    And I should see "34.10 EUR" in the ".sc_price_label .sc_deductible" "css_element"
+    ## Remaining credit
+    ## And I should see "18.90 EUR" in the ".sc_price_label .sc_remainingcredit" "css_element"
+    And I should see "0 EUR" in the ".sc_totalprice" "css_element"
+    When I press "Checkout"
+    And I wait "1" seconds
+    And I press "Confirm"
+    And I wait until the page is ready
+    Then I should see "Payment successful!"
+    And I should see "Test item 2" in the ".payment-success ul.list-group" "css_element"
+    And I should see "Test item 3" in the ".payment-success ul.list-group" "css_element"
+    ## Verify by admin
+    And I log out
+    And I log in as "admin"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    And I wait until the page is ready
+    And I should see "18.90" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
+    And I should see "43.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
+    And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    And I log out
+
+  @javascript
   Scenario: User select two items with costcenters and default costcenter is being set than make checkout
     Given the following config values are set as admin:
       | config                      | value       | plugin              |
