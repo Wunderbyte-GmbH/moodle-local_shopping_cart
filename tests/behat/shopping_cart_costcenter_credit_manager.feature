@@ -376,8 +376,11 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I log out
 
   @javascript
-  Scenario: User selects two items with costcenters and enough credits in nocostcenter plus matching costcenter and no default costcenter than make checkout
-    Given the following "local_shopping_cart > user credits" exist:
+  Scenario: User selects two items with costcenters and enough credits in nocostcenter plus matching costcenter when default costcenter is being set and than make checkout
+    Given the following config values are set as admin:
+      | config                      | value       | plugin              |
+      | defaultcostcenterforcredits | CostCenter1 | local_shopping_cart |
+    And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency | costcenter  |
       | user1 | 30     | EUR      |             |
       | user1 | 13     | EUR      | CostCenter1 |
