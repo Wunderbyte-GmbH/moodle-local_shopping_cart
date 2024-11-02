@@ -76,7 +76,7 @@ class shopping_cart_credits {
             // Inclide balance for default costcenter if costcenter not provided explicitly.
             $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
             if (!empty($defaultcostcenter) && $defaultcostcenter == $costcenter) {
-                $defaultcostcentersql = " OR COALESCE(NULLIF(costcenter, ''), '') = :defaultcostcenter ";
+                $defaultcostcentersql .= " OR COALESCE(NULLIF(costcenter, ''), '') = :defaultcostcenter ";
                 $params['defaultcostcenter'] = $defaultcostcenter;
             }
         }
