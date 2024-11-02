@@ -141,6 +141,56 @@ final class cartstore_test extends TestCase {
     }
 
     /**
+     * Test test_cartstore_get_costcenter
+     * @covers \cartstore
+     */
+    public function test_cartstore_get_costcenter(): void {
+
+        $user1 = $this->get_data_generator()->create_user();
+
+        $cartstore = cartstore::instance((int)$user1->id);
+
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'testitem',
+            1,
+            $user1->id);
+
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'testitem',
+            2,
+            $user1->id);
+
+        $data = $cartstore->get_data();
+
+        // Check total price and absence of costcenter and credits.
+        $this->assertEquals(33.83, $data['price']);
+        $this->assertEquals(30.3, $data['price_net']);
+        $this->assertEquals(33.83, $data['initialtotal']);
+        $this->assertEmpty($data['costcenter']);
+        $this->assertEmpty($data['deductible']);
+        $this->assertEmpty($data['remainingcredit']);
+        $this->assertArrayHasKey('items', $data);
+        $this->assertEquals(2, count($data['items']));
+
+        // Set default costcenter and credits for it.
+        set_config('defaultcostcenterforcredits', 'CostCenter1', 'local_shopping_cart');
+        shopping_cart_credits::add_credit($user1->id, 50, 'EUR', 'CostCenter1');
+        $data = $cartstore->get_data();
+
+        // Check total price, costcenter and credits.
+        $this->assertEmpty($data['price']);
+        $this->assertEquals(30.3, $data['price_net']);
+        $this->assertEquals(33.83, $data['deductible']);
+        $this->assertEquals(33.83, $data['initialtotal']);
+        $this->assertEquals(16.17, $data['remainingcredit']);
+        $this->assertEquals('CostCenter1', $data['costcenter']);
+        $this->assertArrayHasKey('items', $data);
+        $this->assertEquals(2, count($data['items']));
+    }
+
+    /**
      * Data provider for test_cartstore_get_data
      *
      * @return array

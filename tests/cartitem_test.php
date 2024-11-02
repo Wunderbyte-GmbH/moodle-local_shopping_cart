@@ -104,4 +104,46 @@ final class cartitem_test extends TestCase {
             $this->assertArrayHasKey($property->getName(), $cartitemarray);
         }
     }
+
+    /**
+     * Test costcenter not set
+     * @covers \cartitem->costcenter
+     *
+     * @return void
+     */
+    public function test_costcenter_is_set(): void {
+        $price = 10.00;
+        $cartitem = new cartitem(
+            1,
+            'Testitem 1',
+            $price,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'main',
+            'My Testitem 1 description'
+        );
+
+        $this->assertNull($cartitem->costcenter);
+
+        $costcenter = 'TestitemCostcenter';
+        $cartitem = new cartitem(
+            1,
+            'Testitem 1',
+            $price,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'main',
+            'My Testitem 1 description',
+            '',
+            null,
+            null,
+            null,
+            null,
+            0,
+            $costcenter
+        );
+
+        $this->assertEquals($costcenter, $cartitem->costcenter);
+    }
+
 }
