@@ -1119,22 +1119,29 @@ class shopping_cart {
         }
 
         if ($success == 1) {
-            // If the payment was successfully canceled, we can book the credits to the users balance.
-
-            $quota = self::get_quota_consumed($componentname, $area, $itemid, $userid, $historyid);
-            $customcredit = $quota['remainingvalue'];
 
             /* If the user canceled herself and a cancelation fee is set in config settings
-            we deduce this fee from the credit. */
+            we deduce the standard fee from the credit. */
             if ($userid == $USER->id) {
                 if (
-                    ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
-                    && $cancelationfee > 0
+                    ($cancelationfeesettings = get_config('local_shopping_cart', 'cancelationfee'))
+                    && $cancelationfeesettings > 0
                 ) {
-                    $customcredit = $customcredit - $cancelationfee;
+                    $cancelationfee = $cancelationfeesettings;
 
                 }
             }
+
+            $quota = self::get_quota_consumed(
+                $componentname,
+                $area,
+                $itemid,
+                $userid,
+                $historyid,
+            );
+
+            $customcredit = isset($quota['remainingvalue']) ? $quota['remainingvalue'] : $customcredit;
+            $customcredit -= $cancelationfee;
             // Apply rounding to all relevant values.
             // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
