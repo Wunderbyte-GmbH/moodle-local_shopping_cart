@@ -1121,16 +1121,12 @@ class shopping_cart {
         if ($success == 1) {
             // If the payment was successfully canceled, we can book the credits to the users balance.
 
+            $quota = self::get_quota_consumed($componentname, $area, $itemid, $userid, $historyid);
+            $customcredit = $quota['remainingvalue'];
+
             /* If the user canceled herself and a cancelation fee is set in config settings
             we deduce this fee from the credit. */
             if ($userid == $USER->id) {
-                // The credit might be reduced by the consumption.
-                $consumption = get_config('local_shopping_cart', 'calculateconsumation');
-                if ($consumption == 1) {
-                    $quota = self::get_quota_consumed($componentname, $area, $itemid, $userid, $historyid);
-                    $customcredit = $quota['remainingvalue'];
-                }
-
                 if (
                     ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
                     && $cancelationfee > 0
@@ -1718,8 +1714,7 @@ class shopping_cart {
 
         // If we have set a fixed percentage in settings, we use this one!
         if (
-            get_config('local_shopping_cart', 'calculateconsumation')
-            && get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0
+            get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0
         ) {
             // We also check if the setting to only apply fixed percentage within service period is turned on.
             if (get_config('local_shopping_cart', 'fixedpercentageafterserviceperiodstart')) {
@@ -1750,6 +1745,8 @@ class shopping_cart {
                 return;
             }
         }
+        // TODO calculate and apply quotaconsumed in else if else if (!empty(get_config('local_shopping_cart', 'calculateconsumation'))).
+        // This is currently done via modal, but not in all cases.
 
         // We fetch the consumed quota as well.
         $providerclass = self::get_service_provider_classname($item->componentname);

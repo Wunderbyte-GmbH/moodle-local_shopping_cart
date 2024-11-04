@@ -59,8 +59,12 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $data = new stdClass();
 
         $list = '';
+        $quotapercentage = get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
         foreach ($bookedusers as $user) {
             $content = "$user->firstname $user->lastname $user->email, $user->price $user->currency";
+            if (isset($quotapercentage) && $quotapercentage > 0) {
+                $content .= " (-$quotapercentage%)";
+            }
             $list .= html_writer::tag('li', $content);
         }
 
