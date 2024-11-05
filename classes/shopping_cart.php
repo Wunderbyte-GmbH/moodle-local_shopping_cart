@@ -1141,7 +1141,7 @@ class shopping_cart {
                 $historyid,
             );
 
-            if (isset($quota['remainingvalue']) && !empty($quota['success'])) {
+            if (isset($quota['remainingvalue']) && !empty($quota['quota'])) {
                 $customcredit = $quota['remainingvalue'];
             }
             // Apply rounding to all relevant values.
