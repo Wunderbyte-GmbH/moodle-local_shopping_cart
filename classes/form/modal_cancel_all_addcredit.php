@@ -139,7 +139,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
             }
 
             shopping_cart::cancel_purchase($buser->itemid, $data->area, $buser->userid, $componentname,
-                $buser->id, $credit, $cancelationfee);
+                $buser->id, $credit, $cancelationfee, true);
 
         }
 

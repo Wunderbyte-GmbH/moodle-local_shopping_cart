@@ -1029,6 +1029,7 @@ class shopping_cart {
      * @param float $customcredit
      * @param float $cancelationfee
      * @param int $applytocomponent
+     * @param bool $applygivenquota
      *
      * @return array
      */
@@ -1040,7 +1041,8 @@ class shopping_cart {
         ?int $historyid = null,
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
-        int $applytocomponent = 1
+        int $applytocomponent = 1,
+        bool $applygivenquota = false,
     ): array {
 
         global $USER;
@@ -1131,23 +1133,24 @@ class shopping_cart {
                 }
             }
 
-            // Reduction of credit because of cancelationfee is done in modal.
+            if ($applygivenquota) {
+                // Reduction of credit because of cancelationfee is done in modal.
+                $quota = self::get_quota_consumed(
+                    $componentname,
+                    $area,
+                    $itemid,
+                    $userid,
+                    $historyid,
+                    $customcredit
+                );
 
-            $quota = self::get_quota_consumed(
-                $componentname,
-                $area,
-                $itemid,
-                $userid,
-                $historyid,
-                $customcredit
-            );
-
-            if (
-                isset($quota['remainingvalue'])
-                && isset($quota['quota'])
-                && $quota['quota'] > 0
-            ) {
-                $customcredit = $quota['remainingvalue'];
+                if (
+                    isset($quota['remainingvalue'])
+                    && isset($quota['quota'])
+                    && $quota['quota'] > 0
+                ) {
+                    $customcredit = $quota['remainingvalue'];
+                }
             }
             // Apply rounding to all relevant values.
             // If setting to round discounts is turned on, we round to full int.
