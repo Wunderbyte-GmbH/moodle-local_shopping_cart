@@ -1130,6 +1130,7 @@ class shopping_cart {
                     && $cancelationfeesettings > 0
                 ) {
                     $customcredit -= $cancelationfeesettings;
+                    $applygivenquota = true;
                 }
             }
 
