@@ -1127,10 +1127,11 @@ class shopping_cart {
                     ($cancelationfeesettings = get_config('local_shopping_cart', 'cancelationfee'))
                     && $cancelationfeesettings > 0
                 ) {
-                    $cancelationfee = $cancelationfeesettings;
-
+                    $customcredit -= $cancelationfeesettings;
                 }
             }
+
+            // Reduction of credit because of cancelationfee is done in modal.
 
             $quota = self::get_quota_consumed(
                 $componentname,
@@ -1140,8 +1141,9 @@ class shopping_cart {
                 $historyid,
             );
 
-            $customcredit = isset($quota['remainingvalue']) ? $quota['remainingvalue'] : $customcredit;
-            $customcredit -= $cancelationfee;
+            if (isset($quota['remainingvalue']) && !empty($quota['success'])) {
+                $customcredit = $quota['remainingvalue'];
+            }
             // Apply rounding to all relevant values.
             // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
@@ -1420,7 +1422,7 @@ class shopping_cart {
         $item = shopping_cart_history::return_item_from_history($historyid);
 
         self::add_quota_consumed_to_item($item, $userid);
-        $quota = $item->quotaconsumed;
+        $quota = $item->quotaconsumed ?? -1;
 
         // Now get the historyitem in order to check the initial price and calculate the rest.
         if ($quota >= 0 && $item) {
@@ -1751,18 +1753,16 @@ class shopping_cart {
                 $item->quotaconsumed = (float) 0.01 * get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
                 return;
             }
+        } else if (get_config('local_shopping_cart', 'calculateconsumation')) {
+            // Fetch consumed quota.
+            $providerclass = self::get_service_provider_classname($item->componentname);
+            $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
+                    [
+                            'area' => $item->area,
+                            'itemid' => $item->itemid,
+                            'userid' => $userid,
+                    ]);
         }
-        // TODO calculate and apply quotaconsumed in else if else if (!empty(get_config('local_shopping_cart', 'calculateconsumation'))).
-        // This is currently done via modal, but not in all cases.
-
-        // We fetch the consumed quota as well.
-        $providerclass = self::get_service_provider_classname($item->componentname);
-        $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
-                [
-                        'area' => $item->area,
-                        'itemid' => $item->itemid,
-                        'userid' => $userid,
-                ]);
     }
 
     /**
