@@ -1139,9 +1139,14 @@ class shopping_cart {
                 $itemid,
                 $userid,
                 $historyid,
+                $customcredit
             );
 
-            if (isset($quota['remainingvalue']) && !empty($quota['quota'])) {
+            if (
+                isset($quota['remainingvalue'])
+                && isset($quota['quota'])
+                && $quota['quota'] > 0
+            ) {
                 $customcredit = $quota['remainingvalue'];
             }
             // Apply rounding to all relevant values.
@@ -1414,10 +1419,18 @@ class shopping_cart {
      * @param int $itemid
      * @param int $userid
      * @param int $historyid
+     * @param float $price
      *
      * @return array
      */
-    public static function get_quota_consumed(string $component, string $area, int $itemid, int $userid, int $historyid): array {
+    public static function get_quota_consumed(
+        string $component,
+        string $area,
+        int $itemid,
+        int $userid,
+        int $historyid,
+        float $price = 0
+        ): array {
 
         $item = shopping_cart_history::return_item_from_history($historyid);
 
@@ -1427,8 +1440,9 @@ class shopping_cart {
         // Now get the historyitem in order to check the initial price and calculate the rest.
         if ($quota >= 0 && $item) {
             $initialprice = (float)$item->price;
+            $price = empty($price) ? $initialprice : $price;
             $deducedvalue = $initialprice * $quota;
-            $remainingvalue = $initialprice - $deducedvalue;
+            $remainingvalue = $price - $deducedvalue;
             $currency = $item->currency;
             $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
             $success = $cancelationfee < 0 ? 0 : 1; // Cancelation not allowed.
