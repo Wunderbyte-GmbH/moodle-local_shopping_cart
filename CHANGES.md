@@ -1,3 +1,18 @@
+## Version 0.9.38 (2024110600)
+* Bugfix: Cast datatype in receipt
+* Bugfix: Apply given quota to cancel all user function
+
+## Version 0.9.37 (2024102500)
+* Improvement: Support coursestarttime in receipt
+* Bugfix: Use separate capability for searching users
+* Bugfix: Don't change buyfor user when we are in a webservice environment
+
+## Version 0.9.36 (2024102200)
+* Improvement: Set back buyforuser on every page except cashier.
+* Bugfix: Fix costcenter check with rebookingfee
+* Bugfix: storedpaymentaccountid can not block on empty cart
+* Bugfix: Make sure one can see other users receipt only with cashier capability
+
 ## Version 0.9.35 (2024101702)
 * Bugfix: Function to check for rebookings not breaking checkout
 * Bugfix: Correctly trigger item_notbought event
