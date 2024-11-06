@@ -2,6 +2,10 @@ name: Moodle Plugin CI
 
 on: [push, pull_request]
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/USI' || github.ref == 'refs/heads/dev_testing' || startsWith(github.ref, 'refs/heads/MOODLE')
