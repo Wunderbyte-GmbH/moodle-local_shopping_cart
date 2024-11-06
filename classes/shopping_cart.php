@@ -1027,7 +1027,7 @@ class shopping_cart {
      * @param float $customcredit
      * @param float $cancelationfee
      * @param int $applytocomponent
-     * @param bool $applygivenquota
+     * @param int $applygivenquota
      *
      * @return array
      */
@@ -1040,7 +1040,7 @@ class shopping_cart {
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
         int $applytocomponent = 1,
-        bool $applygivenquota = false
+        int $applygivenquota = 0
     ): array {
 
         global $USER;
@@ -1128,11 +1128,11 @@ class shopping_cart {
                     && $cancelationfeesettings > 0
                 ) {
                     $customcredit -= $cancelationfeesettings;
-                    $applygivenquota = true;
+                    $applygivenquota = 1;
                 }
             }
 
-            if ($applygivenquota) {
+            if (!empty($applygivenquota)) {
                 // Reduction of credit because of cancelationfee is done in modal.
                 $quota = self::get_quota_consumed(
                     $componentname,
