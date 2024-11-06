@@ -1042,7 +1042,7 @@ class shopping_cart {
         float $customcredit = 0.0,
         float $cancelationfee = 0.0,
         int $applytocomponent = 1,
-        bool $applygivenquota = false,
+        bool $applygivenquota = false
     ): array {
 
         global $USER;
