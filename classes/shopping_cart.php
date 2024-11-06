@@ -1778,6 +1778,9 @@ class shopping_cart {
                             'itemid' => $item->itemid,
                             'userid' => $userid,
                     ]);
+        } else {
+            $item->quotaconsumed = 0.0;
+            return;
         }
     }
 
