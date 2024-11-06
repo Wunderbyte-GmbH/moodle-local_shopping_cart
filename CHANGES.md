@@ -1,3 +1,8 @@
+## Version 0.9.39 (2024110601)
+* Improvement: Add tests for costcenters
+* Bugfix: Correct application of costcenters
+* Bugfix: Return 0 quota if quota is disabled
+
 ## Version 0.9.38 (2024110600)
 * Bugfix: Cast datatype in receipt
 * Bugfix: Apply given quota to cancel all user function
