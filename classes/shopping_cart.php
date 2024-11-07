@@ -959,17 +959,17 @@ class shopping_cart {
 
             if ($totalprice < 0) {
                 $now = time();
-
+                $id = $data['identifier'] ?? $identifier;
                 // Add credit to the user.
                 $correctiondata = (object)[
                     'userid' => $userid,
                     'currency' => $data['currency'],
                     'creditsmanagercredits' => -$totalprice,
-                    'creditsmanagerreason' => get_string('rebookingidentifier', 'local_shopping_cart', $data['identifier']),
+                    'creditsmanagerreason' => get_string('rebookingidentifier', 'local_shopping_cart', $id),
                     'payment' => LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION,
                     'timemodified' => $now,
                     'timecreated' => $now,
-                    'identifier' => $data['identifier'],
+                    'identifier' => $id,
                     'costcenter' => $data['costcenter'] ?? '',
                 ];
                 shopping_cart_credits::creditsmanager_correct_credits($correctiondata);
