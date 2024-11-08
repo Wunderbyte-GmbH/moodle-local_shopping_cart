@@ -72,3 +72,18 @@ Feature: Cashier actions in shopping cart with tax categories enabled.
     And I should see "Test item 3" in the "ul.cashier-history-items" "css_element"
     And I should see "13.80 EUR" in the "ul.cashier-history-items" "css_element"
     ## And I should see "(13.80 EUR + 0%)" in the "ul.cashier-history-items div.item-price" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "11.50" in the "#cash_report_table_r3" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r3" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r3" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3" "css_element"
+    And I should see "22.33" in the "#cash_report_table_r2" "css_element"
+    And I should see "Test item 2" in the "#cash_report_table_r2" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r2" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2" "css_element"
+    And I should see "13.80" in the "#cash_report_table_r1" "css_element"
+    And I should see "Test item 3" in the "#cash_report_table_r1" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r1" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1" "css_element"
