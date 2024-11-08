@@ -74,6 +74,18 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
     And I log out
+    ## Verify records in the ledger table.
+    And I log in as "admin"
+    And I visit "/local/shopping_cart/report.php"
+    And the following should exist in the "cash_report_table" table:
+      | Paid  | Credit: | Cancelation fee | Item name              | E-Mail                     | Payment method | Status   |
+      | 0.00  | 0.00    | -1.00           | Canceled - Test item 3 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 19.00   | 0.00            | Canceled - Test item 2 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 2.00    | 0.00            | Canceled - Test item 1 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 13.80 |         |                 | Test item 3            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+    And I log out
 
   @javascript
   Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption enabled and cancellation fee given
@@ -122,4 +134,17 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
+    And I log out
+    ## Verify records in the ledger table.
+    And I log in as "admin"
+    And I visit "/local/shopping_cart/report.php"
+    ##And I wait "30" seconds
+    And the following should exist in the "cash_report_table" table:
+      | Paid  | Credit: | Cancelation fee | Item name              | E-Mail                     | Payment method | Status   |
+      | 0.00  | 0.00    | -1.00           | Canceled - Test item 3 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 19.30   | 0.00            | Canceled - Test item 2 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 2.30    | 0.00            | Canceled - Test item 1 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 13.80 |         |                 | Test item 3            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
     And I log out
