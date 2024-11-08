@@ -99,7 +99,7 @@ Feature: Cashier actions in shopping cart.
     And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I log out
-    Given I log in as "admin"
+    And I log in as "admin"
     And I set the following administration settings values:
       | Round discounts | |
     When I visit "/local/shopping_cart/cashier.php"
@@ -113,9 +113,17 @@ Feature: Cashier actions in shopping cart.
       | discountabsolute | 4.5 |
     And I press "Save changes"
     And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
-    Then I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    And I should see "5.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
-    Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
+    And I should see "Payment successful" in the "div.payment_message_result" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "5.50" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "4.50" in the "#cash_report_table_r1 .discount" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r1" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
 
   @javascript
   Scenario: Cashier buys discounted item (with rounding) for user with cash
@@ -141,6 +149,14 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.00 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
     And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
     Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "5.00" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "5.00" in the "#cash_report_table_r1 .discount" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r1" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
 
   @javascript
   Scenario: Cashier buys item for user with cash and cancel purchase with cancellation fee
@@ -168,6 +184,18 @@ Feature: Cashier actions in shopping cart.
     Then I should see "8" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "8.00" in the "#cash_report_table_r1 .credits" "css_element"
+    And I should see "2.00" in the "#cash_report_table_r1 .fee" "css_element"
+    And I should see "Canceled - Test item 1" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Canceled" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "10.00" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r2" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
 
   @javascript
   Scenario: Cashier buys discounted item for user with cash and cancel purchase with cancellation fee
@@ -202,3 +230,16 @@ Feature: Cashier actions in shopping cart.
     Then I should see "5.50" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
     And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "5.50" in the "#cash_report_table_r1 .credits" "css_element"
+    And I should see "2.00" in the "#cash_report_table_r1 .fee" "css_element"
+    And I should see "Canceled - Test item 1" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Canceled" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "7.50" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "2.50" in the "#cash_report_table_r2 .discount" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r2" "css_element"
+    And I should see "Cashier (Cash)" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
