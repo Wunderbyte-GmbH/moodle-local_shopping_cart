@@ -27,6 +27,8 @@ use local_shopping_cart\form\daily_sums_date_selector_form;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\table\cash_report_table;
 use local_wunderbyte_table\filters\types\standardfilter;
+use local_wunderbyte_table\filters\types\intrange;
+use local_wunderbyte_table\filters\types\datepicker;
 
 require_once(__DIR__ . '/../../config.php');
 
@@ -161,8 +163,12 @@ $from = "(SELECT DISTINCT " . $uniqueidpart .
         $customorderid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
-        p.gateway$selectorderidpart
+        p.gateway$selectorderidpart,
+        sch.serviceperiodstart,
+        sch.serviceperiodend
         FROM {local_shopping_cart_ledger} scl
+        LEFT JOIN {local_shopping_cart_history} sch
+        ON sch.itemid = scl.itemid AND scl.identifier = sch.identifier
         LEFT JOIN {payments} p
         ON p.itemid = scl.identifier
         $customorderidpart
@@ -213,6 +219,8 @@ if ($debug != 2) {
         get_string('payment', 'local_shopping_cart'),
         get_string('paymentbrand', 'local_shopping_cart'),
         get_string('paymentstatus', 'local_shopping_cart'),
+        get_string('serviceperiodstart', 'local_shopping_cart'),
+        get_string('serviceperiodend', 'local_shopping_cart'),
         get_string('gateway', 'local_shopping_cart'),
         get_string('orderid', 'local_shopping_cart'),
         get_string('annotation', 'local_shopping_cart'),
@@ -239,6 +247,8 @@ if ($debug != 2) {
         'payment',
         'paymentbrand',
         'paymentstatus',
+        'serviceperiodstart',
+        'serviceperiodend',
         'gateway',
     ];
     if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
@@ -329,6 +339,23 @@ if ($debug != 2) {
         LOCAL_SHOPPING_CART_PAYMENT_CANCELED => get_string('paymentcanceled', 'local_shopping_cart'),
     ]);
     $table->add_filter($standardfilter);
+
+    $intragefilter = new intrange('itemname', get_string('numbersinitemname', 'local_shopping_cart'));
+    $table->add_filter($intragefilter);
+
+    $datepicker = new datepicker(
+        'serviceperiodstart',
+        get_string('serviceperiod', 'local_shopping_cart'),
+        'serviceperiodend',
+    );
+    $datepicker->add_options(
+        'in between',
+        '<',
+        get_string('apply_filter', 'local_wunderbyte_table'),
+        'now',
+        'now'
+    );
+    $table->add_filter($datepicker);
 
     if ($debug == 3) {
         $encodedtable = json_encode($table);
