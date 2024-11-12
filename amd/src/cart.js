@@ -311,6 +311,7 @@ export const reinit = (userid = 0) => {
 
                 updateTotalPrice(userid);
 
+                updateItemPrice(data);
                 return;
             }).catch(e => {
                 // eslint-disable-next-line no-console
@@ -324,6 +325,30 @@ export const reinit = (userid = 0) => {
         },
     }]);
 };
+
+/**
+ * Update item price.
+ *
+ * @param {mixed} data
+ *
+ */
+function updateItemPrice(data) {
+    data.items.forEach(item => {
+        document.querySelectorAll(
+            '[data-itemid="'
+            + item.itemid
+            + '"][data-component="'
+            + item.componentname
+            + '"][data-area="'
+            + item.area
+            + '"][data-objecttable="local_shopping_cart"]'
+        ).forEach(element => {
+            const pricecontainer = element.closest(".pricecontainer");
+            const pricecurrency = pricecontainer.querySelector("span.pricecurrency");
+            pricecurrency.innerHTML = item.price + " " + item.currency;
+        });
+    });
+}
 
 /**
  * This function is only called when the timer invalidates the cart.
