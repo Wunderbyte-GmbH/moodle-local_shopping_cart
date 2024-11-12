@@ -67,6 +67,8 @@ $table->define_headers([
     get_string('paymentstatus', 'local_shopping_cart'),
     get_string('gateway', 'local_shopping_cart'),
     get_string('orderid', 'local_shopping_cart'),
+    get_string('serviceperiodstart', 'local_shopping_cart'),
+    get_string('serviceperiodend', 'local_shopping_cart'),
     get_string('annotation', 'local_shopping_cart'),
     get_string('cashier', 'local_shopping_cart'),
 ]);
@@ -91,6 +93,8 @@ $table->define_columns([
     'paymentstatus',
     'gateway',
     'orderid',
+    'serviceperiodstart',
+    'serviceperiodend',
     'annotation',
     'usermodified',
 ]);
