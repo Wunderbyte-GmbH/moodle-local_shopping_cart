@@ -81,9 +81,25 @@ if (!empty($account)) {
 
             // If there are open orders tables we create selects for them.
             $openorderstable = "paygw_" . $gwname . "_openorders";
+
+            // For some gateways, we store a merchantref in the openorders table.
+            $merchantrefexists = false;
+            $tidpart = 'tid';
+
             if ($dbman->table_exists($openorderstable)) {
+                $openorderscols = $DB->get_columns($openorderstable);
+                foreach ($openorderscols as $key => $value) {
+                    if (strpos($key, 'merchantref') !== false) {
+                        $merchantrefexists = true;
+                        break;
+                    }
+                }
+                if ($merchantrefexists) {
+                    $tidpart = 'merchantref AS tid';
+                }
+
                 $openorderselects[] = "SELECT itemid, '" . $gwname .
-                    "' AS gateway, tid FROM {paygw_" . $gwname . "_openorders}";
+                    "' AS gateway, $tidpart FROM {paygw_" . $gwname . "_openorders}";
             }
 
             $cols = $DB->get_columns($tablename);
@@ -100,17 +116,16 @@ if (!empty($account)) {
                 if (strpos($key, 'orderid') !== false) {
                     $orderidexists = true;
 
-                    $select .= ", $gwname.$key orderid ";
+                    $select .= ", $gwname.$key AS orderid ";
                 }
                 if (strpos($key, 'paymentbrand') !== false) {
                     $paymentbrandexists = true;
-                    $select .= ", $gwname.$key paymentbrand ";
+                    $select .= ", $gwname.$key AS paymentbrand ";
                 }
             }
             if ($orderidexists) {
-
                 if (!$paymentbrandexists) {
-                    $select .= ", '" . get_string('unknown', 'local_shopping_cart') . "' as paymentbrand ";
+                    $select .= ", '" . get_string('unknown', 'local_shopping_cart') . "' AS paymentbrand ";
                 }
                 $colselects[] = "$select $from";
             }
@@ -132,14 +147,19 @@ if (!empty($openorderselects)) {
 
 if (!empty($colselects)) {
     $gatewaysupported = true;
-    $uniqueidpart = $DB->sql_concat("scl.id", "' - '",
+    $uniqueidpart = $DB->sql_concat(
+        "scl.id",
+        "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
+        $CFG->version > 2022112800 ?
+            "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
             "COALESCE(CAST(p.id AS VARCHAR),'X')",
         "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
-            "COALESCE(CAST(pgw.id AS VARCHAR),'X')");
+        $CFG->version > 2022112800 ?
+            "COALESCE(" . $DB->sql_cast_to_char("pgw.id") . ",'X')" :
+            "COALESCE(CAST(pgw.id AS VARCHAR),'X')"
+    );
     $selectorderidpart = ", pgw.orderid, pgw.paymentbrand";
     $colselectsstring = implode(' UNION ', $colselects);
     $gatewayspart = "LEFT JOIN ($colselectsstring) pgw ON p.id = pgw.paymentid";
@@ -148,10 +168,14 @@ if (!empty($colselects)) {
     $gatewaysupported = false;
     $gatewayspart = "";
     $selectorderidpart = "";
-    $uniqueidpart = $DB->sql_concat("scl.id", "' - '",
+    $uniqueidpart = $DB->sql_concat(
+        "scl.id",
+        "' - '",
         // Sql_cast_to_char is available since Moodle 4.1.
-        $CFG->version > 2022112800 ? "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
-            "COALESCE(CAST(p.id AS VARCHAR),'X')");
+        $CFG->version > 2022112800 ?
+            "COALESCE(" . $DB->sql_cast_to_char("p.id") . ",'X')" :
+            "COALESCE(CAST(p.id AS VARCHAR),'X')"
+    );
 }
 
 // SQL query. The subselect will fix the "Did you remember to make the first column something...
@@ -434,7 +458,6 @@ echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
 
 // Debug-Mode 1 + 3: We do not show daily sums.
 if ($debug != 1 && $debug != 3) {
-
     // Check if daily sums are turned on in settings.
     if (get_config('local_shopping_cart', 'showdailysums')) {
         // Initialize the Moodle form for filtering the table.
@@ -449,12 +472,16 @@ if ($debug != 1 && $debug != 3) {
         if ($fromform = $mform->get_data()) {
             $dailysumsdate = $fromform->dailysumsdate;
             $date = date('Y-m-d', $dailysumsdate);
-            echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($date, $selectorformoutput));
+            echo $OUTPUT->render_from_template(
+                'local_shopping_cart/report_daily_sums',
+                shopping_cart::get_daily_sums_data($date, $selectorformoutput)
+            );
         } else {
             // Show daily sums.
-            echo $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($date, $selectorformoutput));
+            echo $OUTPUT->render_from_template(
+                'local_shopping_cart/report_daily_sums',
+                shopping_cart::get_daily_sums_data($date, $selectorformoutput)
+            );
         }
     }
 

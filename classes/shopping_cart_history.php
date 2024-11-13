@@ -130,9 +130,20 @@ class shopping_cart_history {
 
                     // If there are open orders tables we create selects for them.
                     $openorderstable = "paygw_" . $gwname . "_openorders";
+                    $tidpart = 'tid';
                     if ($dbman->table_exists($openorderstable)) {
+                        $openorderscols = $DB->get_columns($openorderstable);
+                        foreach ($openorderscols as $key => $value) {
+                            if (strpos($key, 'merchantref') !== false) {
+                                $merchantrefexists = true;
+                                break;
+                            }
+                        }
+                        if ($merchantrefexists) {
+                            $tidpart = 'merchantref AS tid';
+                        }
                         $openorderselects[] = "SELECT itemid, '" . $gwname .
-                            "' AS gateway, tid FROM {paygw_" . $gwname . "_openorders}";
+                            "' AS gateway, $tidpart FROM {paygw_" . $gwname . "_openorders}";
                     }
 
                     $cols = $DB->get_columns($tablename);
