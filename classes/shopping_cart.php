@@ -827,7 +827,6 @@ class shopping_cart {
                 ($item['componentname'] === 'local_shopping_cart')
                 && ($item['area'] === 'rebookitem')
             ) {
-
                 shopping_cart_rebookingcredit::checkout_rebooking_item(
                     $item['componentname'],
                     $item['area'],
