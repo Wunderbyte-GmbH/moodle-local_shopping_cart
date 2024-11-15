@@ -409,7 +409,8 @@ div.shopping-cart-items-container div.item-description {
 
 .shopping-cart-item[data-area="rebookingcredit"] img,
 .shopping-cart-item[data-area="rebookitem"] img,
-.shopping-cart-item[data-area="bookingfee"] img {
+.shopping-cart-item[data-area="bookingfee"] img,
+.shopping-cart-item[data-area^="installments"] img {
     width: 20px;
 }
 
