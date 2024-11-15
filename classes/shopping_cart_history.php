@@ -643,8 +643,16 @@ class shopping_cart_history {
                 $record->componentname === 'local_shopping_cart'
                 && $area === 'installments'
             ) {
+                // GH-94: Fix paymentstatus for installments in shopping cart history.
+                $updaterecord = new stdClass();
+                $updaterecord->id = $record->id;
+                $updaterecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+                $updaterecord->timemodified = $record->timemodified;
+                $DB->update_record('local_shopping_cart_history', $updaterecord);
+
                 // We retrieve the item from history and update it for the installments.
                 $historyitem = self::return_item_from_history($record->itemid);
+
                 // Now we manipulate our entry to have a correct ledger.
                 $ledgerrecord = $record;
                 $ledgerrecord->itemid = $historyitem->itemid;
