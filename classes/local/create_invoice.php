@@ -373,9 +373,10 @@ class create_invoice {
                     ? date($dateformat, $optionsettings->coursestarttime) : $date;
                 $tmp = str_replace("[[coursestarttime]]", $coursestarttime, $tmp); // E.g. "Mo, 10:00 - 12:00".
             } else {
-                // It should still be replaced with an empty string in case it's no booking option.
+                // Placeholders should be replaced with an empty string in case it's no booking option.
                 $tmp = str_replace("[[location]]", '', $tmp);
                 $tmp = str_replace("[[dayofweektime]]", '', $tmp);
+                $tmp = str_replace("[[coursestarttime]]", '', $tmp);
             }
 
             $sum += $price;
