@@ -154,7 +154,7 @@ $string['cashtransferreason'] = 'Grund für die Bargeldumbuchung';
 $string['cashtransferreason_help'] = 'Geben Sie einen Grund für die Bargeldumbuchung an.';
 $string['cashtransferreasonnecessary'] = 'Sie müssen einen Grund für die Bargeldumbuchung angeben!';
 $string['cashtransfersuccess'] = 'Bargeldumbuchung erfolgreich';
-$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung ❯❯';
+$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung';
 $string['checkout_completed'] = 'Checkout abgeschlossen';
 $string['checkout_completed_desc'] = 'Der Benutzer mit der ID {$a->userid} hat den Checkout mit identifier {$a->identifier}
  erfolgreich abgeschlossen';

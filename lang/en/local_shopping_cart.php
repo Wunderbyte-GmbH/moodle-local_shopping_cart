@@ -154,7 +154,7 @@ $string['cashtransferreason'] = 'Reason for the cash transfer';
 $string['cashtransferreason_help'] = 'Enter a reason why cash was transferred.';
 $string['cashtransferreasonnecessary'] = 'You need to give a reason why cash was transferred.';
 $string['cashtransfersuccess'] = 'Cash transfer successful';
-$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout ❯❯';
+$string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout';
 $string['checkout_completed'] = 'Checkout Completed';
 $string['checkout_completed_desc'] = 'The user with userid {$a->userid} successfully completed the checkout with identifier {$a->identifier}';
 $string['checkouterrormodaltitle'] = "There is a problem with your order:";
