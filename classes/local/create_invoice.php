@@ -197,7 +197,7 @@ class create_invoice {
         $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
         // Set some content to print.
 
-        $filename = get_config('local_shopping_cart' , 'receiptimage');
+        $filename = get_config('local_shopping_cart', 'receiptimage');
         $cfghtml = get_config('local_shopping_cart', 'receipthtml');
         $context = context_system::instance();
         $fs = get_file_storage();
@@ -205,8 +205,15 @@ class create_invoice {
         foreach ($files as $file) {
             if ($file->get_filesize() > 0) {
                 $filename = $file->get_filename();
-                $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-                    $file->get_itemid(), $file->get_filepath(), $file->get_filename(), true);
+                $imgurl = moodle_url::make_pluginfile_url(
+                    $file->get_contextid(),
+                    $file->get_component(),
+                    $file->get_filearea(),
+                    $file->get_itemid(),
+                    $file->get_filepath(),
+                    $file->get_filename(),
+                    true
+                );
             }
         }
 
@@ -306,7 +313,6 @@ class create_invoice {
         $sum = 0.0;
         $itemhtml = '';
         foreach ($items as $item) {
-
             if (isset($item->schistoryid)) {
                 $shistoryitem = $DB->get_record('local_shopping_cart_history', ['id' => $item->schistoryid]);
                 $installmentdata = shopping_cart_history::get_installmentdata($shistoryitem);
@@ -316,26 +322,31 @@ class create_invoice {
                 $tmp = str_replace(
                     "[[price]]",
                     number_format((float) $item->price, 2, $commaseparator, ''),
-                    $repeathtml[0]);
+                    $repeathtml[0]
+                );
                 $tmp = str_replace(
                     "[[originalprice]]",
                     number_format((float) $item->price, 2, $commaseparator, ''),
-                    $tmp);
+                    $tmp
+                );
                 $tmp = str_replace(
                     "[[outstandingprice]]",
                     number_format(0.0, 2, $commaseparator, ''),
-                    $tmp);
+                    $tmp
+                );
             } else {
                 // In this case, price is what was really paid.
                 $price = $shistoryitem->price;
                 $tmp = str_replace(
                     "[[price]]",
                     number_format((float) $price, 2, $commaseparator, ''),
-                    $repeathtml[0]);
+                    $repeathtml[0]
+                );
                 $tmp = str_replace(
                     "[[originalprice]]",
                     number_format((float) $installmentdata['originalprice'], 2, $commaseparator, ''),
-                    $tmp);
+                    $tmp
+                );
                 // Make sure to display the price that was actually already payed as price.
                 $outstanding = 0;
                 foreach ($installmentdata['payments'] as $payment) {
@@ -346,7 +357,8 @@ class create_invoice {
                 $tmp = str_replace(
                     "[[outstandingprice]]",
                     number_format((float) $outstanding, 2, $commaseparator, ''),
-                    $tmp);
+                    $tmp
+                );
             }
             $tmp = str_replace("[[name]]", $item->itemname, $tmp);
             $tmp = str_replace("[[pos]]", $pos, $tmp);
@@ -387,7 +399,7 @@ class create_invoice {
                 border: 1px solid #c3c3c3;
             }
         </style>
-        '. $prehtml[0] . $itemhtml . $posthtml;
+        ' . $prehtml[0] . $itemhtml . $posthtml;
         // Print text using writeHTMLCell().
 
         // Set document information.
