@@ -573,6 +573,7 @@ $string['receipthtml:description'] = 'You can use the following placeholders:
  Only use basic HTML supported by TCPDF';
 $string['receiptimage'] = 'Background image for cashiers receipt';
 $string['receiptimage:description'] = 'Set a background image, e.g. with logo';
+$string['receipts'] = 'Receipts';
 $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';
 $string['reminderdaysbefore'] = "Reminder x days before";

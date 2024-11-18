@@ -504,6 +504,7 @@ $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verw
  Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
 $string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
+$string['receipts'] = 'Buchungsbestätigungen';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';
 $string['remainingtotal'] = 'Preis:';
 $string['reminderdaysbefore'] = "Erinnerung x Tage vorher";

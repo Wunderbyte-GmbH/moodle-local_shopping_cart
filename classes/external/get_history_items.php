@@ -49,7 +49,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_history_items extends external_api {
-
     /**
      * Describes the paramters for this service.
      *
@@ -114,7 +113,16 @@ class get_history_items extends external_api {
                     'orderid' => new external_value(PARAM_TEXT, 'Order id'),
                     'gateway' => new external_value(PARAM_TEXT, 'Gateway'),
                     'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until'),
+                    'hasinstallments' => new external_value(PARAM_BOOL, 'Has installments', VALUE_DEFAULT, false),
                     'receipturl' => new external_value(PARAM_URL, 'Receipt url'),
+                    'installmentreceipturls' => new external_multiple_structure(
+                        new external_single_structure(
+                            [
+                                'identifier' => new external_value(PARAM_INT, 'Identifier'),
+                                'installmentreceipturl' => new external_value(PARAM_URL, 'Receipt url'),
+                            ]
+                        )
+                    ),
                     'canceled' => new external_value(PARAM_BOOL, 'Canceled'),
                     'showrebooking' => new external_value(PARAM_BOOL, 'Show rebooking', VALUE_DEFAULT, false),
                     'rebooking' => new external_value(PARAM_BOOL, 'Rebooking', VALUE_DEFAULT, false),

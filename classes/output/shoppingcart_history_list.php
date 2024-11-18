@@ -111,6 +111,7 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param bool $fromledger
      */
     public function __construct(int $userid, int $identifier = 0, $fromledger = false) {
+        global $DB;
 
         $this->userid = $userid;
         $this->fromledger = $fromledger;
@@ -130,7 +131,6 @@ class shoppingcart_history_list implements renderable, templatable {
             } else {
                 $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
             }
-
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
         }
@@ -152,6 +152,42 @@ class shoppingcart_history_list implements renderable, templatable {
                 'id' => $item->identifier,
                 'userid' => $item->userid,
             ]);
+
+            // Improvement: For installments, we need to aggregate all receipts (GH-92).
+            $schistoryid = $DB->get_field_sql(
+                "SELECT schistoryid
+                   FROM {local_shopping_cart_ledger}
+                  WHERE identifier = :identifier
+                    AND schistoryid IS NOT NULL
+                  LIMIT 1",
+                ['identifier' => $item->identifier]
+            );
+            if (!empty($schistoryid)) {
+                $additionalidentifiers = $DB->get_fieldset_sql(
+                    "SELECT DISTINCT identifier
+                                FROM {local_shopping_cart_ledger}
+                               WHERE schistoryid = :schistoryid
+                                 AND identifier <> :identifier
+                                 AND identifier IS NOT NULL",
+                    ['schistoryid' => $schistoryid, 'identifier' => $item->identifier]
+                );
+                if (!empty($additionalidentifiers)) {
+                    $item->hasinstallments = true;
+                    $item->installmentreceipturls[] = [
+                        'identifier' => $item->identifier,
+                        'installmentreceipturl' => $item->receipturl,
+                    ];
+                    foreach ($additionalidentifiers as $additionalidentifier) {
+                        $item->installmentreceipturls[] = [
+                            'identifier' => $additionalidentifier,
+                            'installmentreceipturl' => new moodle_url("/local/shopping_cart/receipt.php", [
+                                'id' => $additionalidentifier,
+                                'userid' => $item->userid,
+                            ]),
+                        ];
+                    }
+                }
+            }
 
             shopping_cart::add_quota_consumed_to_item($item, $userid);
             self::add_round_config($item);

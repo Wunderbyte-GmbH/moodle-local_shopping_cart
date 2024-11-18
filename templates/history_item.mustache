@@ -89,9 +89,26 @@
         </span>
     </p>
     {{^canceled}}
+    {{^hasinstallments}}
     <a href="{{{receipturl}}}" target="_blank" class="shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left">
         <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} receipt, local_shopping_cart {{/str}}
     </a>
+    {{/hasinstallments}}
+    {{#hasinstallments}}
+        <div class="dropdown show d-inline">
+            <a class="shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left dropdown-toggle"
+                href="#" role="button" id="shopping_cart_history_receipt_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} receipts, local_shopping_cart {{/str}}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="shopping_cart_history_receipt_menu">
+                {{#installmentreceipturls}}
+                    <a href="{{{installmentreceipturl}}}" target="_blank" class="dropdown-item shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left">
+                        {{#str}} receipt, local_shopping_cart {{/str}} #{{identifier}}
+                    </a>
+                {{/installmentreceipturls}}
+            </div>
+        </div>
+    {{/hasinstallments}}
     {{/canceled}}
     {{> local_shopping_cart/button_cancel }}
     {{#showrebooking}}
