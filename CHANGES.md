@@ -1,3 +1,13 @@
+## Version 0.9.40 (2024111900)
+* Improvement: Add filter for serviceperiod and numbers in itemname to report (Wunderbyte-GmbH/moodle-mod_booking#665).
+* Improvement: Add serviceperiod to download of report (Wunderbyte-GmbH/moodle-mod_booking#665).
+* Improvement: Update item price for in pricecontainer.
+* Improvement: When there is a merchantref, we show it instead of tid #91.
+* Improvement: Aggregate all installment receipts in shopping cart history. #92.
+* Bugfix: Fix for [[coursestarttime]] placeholder in invoice.
+* Bugfix: Fix icons of installments (too big on checkout.php).
+* Bugfix: Fix wrong paymentstatus for installments in shopping cart history #94.
+
 ## Version 0.9.39 (2024110601)
 * Improvement: Add tests for costcenters
 * Bugfix: Correct application of costcenters
