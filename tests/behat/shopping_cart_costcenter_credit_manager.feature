@@ -230,6 +230,19 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "21.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "41.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "10.00" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 6" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "-10.00" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "-10.00" in the "#cash_report_table_r2 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r2" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
     And I log out
 
   @javascript
@@ -277,6 +290,23 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "18.90" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "43.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "13.80" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 3" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "20.30" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 2" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .price" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r3 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3 .paymentstatus" "css_element"
     And I log out
 
   @javascript
@@ -325,6 +355,23 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "14.70" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "35.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "20.30" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 2" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "10.00" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 1" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+    And I should see "-30.30" in the "#cash_report_table_r3 .price" "css_element"
+    And I should see "-30.30" in the "#cash_report_table_r3 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r3 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3 .paymentstatus" "css_element"
     And I log out
 
   @javascript
@@ -374,6 +421,23 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "32.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "7.90" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "13.80" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 8" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "20.30" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 7" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .price" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r3 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3 .paymentstatus" "css_element"
     And I log out
 
   @javascript
@@ -421,6 +485,23 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "13.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "14.00" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And I should see "15.90" in the ".cashier-history-items [data-costcenter=\"No costcenter\"] .credit_total" "css_element"
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "13.80" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 8" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "20.30" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 7" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .price" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r3 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3 .paymentstatus" "css_element"
     And I log out
 
   @javascript
@@ -471,6 +552,23 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "13.00" in the ".cashier-history-items [data-costcenter=\"CostCenter1\"] .credit_total" "css_element"
     And I should see "9.90" in the ".cashier-history-items [data-costcenter=\"CostCenter2\"] .credit_total" "css_element"
     And "cashier-history-items [data-costcenter=\"No costcenter\"]" "css_element" should not exist
+    ## Verify records in the ledger table.
+    And I follow "Cash report"
+    And I wait until the page is ready
+    And I should see "13.80" in the "#cash_report_table_r1 .price" "css_element"
+    And I should see "Test item 8" in the "#cash_report_table_r1" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r1 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r1 .paymentstatus" "css_element"
+    And I should see "20.30" in the "#cash_report_table_r2 .price" "css_element"
+    And I should see "Test item 7" in the "#cash_report_table_r2" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r2 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .price" "css_element"
+    And I should see "-34.10" in the "#cash_report_table_r3 .credits" "css_element"
+    And I should see "Credits used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Extra row because credits were used" in the "#cash_report_table_r3" "css_element"
+    And I should see "Credits" in the "#cash_report_table_r3 .payment" "css_element"
+    And I should see "Success" in the "#cash_report_table_r3 .paymentstatus" "css_element"
     And I log out
 
   @javascript
