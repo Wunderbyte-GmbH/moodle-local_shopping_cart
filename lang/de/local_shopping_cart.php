@@ -525,6 +525,7 @@ $string['serviceperiod'] = 'Serviceperiode';
 $string['serviceperiodend'] = 'Ende der Serviceperiode';
 $string['serviceperiodstart'] = 'Beginn der Serviceperiode';
 $string['shopping_cart:canbuy'] = 'Kann kaufen';
+$string['shopping_cart:cansearchusers'] = 'Kann andere NutzerInnen suchen';
 $string['shopping_cart:canverifypayments'] = 'Kann Zahlungen verifizieren';
 $string['shopping_cart:cashier'] = 'Ist berechtigt für die Kassa';
 $string['shopping_cart:cashiermanualrebook'] = 'Kann Benutzer:innen manuell nachbuchen';
