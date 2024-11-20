@@ -108,9 +108,12 @@ class create_invoice {
                     ? 'local_shopping_cart_invoices'
                     : get_config('local_shopping_cart', 'pathtoinvoices'));
             $filepath = $datadir . "/" . $filename;
+
+            // Make sure to escape double "/".
+            $filepath = str_replace("//", "/", $filepath);
             if (!is_dir($datadir)) {
                 // Create the directory if it doesn't exist.
-                if (!make_upload_directory($datadir)) {
+                if (!make_writable_directory($datadir)) {
                     // Handle directory creation error (e.g., display an error message).
                     throw new moodle_exception('errorcreatingdirectory', 'local_shopping_cart');
                 }
