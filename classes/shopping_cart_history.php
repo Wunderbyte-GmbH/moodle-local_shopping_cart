@@ -130,7 +130,11 @@ class shopping_cart_history {
 
                     // If there are open orders tables we create selects for them.
                     $openorderstable = "paygw_" . $gwname . "_openorders";
+
+                    // For some gateways, we store a merchantref in the openorders table.
+                    $merchantrefexists = false;
                     $tidpart = 'tid';
+
                     if ($dbman->table_exists($openorderstable)) {
                         $openorderscols = $DB->get_columns($openorderstable);
                         foreach ($openorderscols as $key => $value) {
