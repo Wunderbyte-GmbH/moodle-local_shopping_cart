@@ -1,3 +1,6 @@
+## Version 0.9.41 (2024112000)
+* Improvement: Add dependency for new version 2024112000 of Wunderbyte Table.
+
 ## Version 0.9.40 (2024111900)
 * Improvement: Add filter for serviceperiod and numbers in itemname to report (Wunderbyte-GmbH/moodle-mod_booking#665).
 * Improvement: Add serviceperiod to download of report (Wunderbyte-GmbH/moodle-mod_booking#665).
