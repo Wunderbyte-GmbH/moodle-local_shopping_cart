@@ -1,3 +1,10 @@
+## Version 0.9.42 (2024112500)
+* Improvement: Add support for Moodle 4.5.
+* Bugfix: Fix lang string.
+* Bugfix: Fix bug with merchantref (#97).
+* Bugfix: Store receipt correctly (#98).
+* Bugfix: No 2x for money icon in navbar.
+
 ## Version 0.9.41 (2024112000)
 * Improvement: Add dependency for new version 2024112000 of Wunderbyte Table.
 
