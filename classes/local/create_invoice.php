@@ -31,6 +31,7 @@ use core_payment\account;
 use core_user;
 use Exception;
 use html_writer;
+use local_entities\entitiesrelation_handler;
 use local_shopping_cart\addresses;
 use local_shopping_cart\invoice\invoicenumber;
 use local_shopping_cart\shopping_cart_history;
@@ -370,6 +371,22 @@ class create_invoice {
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
                 $optionid = $item->itemid;
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
+                if (
+                    empty($optionsettings->location) &&
+                    !empty($optionsettings->sessions) &&
+                    class_exists('local_entities\entitiesrelation_handler')
+                ) {
+                    // If no global location is given, use first entity of sessions.
+                    $entitieshandler = new entitiesrelation_handler('mod_booking', 'optiondate');
+                    foreach ($optionsettings->sessions as $id => $session) {
+                        $entity = $entitieshandler->get_instance_data($id);
+                        if (empty($entity)) {
+                            continue;
+                        }
+                        $optionsettings->location = $entity->name;
+                        break;
+                    }
+                }
                 $tmp = str_replace("[[location]]", $optionsettings->location ?? '', $tmp); // Add location.
                 $tmp = str_replace("[[dayofweektime]]", $optionsettings->dayofweektime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
                 $coursestarttime = !empty($optionsettings->coursestarttime)
