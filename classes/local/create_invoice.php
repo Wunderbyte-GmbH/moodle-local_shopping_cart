@@ -298,7 +298,7 @@ class create_invoice {
             }
         }
         foreach ($user->profile as $profilefieldkey => $profilefieldvalue) {
-            if (!isset($user->{$$profilefieldkey})) {
+            if (!isset($user->{$profilefieldkey})) {
                 // Convert unix timestamps to rendered dates.
                 if (is_numeric($profilefieldvalue)) {
                     if (strlen((string)$profilefieldvalue) > 8 && strlen((string)$profilefieldvalue) < 12) {
@@ -391,7 +391,7 @@ class create_invoice {
                 $tmp = str_replace("[[dayofweektime]]", $optionsettings->dayofweektime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
                 $coursestarttime = !empty($optionsettings->coursestarttime)
                     ? date($dateformat, $optionsettings->coursestarttime) : $date;
-                $tmp = str_replace("[[coursestarttime]]", $coursestarttime, $tmp); // E.g. "Mo, 10:00 - 12:00".
+                $tmp = str_replace("[[coursestarttime]]", $coursestarttime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
             } else {
                 // Placeholders should be replaced with an empty string in case it's no booking option.
                 $tmp = str_replace("[[location]]", '', $tmp);
