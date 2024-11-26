@@ -276,6 +276,7 @@ class shopping_cart_history {
             foreach ($data->items as $item) {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $data->address_billing ?? null;
+                $item['address_shipping'] = $data->address_shipping ?? null;
                 $uidcountrynr = null;
                 if (isset($data->vatnrnumber)) {
                     $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
