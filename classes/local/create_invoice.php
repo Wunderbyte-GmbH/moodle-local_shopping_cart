@@ -392,11 +392,21 @@ class create_invoice {
                 $coursestarttime = !empty($optionsettings->coursestarttime)
                     ? date($dateformat, $optionsettings->coursestarttime) : $date;
                 $tmp = str_replace("[[coursestarttime]]", $coursestarttime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
+
+                // Special handling for semester placeholder.
+                if (
+                    !empty($semesterid = $optionsettings->semesterid) &&
+                    $record = $DB->get_record('booking_semesters', ['id' => $semesterid])
+                ) {
+                    $semester = $record->name . " ($record->identifier)";
+                    $tmp = str_replace("[[semester]]", $semester ?? '', $tmp);
+                };
             } else {
                 // Placeholders should be replaced with an empty string in case it's no booking option.
                 $tmp = str_replace("[[location]]", '', $tmp);
                 $tmp = str_replace("[[dayofweektime]]", '', $tmp);
                 $tmp = str_replace("[[coursestarttime]]", '', $tmp);
+                $tmp = str_replace("[[semester]]", '', $tmp);
             }
 
             $sum += $price;
