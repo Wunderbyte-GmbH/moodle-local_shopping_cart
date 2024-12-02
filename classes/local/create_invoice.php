@@ -223,8 +223,16 @@ class create_invoice {
 
         $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
         $timecreated = $items[array_key_first($items)]->timecreated;
-        $addressbilling = $items[array_key_first($items)]->address_billing ?? 0;
-        $addressshipping = $items[array_key_first($items)]->address_shipping ?? 0;
+
+        foreach ($items as $item) {
+            if (empty($addressbilling)) {
+                $addressbilling = $item->address_billing ?? 0;
+            }
+            if (empty($addressshipping)) {
+                $addressshipping = $item->address_shipping ?? 0;
+            }
+        }
+
         $date = date($dateformat, $timecreated);
         $userid = $items[array_key_first($items)]->userid;
 
