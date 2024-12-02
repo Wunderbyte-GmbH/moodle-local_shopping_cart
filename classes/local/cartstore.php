@@ -98,9 +98,10 @@ class cartstore {
         $data['expirationtime'] = $expirationtime;
 
         // Use ot item ot default costcenter.
-        $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
-        $data['costcenter'] = !empty($item->costcenter) ? $item->costcenter : ($defaultcostcenter ?? '');
-
+        if (empty($data['costcenter'])) {
+            $defaultcostcenter = get_config('local_shopping_cart', 'defaultcostcenterforcredits');
+            $data['costcenter'] = !empty($item->costcenter) ? $item->costcenter : ($defaultcostcenter ?? '');
+        }
         // When we add the first item, we need to reset credit...
         // ... because we can only use the one from the correct cost center.
         [$credit, $currency] = shopping_cart_credits::get_balance($this->userid, $data['costcenter']);
