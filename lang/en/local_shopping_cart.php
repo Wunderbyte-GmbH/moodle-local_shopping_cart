@@ -404,7 +404,7 @@ $string['noinstallments'] = "Currently there are no open installment payments";
 $string['noitemsincart'] = 'There are no items in the cart';
 $string['nolimit'] = 'No limit';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">No payment account exists!</div>';
-$string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p>';
+$string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Click here to create a payment account.</a></p> <p>In a second step, select the created payment account in your <a href="/admin/category.php?category=local_shopping_cart">Shopping Cart settings</a></p>';
 $string['nopermission'] = "No permission to cancel";
 $string['nopermissiontoaccesspage'] =
         '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
