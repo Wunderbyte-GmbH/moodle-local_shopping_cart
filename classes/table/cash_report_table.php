@@ -197,11 +197,27 @@ class cash_report_table extends wunderbyte_table {
                 [
                     'success' => 1,
                     'id' => $values->identifier,
+                    'idcol' => 'identifier', // Use the identifier to create the receipt.
                     'userid' => $values->userid,
                 ]
             );
-            $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), ['href' => $url->out(false)]);
+        } else {
+            /* Special receipt - for example for credits paid back
+            (there is no identifier in this case but the id in the ledger table). */
+            $url = new moodle_url(
+                '/local/shopping_cart/receipt.php',
+                [
+                    'success' => 1,
+                    'id' => $values->id,
+                    'idcol' => 'id',
+                    'userid' => $values->userid,
+                ]
+            );
         }
+        $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), [
+            'href' => $url->out(false),
+            'target' => '_blank',
+        ]);
 
         return $out ?? '';
     }

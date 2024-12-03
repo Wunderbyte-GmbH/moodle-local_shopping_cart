@@ -170,10 +170,18 @@ class create_invoice {
      * @param int $userid
      * @param string $filename
      * @param bool $asstring
+     * @param string $idcol can be 'identifier' for normal receipts, or 'id' (ledger id)
+     *                      for special receipts like for credits paid back for exaple
      *
      * @return string
      */
-    public static function create_receipt(int $identifier, int $userid, string $filename = '', bool $asstring = false): string {
+    public static function create_receipt(
+        int $identifier,
+        int $userid,
+        string $filename = '',
+        bool $asstring = false,
+        string $idcol = 'identifier'
+    ): string {
 
         global $CFG;
 
@@ -221,7 +229,17 @@ class create_invoice {
             }
         }
 
-        $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
+        switch ($idcol) {
+            case 'id':
+                // In this case $identifier stores the ledger id.
+                $items = shopping_cart_history::return_data_from_ledger_via_id($identifier);
+                break;
+            case 'identifier':
+            default:
+                $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
+                break;
+        }
+
         $timecreated = $items[array_key_first($items)]->timecreated;
 
         foreach ($items as $item) {
@@ -279,9 +297,20 @@ class create_invoice {
             $address .= ': <br>' .  $shippingaddress;
         }
 
-        $invoicenumber = invoicenumber::get_invoicenumber_by_identifier($identifier);
+        switch ($idcol) {
+            case 'id':
+                $invoicenumber = "X{$identifier}"; // Special invoices start with X and have the ledger id as invoice number.
+                $cfghtml = str_replace("[[id]]", "X{$identifier}", $cfghtml);
+                $cfghtml = str_replace("[[order_number]]", "X{$identifier}", $cfghtml);
+                break;
+            case 'identifier':
+            default:
+                $invoicenumber = invoicenumber::get_invoicenumber_by_identifier($identifier);
+                $cfghtml = str_replace("[[id]]", $identifier, $cfghtml);
+                $cfghtml = str_replace("[[order_number]]", $identifier, $cfghtml);
+                break;
+        }
 
-        $cfghtml = str_replace("[[id]]", $identifier, $cfghtml);
         $cfghtml = str_replace("[[date]]", $date, $cfghtml);
         $cfghtml = str_replace("[[username]]", $user->username, $cfghtml);
         $cfghtml = str_replace("[[firstname]]", $user->firstname, $cfghtml);
@@ -291,7 +320,6 @@ class create_invoice {
         $cfghtml = str_replace("[[institution]]", $user->institution, $cfghtml);
         $cfghtml = str_replace("[[department]]", $user->department, $cfghtml);
         $cfghtml = str_replace("[[address]]", $address, $cfghtml);
-        $cfghtml = str_replace("[[order_number]]", $identifier, $cfghtml);
         $cfghtml = str_replace("[[invoice_number]]", $invoicenumber ?: '', $cfghtml);
 
         // We also add the possibility to use any custom user profile field as param.
@@ -444,7 +472,7 @@ class create_invoice {
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor($user->email);
-        $pdf->SetTitle('bookingreceipt_' . $identifier . '_' . $userid . '_' . $date);
+        $pdf->SetTitle('bookingreceipt_' . $invoicenumber . '_' . $userid . '_' . $date);
         $pdf->SetSubject('');
         $pdf->SetKeywords('');
 

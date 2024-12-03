@@ -454,6 +454,15 @@ class shopping_cart_credits {
         $now = time();
         $ledgerrecord->userid = $userid;
         $ledgerrecord->itemid = 0;
+        switch ($method) {
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
+                $ledgerrecord->itemname = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
+                break;
+            case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
+            default:
+                $ledgerrecord->itemname = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
+                break;
+        }
         $ledgerrecord->price = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->currency = $currency;
@@ -574,6 +583,7 @@ class shopping_cart_credits {
             $now = time();
             $ledgerrecord->userid = $data->userid;
             $ledgerrecord->itemid = 0;
+            $ledgerrecord->itemname = get_string('paymentmethodcreditscorrection', 'local_shopping_cart');
             $ledgerrecord->price = 0;
             $ledgerrecord->credits = (float) $data->creditsmanagercredits;
             $ledgerrecord->currency = $currency;

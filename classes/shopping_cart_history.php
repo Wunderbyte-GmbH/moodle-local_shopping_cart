@@ -587,10 +587,36 @@ class shopping_cart_history {
             if ($aborted) {
                 return [];
             }
-
             return $data;
         }
+        return [];
+    }
 
+    /**
+     * Return ledger data from DB via ledger id (cash report data).
+     * This function won't return data if the payment is already aborted.
+     *
+     * @param int $id
+     * @return array
+     */
+    public static function return_data_from_ledger_via_id(int $id): array {
+        global $DB;
+        if (
+            $data = $DB->get_records('local_shopping_cart_ledger', ['id' => $id])
+        ) {
+            // If there is an error registered, we return null.
+            foreach ($data as $record) {
+                $aborted = false;
+                // Status LOCAL_SHOPPING_CART_PAYMENT_ABORTED is 1. Fails in adhoc task if constant is used. Weird.
+                if ($record->paymentstatus == 1) {
+                    $aborted = true;
+                }
+            }
+            if ($aborted) {
+                return [];
+            }
+            return $data;
+        }
         return [];
     }
 
