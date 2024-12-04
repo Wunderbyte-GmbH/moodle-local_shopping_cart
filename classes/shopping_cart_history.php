@@ -173,8 +173,8 @@ class shopping_cart_history {
             $ootidpart = "LEFT JOIN ($openorderselectsstring) oo ON sch.identifier = oo.itemid AND oo.gateway = p.gateway";
         } else {
             // If we do not have any open orders tables, we still keep an empty custom order id column for consistency.
-            $ootid = "'' AS ootid, ";
-            $oocustomorderid = "'' AS oo.customorderid, ";
+            $ootid = "NULL AS ootid, ";
+            $oocustomorderid = "NULL AS customorderid, ";
             $ootidpart = '';
         }
 
