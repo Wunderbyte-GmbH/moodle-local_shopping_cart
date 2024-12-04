@@ -136,13 +136,13 @@ if (!empty($account)) {
 // If we have open orders tables select statements, we can now UNION them.
 if (!empty($openorderselects)) {
     // Some clients do not need the default orderid but the custom orderid from the openorders table.
-    $customorderid = "oo.tid AS customorderid, ";
+    $ootid = "oo.tid AS ootid, ";
     $openorderselectsstring = implode(' UNION ', $openorderselects);
-    $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid AND oo.gateway = p.gateway";
+    $ootidpart = "LEFT JOIN ($openorderselectsstring) oo ON scl.identifier = oo.itemid AND oo.gateway = p.gateway";
 } else {
     // If we do not have any open orders tables, we still keep an empty custom order id column for consistency.
-    $customorderid = "'' AS customorderid, ";
-    $customorderidpart = '';
+    $ootid = "'' AS ootid, ";
+    $ootidpart = '';
 }
 
 if (!empty($colselects)) {
@@ -184,7 +184,7 @@ $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
         " AS uniqueid, scl.id, scl.userid, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
         u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
-        $customorderid .
+        $ootid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
         p.gateway$selectorderidpart,
@@ -195,7 +195,7 @@ $from = "(SELECT DISTINCT " . $uniqueidpart .
         ON sch.itemid = scl.itemid AND scl.identifier = sch.identifier
         LEFT JOIN {payments} p
         ON p.itemid = scl.identifier
-        $customorderidpart
+        $ootidpart
         LEFT JOIN {user} u
         ON u.id = scl.userid
         LEFT JOIN {user} um
@@ -277,7 +277,7 @@ if ($debug != 2) {
     ];
     if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
         // Only show custom order id if config setting is turned on.
-        $columns[] = 'customorderid';
+        $columns[] = 'ootid';
     } else {
         // Default.
         $columns[] = 'orderid';

@@ -111,6 +111,7 @@ class get_history_items extends external_api {
                     'date' => new external_value(PARAM_TEXT, 'Date string name'),
                     'paymentstring' => new external_value(PARAM_TEXT, 'Paid with'),
                     'orderid' => new external_value(PARAM_TEXT, 'Order id'),
+                    'customorderid' => new external_value(PARAM_TEXT, 'Custom order id'),
                     'gateway' => new external_value(PARAM_TEXT, 'Gateway'),
                     'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until'),
                     'hasinstallments' => new external_value(PARAM_BOOL, 'Has installments', VALUE_DEFAULT, false),

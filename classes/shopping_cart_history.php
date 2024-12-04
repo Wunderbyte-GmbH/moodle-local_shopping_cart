@@ -131,23 +131,23 @@ class shopping_cart_history {
                     // If there are open orders tables we create selects for them.
                     $openorderstable = "paygw_" . $gwname . "_openorders";
 
-                    // For some gateways, we store a merchantref in the openorders table.
-                    $merchantrefexists = false;
+                    // For some gateways, we store a merchantref or customorderid in the openorders table.
                     $tidpart = 'tid';
+                    $customorderidpart = 'NULL AS customorderid';
 
                     if ($dbman->table_exists($openorderstable)) {
                         $openorderscols = $DB->get_columns($openorderstable);
                         foreach ($openorderscols as $key => $value) {
                             if (strpos($key, 'merchantref') !== false) {
-                                $merchantrefexists = true;
-                                break;
+                                $tidpart = 'merchantref AS tid';
+                            }
+                            if (strpos($key, 'customorderid') !== false) {
+                                $customorderidpart = 'customorderid';
                             }
                         }
-                        if ($merchantrefexists) {
-                            $tidpart = 'merchantref AS tid';
-                        }
                         $openorderselects[] = "SELECT itemid, '" . $gwname .
-                            "' AS gateway, $tidpart FROM {paygw_" . $gwname . "_openorders}";
+                            "' AS gateway, $tidpart, $customorderidpart
+                            FROM {paygw_" . $gwname . "_openorders}";
                     }
 
                     $cols = $DB->get_columns($tablename);
@@ -167,13 +167,15 @@ class shopping_cart_history {
         // If we have open orders tables select statements, we can now UNION them.
 
         if (!empty($openorderselects)) {
-            $customorderid = "oo.tid AS customorderid, ";
+            $ootid = "oo.tid AS ootid, ";
+            $oocustomorderid = "oo.customorderid, ";
             $openorderselectsstring = implode(' UNION ', $openorderselects);
-            $customorderidpart = "LEFT JOIN ($openorderselectsstring) oo ON sch.identifier = oo.itemid AND oo.gateway = p.gateway";
+            $ootidpart = "LEFT JOIN ($openorderselectsstring) oo ON sch.identifier = oo.itemid AND oo.gateway = p.gateway";
         } else {
             // If we do not have any open orders tables, we still keep an empty custom order id column for consistency.
-            $customorderid = "'' AS customorderid, ";
-            $customorderidpart = '';
+            $ootid = "'' AS ootid, ";
+            $oocustomorderid = "'' AS oo.customorderid, ";
+            $ootidpart = '';
         }
 
         if (!empty($colselects)) {
@@ -206,11 +208,11 @@ class shopping_cart_history {
         }
 
         $sql = "SELECT DISTINCT
-                $uniqueidpart sch.*, " . $customorderid . "p.gateway$selectorderidpart
+                $uniqueidpart sch.*, " . $ootid . $oocustomorderid . "p.gateway$selectorderidpart
                 FROM {local_shopping_cart_history} sch
                 LEFT JOIN {payments} p
                 ON p.itemid = sch.identifier AND p.userid=sch.userid
-                $customorderidpart
+                $ootidpart
                 $gatewayspart
                 WHERE sch.userid = :userid
                 AND sch.paymentstatus >= :paymentstatus
@@ -223,8 +225,8 @@ class shopping_cart_history {
         // ... then we replace the order ID with the custom order ID.
         if (get_config('local_shopping_cart', 'cashreportshowcustomorderid')) {
             foreach ($records as &$record) {
-                if (!empty($record->customorderid)) {
-                    $record->orderid = $record->customorderid;
+                if (!empty($record->ootid)) {
+                    $record->orderid = $record->ootid;
                 }
             }
         }
