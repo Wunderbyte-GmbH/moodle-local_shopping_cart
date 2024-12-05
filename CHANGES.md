@@ -1,3 +1,14 @@
+## Version 0.9.43 (2024120500)
+* Improvement: Save address infos correctly to ledger.
+* Improvement: Display location of first session for options without global location.
+* Improvement: Show merchantref and customorderid at the right places. (Wunderbyte-GmbH/moodle-paygw_payone#5)
+* Improvement: Add semester placeholder (Wunderbyte-GmbH/moodle-mod_booking#660).
+* Bugfix: Bugfixes for receipts.
+* Bugfix: Fix lang string nopaymentaccountsdesc.
+* Bugfix: Show address also in credit card checkout.
+* Bugfix: Bugfix when wanting to consume credits with booking fee and non default costcenter #107.
+* Bugfix: Fix SQL for customorderid that broke behat. (Wunderbyte-GmbH/moodle-paygw_payone#5)
+
 ## Version 0.9.42 (2024112500)
 * Improvement: Add support for Moodle 4.5.
 * Bugfix: Fix lang string.
