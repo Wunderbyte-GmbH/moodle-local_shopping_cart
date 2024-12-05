@@ -573,7 +573,8 @@ $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
-Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
+Before and afterwards you can also use [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]],
+[[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
 Only use basic HTML supported by TCPDF';
 $string['receipts'] = 'Receipts';
 $string['remainingcredit'] = 'Remaining credit:';

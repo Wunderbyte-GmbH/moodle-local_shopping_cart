@@ -427,7 +427,11 @@ class create_invoice {
                     !empty($semesterid = $optionsettings->semesterid) &&
                     $record = $DB->get_record('booking_semesters', ['id' => $semesterid])
                 ) {
-                    $semester = $record->name . " ($record->identifier)";
+                    $semestername = $record->name;
+                    $semestershort = $record->identifier;
+                    $semester = $semestername . " ($semestershort)";
+                    $tmp = str_replace("[[semestername]]", $semestername ?? '', $tmp);
+                    $tmp = str_replace("[[semestershort]]", $semestershort ?? '', $tmp);
                     $tmp = str_replace("[[semester]]", $semester ?? '', $tmp);
                 };
             } else {
@@ -436,6 +440,8 @@ class create_invoice {
                 $tmp = str_replace("[[dayofweektime]]", '', $tmp);
                 $tmp = str_replace("[[coursestarttime]]", '', $tmp);
                 $tmp = str_replace("[[semester]]", '', $tmp);
+                $tmp = str_replace("[[semestername]]", '', $tmp);
+                $tmp = str_replace("[[semestershort]]", '', $tmp);
             }
 
             $sum += $price;

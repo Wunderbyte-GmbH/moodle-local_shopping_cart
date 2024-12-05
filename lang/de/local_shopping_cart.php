@@ -504,7 +504,8 @@ $string['receipt:transactionno'] = 'Transaktionsnummer';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
-Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] und [[order_number]] verwenden.
+Außerhalb von [[items]] können Sie auch [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]],
+[[date]], [[invoice_number]] und [[order_number]] verwenden.
 Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
 $string['receipts'] = 'Buchungsbestätigungen';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';
