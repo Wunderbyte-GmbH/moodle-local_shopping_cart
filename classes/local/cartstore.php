@@ -125,7 +125,8 @@ class cartstore {
     public function delete_item(
         string $component,
         string $area,
-        int $itemid) {
+        int $itemid
+    ) {
 
         $data = $this->get_cache();
 
@@ -138,6 +139,7 @@ class cartstore {
                 if (empty($data['items'])) {
                     $data['expirationtime'] = 0;
                     unset($data['paymentaccountid']);
+                    unset($data['costcenter']);
                 }
                 $this->set_cache($data);
             }
@@ -304,6 +306,7 @@ class cartstore {
                 unset($data['openinstallments']);
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
+                unset($data['costcenter']);
                 $this->set_cache($data);
             }
         }
