@@ -575,10 +575,6 @@ $string['receipthtml:description'] = 'You can use the following placeholders:
 [[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
 Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
 Only use basic HTML supported by TCPDF';
-// As images can be added via HTML anyway, we do not need this anymore.
-// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-/* $string['receiptimage'] = 'Background image for cashiers receipt';
-$string['receiptimage:description'] = 'Set a background image, e.g. with logo'; */
 $string['receipts'] = 'Receipts';
 $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';

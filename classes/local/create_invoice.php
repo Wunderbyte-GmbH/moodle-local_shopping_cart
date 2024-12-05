@@ -221,27 +221,6 @@ class create_invoice {
             }
         }
 
-        // As images can be added via HTML anyway, we do not need this anymore.
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-        /* $filename = get_config('local_shopping_cart', 'receiptimage');
-        $context = context_system::instance();
-        $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'local_shopping_cart', 'local_shopping_cart_receiptimage');
-        foreach ($files as $file) {
-            if ($file->get_filesize() > 0) {
-                $filename = $file->get_filename();
-                $imgurl = moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename(),
-                    true
-                );
-            }
-        } */
-
         switch ($idcol) {
             case 'id':
                 // In this case $identifier stores the ledger id.
@@ -516,27 +495,6 @@ class create_invoice {
         $pdf->setPrintFooter(false);
 
         $pdf->AddPage();
-
-        // As images can be added via HTML anyway, we do not need this anymore.
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-        /* if (isset($imgurl)) {
-            $pdf->Image(
-                $imgurl->out(false),
-                0,
-                0,
-                $pdf->getPageWidth(),
-                $pdf->getPageHeight(),
-                "",
-                "",
-                "",
-                true,
-                "300",
-                "",
-                false,
-                false,
-                0
-            );
-        } */
 
         // Now, we write the HTML into a TCPDF cell.
         $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);

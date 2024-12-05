@@ -339,17 +339,6 @@ if ($hassiteconfig) {
         )
     );
 
-
-    // As images can be added via HTML anyway, we do not need this anymore.
-    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-    /* $fileid = 'local_shopping_cart_receiptimage';
-    $name = 'local_shopping_cart/receiptimage';
-    $title = get_string('receiptimage', 'local_shopping_cart');
-    $description = get_string('receiptimage:description', 'local_shopping_cart');
-    $opts = ['accepted_types' => ['.png', '.jpg'], 'maxfiles' => 1];
-    $setting = new admin_setting_configstoredfile($name, $title, $description, $fileid, 0, $opts);
-    $settings->add($setting); */
-
     // Cancellation settings.
     $cancellationsettings = new admin_settingpage('local_shopping_cart_cancellation_settings',
         get_string('cancellationsettings', 'local_shopping_cart'));
