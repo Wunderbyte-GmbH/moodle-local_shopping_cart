@@ -1,3 +1,6 @@
+## Version 0.9.44 (2024120501)
+* Bugfix: Make sure we always get rid of the old costcenter
+
 ## Version 0.9.43 (2024120500)
 * Improvement: Save address infos correctly to ledger.
 * Improvement: Display location of first session for options without global location.
