@@ -330,6 +330,10 @@ $string['es'] = "Spain";
 $string['eu'] = "European Union";
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
+$string['extrareceipts'] = 'Also create receipts for special rows (like "Credits paid back").';
+$string['extrareceiptshtml'] = 'HTML template for extra rows';
+$string['extrareceiptshtmldesc'] = 'Leave this empty, if you want to use the same template as for normal receipts.
+You can use the same placeholders as for the default receipts.';
 $string['failure'] = 'Failure';
 $string['fi'] = "Finland";
 $string['firstname'] = 'First name';
@@ -568,11 +572,13 @@ $string['receipt:total'] = 'Total sum';
 $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
-[[price]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
- Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
- Only use basic HTML supported by TCPDF';
-$string['receiptimage'] = 'Background image for cashiers receipt';
-$string['receiptimage:description'] = 'Set a background image, e.g. with logo';
+[[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
+Before and afterwards you can also use [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
+Only use basic HTML supported by TCPDF';
+// As images can be added via HTML anyway, we do not need this anymore.
+// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+/* $string['receiptimage'] = 'Background image for cashiers receipt';
+$string['receiptimage:description'] = 'Set a background image, e.g. with logo'; */
 $string['receipts'] = 'Receipts';
 $string['remainingcredit'] = 'Remaining credit:';
 $string['remainingtotal'] = 'Price:';

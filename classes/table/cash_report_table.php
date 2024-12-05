@@ -203,16 +203,22 @@ class cash_report_table extends wunderbyte_table {
             );
         } else {
             /* Special receipt - for example for credits paid back
-            (there is no identifier in this case but the id in the ledger table). */
-            $url = new moodle_url(
-                '/local/shopping_cart/receipt.php',
-                [
-                    'success' => 1,
-                    'id' => $values->id,
-                    'idcol' => 'id',
-                    'userid' => $values->userid,
-                ]
-            );
+            (there is no identifier in this case but the id in the ledger table).
+            We only create it, if the setting extrareceipts is checked. */
+            if (get_config('local_shopping_cart', 'extrareceipts')) {
+                $url = new moodle_url(
+                    '/local/shopping_cart/receipt.php',
+                    [
+                        'success' => 1,
+                        'id' => $values->id,
+                        'idcol' => 'id',
+                        'userid' => $values->userid,
+                    ]
+                );
+            } else {
+                // If the setting is off, we return an empty string.
+                return '';
+            }
         }
         $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), [
             'href' => $url->out(false),

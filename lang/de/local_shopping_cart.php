@@ -325,6 +325,10 @@ $string['es'] = "Spanien";
 $string['eu'] = "Europäische Union";
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
+$string['extrareceipts'] = 'Buchungsbestätigungen auch für Extra-Zeilen im Kassajournal (z.B. "Guthabenrückzahlung bar") erstellen.';
+$string['extrareceiptshtml'] = 'HTML-Vorlage für Extra-Zeilen im Kassajournal';
+$string['extrareceiptshtmldesc'] = 'Lassen Sie dieses Feld leer, wenn Sie die gleiche Vorlage wie für normale Buchungsbestätigungen verwenden möchten.
+Sie können die selben Platzhalter wie bei den normalen Buchungsbestätigungen verwenden.';
 $string['failure'] = 'Fehler.';
 $string['fi'] = "Finnland";
 $string['firstname'] = 'Vorname';
@@ -500,10 +504,12 @@ $string['receipt:transactionno'] = 'Transaktionsnummer';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
 [[price]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
- Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] und [[order_number]] verwenden.
- Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
-$string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
-$string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.';
+Außerhalb von [[items]] können Sie auch [[sum]], [[firstname]], [[lastname]], [[mail]], [[address]], [[date]], [[invoice_number]] und [[order_number]] verwenden.
+Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';
+// As images can be added via HTML anyway, we do not need this anymore.
+// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+/* $string['receiptimage'] = 'Hintergrundbild für den Kassenbeleg';
+$string['receiptimage:description'] = 'Laden Sie ein Hintergrundbild für den Kassenbeleg hoch, das z.B. Ihr Logo enthält.'; */
 $string['receipts'] = 'Buchungsbestätigungen';
 $string['remainingcredit'] = 'Verbleibendes Guthaben:';
 $string['remainingtotal'] = 'Preis:';

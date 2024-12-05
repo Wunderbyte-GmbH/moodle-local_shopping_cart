@@ -171,7 +171,7 @@ class create_invoice {
      * @param string $filename
      * @param bool $asstring
      * @param string $idcol can be 'identifier' for normal receipts, or 'id' (ledger id)
-     *                      for special receipts like for credits paid back for exaple
+     *                      for special receipts like for credits paid back for example
      *
      * @return string
      */
@@ -209,8 +209,21 @@ class create_invoice {
         $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
         // Set some content to print.
 
-        $filename = get_config('local_shopping_cart', 'receiptimage');
+        // Default HTML template.
         $cfghtml = get_config('local_shopping_cart', 'receipthtml');
+
+        // Check if there as a separate HTML template for special rows without identifier.
+        if ($idcol == "id") {
+            $extrareceiptshtml = get_config('local_shopping_cart', 'extrareceiptshtml');
+            if (!empty(trim(strip_tags($extrareceiptshtml)))) {
+                // If it's not empty, we use it instead of the default HTML template.
+                $cfghtml = $extrareceiptshtml;
+            }
+        }
+
+        // As images can be added via HTML anyway, we do not need this anymore.
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* $filename = get_config('local_shopping_cart', 'receiptimage');
         $context = context_system::instance();
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'local_shopping_cart', 'local_shopping_cart_receiptimage');
@@ -227,7 +240,7 @@ class create_invoice {
                     true
                 );
             }
-        }
+        } */
 
         switch ($idcol) {
             case 'id':
@@ -402,6 +415,7 @@ class create_invoice {
             }
             $tmp = str_replace("[[name]]", $item->itemname, $tmp);
             $tmp = str_replace("[[pos]]", $pos, $tmp);
+            $tmp = str_replace("[[credits]]", $item->credits ?? '', $tmp);
 
             // If it's a booking option, we add option-specific data.
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
@@ -503,7 +517,9 @@ class create_invoice {
 
         $pdf->AddPage();
 
-        if (isset($imgurl)) {
+        // As images can be added via HTML anyway, we do not need this anymore.
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* if (isset($imgurl)) {
             $pdf->Image(
                 $imgurl->out(false),
                 0,
@@ -520,9 +536,10 @@ class create_invoice {
                 false,
                 0
             );
-        }
-        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+        } */
 
+        // Now, we write the HTML into a TCPDF cell.
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
         ob_end_clean();
 
         $filename = $user->firstname . '_' . $user->lastname . '_' . $date . '.pdf';
