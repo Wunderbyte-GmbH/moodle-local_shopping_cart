@@ -251,7 +251,7 @@ $string['cz'] = "Tschechien";
 $string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
 $string['dailysumspdfhtml'] = 'HTML-Vorlage für die Erstellung des Tagessumen-PDFs';
 $string['dailysumspdfhtml:description'] = 'Geben Sie HTML-Code ein, der als Vorlage für die Erstellung des Tagessumen-PDFs verwendet werden soll.
-Sie können die folgenden Platzhalter verwenden: [[title]], [[date]], [[totalsum]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+Sie können die folgenden Platzhalter verwenden: [[title]], [[date]], [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Lassen Sie das Feld leer, um die Standard-Vorlage zu verwenden.';
 $string['de'] = "Deutschland";
@@ -569,6 +569,7 @@ $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
 $string['titledailysums:total'] = 'Saldo';
+$string['titledailysums:totalcash'] = 'Bar-Saldo';
 $string['token'] = 'Token';
 $string['tokendesc'] = 'Geben Sie Ihr Authentifizierungstoken ein. Für ERPNExt benützen sie: &lt;api_key&gt;:&lt;api_secret&gt;';
 $string['total'] = 'Gesamt:';

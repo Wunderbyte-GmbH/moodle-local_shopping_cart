@@ -1833,6 +1833,9 @@ class shopping_cart {
         $dailysumsfromdb = $DB->get_records_sql($dailysumssql, $dailysumsparams);
         // We also calculate the total daily sum.
         $total = 0.0;
+        // Additionallly, we keep track of cash.
+        $totalcash = 0.0;
+
         foreach ($dailysumsfromdb as $dailysumrecord) {
             $add = true;
             $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
@@ -1844,12 +1847,14 @@ class shopping_cart {
                     break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER:
                     $total += (float)$dailysumrecord->dailysum;
+                    // Do not increment totalcash here, as we cannot be sure at this point that it's really cash.
                     $dailysumrecord->paymentmethod = get_string('paymentmethodcashier', 'local_shopping_cart');
                     $dailysumsdata['cashier'] = $dailysumrecord->dailysumformatted;
                     break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH:
                     // Will be a negative number, so we can still use "+=".
                     $total += (float)$dailysumrecord->dailysum;
+                    $totalcash += (float)$dailysumrecord->dailysum;
                     $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                     $dailysumsdata['creditspaidbackcash'] = $dailysumrecord->dailysumformatted;
                     break;
@@ -1861,6 +1866,7 @@ class shopping_cart {
                     break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                     $total += (float)$dailysumrecord->dailysum;
+                    $totalcash += (float)$dailysumrecord->dailysum;
                     $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');
                     $dailysumsdata['cash'] = $dailysumrecord->dailysumformatted;
                     break;
@@ -1887,6 +1893,7 @@ class shopping_cart {
                 $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
             }
             $dailysumsdata['totalsum'] = number_format($total, 2, $commaseparator, '');
+            $dailysumsdata['totalcash'] = number_format($totalcash, 2, $commaseparator, '');
         }
 
         if (get_config('local_shopping_cart', 'showdailysumscurrentcashier')) {

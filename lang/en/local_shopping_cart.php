@@ -255,7 +255,7 @@ $string['cz'] = "Czech Republic";
 $string['dailysums:downloadpdf'] = 'Download daily sums as PDF';
 $string['dailysumspdfhtml'] = 'HTML template for the daily sums PDF';
 $string['dailysumspdfhtml:description'] = 'Enter HTML to create the daily sums PDF. You can use the following placeholders:
-[[title]], [[date]], [[totalsum]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+[[title]], [[date]], [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Leave this empty to use the default template.';
 $string['de'] = "Germany";
@@ -638,6 +638,7 @@ $string['titledailysums'] = 'Daily revenue';
 $string['titledailysums:all'] = 'All revenues';
 $string['titledailysums:current'] = 'Current cashier';
 $string['titledailysums:total'] = 'Total revenue';
+$string['titledailysums:totalcash'] = 'Total cash revenue';
 $string['token'] = 'Token';
 $string['tokendesc'] = 'Enter your authentication token. For ERPNext use &lt;api_key&gt;:&lt;api_secret&gt;';
 $string['total'] = 'Total:';
