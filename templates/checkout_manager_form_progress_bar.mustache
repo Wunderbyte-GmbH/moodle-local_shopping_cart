@@ -1,0 +1,104 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/checkout
+
+    This template will render the shopping cart checkout pate.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+       "count":1,
+       "maxitems":"10",
+       "wwwroot":"http:\/\/localhost\/400_moodle\/"
+    }
+}}
+
+
+
+
+<div class="shopping-cart-checkout-manager-status-bar">
+{{#checkout_manager_body.item_list}}
+<div class="shopping-cart-checkout-manager-status-bar-line"></div>
+<div class="shopping-cart-checkout-manager-status-item {{status}}">
+    <div class="circle">
+    <i class="{{item}}"></i>
+    </div>
+</div>
+{{/checkout_manager_body.item_list}}
+</div>
+
+<style>
+  .shopping-cart-checkout-manager-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    margin: 20px 0;
+  }
+
+  .shopping-cart-checkout-manager-status-bar-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #ccc;
+    z-index: 1;
+  }
+
+  .shopping-cart-checkout-manager-status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .shopping-cart-checkout-manager-status-item .circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 24px;
+    border: 2px solid #ccc;
+    background-color: gray;
+  }
+
+  .shopping-cart-checkout-manager-status-item.active .circle {
+    background-color: green;
+    border-color: green;
+  }
+
+  .shopping-cart-checkout-manager-status-item.inactive .circle {
+    background-color: gray;
+    border-color: gray;
+  }
+</style>

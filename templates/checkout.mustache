@@ -169,8 +169,10 @@
                 <a href="{{wwwroot}}/local/shopping_cart/address.php">{{#str}} addresses:change, local_shopping_cart {{/str}}</a>
             </div>
         {{/show_selected_addresses}}
-
         <div>
+            {{#checkout_manager_body}}
+                {{> local_shopping_cart/checkout_manager_form }}
+            {{/checkout_manager_body}}
             {{#address_selection_required}}
                 <div class="pull-right mt-3">
                     <a
