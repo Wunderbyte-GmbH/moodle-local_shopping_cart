@@ -18,45 +18,64 @@
  * The cartstore class handles the in and out of the cache.
  *
  * @package local_shopping_cart
- * @author Georg Maißer
+ * @author Jacob Viertel
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shopping_cart\local\pricemodifier\modifiers;
-
-use dml_exception;
-use coding_exception;
-use local_shopping_cart\local\pricemodifier\modifier_base;
+namespace local_shopping_cart\local\checkout_process;
 
 /**
  * Class checkout
  *
- * @author Georg Maißer
+ * @author Jacob Viertel
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class termsandconditions extends modifier_base {
+abstract class checkout_base_item {
     /**
-     * The id is nedessary for the hierarchie of modifiers.
-     * @var int
+     * Renders checkout item.
      */
-    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS;
+    public static function is_head() {
+        return false;
+    }
 
     /**
-     * Applies the given price modifiers on the cached data.
-     * @param array $data
-     * @return array
-     * @throws dml_exception
-     * @throws coding_exception
+     * Renders checkout item.
      */
-    public static function apply(array &$data): array {
-        // Show the terms.
-        if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
-            $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
-        }
+    public static function is_active() {
+        return true;
+    }
 
+    /**
+     * Renders checkout item.
+     */
+    public static function render_body() {
+        $data = 'some fancy template';
         return $data;
     }
 
+    /**
+     * Checks status of checkout item.
+     */
+    public static function check() {
+        $data = 'some status value';
+        return $data;
+    }
+
+    /**
+     * Checks status of checkout item.
+     * @return string
+     */
+    public static function get_icon_progress_bar() {
+        return 'fa-solid fa-cart-shopping';
+    }
+
+    /**
+     * Checks status of checkout item.
+     * @return string
+     */
+    public static function get_status_progress_bar() {
+        return 'inactive';
+    }
 }

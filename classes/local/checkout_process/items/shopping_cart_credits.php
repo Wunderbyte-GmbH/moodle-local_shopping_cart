@@ -18,45 +18,35 @@
  * The cartstore class handles the in and out of the cache.
  *
  * @package local_shopping_cart
- * @author Georg Maißer
+ * @author Jacob Viertel
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shopping_cart\local\pricemodifier\modifiers;
+namespace local_shopping_cart\local\checkout_process\items;
 
-use dml_exception;
-use coding_exception;
-use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\local\checkout_process\checkout_base_item;
 
 /**
  * Class checkout
  *
- * @author Georg Maißer
+ * @author Jacob Viertel
  * @copyright 2024 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class termsandconditions extends modifier_base {
+class shopping_cart_credits extends checkout_base_item {
     /**
-     * The id is nedessary for the hierarchie of modifiers.
-     * @var int
+     * Renders checkout item.
+     * @return string
      */
-    public static $id = LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS;
-
-    /**
-     * Applies the given price modifiers on the cached data.
-     * @param array $data
-     * @return array
-     * @throws dml_exception
-     * @throws coding_exception
-     */
-    public static function apply(array &$data): array {
-        // Show the terms.
-        if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
-            $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
-        }
-
-        return $data;
+    public static function get_icon_progress_bar() {
+        return 'fa-solid fa-coins';
     }
 
+    /**
+     * Renders checkout item.
+     */
+    public static function is_head() {
+        return true;
+    }
 }
