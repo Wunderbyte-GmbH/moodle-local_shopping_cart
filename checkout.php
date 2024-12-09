@@ -26,6 +26,7 @@
 
 use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\addresses;
@@ -192,6 +193,9 @@ if ($hasallrequiredaddresses) {
     $data['show_selected_addresses'] = true;
 }
 $data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
+$checkoutmanager = new checkout_manager();
+$checkoutmanagerdata = $checkoutmanager->render_overview();
+$data = array_merge($data, $checkoutmanagerdata);
 if (empty($jsononly)) {
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
