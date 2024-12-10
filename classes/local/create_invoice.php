@@ -405,6 +405,7 @@ class create_invoice {
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
                 $optionid = $item->itemid;
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
+                $bookingsettings = \mod_booking\singleton_service::get_instance_of_booking_settings_by_cmid($optionsettings->cmid);
                 if (
                     empty($optionsettings->location) &&
                     !empty($optionsettings->sessions) &&
@@ -426,27 +427,11 @@ class create_invoice {
                 $coursestarttime = !empty($optionsettings->coursestarttime)
                     ? date($dateformat, $optionsettings->coursestarttime) : $date;
                 $tmp = str_replace("[[coursestarttime]]", $coursestarttime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
-
-                // Special handling for semester placeholder.
-                if (
-                    !empty($semesterid = $optionsettings->semesterid) &&
-                    $record = $DB->get_record('booking_semesters', ['id' => $semesterid])
-                ) {
-                    $semestername = $record->name;
-                    $semestershort = $record->identifier;
-                    $semester = $semestername . " ($semestershort)";
-                    $tmp = str_replace("[[semestername]]", $semestername ?? '', $tmp);
-                    $tmp = str_replace("[[semestershort]]", $semestershort ?? '', $tmp);
-                    $tmp = str_replace("[[semester]]", $semester ?? '', $tmp);
-                };
             } else {
                 // Placeholders should be replaced with an empty string in case it's no booking option.
                 $tmp = str_replace("[[location]]", '', $tmp);
                 $tmp = str_replace("[[dayofweektime]]", '', $tmp);
                 $tmp = str_replace("[[coursestarttime]]", '', $tmp);
-                $tmp = str_replace("[[semester]]", '', $tmp);
-                $tmp = str_replace("[[semestername]]", '', $tmp);
-                $tmp = str_replace("[[semestershort]]", '', $tmp);
             }
 
             $sum += $price;
@@ -471,7 +456,35 @@ class create_invoice {
             }
         </style>
         ' . $prehtml[0] . $itemhtml . $posthtml;
-        // Print text using writeHTMLCell().
+
+        // Special handling for semester placeholder.
+        $semesterid = $optionsettings->semesterid ?? $bookingsettings->semesterid ?? 0;
+        if ($semesterid === 0) {
+            $semesterid = $DB->get_field_sql(
+                "SELECT id
+                FROM {booking_semesters}
+                WHERE startdate <= :date1
+                AND enddate >= :date2
+                LIMIT 1",
+                [
+                    'date1' => $timecreated,
+                    'date2' => $timecreated,
+                ]
+            );
+        }
+        if (!empty($semesterid)) {
+            $record = $DB->get_record('booking_semesters', ['id' => $semesterid]);
+            $semestername = $record->name;
+            $semestershort = $record->identifier;
+            $semester = $semestername . " ($semestershort)";
+            $html = str_replace("[[semestername]]", $semestername ?? '', $html);
+            $html = str_replace("[[semestershort]]", $semestershort ?? '', $html);
+            $html = str_replace("[[semester]]", $semester ?? '', $html);
+        } else {
+            $html = str_replace("[[semester]]", '', $html);
+            $html = str_replace("[[semestername]]", '', $html);
+            $html = str_replace("[[semestershort]]", '', $html);
+        }
 
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
@@ -507,6 +520,7 @@ class create_invoice {
 
         $pdf->AddPage();
 
+        // Print text using writeHTMLCell().
         // Now, we write the HTML into a TCPDF cell.
         $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
         ob_end_clean();
