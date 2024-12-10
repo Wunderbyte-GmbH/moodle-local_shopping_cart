@@ -1790,9 +1790,10 @@ class shopping_cart {
      *
      * @param string $date date in the form 'YYYY-MM-DD'
      * @param string $selectorformoutput the HTML of the date selector form
+     * @param bool $fromform submitted by form
      * @return array array containing the data needed to render daily sums
      */
-    public static function get_daily_sums_data(string $date, string $selectorformoutput = ''): array {
+    public static function get_daily_sums_data(string $date, string $selectorformoutput = '', bool $fromform = false): array {
         global $DB, $USER;
 
         $commaseparator = current_language() == 'de' ? ',' : '.';
@@ -1978,6 +1979,9 @@ class shopping_cart {
         // Add download URL.
         if (!empty($date)) {
             $dailysumsdata['dailysumspdfurl'] = new moodle_url('/local/shopping_cart/daily_sums_pdf.php', ['date' => $date]);
+        }
+        if ($fromform) {
+            $dailysumsdata['open'] = true;
         }
 
         return $dailysumsdata;
