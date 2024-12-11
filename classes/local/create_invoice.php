@@ -349,6 +349,7 @@ class create_invoice {
         $pos = 1;
         $sum = 0.0;
         $itemhtml = '';
+        $semesterid = 0;
         foreach ($items as $item) {
             if (isset($item->schistoryid)) {
                 $shistoryitem = $DB->get_record('local_shopping_cart_history', ['id' => $item->schistoryid]);
@@ -429,9 +430,10 @@ class create_invoice {
 
                 // Special handling for semester placeholder.
                 if (
-                    !empty($semesterid = $optionsettings->semesterid) &&
-                    $record = $DB->get_record('booking_semesters', ['id' => $semesterid])
+                    !empty($optionsettings->semesterid) &&
+                    $record = $DB->get_record('booking_semesters', ['id' => $optionsettings->semesterid])
                 ) {
+                    $semesterid = $optionsettings->semesterid;
                     $semestername = $record->name;
                     $semestershort = $record->identifier;
                     $semester = $semestername . " ($semestershort)";
@@ -456,6 +458,11 @@ class create_invoice {
 
         $sumstring = number_format((float) $sum, 2, $commaseparator, '');
         $posthtml = str_replace("[[sum]]", $sumstring, $posthtml);
+        if (!empty($semesterid)) {
+            $prehtml[0] = str_replace("[[semester]]", $semester ?? '', $prehtml[0]);
+            $prehtml[0] = str_replace("[[semestername]]", $semestername ?? '', $prehtml[0]);
+            $prehtml[0] = str_replace("[[semestershort]]", $semestershort ?? '', $prehtml[0]);
+        }
         $html = '
         <style>
             h1 {
