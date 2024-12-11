@@ -234,6 +234,11 @@ class create_invoice {
 
         $timecreated = $items[array_key_first($items)]->timecreated;
 
+        // Make sure items are sorted from the most expensive on top to a credit (negative).
+        usort($items, function ($a, $b) {
+            return $b->price <=> $a->price; // Spaceship operator for comparison.
+        });
+
         foreach ($items as $item) {
             if (empty($addressbilling)) {
                 $addressbilling = $item->address_billing ?? 0;
