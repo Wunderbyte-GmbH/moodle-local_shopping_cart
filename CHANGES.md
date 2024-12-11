@@ -1,3 +1,8 @@
+## Version 0.9.45 (2024121100)
+* New feature: Create receipts for ledger records without identifier (for example for credits paid back)
+* Improvement: New placeholder [[credits]]
+* Improvement: Add new semester placeholders to invoices (receipts)
+
 ## Version 0.9.44 (2024120501)
 * Bugfix: Make sure we always get rid of the old costcenter
 
