@@ -406,6 +406,10 @@ class create_invoice {
                 $optionid = $item->itemid;
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
                 $bookingsettings = \mod_booking\singleton_service::get_instance_of_booking_settings_by_cmid($optionsettings->cmid);
+
+                // If option has no semester id, then use semester id from instance.
+                $semesterid = $optionsettings->semesterid ?? $bookingsettings->semesterid ?? 0;
+
                 if (
                     empty($optionsettings->location) &&
                     !empty($optionsettings->sessions) &&
@@ -458,8 +462,7 @@ class create_invoice {
         ' . $prehtml[0] . $itemhtml . $posthtml;
 
         // Special handling for semester placeholder.
-        $semesterid = $optionsettings->semesterid ?? $bookingsettings->semesterid ?? 0;
-        if ($semesterid === 0) {
+        if (empty($semesterid) && class_exists('mod_booking\booking')) {
             $semesterid = $DB->get_field_sql(
                 "SELECT id
                 FROM {booking_semesters}
@@ -472,7 +475,7 @@ class create_invoice {
                 ]
             );
         }
-        if (!empty($semesterid)) {
+        if (!empty($semesterid) && class_exists('mod_booking\booking')) {
             $record = $DB->get_record('booking_semesters', ['id' => $semesterid]);
             $semestername = $record->name;
             $semestershort = $record->identifier;
