@@ -27,6 +27,7 @@ namespace local_shopping_cart;
 
 use advanced_testcase;
 use local_shopping_cart_generator;
+use local_shopping_cart\local\cartstore;
 
 /**
  * Test for shopping_cart_credits
@@ -247,6 +248,56 @@ final class shopping_cart_credits_test extends advanced_testcase {
 
         $balance2 = shopping_cart_credits::get_balance_for_all_costcenters($user1->id);
         $this->assertEmpty($balance2);
+    }
+
+    /**
+     * Test test_cartstore_get_costcenter
+     *
+     * User selects two items with costcenters and no no enough credits in both nocostcenter
+     * and dedicated costcenters and no default costcenter than proceed to checkout
+     *
+     * @covers \cartstore
+     */
+    public function test_cartstore_two_costcenters_not_enough_credits(): void {
+
+        parent::setUp();
+        $this->resetAfterTest(true);
+
+        $user1 = $this->getDataGenerator()->create_user();
+
+        $cartstore = cartstore::instance((int)$user1->id);
+
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'option',
+            7,
+            $user1->id
+        );
+
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'option',
+            8,
+            $user1->id
+        );
+
+        // Set credits for all costcenters.
+        shopping_cart_credits::add_credit($user1->id, 15, 'EUR');
+        shopping_cart_credits::add_credit($user1->id, 13, 'EUR', 'CostCenter1');
+        shopping_cart_credits::add_credit($user1->id, 14, 'EUR', 'CostCenter2');
+
+        $data = $cartstore->get_data();
+
+        // Check total price, costcenter and credits.
+        // CostCenter2 + noname costcenter has to be used.
+        $this->assertEmpty($data['remainingcredit']);
+        $this->assertEquals(5.1, $data['price']);
+        $this->assertEquals(29, $data['deductible']);
+        $this->assertEquals(34.1, $data['initialtotal']);
+        $this->assertEquals(29, $data['credit']);
+        $this->assertEquals('CostCenter2', $data['costcenter']);
+        $this->assertArrayHasKey('items', $data);
+        $this->assertEquals(2, count($data['items']));
     }
 
     /**
