@@ -1,3 +1,8 @@
+## Version 0.9.45 (2024121200)
+* Improvement: add labels to placeholders in checkout success
+* Bugfix: New placeholders [[semester]], [[semestername]], [[semestershort]] now really work
+* Improvement: apply daily sums to report table
+
 ## Version 0.9.45 (2024121100)
 * New feature: Create receipts for ledger records without identifier (for example for credits paid back)
 * Improvement: New placeholder [[credits]]
