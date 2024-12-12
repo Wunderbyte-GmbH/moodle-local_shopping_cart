@@ -52,6 +52,7 @@ class daily_sums_date_selector_form extends moodleform {
         $mform->addElement('date_selector', 'dailysumsdate', get_string('date'));
         $mform->setType('dailysumsdate', PARAM_INT);
         $mform->addElement('hidden', 'wbtfilter', ''); // We don't really need this here, values will be appended later.
+        $mform->setType('wbtfilter', PARAM_RAW);
 
         $this->add_action_buttons(false);
     }
