@@ -43,7 +43,7 @@
 
 }}
 <div class="shopping-cart-price item-price">
-
+    {{#str}} placeholderlabelprice, local_shopping_cart {{/str}}
     {{! prices have tax information }}
     {{#taxesenabled}}<b class="pull-right">{{price_gross}} {{currency}}</b><br><small>({{price_net}} {{currency}} + {{taxpercentage_visual}}%)</small>{{/taxesenabled}}
 
