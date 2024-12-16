@@ -197,9 +197,11 @@ class create_invoice {
         switch (current_language()) {
             case 'de':
                 $dateformat = "d.m.Y";
+                $datetimeformat = "d.m.Y, m:h";
                 break;
             default:
                 $dateformat = "Y-m-d";
+                $datetimeformat = "Y-m-d, m:h";
                 break;
         }
 
@@ -429,7 +431,7 @@ class create_invoice {
                 $tmp = str_replace("[[location]]", $optionsettings->location ?? '', $tmp); // Add location.
                 $tmp = str_replace("[[dayofweektime]]", $optionsettings->dayofweektime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
                 $coursestarttime = !empty($optionsettings->coursestarttime)
-                    ? date($dateformat, $optionsettings->coursestarttime) : $date;
+                    ? date($datetimeformat, $optionsettings->coursestarttime) . get_string('h', 'mod_booking') : $date;
                 $tmp = str_replace("[[coursestarttime]]", $coursestarttime ?? '', $tmp); // E.g. "Mo, 10:00 - 12:00".
             } else {
                 // Placeholders should be replaced with an empty string in case it's no booking option.
