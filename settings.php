@@ -204,6 +204,16 @@ if ($hassiteconfig) {
 
     $settings->add(
         new admin_setting_configtext(
+                'local_shopping_cart/prolongedpaymenttime',
+                get_string('prolongedpaymenttime', 'local_shopping_cart'),
+                get_string('prolongedpaymenttime_desc', 'local_shopping_cart'),
+                0,
+                PARAM_INT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
                 'local_shopping_cart/uniqueidentifier',
                 get_string('uniqueidentifier', 'local_shopping_cart'),
                 get_string('uniqueidentifier_desc', 'local_shopping_cart'),

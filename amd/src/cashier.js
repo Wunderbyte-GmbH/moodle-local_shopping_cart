@@ -332,3 +332,57 @@ function initUserSelectorForm() {
 
     dynamicForm.load();
 }
+
+/**
+ *
+ * @param {*} event
+ */
+export function modifyTimeModal(event) {
+
+    // We two parents up, we find the right element with the necessary information.
+    const element = event.target.closest('.shopping-cart-item');
+
+    const itemid = element.dataset.itemid;
+    const userid = element.dataset.userid;
+    const componentname = element.dataset.component;
+    const area = element.dataset.area;
+
+    const modalForm = new ModalForm({
+
+        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+        formClass: "local_shopping_cart\\form\\modal_modify_time_of_deletion_task",
+        // Add as many arguments as you need, they will be passed to the form:
+        args: {'itemid': itemid,
+               'userid': userid,
+               'componentname': componentname,
+               'area': area},
+        // Pass any configuration settings to the modal dialogue, for example, the title:
+        modalConfig: {title: getString('modifytimeofdeletiontask', 'local_shopping_cart')},
+        // DOM element that should get the focus after the modal dialogue is closed:
+        returnFocus: element
+    });
+    // Listen to events if you want to execute something on form submit.
+    // Event detail will contain everything the process() function returned:
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, e => {
+
+        const response = e.detail;
+        console.log(response);
+        const deletionDate = new Date(response.taskdeletiontimestamp * 1000);
+        const formattedDate = deletionDate.toLocaleString(response.currentlang, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+        getString('modifytimeofdeletiontaskconfirmation', 'local_shopping_cart', formattedDate).then(localizedmessage => {
+
+            showNotification(localizedmessage, "success");
+            return;
+        });
+    });
+
+    // Show the form.
+    modalForm.show();
+
+}

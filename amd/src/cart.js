@@ -36,6 +36,7 @@ import {
     get_string as getString
         }
         from 'core/str';
+import { modifyTimeModal } from './cashier';
 
 export var interval = null;
 export var visbilityevent = false;
@@ -52,6 +53,7 @@ const SELECTORS = {
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
     DISCOUNTCLASS: 'shoppingcart-discount-icon',
+    MODIFYTIMECLASS: 'shoppingcart-modifytime-icon',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationtime',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
@@ -98,8 +100,9 @@ const SELECTORS = {
 
                 deleteItem(itemid, component, area, userid);
             } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
-
                 discountModal(event);
+            } else if (element.classList.contains(SELECTORS.MODIFYTIMECLASS)) {
+                modifyTimeModal(event);
             }
         });
     });

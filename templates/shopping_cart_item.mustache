@@ -92,6 +92,13 @@
         <i class="fa fa-fw pl-2" aria-hidden="true"></i>
     </span>
     {{/nodelete}}
+    {{#iscashier}}
+        <span class="item-button pull-right">
+            <i class="shoppingcart-modifytime-icon fa fa-clock-o pl-2" aria-hidden="true"
+            data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
+            data-itemid="{{itemid}}" data-action="modifyreservationtime" data-userid="{{userid}}"></i>
+        </span>
+    {{/iscashier}}
     <div class="pull-right">
         {{> local_shopping_cart/item_price }}
     </div>

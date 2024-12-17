@@ -340,6 +340,16 @@ class shopping_cart_history {
                     $event->trigger();
 
                     $returnid = $id;
+
+                    // Update timestamp of deletion.
+                    if (
+                        !empty($additionalminutes = get_config('local_shopping_cart', 'prolongedpaymenttime'))
+                    ) {
+                        $time = time();
+                        $additionalseconds = $additionalminutes * 60;
+                        $time += $additionalseconds;
+                        shopping_cart::add_or_reschedule_addhoc_tasks($time, $data->userid);
+                    }
                 } else {
                     $returnid = 0;
                 }
