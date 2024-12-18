@@ -269,7 +269,7 @@ if ($hassiteconfig) {
     <tr>
     <td><!--<img src="url-to-your-logo"--></td>
     <td style="text-align: right">
-    Datum: [[date]]<br><br>
+    Date: [[date]]<br><br>
     </td>
     </tr>
     <tr>
@@ -338,7 +338,54 @@ if ($hassiteconfig) {
         )
     );
 
-    $defaultextrareceipthtml = '';
+    $defaultextrareceipthtml =
+        '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
+        <tr>
+        <td><!--<img src="url-to-your-logo"--></td>
+        <td style="text-align: right">
+        Date: [[date]]<br><br>
+        </td>
+        </tr>
+        <tr>
+        <td style="font-size:1.3em; font-weight: bold;">
+        <br><br>
+        Extra receipt (no invoice)<br>
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2" style="text-align: left;">Transaction number: [[id]]</td>
+        </tr>
+        <tr>
+        <td colspan="2" style="text-align: left;">
+        [[firstname]] [[lastname]]<br>
+        [[mail]]
+        </td>
+        </tr>
+        </table>
+        <br><br><br>
+        <table cellpadding="5" cellspacing="0" style="width: 100%;" border="1px solid #ccc">
+        <tr style="background-color: #cccccc; padding:5px;">
+        <td style="text-align: center; width: 10%;"><b>#</b></td>
+        <td style="text-align: left; width: 40%;"><b>Name</b></td>
+        <td style="text-align: center; width: 25%;"><b>Paid</b></td>
+        <td style="text-align: center; width: 25%;"><b>Credits (added/removed)</b></td>
+        </tr>
+        [[items]]
+        <tr>
+        <td style="text-align: center;">[[pos]]</td>
+        <td style="text-align: left;">[[name]]</td>
+        <td style="text-align: right;">[[price]] EUR</td>
+        <td style="text-align: right;">[[credits]] EUR</td>
+        </tr>
+        [[/items]]
+        </table>
+        <br>
+        <br>
+        Signature:
+        <div style="border: 1px solid #000;">
+        <br><br><br>
+        </div>';
+
     $settings->add(
         new admin_setting_configtextarea(
                 'local_shopping_cart/extrareceiptshtml',
