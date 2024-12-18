@@ -379,6 +379,8 @@ export function modifyTimeModal(event) {
 
             showNotification(localizedmessage, "success");
             return;
+        }).catch(e => {
+            showNotification(`Error: ${e}`, "error");
         });
     });
 

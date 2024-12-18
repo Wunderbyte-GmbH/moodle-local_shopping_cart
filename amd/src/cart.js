@@ -36,7 +36,7 @@ import {
     get_string as getString
         }
         from 'core/str';
-import { modifyTimeModal } from './cashier';
+import {modifyTimeModal} from './cashier';
 
 export var interval = null;
 export var visbilityevent = false;
