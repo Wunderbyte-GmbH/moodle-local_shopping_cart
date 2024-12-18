@@ -201,6 +201,10 @@ class cash_report_table extends wunderbyte_table {
                     'userid' => $values->userid,
                 ]
             );
+            $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), [
+                'href' => $url->out(false),
+                'target' => '_blank',
+            ]);
         } else {
             /* Special receipt - for example for credits paid back
             (there is no identifier in this case but the id in the ledger table).
@@ -215,15 +219,15 @@ class cash_report_table extends wunderbyte_table {
                         'userid' => $values->userid,
                     ]
                 );
+                $out = html_writer::tag('a', get_string('extrareceipt', 'local_shopping_cart'), [
+                    'href' => $url->out(false),
+                    'target' => '_blank',
+                ]);
             } else {
                 // If the setting is off, we return an empty string.
                 return '';
             }
         }
-        $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), [
-            'href' => $url->out(false),
-            'target' => '_blank',
-        ]);
 
         return $out ?? '';
     }

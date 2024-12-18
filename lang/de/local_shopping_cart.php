@@ -327,6 +327,7 @@ $string['es'] = "Spanien";
 $string['eu'] = "Europäische Union";
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
 $string['expirationtime:description'] = 'Wie lange darf sich eine Buchung maximal im Warenkorb befinden?';
+$string['extrareceipt'] = 'Extra-Beleg';
 $string['extrareceipts'] = 'Buchungsbestätigungen auch für Extra-Zeilen im Kassajournal (z.B. "Guthabenrückzahlung bar") erstellen.';
 $string['extrareceiptshtml'] = 'HTML-Vorlage für Extra-Zeilen im Kassajournal';
 $string['extrareceiptshtmldesc'] = 'Lassen Sie dieses Feld leer, wenn Sie die gleiche Vorlage wie für normale Buchungsbestätigungen verwenden möchten.

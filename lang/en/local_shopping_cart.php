@@ -332,6 +332,7 @@ $string['es'] = "Spain";
 $string['eu'] = "European Union";
 $string['expirationtime'] = 'Set expiration time in minutes';
 $string['expirationtime:description'] = 'How long should the item be in the cart?';
+$string['extrareceipt'] = 'Extra receipt';
 $string['extrareceipts'] = 'Also create receipts for special rows (like "Credits paid back").';
 $string['extrareceiptshtml'] = 'HTML template for extra rows';
 $string['extrareceiptshtmldesc'] = 'Leave this empty, if you want to use the same template as for normal receipts.
