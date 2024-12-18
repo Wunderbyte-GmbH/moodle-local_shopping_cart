@@ -1,4 +1,9 @@
-## Version 0.9.45 (2024121200)
+## Version 0.9.47 (2024121800)
+* New feature: Modify expiration of item in cart #114.
+* Improvement: Add minutes & hour to coursestarttime.
+* Bugfix: Fix grunting.
+
+## Version 0.9.46 (2024121200)
 * Improvement: add labels to placeholders in checkout success
 * Bugfix: New placeholders [[semester]], [[semestername]], [[semestershort]] now really work
 * Improvement: apply daily sums to report table
