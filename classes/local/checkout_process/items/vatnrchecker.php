@@ -25,8 +25,9 @@
 
 namespace local_shopping_cart\local\checkout_process\items;
 
-use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
+use local_shopping_cart\local\vatnrchecker as vatnrcheckerhelper;
+use moodle_exception;
 
 /**
  * Class checkout
@@ -69,13 +70,93 @@ class vatnrchecker extends checkout_base_item {
      * Checks status of checkout item.
      * @return array
      */
-    public static function render_body() {
+    public static function render_body($cachedata) {
         global $PAGE;
-        $vatnrchecker = new dynamicvatnrchecker();
-        $vatnrchecker->set_data_for_dynamic_submission();
-        $template = $vatnrchecker->render();
+        $data = [];
+        $data['countries'] = self::get_country_code_name();
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template("local_shopping_cart/vatnrchecker", $data);
         return [
             'template' => $template,
+        ];
+    }
+
+    /**
+     * Renders checkout item.
+     * @return array
+     */
+    public static function get_country_code_name() {
+        $vatnrchecker = new vatnrcheckerhelper();
+        $countries = $vatnrchecker->return_countrycodes_array();
+
+        $formattedcountrycodes = [];
+        foreach ($countries as $code => $name) {
+            $formattedcountrycodes[] = [
+                'code' => $code,
+                'name' => $name,
+            ];
+        }
+        return $formattedcountrycodes;
+    }
+
+    /**
+     * Renders checkout item.
+     * @return bool list of all required address keys
+     */
+    public static function is_mandatory() {
+        if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
+    public static function check_status(
+        $managercachestep,
+        $changedinput
+    ): array {
+        $data = $changedinput ?? [];
+        try {
+            $changedinput = self::get_input_data($changedinput);
+            $vatnrchecker = new vatnrcheckerhelper();
+            $vatnumbercheck = $vatnrchecker->check_vatnr_number(
+                $changedinput['country'],
+                $changedinput['vatnumber']
+            );
+        } catch (\Exception $e) {
+            throw new moodle_exception(
+                'wronginputvalue',
+                'local_shopping_cart',
+                '',
+                null,
+                $e->getMessage()
+            );
+        }
+        return [
+            'data' => $data,
+            'mandatory' => self::is_mandatory(),
+            'valid' => $vatnumbercheck,
+        ];
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
+    public static function get_input_data(
+        $changedinput
+    ) {
+        $changedinput = json_decode($changedinput);
+        $vatcodecountry = explode(',', $changedinput->vatCodeCountry);
+        [$countrycode, $vatnumber] = $vatcodecountry;
+        return [
+            'country' => $countrycode,
+            'vatnumber' => $vatnumber,
         ];
     }
 }

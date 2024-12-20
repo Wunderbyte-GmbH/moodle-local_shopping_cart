@@ -38,11 +38,16 @@
 }}
 
 
-<div class="shopping-cart-checkout-manager-buttons">
+<div
+    class="shopping-cart-checkout-manager-buttons"
+>
   {{#checkout_manager_body.buttons.previous_button}}
     <button
       class="btn btn-secondary shopping-cart-checkout-manager-previousbutton"
-      {{#hidden}}style="display: none;"{{/hidden}}>
+      {{#hidden}}style="display: none;"{{/hidden}}
+      data-action="previous"
+      data-currentstep="{{checkout_manager_body.currentstep}}"
+    >
       {{text}}
     </button>
   {{/checkout_manager_body.buttons.previous_button}}
@@ -50,12 +55,15 @@
   {{#checkout_manager_body.buttons.next_button}}
     <button
       class="btn btn-primary shopping-cart-checkout-manager-nextbutton"
-      {{#hidden}}style="display: none;"{{/hidden}}>
+      {{#hidden}}style="display: none;"{{/hidden}}
+      {{#disabled}}disabled{{/disabled}}
+      data-action="next"
+      data-currentstep="{{checkout_manager_body.currentstep}}"
+    >
       {{text}}
     </button>
   {{/checkout_manager_body.buttons.next_button}}
 </div>
-
 
 <style>
 .shopping-cart-checkout-manager-buttons {
@@ -63,3 +71,10 @@
   text-align: center;
 }
 </style>
+
+{{#js}}
+    require(['local_shopping_cart/checkout_manager'], function(checkoutManager) {
+    checkoutManager.init();
+    });
+
+{{/js}}

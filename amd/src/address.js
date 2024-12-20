@@ -80,13 +80,10 @@ export function newAddressModal(button) {
             // eslint-disable-next-line no-console
             console.log(e);
         });
-
         redrawRenderedAddresses(response.templatedata);
     });
 
-    // Show the form.
     modalForm.show();
-
 }
 
 /**
@@ -96,6 +93,9 @@ export function newAddressModal(button) {
 function redrawRenderedAddresses(data) {
     Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
         Templates.replaceNodeContents(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
+        // Dispatch a custom event after rendering the addresses
+        const event = new CustomEvent('local_shopping_cart/addressesRedrawn', {});
+        document.dispatchEvent(event);
         return null;
     }).catch((e) => {
         // eslint-disable-next-line no-console
