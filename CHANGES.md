@@ -1,3 +1,7 @@
+## Version 0.9.48 (2024122000)
+* Improvement: Add possibility to differentiate between receipts and extra receipts.
+* Improvement: Add default html for extrareceiptshtml (#116).
+
 ## Version 0.9.47 (2024121800)
 * New feature: Modify expiration of item in cart #114.
 * Improvement: Add minutes & hour to coursestarttime.
