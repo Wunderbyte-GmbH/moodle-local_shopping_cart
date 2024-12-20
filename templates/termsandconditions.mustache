@@ -132,7 +132,17 @@
             {{{termsandconditions}}}
         </div>
         <div class="mt-2 ml-4">
-        <input class="form-check-input" id="accepttermsnandconditions" name="accepttermsnandconditions" type="checkbox" value="" required>
+        <input
+            class="form-check-input"
+            id="accepttermsnandconditions"
+            name="accepttermsnandconditions"
+            type="checkbox"
+            value=""
+            {{#selected}}
+                checked
+            {{/selected}}
+            required
+        >
         <label class="form-check-label" for="accepttermsnandconditions">
             {{#str}} confirmterms, local_shopping_cart {{/str}}
         </label>
