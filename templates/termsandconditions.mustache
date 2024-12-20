@@ -1,0 +1,141 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/checkout
+
+    This template will render the shopping cart checkout pate.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+       "count":1,
+       "maxitems":"10",
+       "wwwroot":"http:\/\/localhost\/400_moodle\/",
+       "items":[
+          {
+             "itemid":1,
+             "itemname":"my test item 1",
+             "price":10,
+             "currency":"EUR",
+             "componentname":"local_shopping_cart",
+             "area":"main",
+             "description":"item description",
+             "imageurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/pix\/edu.png",
+             "canceluntil":1669192848,
+             "serviceperiodstart":1667983248,
+             "serviceperiodend":1670575248
+          }
+       ],
+       "price":10,
+       "initialtotal":10,
+       "deductible":0,
+       "checkboxid":"eacee3",
+       "usecredit":1,
+       "expirationtime":1667984148,
+       "checkouturl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php",
+       "currency":"EUR",
+       "credit":0,
+       "remainingcredit":0,
+       "discount":0,
+       "mail":"info@edulabs.org",
+       "name":"HeidelindeBogner",
+       "userid":"2",
+       "historyitems":[
+           {
+              "id":"3",
+              "userid":"2309",
+              "itemid":"2",
+              "itemname":"my test item 2",
+              "price":"10.00",
+              "discount":"0.00",
+              "currency":"EUR",
+              "componentname":"local_shopping_cart",
+              "area":"main",
+              "identifier":"1668028796",
+              "payment":"3",
+              "paymentstatus":"2",
+              "usermodified":"2",
+              "timecreated":"1668028796",
+              "timemodified":"1668028796",
+              "canceluntil":"1669238378",
+              "serviceperiodstart":"0",
+              "serviceperiodend":"0",
+              "gateway":null,
+              "date":"2022-11-09",
+              "canceled":false,
+              "canceluntilstring":"2022-11-23",
+              "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+              "buttonclass":"disabled hidden",
+              "paymentstring":"in bar an der Kassa"
+           },
+           {
+              "id":"2",
+              "userid":"2309",
+              "itemid":"1",
+              "itemname":"my test item 1",
+              "price":"10.00",
+              "discount":"0.00",
+              "currency":"EUR",
+              "componentname":"local_shopping_cart",
+              "area":"main",
+              "identifier":"1668028796",
+              "payment":"3",
+              "paymentstatus":"2",
+              "usermodified":"2",
+              "timecreated":"1668028796",
+              "timemodified":"1668028796",
+              "canceluntil":"1669238377",
+              "serviceperiodstart":"0",
+              "serviceperiodend":"0",
+              "gateway":null,
+              "date":"2022-11-09",
+              "canceled":false,
+              "canceluntilstring":"2022-11-23",
+              "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
+              "buttonclass":"disabled hidden",
+              "paymentstring":"in bar an der Kassa"
+           }
+       ],
+       "canpayback":true,
+       "identifier":"1667983317",
+       "successurl":"http:\/\/localhost\/400_moodle\/local\/shopping_cart\/checkout.php?success=1&identifier=1667983317",
+       "termsandconditions": "Accept these terms and conditions"
+    }
+}}
+
+<div class="form_termsandconditions mt-2 d-flex justify-content-end">
+    <div class="form-group">
+        <div class="text-muted border p-2 bg-light rounded">
+            {{{termsandconditions}}}
+        </div>
+        <div class="mt-2 ml-4">
+        <input class="form-check-input" id="accepttermsnandconditions" name="accepttermsnandconditions" type="checkbox" value="" required>
+        <label class="form-check-label" for="accepttermsnandconditions">
+            {{#str}} confirmterms, local_shopping_cart {{/str}}
+        </label>
+        </div>
+    </div>
+</div>

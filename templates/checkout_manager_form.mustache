@@ -37,10 +37,15 @@
     }
 }}
 
+<div id="shopping-cart-checkout-manager-form">
+    <div id="shopping-cart-checkout-manager-status-bar">
+        {{> local_shopping_cart/checkout_manager_form_progress_bar }}
+    </div>
 
+    {{> local_shopping_cart/checkout_manager_form_body }}
 
+    <div id="shopping-cart-checkout-manager-buttons">
+        {{> local_shopping_cart/checkout_manager_form_buttons }}
+    </div>
 
-
-{{> local_shopping_cart/checkout_manager_form_progress_bar }}
-{{> local_shopping_cart/checkout_manager_form_body }}
-{{> local_shopping_cart/checkout_manager_form_buttons }}
+</div>

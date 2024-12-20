@@ -51,4 +51,54 @@ class termsandconditions extends checkout_base_item {
     public static function get_icon_progress_bar() {
         return 'fa-solid fa-file-signature';
     }
+
+    /**
+     * Renders checkout item.
+     */
+    public static function is_mandatory() {
+        return true;
+    }
+
+    /**
+     * Renders checkout item.
+     * @return array
+     */
+    public static function render_body($cachedata) {
+        global $PAGE;
+        $data = [];
+        $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template("local_shopping_cart/termsandconditions", $data);
+        return [
+            'template' => $template,
+        ];
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
+    public static function check_status(
+        $managercachestep,
+        $changedinput
+    ) {
+        $changedinput = json_decode($changedinput);
+        $data = [];
+        $data[$changedinput->name] = $changedinput->value;
+        return [
+            'data' => $data,
+            'mandatory' => self::is_mandatory(),
+            'valid' => self::is_valid($changedinput->value),
+        ];
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return bool list of all required address keys
+     */
+    public static function is_valid($validationstring) {
+        return $validationstring === 'true';
+    }
 }

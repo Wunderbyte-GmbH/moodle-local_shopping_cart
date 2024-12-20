@@ -149,4 +149,11 @@ $functions = [
                 'type' => 'read',
                 'capabilities' => '',
         ],
+        'local_shopping_cart_control_checkout_process' => [
+            'classname'     => 'local_shopping_cart\external\control_checkout_process',
+            'description'   => 'Update the booking notes via AJAX',
+            'type'          => 'write',
+            'capabilities'  => 'mod/booking:readresponses',
+            'ajax'          => 1,
+        ],
 ];

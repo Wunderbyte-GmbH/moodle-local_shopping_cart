@@ -50,7 +50,7 @@ abstract class checkout_base_item {
     /**
      * Renders checkout item.
      */
-    public static function render_body() {
+    public static function render_body($cachedata) {
         $data = 'some fancy template';
         return $data;
     }

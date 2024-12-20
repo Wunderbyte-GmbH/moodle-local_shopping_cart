@@ -47,18 +47,12 @@ class dynamicvatnrchecker extends dynamic_form {
         global $USER;
 
         $mform = $this->_form;
-
-        $mform->addElement('static', 'entervatnr', '', get_string('entervatnr', 'local_shopping_cart'));
-        $mform->addElement('advcheckbox', 'usevatnr', ' ', get_string('usevatnr', 'local_shopping_cart'));
-
         $options = vatnrchecker::return_countrycodes_array();
         $mform->addElement('select', 'checkvatnrcountrycode', get_string('checkvatnrcountrycode', 'local_shopping_cart'), $options);
-        $mform->hideIf('checkvatnrcountrycode', 'usevatnr', 'neq', '1');
         $mform->addElement('text', 'checkvatnrnumber', get_string('checkvatnrnumber', 'local_shopping_cart'), '');
-        $mform->hideIf('checkvatnrnumber', 'usevatnr', 'neq', '1');
         $mform->setType('checkvatnrnumber', PARAM_ALPHANUM);
-
-        $mform->addElement('submit',
+        $mform->addElement(
+            'submit',
             'submitbutton',
             get_string('verify', 'local_shopping_cart'),
             ['class' => 'vatnrchecker-submitbutton']
@@ -68,15 +62,15 @@ class dynamicvatnrchecker extends dynamic_form {
         $cartstore = cartstore::instance($USER->id);
         if ($cartstore->has_vatnr_data()) {
             $vatnrdata = $cartstore->get_vatnr_data();
-            $mform->addElement('static',
+            $mform->addElement(
+                'static',
                 'printvatnrdata',
                 '',
                 $vatnrdata['companyname'] . "<br>"
                 . $vatnrdata['street'] . "<br>"
-                . $vatnrdata['place'] . "<br>");
-
+                . $vatnrdata['place'] . "<br>"
+            );
         }
-
     }
 
     /**

@@ -34,11 +34,21 @@ namespace local_shopping_cart\local;
  */
 class vatnrchecker {
     /**
-     * VATNRCHECKERURL
-     *
      * @var string
      */
-    const VATNRCHECKERURL = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number';
+    const VATVIESCHECKERURL = 'https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number';
+    /**
+     * @var string
+     */
+    const VATHMRCCHECKERURL = 'https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number';
+    /**
+     * @var string
+     */
+    const VATCOMPLYCHECKERURL = 'https://api.vatcomply.com/vat?vat_number=';
+    /**
+     * @var string
+     */
+    const RESTCOUNTRIESURL = "https://restcountries.com/v3.1/alpha/";
 
     /** @var stdClass $vatnrdataset Allows us to pass on the data we retrieve during verification to data processing */
     public static $vatnrdataset = null;
@@ -52,43 +62,132 @@ class vatnrchecker {
     public static function check_vatnr_number(string $countrycode, string $vatnrnumber) {
         $response = [];
 
-        if (empty($countrycode)
-            || empty($vatnrnumber)) {
-
+        if (
+            empty($countrycode) ||
+            empty($vatnrnumber)
+        ) {
             return '';
         }
+        $vatregion = self::get_vat_region($countrycode);
+        $vatnrnumber = str_replace($countrycode, '', $vatnrnumber);
+        $response = false;
+        switch ($vatregion) {
+            case 'gb':
+                $response = self::validate_with_hmrc($vatnrnumber);
+                break;
+            case 'eu':
+                $response = self::validate_with_vies($countrycode, $vatnrnumber);
+                break;
+            default:
+                $response = self::validate_with_vatcomply($vatnrnumber);
+                break;
+        }
+        $response = json_decode($response, true);
+        if (isset($response['valid']) && $response['valid']) {
+            return true;
+        }
+        return false;
+    }
 
-        $url = self::VATNRCHECKERURL;
-        $params = (object)[
-            "countryCode" => $countrycode,
-            "vatNumber" => $vatnrnumber,
-            "requesterMemberStateCode" => get_config('local_shopping_cart', 'owncountrycode'),
-            "requesterNumber" => get_config('local_shopping_cart', 'ownvatnrnumber'),
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $countrycode
+     * @param string $vatnumber
+     * @return string
+     */
+    public static function validate_with_vies($countrycode, $vatnumber) {
+        $url = self::VATVIESCHECKERURL;
+        $data = json_encode(['countryCode' => $countrycode, 'vatNumber' => $vatnumber]);
+        return self::make_vat_post_request($url, $data);
+    }
 
-        ];
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $vatnumber
+     * @return string
+     */
+    public static function validate_with_hmrc($vatnumber) {
+        $url = self::VATHMRCCHECKERURL;
+        $data = json_encode(['vatNumber' => $vatnumber]);
+        return self::make_vat_post_request($url, $data);
+    }
 
-        $header = [
-            'Content-Type: application/json',
-        ];
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $vatnumber
+     * @return string
+     */
+    public static function validate_with_vatcomply($vatnumber) {
+        $url = self::VATCOMPLYCHECKERURL . urlencode($vatnumber);
+        return file_get_contents($url);
+    }
 
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_URL, $url);
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $url
+     * @param string $data
+     * @return string
+     */
+    public static function make_vat_post_request($url, $data) {
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
         $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            return "Error: " . curl_error($ch);
+        }
+        curl_close($ch);
+        return $response;
+    }
 
-        $info = curl_getinfo($ch);
-        $error = curl_error($ch);
 
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $countrycode
+     * @return string
+     */
+    public static function get_vat_region($countrycode) {
+        if ($countrycode == 'GB') {
+            return 'gb';
+        }
+        if (self::is_european_region($countrycode)) {
+            return 'eu';
+        }
+        return 'restofworld';
+    }
+
+    /**
+     * Function to return an array of localized country codes.
+     * @param string $countrycode
+     * @return bool
+     */
+    public static function is_european_region($countrycode) {
+        $url = self::RESTCOUNTRIESURL . urlencode($countrycode);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            echo "Error: " . curl_error($ch);
+            return false;
+        }
         curl_close($ch);
 
-        return $response;
+        $data = json_decode($response, true);
+        if (
+            isset($data[0]['region']) &&
+            $data[0]['region'] === 'Europe'
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -98,7 +197,6 @@ class vatnrchecker {
      */
     public static function return_countrycodes_array() {
         $stringman = get_string_manager();
-
         $countries = [
             'novatnr' => $stringman->get_string('novatnr', 'local_shopping_cart', null, 'en'),
             'AT' => $stringman->get_string('at', 'local_shopping_cart', null, 'en'),
