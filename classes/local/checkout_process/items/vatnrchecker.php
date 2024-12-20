@@ -74,11 +74,47 @@ class vatnrchecker extends checkout_base_item {
         global $PAGE;
         $data = [];
         $data['countries'] = self::get_country_code_name();
+        self::set_data_from_cache($data, $cachedata['data']);
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/vatnrchecker", $data);
         return [
             'template' => $template,
         ];
+    }
+
+    /**
+     * Generates the data for rendering the templates/address.mustache template.
+     * @param array $termsandconditions
+     * @param array $cachedata
+     */
+    public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata) {
+        $cacheddata = self::get_input_data($cachedata);
+        self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
+        $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
+    }
+
+    /**
+     * Generates the data for rendering the templates/address.mustache template.
+     * @param array $vatnrcheckerdata
+     * @param array $country
+     */
+    public static function set_cached_selected_country(&$vatnrcheckerdata, $countrycode) {
+        foreach ($vatnrcheckerdata['countries'] as &$country) {
+            if ($country['code'] == $countrycode) {
+                $country['selected'] = true;
+            } else {
+                unset($country['selected']);
+            }
+        }
+    }
+
+    /**
+     * Generates the data for rendering the templates/address.mustache template.
+     * @param array $vatnrcheckerdata
+     * @param array $country
+     */
+    public static function set_cached_vatnumber(&$vatnrcheckerdata, $vatnumber) {
+        ;
     }
 
     /**
@@ -122,11 +158,13 @@ class vatnrchecker extends checkout_base_item {
         $data = $changedinput ?? [];
         try {
             $changedinput = self::get_input_data($changedinput);
-            $vatnrchecker = new vatnrcheckerhelper();
-            $vatnumbercheck = $vatnrchecker->check_vatnr_number(
-                $changedinput['country'],
-                $changedinput['vatnumber']
-            );
+            if (isset($changedinput['country']) && isset($changedinput['vatnumber'])) {
+                $vatnrchecker = new vatnrcheckerhelper();
+                $vatnumbercheck = $vatnrchecker->check_vatnr_number(
+                    $changedinput['country'],
+                    $changedinput['vatnumber']
+                );
+            }
         } catch (\Exception $e) {
             throw new moodle_exception(
                 'wronginputvalue',

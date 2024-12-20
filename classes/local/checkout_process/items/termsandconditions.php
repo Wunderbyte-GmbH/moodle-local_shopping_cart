@@ -67,6 +67,8 @@ class termsandconditions extends checkout_base_item {
         global $PAGE;
         $data = [];
         $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+        self::set_data_from_cache($data, $cachedata['data']);
+
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/termsandconditions", $data);
         return [
@@ -86,6 +88,7 @@ class termsandconditions extends checkout_base_item {
         $changedinput = json_decode($changedinput);
         $data = [];
         $data[$changedinput->name] = $changedinput->value;
+
         return [
             'data' => $data,
             'mandatory' => self::is_mandatory(),
@@ -100,5 +103,18 @@ class termsandconditions extends checkout_base_item {
      */
     public static function is_valid($validationstring) {
         return $validationstring === 'true';
+    }
+
+    /**
+     * Generates the data for rendering the templates/address.mustache template.
+     * @param array $termsandconditions
+     * @param array $cachedata
+     */
+    public static function set_data_from_cache(&$termsandconditions, $cachedata) {
+        if ($cachedata['accepttermsnandconditions']) {
+            $termsandconditions['selected'] = true;
+        } else {
+            unset($termsandconditions['selected']);
+        }
     }
 }

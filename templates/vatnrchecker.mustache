@@ -136,9 +136,17 @@
             id="shopping-cart-checkout-manager-country-select"
             class="shopping-cart-checkout-manager-form-select"
             name="country"
+
         >
             {{#countries}}
-                <option value={{code}}>{{name}}</option>
+                <option
+                    value={{code}}
+                    {{#selected}}
+                        selected
+                    {{/selected}}
+                >
+                    {{name}}
+                </option>
             {{/countries}}
         </select>
     </div>
@@ -154,6 +162,7 @@
             name="vat_number"
             class="shopping-cart-checkout-manager-form-input"
             placeholder="Enter VAT number"
+            value="{{vatnumber}}"
         />
     </div>
 
