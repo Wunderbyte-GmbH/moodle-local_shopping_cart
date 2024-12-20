@@ -44,14 +44,14 @@
             <fieldset>
                 {{#saved_addresses}}
                     <div class="ml-2">
-                        {{addresskey}}_selected
                         <input
                             type="radio"
                             name="selectedaddress_{{addresskey}}"
                             value="{{id}}"
                             id="{{addresskey}}address{{id}}"
-                            {{#billing_selected}}checked{{/billing_selected}}
-                            {{#shipping_selected}}checked{{/shipping_selected}}
+                            {{#selected}}
+                                checked
+                            {{/selected}}
                         />
                         <label for="{{addresskey}}address{{id}}" class="local-shopping_cart-savedaddress">
                             {{> local_shopping_cart/address_singleline }}
@@ -62,20 +62,6 @@
             <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
         </div>
     {{/required_addresses}}
-</div>
-
-<div class="pull-right mt-3">
-    <button
-            class="btn btn-primary mr-3"
-            type="submit"
-            name="submit">
-        {{#required_addresses_multiple}}
-            {{#str}} addresses:confirm:multiple, local_shopping_cart {{/str}}
-        {{/required_addresses_multiple}}
-        {{^required_addresses_multiple}}
-            {{#str}} addresses:confirm:single, local_shopping_cart {{/str}}
-        {{/required_addresses_multiple}}
-    </button>
 </div>
 
 {{#js}}

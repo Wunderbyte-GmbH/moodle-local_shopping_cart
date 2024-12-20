@@ -62,7 +62,7 @@ class addresses extends checkout_base_item {
     public static function render_body($cachedata) {
         global $PAGE;
         $data = self::get_template_render_data();
-        self::set_cached_data($data['saved_addresses'], $cachedata['data']);
+        $data['required_addresses'] = self::set_data_from_cache($data['required_addresses'], $cachedata['data']);
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/address", $data);
         return [
@@ -75,19 +75,21 @@ class addresses extends checkout_base_item {
      * @param array $data
      * @param array $cachedata
      */
-    public static function set_cached_data(&$savedaddresses, $cachedata) {
-        foreach ($savedaddresses as $savedaddress) {
-            if ($savedaddress->id == $cachedata['selectedaddress_billing']) {
-                $savedaddress->billing_selected = true;
-            } else {
-                $savedaddress->billing_selected = false;
+    public static function set_data_from_cache(&$requiredaddresses, $cachedata) {
+        foreach ($requiredaddresses as &$requiredaddress) {
+            $newsavedaddresses = [];
+            foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
+                $savedaddresscopy = clone $savedaddress;
+                if ($savedaddresscopy->id == $cachedata['selectedaddress_' . $requiredaddress['addresskey']]) {
+                    $savedaddresscopy->selected = true;
+                } else {
+                    unset($savedaddresscopy->selected);
+                }
+                $newsavedaddresses[] = $savedaddresscopy;
             }
-            if ($savedaddress->id == $cachedata['selectedaddress_shipping']) {
-                $savedaddress->shipping_selected = true;
-            } else {
-                $savedaddress->shipping_selected = false;
-            }
+            $requiredaddress['saved_addresses'] = $newsavedaddresses;
         }
+        return $requiredaddresses;
     }
 
     /**
@@ -117,10 +119,12 @@ class addresses extends checkout_base_item {
             $dbaddress->country = $countries[$dbaddress->state];
             $savedaddresses[] = $dbaddress;
         }
-        $data['saved_addresses'] = $savedaddresses;
 
         $requiredaddresseslocalized = self::get_required_address_data();
         $data['required_addresses'] = array_values($requiredaddresseslocalized);
+        foreach ($data['required_addresses'] as &$requiredaddress) {
+            $requiredaddress['saved_addresses'] = $savedaddresses;
+        }
         $data['required_addresses_keys'] = array_reduce($requiredaddresseslocalized, function ($keys, $addressdata) {
             $keys[] = $addressdata['addresskey'];
             return $keys;
