@@ -40,13 +40,24 @@
 
 
 
-<div class="shopping-cart-checkout-manager-status-bar">
+<div
+    class="shopping-cart-checkout-manager-status-bar"
+>
 {{#checkout_manager_body.item_list}}
 <div class="shopping-cart-checkout-manager-status-bar-line"></div>
 <div class="shopping-cart-checkout-manager-status-item {{status}}">
-    <div class="circle">
-    <i class="{{item}}"></i>
-    </div>
+    <button
+        class="circle"
+        data-action=""
+        data-currentstep="{{step}}"
+    >
+        <i class="{{item}}"></i>
+            {{#valid}}
+                <span class="shopping-cart-checkout-manager-valid-checkmark">
+                    <i class="icon fa-solid fa-check"></i>
+                </span>
+            {{/valid}}
+    </button>
 </div>
 {{/checkout_manager_body.item_list}}
 </div>
@@ -100,5 +111,28 @@
   .shopping-cart-checkout-manager-status-item.inactive .circle {
     background-color: gray;
     border-color: gray;
+  }
+
+  .shopping-cart-checkout-manager-valid-checkmark {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    background-color: #77ab83;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 12px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    line-height: 1;
+  }
+
+  .shopping-cart-checkout-manager-valid-checkmark .icon {
+    line-height: 1;
+    vertical-align: middle;
+    padding-left: 7px;
   }
 </style>

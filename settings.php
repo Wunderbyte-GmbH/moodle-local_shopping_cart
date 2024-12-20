@@ -842,6 +842,13 @@ if ($hassiteconfig) {
         PARAM_ALPHANUM
     ));
 
+    $settings->add(new admin_setting_configcheckbox(
+        $componentname . '/onlywithvatnrnumber',
+        get_string('onlywithvatnrnumber', $componentname),
+        get_string('onlywithvatnrnumber_desc', $componentname),
+        0,
+    ));
+
     // Add a heading for the section.
     $settings->add(new admin_setting_heading(
         'local_shopping_cart/privacyheading',

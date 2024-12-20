@@ -157,7 +157,7 @@ if (isset($success) && isset($historylist)) {
     ) {
         $vatnrchecker = new dynamicvatnrchecker();
         $vatnrchecker->set_data_for_dynamic_submission();
-        $data['showvatnrchecker'] = $vatnrchecker->render();
+        //$data['showvatnrchecker'] = $vatnrchecker->render();
     }
     $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 }
@@ -192,8 +192,8 @@ if ($hasallrequiredaddresses) {
     $data['selected_addresses'] = $selectedaddresses;
     $data['show_selected_addresses'] = true;
 }
-$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
-$checkoutmanager = new checkout_manager();
+//$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
+$checkoutmanager = new checkout_manager($data['userid']);
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);
 if (empty($jsononly)) {

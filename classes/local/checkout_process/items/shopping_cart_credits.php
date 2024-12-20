@@ -49,4 +49,35 @@ class shopping_cart_credits extends checkout_base_item {
     public static function is_head() {
         return true;
     }
+
+    /**
+     * Renders checkout item.
+     */
+    public static function is_mandatory() {
+        return false;
+    }
+
+    /**
+     * Renders checkout item.
+     * @return array
+     */
+    public static function render_body($cachedata) {
+        global $PAGE;
+        return [
+            'template' => 'tbd',
+        ];
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
+    public static function check_status(): array {
+        return [
+            'data' => 'testing',
+            'mandatory' => self::is_mandatory(),
+            'valid' => false,
+        ];
+    }
 }

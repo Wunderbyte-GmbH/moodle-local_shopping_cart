@@ -56,17 +56,38 @@ class addresses extends checkout_base_item {
 
     /**
      * Renders checkout item.
+     * @param array $cachedata
      * @return array
      */
-    public static function render_body() {
+    public static function render_body($cachedata) {
         global $PAGE;
         $data = self::get_template_render_data();
+        self::set_cached_data($data['saved_addresses'], $cachedata['data']);
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/address", $data);
-
         return [
             'template' => $template,
         ];
+    }
+
+    /**
+     * Generates the data for rendering the templates/address.mustache template.
+     * @param array $data
+     * @param array $cachedata
+     */
+    public static function set_cached_data(&$savedaddresses, $cachedata) {
+        foreach ($savedaddresses as $savedaddress) {
+            if ($savedaddress->id == $cachedata['selectedaddress_billing']) {
+                $savedaddress->billing_selected = true;
+            } else {
+                $savedaddress->billing_selected = false;
+            }
+            if ($savedaddress->id == $cachedata['selectedaddress_shipping']) {
+                $savedaddress->shipping_selected = true;
+            } else {
+                $savedaddress->shipping_selected = false;
+            }
+        }
     }
 
     /**
@@ -127,6 +148,13 @@ class addresses extends checkout_base_item {
     }
 
     /**
+     * Renders checkout item.
+     */
+    public static function is_mandatory() {
+        return true;
+    }
+
+    /**
      * Returns the required-address keys as specified in the plugin config.
      *
      * @return array list of all required address keys
@@ -135,5 +163,47 @@ class addresses extends checkout_base_item {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
         return $requiredaddresskeys;
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return array list of all required address keys
+     */
+    public static function check_status(
+        $managercachestep,
+        $changedinput
+    ) {
+        $data = $managercachestep['data'];
+        $requiredaddresskeys = self::get_required_address_keys();
+        $changedinput = json_decode($changedinput);
+        foreach ($requiredaddresskeys as $requiredaddresskey) {
+            if (str_contains($changedinput->name, $requiredaddresskey)) {
+                $data[$changedinput->name] = $changedinput->value;
+            }
+        }
+        return [
+            'data' => $data,
+            'mandatory' => self::is_mandatory(),
+            'valid' => self::is_valid($data, $requiredaddresskeys),
+        ];
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return bool list of all required address keys
+     */
+    public static function is_valid(
+        $requiredaddresskeys,
+        $data
+    ) {
+        $requiredkeys = count($requiredaddresskeys);
+        $currentkeys = count($data);
+
+        if ($requiredkeys == $currentkeys) {
+            return true;
+        }
+        return false;
     }
 }
