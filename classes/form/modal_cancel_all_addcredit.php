@@ -59,13 +59,38 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $data = new stdClass();
 
         $list = '';
-        $quotapercentage = get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
+        $consumedvalue = '';
+        // Allpy fixed consumed quota 1st.
+        $quotafixedpercentage = get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
+        if (isset($quotafixedpercentage) && $quotafixedpercentage > 0) {
+            $consumedvalue = " (-$quotafixedpercentage%)";
+        }
+        $quotaconsumed = get_config('local_shopping_cart', 'calculateconsumation');
         foreach ($bookedusers as $user) {
             $content = "$user->firstname $user->lastname $user->email, $user->price $user->currency";
-            if (isset($quotapercentage) && $quotapercentage > 0) {
-                $content .= " (-$quotapercentage%)";
+            // Allpy actual consummed quota only if no fixed consumed quota defined.
+            if (
+                $quotaconsumed
+                && (!isset($quotafixedpercentage) || (isset($quotafixedpercentage) && $quotafixedpercentage <= 0))
+            ) {
+                $userhistory = shopping_cart_history::get_most_recent_historyitem(
+                    $componentname,
+                    $area,
+                    $itemid,
+                    $user->userid
+                );
+                if (isset($userhistory->id)) {
+                    $consumed = (object)shopping_cart::get_quota_consumed(
+                        $componentname,
+                        $area,
+                        $itemid,
+                        $user->userid,
+                        $userhistory->id
+                    );
+                    $consumedvalue = ' (-' . $consumed->quota * 100 . '%)';
+                }
             }
-            $list .= html_writer::tag('li', $content);
+            $list .= html_writer::tag('li', $content . $consumedvalue);
         }
 
         if (count($bookedusers) == 0) {
