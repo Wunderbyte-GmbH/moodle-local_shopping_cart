@@ -843,9 +843,9 @@ if ($hassiteconfig) {
     ));
 
     $settings->add(new admin_setting_configcheckbox(
-        $componentname . '/onlywithvatnrnumber',
-        get_string('onlywithvatnrnumber', $componentname),
-        get_string('onlywithvatnrnumber_desc', $componentname),
+        'local_shopping_cart/onlywithvatnrnumber',
+        get_string('onlywithvatnrnumber', 'local_shopping_cart'),
+        get_string('onlywithvatnrnumber_desc', 'local_shopping_cart'),
         0,
     ));
 
