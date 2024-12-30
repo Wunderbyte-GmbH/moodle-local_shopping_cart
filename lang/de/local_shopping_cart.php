@@ -106,6 +106,7 @@ $string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
 $string['bookingfeeonlyonce_desc'] = 'Die Buchungsgebühr wird nur einmal für jede Nutzer:in eingehoben. Sobald einmal bezahlt wurde, sind alle weiteren Buchungen ohne Buchungsgebühr.';
 $string['bookingfeevariable'] = 'Variable Buchungsgebühr';
 $string['bookingfeevariable_desc'] = 'Entsprechend der Kostenstelle, können unterschiedliche Buchungsgebühren angegeben werden.';
+$string['cachedef_cachebookingpreprocess'] = 'Buchungsvorverarbeitung Cache';
 $string['cachedef_cachedcashreport'] = 'Kassajournal-Cache';
 $string['cachedef_cacherebooking'] = 'Umbuchungs-Cache (Rebooking Cache)';
 $string['cachedef_cacheshopping'] = 'Shopping Cache';
