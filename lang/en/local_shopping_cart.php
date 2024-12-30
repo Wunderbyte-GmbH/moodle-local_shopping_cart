@@ -106,6 +106,7 @@ $string['bookingfeeonlyonce'] = 'Charge booking fee only once';
 $string['bookingfeeonlyonce_desc'] = 'Every user pays the booking fee only once, no matter how many checkouts she makes.';
 $string['bookingfeevariable'] = 'Variable Booking Fee';
 $string['bookingfeevariable_desc'] = 'Depending on the costcenter, different booking fees can be specified.';
+$string['cachedef_cachebookingpreprocess'] = 'Booking preprocessing cache';
 $string['cachedef_cachedcashreport'] = 'Cash report cache';
 $string['cachedef_cacherebooking'] = 'Rebooking cache';
 $string['cachedef_cacheshopping'] = 'Shopping cache';
