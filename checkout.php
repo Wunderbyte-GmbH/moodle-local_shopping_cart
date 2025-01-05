@@ -124,6 +124,7 @@ if (isset($success) && isset($historylist)) {
         $data['failed'] = 1;
         $data['finished'] = 1;
     }
+    $data["userid"] = $USER->id;
 } else {
     $cartstore = cartstore::instance($userid);
     $data = $cartstore->get_localized_data();
