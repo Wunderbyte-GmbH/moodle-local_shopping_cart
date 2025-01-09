@@ -31,7 +31,7 @@ $string['accessdenied'] = 'Access denied';
 $string['accountid'] = 'Payment account';
 $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
-    You can\'t apply both at the same time.';
+    You can\'t apply both at the same time. If you enter a negative amount, this amout will added to the price that will therefore increase.';
 $string['addedtocart'] = '{$a} was added to your cart.';
 $string['additonalcashiersection'] = 'Add text for cashier section';
 $string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';

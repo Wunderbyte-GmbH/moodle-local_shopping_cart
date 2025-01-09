@@ -32,7 +32,7 @@ $string['accountid'] = 'Zahlungsanbieter-Konto';
 $string['accountid:description'] =
         'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
-    nicht aber um beides.';
+    nicht aber um beides. Wenn Sie einen negativen Wert als Betrag wählen, wird der Preis um diesen Betrag erhöht.';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
 $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';

@@ -189,7 +189,6 @@ class cartstore {
         $initialprice = $item['price'] + $initialdiscount;
 
         if (!empty($percent)) {
-
             // Validation of percent value.
             if ($percent < 0 || $percent > 100) {
                 throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
@@ -197,14 +196,16 @@ class cartstore {
             $item['discount'] = $initialprice / 100 * $percent;
 
             // If setting to round discounts is turned on, we round to full int.
-            $item['discount'] = round($item['discount'],
-                    $discountprecision);
+            $item['discount'] = round(
+                $item['discount'],
+                    $discountprecision
+                );
 
             $item['price'] =
                     $initialprice - $item['discount'];
         } else if (!empty($absolute)) {
             // Validation of absolute value.
-            if ($absolute < 0 || $absolute > $initialprice) {
+            if ($absolute > $initialprice) {
                 throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
             }
             $item['discount'] = $absolute;
