@@ -321,6 +321,7 @@ $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.
 $string['error:nofieldchosen'] = 'Sie müssen ein Feld auswählen.';
 $string['error:noreason'] = 'Bitte geben Sie einen Grund an.';
 $string['error:notpositive'] = 'Bitte geben Sie eine positive Zahl ein.';
+$string['error:useonlyonefield'] = 'Sie können jeweils nur eines dieser Felder nutzen';
 $string['errorinvalidvatnr'] = 'Die übermittelte UID {$a} ist ungültig';
 $string['errorselectcountry'] = 'Bitte Land auswählen';
 $string['es'] = "Spanien";

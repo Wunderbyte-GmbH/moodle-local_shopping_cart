@@ -326,6 +326,7 @@ $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:nofieldchosen'] = 'You have to choose a field.';
 $string['error:noreason'] = 'Please enter a reason.';
 $string['error:notpositive'] = 'Please enter a positive number.';
+$string['error:useonlyonefield'] = 'Can you use only one of these fields at the time';
 $string['errorinvalidvatnr'] = 'The given VAT number {$a} is invalid';
 $string['errorselectcountry'] = 'Please choose a country';
 $string['es'] = "Spain";

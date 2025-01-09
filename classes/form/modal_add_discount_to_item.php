@@ -72,13 +72,36 @@ class modal_add_discount_to_item extends dynamic_form {
         $mform->addHelpButton('discountpercent', 'discountpercent', 'local_shopping_cart');
         $mform->setType('discountpercent', PARAM_FLOAT);
         $mform->setDefault('discountpercent', 0);
-        $mform->addRule('discountpercent', get_string('floatonly', 'local_shopping_cart'), 'numeric', null , 'client');
+        $mform->addRule('discountpercent', get_string('floatonly', 'local_shopping_cart'), 'numeric', null, 'client');
 
         $mform->addElement('float', 'discountabsolute', get_string('discountabsolute', 'local_shopping_cart'));
         $mform->addHelpButton('discountabsolute', 'discountabsolute', 'local_shopping_cart');
         $mform->setType('discountabsolute', PARAM_FLOAT);
         $mform->setDefault('discountabsolute', 0);
-        $mform->addRule('discountabsolute', get_string('floatonly', 'local_shopping_cart'), 'numeric', null , 'client');
+        $mform->addRule('discountabsolute', get_string('floatonly', 'local_shopping_cart'), 'numeric', null, 'client');
+
+        if (
+            get_config('local_shopping_cart', 'enableinstallments')
+        ) {
+            global $DB;
+            $itemid = $this->_ajaxformdata["itemid"];
+            $iteminfos = $DB->get_record('local_shopping_cart_iteminfo', ['itemid' => $itemid]);
+            $data = json_decode($iteminfos->json);
+            if (
+                isset($data->allowinstallment)
+                && !empty($data->allowinstallment)
+                && isset($data->downpayment)
+            ) {
+                $mform->addElement(
+                    'float',
+                    'downpayment',
+                    get_string('downpayment', 'local_shopping_cart')
+                );
+                $mform->addHelpButton('downpayment', 'downpayment', 'local_shopping_cart');
+                $mform->setType('downpayment', PARAM_FLOAT);
+                $mform->setDefault('downpayment', (float) $data->downpayment);
+            }
+        }
     }
 
     /**
@@ -115,7 +138,9 @@ class modal_add_discount_to_item extends dynamic_form {
             $data->area,
             $data->itemid,
             $data->discountpercent,
-            $data->discountabsolute);
+            $data->discountabsolute,
+            $data->downpayment ?? -1
+        );
 
         return $data;
     }
@@ -210,8 +235,12 @@ class modal_add_discount_to_item extends dynamic_form {
         $errors = [];
 
         if (!empty($data['discountpercent']) && !empty($data['discountabsolute'])) {
-            $errors['discountpercent'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
-            $errors['discountabsolute'] = get_string('onlyonevaluecanbeset', 'local_shopping_cart');
+            $errors['discountpercent'] = get_string('error:useonlyonefield', 'local_shopping_cart');
+            $errors['discountabsolute'] = get_string('error:useonlyonefield', 'local_shopping_cart');
+        }
+
+        if (!empty($data['downpayment']) && $data['downpayment'] < 0) {
+            $errors['downpayment'] = get_string('error:negativevaluenotallowed', 'local_shopping_cart');
         }
 
         return $errors;

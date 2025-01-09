@@ -28,6 +28,7 @@ namespace local_shopping_cart\local;
 use coding_exception;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\local\pricemodifier\modifier_info;
+use local_shopping_cart\local\pricemodifier\modifiers\installments;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 use context_system;
@@ -158,6 +159,7 @@ class cartstore {
      * @param int $itemid
      * @param float $percent
      * @param float $absolute
+     * @param float downpayment
      * @return array
      */
     public function add_discount_to_item(
@@ -165,7 +167,9 @@ class cartstore {
         string $area,
         int $itemid,
         float $percent,
-        float $absolute): array {
+        float $absolute,
+        float $downpayment = -1,
+    ): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
@@ -218,6 +222,9 @@ class cartstore {
             // If both are empty, we unset discount.
             $item['price'] = $initialprice;
             unset($item['discount']);
+        }
+        if ($downpayment >= 0) {
+            installments::set_downpayment_for_user_and_option($this->userid, $itemid, $downpayment);
         }
 
         $this->save_item($item);

@@ -134,6 +134,10 @@ abstract class installments extends modifier_base {
                     $installmentslinkeditems = [];
                     $openamount = $originalprice;
 
+                    $downpaymentdata = self::get_downpayment_for_user_and_option($data['userid'], $record->itemid);
+                    if (!empty($downpaymentdata)) {
+                        $jsonobject->downpayment = $downpaymentdata['newdownpayment'];
+                    }
                     if (!empty($linkeditems)) {
                         // First, we calculate the ratio of the downpayment.
                         $downpaymentratio = $jsonobject->downpayment / $originalprice;
@@ -304,5 +308,55 @@ abstract class installments extends modifier_base {
         }
 
         return $items ?? [];
+    }
+
+    /**
+     * Get downpayment from cache for user and option.
+     *
+     * @param int $userid
+     * @param int $optionid
+     *
+     * @return array
+     *
+     */
+    public static function get_downpayment_for_user_and_option(int $userid, int $optionid) {
+        global $USER;
+
+        $cache = \cache::make('local_shopping_cart', 'cashier');
+        $cachekey = $userid . "_" . $optionid;
+        $data = $cache->get($cachekey);
+        if (
+            empty($data)
+            || $data['expirationtime'] < time()
+        ) {
+            return [];
+        }
+        return $data;
+    }
+
+    /**
+     * Set downpayment for user for option.
+     *
+     * @param int $userid
+     * @param int $optionid
+     * @param float $newdownpayment
+     *
+     * @return array
+     *
+     */
+    public static function set_downpayment_for_user_and_option(int $userid, int $optionid, float $newdownpayment) {
+        global $USER;
+
+        $cache = \cache::make('local_shopping_cart', 'cashier');
+        $cachekey = (string) $userid . "_" . (string) $optionid; // (string) $userid . (string) $optionid;
+
+        $expirationtime = get_config('local_shopping_cart', 'expirationtime');
+        $data = [
+            'newdownpayment' => $newdownpayment,
+            'expirationtime' => strtotime("+ $expirationtime minutes"),
+        ];
+
+        $cache->set($cachekey, $data);
+        return $data;
     }
 }
