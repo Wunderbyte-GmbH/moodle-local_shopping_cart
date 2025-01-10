@@ -401,7 +401,7 @@ class create_invoice {
             }
             $tmp = str_replace("[[name]]", $item->itemname, $tmp);
             $tmp = str_replace("[[pos]]", $pos, $tmp);
-            $tmp = str_replace("[[credits]]", $item->credits ?? '', $tmp);
+            $tmp = str_replace("[[credits]]", $item->credits ?? 0, $tmp);
 
             // If it's a booking option, we add option-specific data.
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
