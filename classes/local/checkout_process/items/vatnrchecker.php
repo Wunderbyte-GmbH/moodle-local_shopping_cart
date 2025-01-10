@@ -51,7 +51,7 @@ class vatnrchecker extends checkout_base_item {
         if (
             get_config('local_shopping_cart', 'showvatnrchecker')
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
-            && !empty(get_config('local_shopping_cart', 'ownvatnrnumber'))
+            && !empty(get_config('local_shopping_cart', 'onlywithvatnrnumber'))
         ) {
             return true;
         }
