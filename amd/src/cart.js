@@ -63,7 +63,7 @@ const SELECTORS = {
     PRICELABELAREA: '.sc_price_label',
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
-    ACCEPTTERMS: '#accepttermsnandconditions',
+    ACCEPTTERMS: '#accepttermsandconditions',
     CHECKVATNRFORM: 'div.form_vatnrchecker',
 };
 /**

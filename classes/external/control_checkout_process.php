@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 
 defined('MOODLE_INTERNAL') || die();
@@ -98,8 +99,12 @@ class control_checkout_process extends external_api {
         }
         $checkoutmanagerdata = $checkoutmanager->render_overview();
         $jsfooter = $PAGE->requires->get_end_code();
+        $cartstore = cartstore::instance((int)$USER->id);
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
+        $data = array_merge($data, $checkoutmanagerdata);
         return [
-            'data' => json_encode($checkoutmanagerdata),
+            'data' => json_encode($data),
             'jsscript' => $jsfooter,
             'reloadbody' => $reloadbody,
             'managerdata' => json_encode($managerdata),

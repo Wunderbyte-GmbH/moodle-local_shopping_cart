@@ -37,22 +37,48 @@
     }
 }}
 
-<div id="shopping-cart-checkout-manager-form">
-    <div id="shopping-cart-checkout-manager-status-bar">
-        {{> local_shopping_cart/checkout_manager_form_progress_bar }}
-    </div>
 
-    {{> local_shopping_cart/checkout_manager_form_body }}
-    {{> local_shopping_cart/checkout_manager_feedback }}
+<div class="shopping-cart-checkout-manager-alert-container">
+    {{#validationmessage}}
+        <div class="shopping-cart-checkout-manager-alert shopping-cart-checkout-manager-alert-success">
+            <i class="fa fa-check-circle"></i>
+            {{validationmessage}}
+        </div>
+    {{/validationmessage}}
 
-
-    <div id="shopping-cart-checkout-manager-buttons">
-        {{> local_shopping_cart/checkout_manager_form_buttons }}
-    </div>
+    {{#errormessage}}
+        <div class="shopping-cart-checkout-manager-alert shopping-cart-checkout-manager-alert-error">
+            <i class="fa fa-exclamation-circle"></i>
+            {{errormessage}}
+        </div>
+    {{/errormessage}}
 </div>
 
-{{#js}}
-    require(['core_payment/gateways_modal'], function(fn) {
-        fn.init();
-    });
-{{/js}}
+
+<style>
+    .shopping-cart-checkout-manager-alert {
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .shopping-cart-checkout-manager-alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .shopping-cart-checkout-manager-alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .shopping-cart-checkout-manager-alert i {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+</style>

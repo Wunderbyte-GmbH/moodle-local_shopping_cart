@@ -176,14 +176,16 @@ class addresses extends checkout_base_item {
      */
     public static function check_status(
         $managercachestep,
-        $changedinput
+        $validationdata
     ) {
         $data = $managercachestep['data'];
         $requiredaddresskeys = self::get_required_address_keys();
-        $changedinput = json_decode($changedinput);
+        $validationdata = json_decode($validationdata);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
-            if (str_contains($changedinput->name, $requiredaddresskey)) {
-                $data[$changedinput->name] = $changedinput->value;
+            foreach ($validationdata as $address) {
+                if (str_contains($address->name, $requiredaddresskey)) {
+                    $data[$address->name] = $address->value;
+                }
             }
         }
         return [
@@ -202,10 +204,10 @@ class addresses extends checkout_base_item {
         $requiredaddresskeys,
         $data
     ) {
-        $requiredkeys = count($requiredaddresskeys);
+        $requiredkeys = $requiredaddresskeys ? count($requiredaddresskeys) : null;
         $currentkeys = count($data);
 
-        if ($requiredkeys == $currentkeys) {
+        if ($requiredkeys === $currentkeys) {
             return true;
         }
         return false;

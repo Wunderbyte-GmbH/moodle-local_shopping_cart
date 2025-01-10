@@ -63,6 +63,14 @@
       {{text}}
     </button>
   {{/checkout_manager_body.buttons.next_button}}
+
+  {{#checkout_manager_body.buttons.checkout_button}}
+    <div
+        class="shopping-cart-checkout-manager-checkout"
+    >
+        {{> local_shopping_cart/checkout_payment_checkout}}
+    </div>
+  {{/checkout_manager_body.buttons.checkout_button}}
 </div>
 
 <style>

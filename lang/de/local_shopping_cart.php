@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['acceptadditionalconditions'] = "Bestätigung zusätzlicher Konditionen verlangen";
+$string['acceptadditionalconditions:description'] = "Ohne Häkchen bei den zusätzlichen Konditionen ist buchen nicht möglich.";
 $string['accepttermsandconditions'] = "Bestätigung der AGBs verlangen";
 $string['accepttermsandconditions:description'] = "Ohne Häkchen bei den AGBs ist buchen nicht möglich.";
 $string['accessdenied'] = 'Zugriff verweigert';
@@ -34,6 +36,9 @@ $string['accountid:description'] =
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides. Wenn Sie einen negativen Wert als Betrag wählen, wird der Preis um diesen Betrag erhöht.';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
+$string['additionalconditions'] = "Zusätzliche Konditionen";
+$string['additionalconditions:description'] = "Sie können hier z.B. ein PDF verlinken. Für Übersetzungen verwenden Sie die
+ <a href='https://docs.moodle.org/402/de/Multi-language_content_filter' target='_blank'>Moodle Sprachfilter</a>.";
 $string['additonalcashiersection'] = 'Text für den Kassa-Bereich';
 $string['additonalcashiersection:description'] = 'HTML Shortcodes oder Buchungsoptionen für den Kassabereich hinzufügen';
 $string['addon'] = 'Zusätzliche Zeit festlegen';
@@ -177,6 +182,7 @@ $string['choosedefaultcountrydesc'] = 'Wählen Sie das Standardland für die Rec
  $string['choosehighertimestamp'] = 'Wählen Sie einen späteren Zeipunkt';
 $string['chooseplatform'] = 'Plattform wählen';
 $string['chooseplatformdesc'] = 'Wählen Sie Ihre Rechnungsplattform aus.';
+$string['confirmadditionalconditions'] = "Zusätzliche Konditionen akzeptieren";
 $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Käufer:innen wirklich stornieren?
     Folgende Nutzer:innen erhalten den Kaufpreis zurück:
     {$a->userlist}
@@ -225,6 +231,7 @@ $string['confirmcanceltitle'] = 'Stornierung bestätigen';
 $string['confirmpaidback'] = 'Bestätige Auszahlung';
 $string['confirmpaidbackbody'] = 'Wollen Sie die Auszahlung bestätigen? Das setzt das Guthaben auf 0.';
 $string['confirmpaidbacktitle'] = 'Bestätige Auszahlung';
+$string['confirmpayment'] = 'Bezahlung bestätigen';
 $string['confirmterms'] = "AGBs akzeptieren";
 $string['confirmzeropricecheckout'] = 'Bestätige';
 $string['confirmzeropricecheckoutbody'] = 'Für diese Buchung ist keine Zahlung notwendig.
@@ -612,6 +619,8 @@ $string['usernotboughtitem'] = 'Nutzer/in mit der id {$a->userid} konnte den Ari
 $string['usevatnr'] = "UID eingeben";
 $string['vatnrcheckerheading'] = "UID überprüfen";
 $string['vatnrcheckerheadingdescription'] = "Vor dem Zahlen kann eine UID eingegeben und überprüft werden";
+$string['vatnrerrorfeedback'] = 'UID ist nicht gültig!';
+$string['vatnrvalidationfeedback'] = 'Gültige UID erkannt';
 $string['verify'] = "UID prüfen";
 $string['wronginputvalue'] = 'Die eingegebenen Werte sind ungültig.';
 $string['xi'] = "Nordirland";

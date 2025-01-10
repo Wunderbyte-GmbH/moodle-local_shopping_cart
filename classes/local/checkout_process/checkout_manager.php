@@ -76,8 +76,8 @@ class checkout_manager {
         $this->controlparameter = $controlparameter;
         $this->managercache = self::get_cache($identifier);
         $this->itemlist = self::get_itemlist_preprocess();
-        // TESTING
-        // $this->controlparameter['currentstep'] = 2;
+        self::set_body_mandatory_count();
+        //$this->controlparameter['currentstep'] = 2;
     }
 
     /**
@@ -105,14 +105,18 @@ class checkout_manager {
         }
         $currentstep = self::set_current_step();
         $checkoutmanager['checkout_manager_body']['currentstep'] = $currentstep;
+        $checkoutmanager['checkout_manager_body']['show_progress_line'] =
+            count($checkoutmanager['checkout_manager_body']['item_list']) > 1 ? true : false;
         self::set_active_page($checkoutmanager['checkout_manager_body']['item_list'], $currentstep);
         if (self::has_multiple_items($checkoutmanager['checkout_manager_body'])) {
             $checkoutmanager['checkout_manager_body']['buttons'] =
-                self::render_checkout_buttons(
+                self::render_navigation_buttons(
                     $checkoutmanager['checkout_manager_body']['item_list'],
                     $currentstep
                 );
         }
+        $checkoutmanager['checkout_manager_body']['buttons']['checkout_button'] =
+                self::render_checkout_button();
         $checkoutmanager['checkout_manager_body']['body'] =
             self::render_checkout_body($checkoutmanager['checkout_manager_body']['item_list']);
         self::render_checkout_head($checkoutmanager['checkout_manager_head']);
@@ -134,7 +138,6 @@ class checkout_manager {
      */
     public function check_preprocess($changedinput) {
         $bodycounter = 0;
-        $mandatorycounter = 0;
         foreach ($this->itemlist as $item) {
             $filename = basename($item, '.php');
             $classname = self::NAMESPACE_PREFIX . $filename;
@@ -145,33 +148,78 @@ class checkout_manager {
                         $this->managercache['steps'][$filename],
                         $changedinput
                     );
+                    if ($this->managercache['steps'][$filename]['valid']) {
+                        $this->managercache['feedback'] = [
+                            'validationmessage' => $iteminstance->get_validation_feedback(),
+                        ];
+                    } else {
+                        $this->managercache['feedback'] = [
+                            'errormessage' => $iteminstance->get_error_feedback(),
+                        ];
+                    }
                 }
                 if ($iteminstance->is_head() === false) {
                     $bodycounter += 1;
                 }
-                if ($iteminstance->is_mandatory()) {
-                    $mandatorycounter += 1;
-                }
             }
         }
-        self::get_checkout_validation($mandatorycounter);
+        self::get_checkout_validation();
         self::set_cache();
         return $this->managercache;
     }
 
     /**
+     * Sets the body and mandatory count if not there yet.
+     */
+    public function set_body_mandatory_count() {
+        if (!isset($this->managercache['body_mandatory_count'])) {
+            $bodycounter = 0;
+            $mandatorycounter = 0;
+            foreach ($this->itemlist as $item) {
+                $filename = basename($item, '.php');
+                $classname = self::NAMESPACE_PREFIX . $filename;
+                if (self::class_exists_is_active($classname)) {
+                    $iteminstance = new $classname();
+                    if ($iteminstance->is_head() === false) {
+                        $bodycounter += 1;
+                    }
+                    if ($iteminstance->is_mandatory()) {
+                        $mandatorycounter += 1;
+                    }
+                }
+            }
+            $this->managercache['body_mandatory_count'] = [
+                'body_count' => $bodycounter,
+                'mandatory_count' => $mandatorycounter,
+            ];
+            self::set_cache();
+        }
+    }
+
+    /**
      * Applies the given price modifiers on the cached data.
      */
-    public function get_checkout_validation($mandatorycounter) {
-        $this->managercache['checkout_validation'] = true;
-        foreach ($this->managercache['steps'] as $step) {
-            if ($step['valid'] === false) {
-                $this->managercache['checkout_validation'] = false;
-                break;
+    public function get_checkout_validation() {
+        $mandatorycachedcounter = $this->managercache['body_mandatory_count']['mandatory_count'];
+        $mandatorycurrentcounter = 0;
+        $bodycounter = $this->managercache['body_mandatory_count']['body_count'];
+        $this->managercache['checkout_validation'] = false;
+        if (isset($this->managercache['steps'])) {
+            foreach ($this->managercache['steps'] as $step) {
+                if ($step['mandatory'] === true) {
+                    if ($step['valid'] === false) {
+                        return;
+                    } else {
+                        $mandatorycurrentcounter++;
+                    }
+                }
             }
-        }
-        if ($mandatorycounter !== count($this->managercache['steps'])) {
-            $this->managercache['checkout_validation'] = false;
+            if (
+                $mandatorycachedcounter <= $mandatorycurrentcounter &&
+                $bodycounter <= count($this->managercache['viewed'])
+            ) {
+                $this->managercache['checkout_validation'] = true;
+            }
         }
     }
 
@@ -255,6 +303,12 @@ class checkout_manager {
                 if ($item['status'] == 'active') {
                     $iteminstance = new $item['classname']();
                     $classname = self::get_class_name($item['classname']);
+                    if (!isset($this->managercache['viewed'])) {
+                        $this->managercache['viewed'] = [];
+                    }
+                    $this->managercache['viewed'][$classname] = true;
+                    self::get_checkout_validation();
+                    self::set_cache();
                     return $iteminstance->render_body($this->managercache['steps'][$classname] ?? []);
                 }
             }
@@ -275,10 +329,18 @@ class checkout_manager {
 
     /**
      * Applies the given price modifiers on the cached data.
+     * @param array $itemlist
+     */
+    public function render_checkout_button() {
+        return $this->managercache['checkout_validation'] ?? false;
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
      * @param array $classname
      * @return array
      */
-    public function render_checkout_buttons($itemlist, $currentstep) {
+    public function render_navigation_buttons($itemlist, $currentstep) {
         $previousbutton = [
             'text' => get_string('previousbutton', 'local_shopping_cart'),
             'hidden' => $currentstep == 0 ? true : false,

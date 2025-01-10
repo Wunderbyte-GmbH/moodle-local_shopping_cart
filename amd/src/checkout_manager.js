@@ -30,6 +30,7 @@ const SELECTORS = {
     PROGRESSBUTTONS: '.shopping-cart-checkout-manager-status-bar button',
     CHECKBOXITEMBODY: '#shopping-cart-checkout-manager-form-body',
     NEWADDRESSBUTTON: '.shopping-cart-new-address',
+    FEEDBACKMESSAGE: '.shopping-cart-checkout-manager-alert-container'
 };
 
 const WEBSERVICE = {
@@ -108,10 +109,15 @@ function initControlListener() {
             button.addEventListener('click', function() {
                 const action = this.getAttribute('data-action');
                 const currentstep = this.getAttribute('data-currentstep');
-                triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-                    action: action,
-                    currentstep: currentstep,
-                });
+                if (
+                    action != undefined &&
+                    currentstep != undefined
+                ) {
+                    triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
+                        action: action,
+                        currentstep: currentstep,
+                    });
+                }
             });
         });
     });
@@ -126,18 +132,40 @@ function initChangeListener() {
         formBody.addEventListener('change', function(event) {
             const target = event.target;
             if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) {
+                const processElements = document.querySelectorAll('[data-shopping-cart-process-data="true"]');
+                const changedInputs = Array.from(processElements).map(element => {
+                    const value = element.type === 'checkbox' ? element.checked : element.value;
+                    if (
+                        element.type == 'radio'
+                    ) {
+                        if (element.checked) {
+                            return {
+                                name: element.name || 'unnamed',
+                                value: value,
+                            };
+                        }
+                        return null;
+                    } else {
+                        return {
+                            name: element.name || 'unnamed',
+                            value: value,
+                        };
+                    }
+                })
+                .filter(item => item !== null);
+                if (
+                    target.hasAttribute('data-skip-webservice')
+                ) {
+                    return;
+                }
                 if (target.type == 'checkbox') {
                     target.value = target.checked;
                 }
-                const changedInput = {
-                    name: target.name || 'unnamed',
-                    value: target.value,
-                };
                 triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
                     action: formBody.dataset.action,
                     currentstep: formBody.dataset.currentstep,
                     identifier: formBody.dataset.identifier,
-                    changedinput: JSON.stringify(changedInput)
+                    changedinput: JSON.stringify(changedInputs)
                 });
             }
         });
@@ -179,9 +207,7 @@ function updateCheckoutManagerPartials(data) {
                 })
                 .then(function() {
                     if (data.jsscript) {
-                        // Extract the raw JavaScript from the script tag
                         const scriptContent = data.jsscript.replace(/<script[^>]*>|<\/script>/gi, '');
-                        // Execute the script safely
                         try {
                             templates.appendNodeContents(
                                 document.querySelector(SELECTORS.CHECKOUTMANAGERFORMID),
@@ -204,9 +230,9 @@ function updateCheckoutManagerPartials(data) {
         });
     } else {
         require(['core/templates'], function(templates) {
-            // Target a specific div in the DOM
             const controlButtons = document.getElementById(SELECTORS.CHECKOUTMANAGERBUTTONSID);
             const progressBar = document.getElementById(SELECTORS.CHECKOUTMANAGERPROGRESSBARID);
+            const feedbackMessageContainer = document.querySelector(SELECTORS.FEEDBACKMESSAGE);
 
             if (!controlButtons) {
                 // eslint-disable-next-line no-console
@@ -232,9 +258,24 @@ function updateCheckoutManagerPartials(data) {
                     // eslint-disable-next-line no-console
                     console.error('Error updating the specific div:', err);
                 });
+            if (feedbackMessageContainer) {
+                const datafeedback = JSON.parse(data.managerdata);
+                if (
+                    feedbackMessageContainer &&
+                    datafeedback.feedback != undefined
+                ) {
+                    templates.render('local_shopping_cart/checkout_manager_feedback', datafeedback.feedback)
+                        .then(function(html) {
+                            feedbackMessageContainer.innerHTML = html;
+                            return;
+                        })
+                        .catch(function(err) {
+                            // eslint-disable-next-line no-console
+                            console.error('Error updating feedback message:', err);
+                        });
+                }
+            }
             Promise.all([renderButtonTemplate, progressBarTemplate]).then(function() {
-                // eslint-disable-next-line no-console
-                console.log('Both templates have been updated.');
                 initControlListener();
                 return;
             }).catch(function(err) {

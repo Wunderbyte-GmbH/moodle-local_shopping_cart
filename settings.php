@@ -297,6 +297,21 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox('local_shopping_cart/acceptadditionalconditions',
+                get_string('acceptadditionalconditions', 'local_shopping_cart'),
+                get_string('acceptadditionalconditions:description', 'local_shopping_cart'), 0));
+
+    $settings->add(
+            new admin_setting_configtextarea(
+                    'local_shopping_cart/additionalconditions',
+                    get_string('additionalconditions', 'local_shopping_cart'),
+                    get_string('additionalconditions:description', 'local_shopping_cart'),
+                    null,
+                    PARAM_RAW
+            )
+    );
+
     // If this setting is turned on, all customers have to pay the sellers tax template.
     $settings->add(
         new admin_setting_configcheckbox(

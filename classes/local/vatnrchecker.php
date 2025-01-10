@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\local;
 
+use SoapClient;
+
 /**
  * Class templaterule
  *
@@ -82,7 +84,6 @@ class vatnrchecker {
                 $response = self::validate_with_vatcomply($vatnrnumber);
                 break;
         }
-        $response = json_decode($response, true);
         if (isset($response['valid']) && $response['valid']) {
             return true;
         }
@@ -93,23 +94,46 @@ class vatnrchecker {
      * Function to return an array of localized country codes.
      * @param string $countrycode
      * @param string $vatnumber
-     * @return string
+     * @return array
      */
     public static function validate_with_vies($countrycode, $vatnumber) {
-        $url = self::VATVIESCHECKERURL;
-        $data = json_encode(['countryCode' => $countrycode, 'vatNumber' => $vatnumber]);
-        return self::make_vat_post_request($url, $data);
+        $wsdl = "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
+        try {
+            $client = new SoapClient($wsdl);
+            return (array) $client->checkVat([
+                'countryCode' => $countrycode,
+                'vatNumber' => $vatnumber,
+            ]);
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
      * Function to return an array of localized country codes.
      * @param string $vatnumber
-     * @return string
+     * @return array
      */
     public static function validate_with_hmrc($vatnumber) {
-        $url = self::VATHMRCCHECKERURL;
-        $data = json_encode(['vatNumber' => $vatnumber]);
-        return self::make_vat_post_request($url, $data);
+        if (!preg_match('/^\d{9}$/', $vatnumber)) {
+            return [
+                'error' => true,
+            ];
+        }
+        $digits = str_split($vatnumber);
+        $weights = [8, 7, 6, 5, 4, 3, 2, 1];
+        $sum = 0;
+        for ($i = 0; $i < 8; $i++) {
+            $sum += $digits[$i] * $weights[$i];
+        }
+        $remainder = $sum % 97;
+        $checkdigit = 97 - $remainder;
+        return [
+            'valid' => (int)$digits[8] === $checkdigit,
+        ];
     }
 
     /**

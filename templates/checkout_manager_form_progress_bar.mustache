@@ -44,21 +44,23 @@
     class="shopping-cart-checkout-manager-status-bar"
 >
 {{#checkout_manager_body.item_list}}
-<div class="shopping-cart-checkout-manager-status-bar-line"></div>
-<div class="shopping-cart-checkout-manager-status-item {{status}}">
-    <button
-        class="circle"
-        data-action=""
-        data-currentstep="{{step}}"
-    >
-        <i class="{{item}}"></i>
-            {{#valid}}
-                <span class="shopping-cart-checkout-manager-valid-checkmark">
-                    <i class="icon fa-solid fa-check"></i>
-                </span>
-            {{/valid}}
-    </button>
-</div>
+    {{#checkout_manager_body.show_progress_line}}
+        <div class="shopping-cart-checkout-manager-status-bar-line"></div>
+        <div class="shopping-cart-checkout-manager-status-item {{status}}">
+            <button
+                class="circle"
+                data-action=""
+                data-currentstep="{{step}}"
+            >
+                <i class="{{item}}"></i>
+                    {{#valid}}
+                        <span class="shopping-cart-checkout-manager-valid-checkmark">
+                            <i class="icon fa-solid fa-check"></i>
+                        </span>
+                    {{/valid}}
+            </button>
+        </div>
+    {{/checkout_manager_body.show_progress_line}}
 {{/checkout_manager_body.item_list}}
 </div>
 

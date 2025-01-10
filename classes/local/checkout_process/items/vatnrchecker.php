@@ -84,7 +84,7 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Generates the data for rendering the templates/address.mustache template.
-     * @param array $termsandconditions
+     * @param array $vatnrcheckerdata
      * @param array $cachedata
      */
     public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata) {
@@ -106,15 +106,6 @@ class vatnrchecker extends checkout_base_item {
                 unset($country['selected']);
             }
         }
-    }
-
-    /**
-     * Generates the data for rendering the templates/address.mustache template.
-     * @param array $vatnrcheckerdata
-     * @param array $country
-     */
-    public static function set_cached_vatnumber(&$vatnrcheckerdata, $vatnumber) {
-        ;
     }
 
     /**
@@ -156,6 +147,7 @@ class vatnrchecker extends checkout_base_item {
         $changedinput
     ): array {
         $data = $changedinput ?? [];
+        $vatnumbercheck = false;
         try {
             $changedinput = self::get_input_data($changedinput);
             if (isset($changedinput['country']) && isset($changedinput['vatnumber'])) {
@@ -180,7 +172,6 @@ class vatnrchecker extends checkout_base_item {
             'valid' => $vatnumbercheck,
         ];
     }
-
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
@@ -196,5 +187,21 @@ class vatnrchecker extends checkout_base_item {
             'country' => $countrycode,
             'vatnumber' => $vatnumber,
         ];
+    }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_validation_feedback() {
+        return get_string('vatnrvalidationfeedback', 'local_shopping_cart');
+    }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_error_feedback() {
+        return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
 }
