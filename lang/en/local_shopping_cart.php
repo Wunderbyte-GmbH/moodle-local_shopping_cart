@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['acceptadditionalconditions'] = "Require acceptance of additional conditions";
+$string['acceptadditionalconditions:description'] = "Without accepting additional conditions, buying is not possible.";
 $string['accepttermsandconditions'] = "Require acceptance of terms and conditions";
 $string['accepttermsandconditions:description'] = "Without accepting terms and conditions, buying is not possible.";
 $string['accessdenied'] = 'Access denied';
@@ -33,6 +35,9 @@ $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
     You can\'t apply both at the same time. If you enter a negative amount, this amout will added to the price that will therefore increase.';
 $string['addedtocart'] = '{$a} was added to your cart.';
+$string['additionalconditions'] = "Additional Conditions";
+$string['additionalconditions:description'] = "You can link to your PDF. For localization of this field, use
+ <a href='https://docs.moodle.org/402/en/Multi-language_content_filter' target='_blank'>Moodle multi-language filters</a>.";
 $string['additonalcashiersection'] = 'Add text for cashier section';
 $string['additonalcashiersection:description'] = 'Add HTML shortcodes or items to buy for the cashier shopping tab';
 $string['addon'] = 'Set addon time';
@@ -176,6 +181,7 @@ $string['choosedefaultcountrydesc'] = 'Select the default country for your custo
 $string['choosehighertimestamp'] = 'Choose a later time';
 $string['chooseplatform'] = 'Choose Platform';
 $string['chooseplatformdesc'] = 'Select your invoicing platform.';
+$string['confirmadditionalconditions'] = "I accept the additional conditions";
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
  The following users will get their money back as credit:
  {$a->userlist}
@@ -231,6 +237,7 @@ $string['confirmpaidback'] = 'Confirm';
 $string['confirmpaidbackbody'] =
  'Do you really want to confirm that you have paid back the user her credit? This will set her credit to 0.';
 $string['confirmpaidbacktitle'] = 'Confirm Payback';
+$string['confirmpayment'] = 'Confirm payment';
 $string['confirmterms'] = "I accept the terms and conditions";
 $string['confirmzeropricecheckout'] = 'Confirm';
 $string['confirmzeropricecheckoutbody'] = 'You do not have to pay anything. Do you want to proceed and book?';
@@ -683,6 +690,8 @@ $string['usernotboughtitem'] = 'User with the userid {$a->userid} could not buy 
 $string['usevatnr'] = "Enter VAT number";
 $string['vatnrcheckerheading'] = "Check VAT number";
 $string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
+$string['vatnrerrorfeedback'] = 'Vat number is invalid!';
+$string['vatnrvalidationfeedback'] = 'Vat number was successfull validated';
 $string['verify'] = "Verify validity of VAT number";
 $string['wronginputvalue'] = 'The provided input value is invalid.';
 $string['xi'] = "Northern Ireland";

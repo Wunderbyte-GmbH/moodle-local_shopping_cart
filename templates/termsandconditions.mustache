@@ -127,25 +127,54 @@
 }}
 
 <div class="form_termsandconditions mt-2 d-flex justify-content-end">
-    <div class="form-group">
-        <div class="text-muted border p-2 bg-light rounded">
-            {{{termsandconditions}}}
+    <div class="form-container" style="max-width: 400px; width: 100%;">
+        <!-- First Form Group -->
+        <div class="form-group mb-4">
+            <div class="text-muted border p-2 bg-light rounded">
+                {{{termsandconditions}}}
+            </div>
+            <div class="mt-2">
+                <input
+                    class="form-check-input"
+                    id="accepttermsandconditions"
+                    name="accepttermsandconditions"
+                    type="checkbox"
+                    value=""
+                    {{#accepttermsandconditions}}
+                        checked
+                    {{/accepttermsandconditions}}
+                    data-shopping-cart-process-data="true"
+                    required
+                >
+                <label class="form-check-label" for="accepttermsandconditions">
+                    {{#str}} confirmterms, local_shopping_cart {{/str}}
+                </label>
+            </div>
         </div>
-        <div class="mt-2 ml-4">
-        <input
-            class="form-check-input"
-            id="accepttermsnandconditions"
-            name="accepttermsnandconditions"
-            type="checkbox"
-            value=""
-            {{#selected}}
-                checked
-            {{/selected}}
-            required
-        >
-        <label class="form-check-label" for="accepttermsnandconditions">
-            {{#str}} confirmterms, local_shopping_cart {{/str}}
-        </label>
+
+        <!-- Second Form Group -->
+        <div class="form-group">
+            <div class="text-muted border p-2 bg-light rounded">
+                {{{additionalconditions}}}
+            </div>
+            <div class="mt-2">
+                <input
+                    class="form-check-input"
+                    id="acceptadditionalconditions"
+                    name="acceptadditionalconditions"
+                    type="checkbox"
+                    value=""
+                    {{#acceptadditionalconditions}}
+                        checked
+                    {{/acceptadditionalconditions}}
+                    data-shopping-cart-process-data="true"
+                    required
+                >
+                <label class="form-check-label" for="acceptadditionalconditions">
+                    {{#str}} confirmadditionalconditions, local_shopping_cart {{/str}}
+                </label>
+            </div>
         </div>
     </div>
 </div>
+

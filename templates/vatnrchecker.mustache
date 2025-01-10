@@ -127,7 +127,6 @@
 }}
 
 <div class="shopping-cart-checkout-manager-container">
-    <!-- Country Selection -->
     <div class="shopping-cart-checkout-manager-form-group">
         <label for="country-select" class="shopping-cart-checkout-manager-form-label">
             Select your country
@@ -136,7 +135,8 @@
             id="shopping-cart-checkout-manager-country-select"
             class="shopping-cart-checkout-manager-form-select"
             name="country"
-
+            data-skip-webservice="true"
+            data-shopping-cart-process-data="true"
         >
             {{#countries}}
                 <option
@@ -163,6 +163,8 @@
             class="shopping-cart-checkout-manager-form-input"
             placeholder="Enter VAT number"
             value="{{vatnumber}}"
+            data-skip-webservice="true"
+            data-shopping-cart-process-data="true"
         />
     </div>
 

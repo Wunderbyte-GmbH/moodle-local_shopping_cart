@@ -198,17 +198,14 @@
                     {{{termsandconditions}}}
                 </div>
                 <div class="mt-2 ml-4">
-                <input class="form-check-input" id="accepttermsnandconditions" name="accepttermsnandconditions" type="checkbox" value="" required>
-                <label class="form-check-label" for="accepttermsnandconditions">
+                <input class="form-check-input" id="accepttermsandconditions" name="accepttermsandconditions" type="checkbox" value="" required>
+                <label class="form-check-label" for="accepttermsandconditions">
                     {{#str}} confirmterms, local_shopping_cart {{/str}}
                 </label>
                 </div>
             </div>
         </div>
         {{/termsandconditions}}
-        {{^address_selection_required}}
-            {{> local_shopping_cart/checkout_payment_region }}
-        {{/address_selection_required}}
         {{#has_historyitems}}
             <div class="card mt-6">
                 <div class="card-header text-center bg-primary text-white">

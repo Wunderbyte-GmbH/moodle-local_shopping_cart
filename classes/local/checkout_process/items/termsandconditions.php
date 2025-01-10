@@ -41,7 +41,13 @@ class termsandconditions extends checkout_base_item {
      * @return bool
      */
     public static function is_active() {
-        return get_config('local_shopping_cart', 'accepttermsandconditions') ? true : false;
+        if (
+            get_config('local_shopping_cart', 'accepttermsandconditions') ||
+            get_config('local_shopping_cart', 'acceptadditionalconditions')
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -66,7 +72,12 @@ class termsandconditions extends checkout_base_item {
     public static function render_body($cachedata) {
         global $PAGE;
         $data = [];
-        $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+        if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
+            $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+        }
+        if (get_config('local_shopping_cart', 'acceptadditionalconditions')) {
+            $data['additionalconditions'] = get_config('local_shopping_cart', 'additionalconditions');
+        }
         self::set_data_from_cache($data, $cachedata['data']);
 
         $template = $PAGE->get_renderer('local_shopping_cart')
@@ -83,26 +94,35 @@ class termsandconditions extends checkout_base_item {
      */
     public static function check_status(
         $managercachestep,
-        $changedinput
+        $validationdata
     ) {
-        $changedinput = json_decode($changedinput);
+        $validationdata = json_decode($validationdata);
         $data = [];
-        $data[$changedinput->name] = $changedinput->value;
-
+        foreach ($validationdata as $validationvalue) {
+            $data[$validationvalue->name] = $validationvalue->value;
+        }
         return [
             'data' => $data,
             'mandatory' => self::is_mandatory(),
-            'valid' => self::is_valid($changedinput->value),
+            'valid' => self::is_valid($validationdata),
         ];
     }
 
     /**
      * Returns the required-address keys as specified in the plugin config.
-     *
+     * @param array $validationdata
      * @return bool list of all required address keys
      */
-    public static function is_valid($validationstring) {
-        return $validationstring === 'true';
+    public static function is_valid($validationdata) {
+        foreach ($validationdata as $validationvalue) {
+            if (
+                !isset($validationvalue->value) ||
+                $validationvalue->value == false
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -111,10 +131,6 @@ class termsandconditions extends checkout_base_item {
      * @param array $cachedata
      */
     public static function set_data_from_cache(&$termsandconditions, $cachedata) {
-        if ($cachedata['accepttermsnandconditions']) {
-            $termsandconditions['selected'] = true;
-        } else {
-            unset($termsandconditions['selected']);
-        }
+        $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
     }
 }
