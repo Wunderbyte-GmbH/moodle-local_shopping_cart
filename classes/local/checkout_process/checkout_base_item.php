@@ -78,4 +78,20 @@ abstract class checkout_base_item {
     public static function get_status_progress_bar() {
         return 'inactive';
     }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_validation_feedback() {
+        return null;
+    }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_error_feedback() {
+        return null;
+    }
 }
