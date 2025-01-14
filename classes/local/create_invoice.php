@@ -197,11 +197,11 @@ class create_invoice {
         switch (current_language()) {
             case 'de':
                 $dateformat = "d.m.Y";
-                $datetimeformat = "d.m.Y, m:h";
+                $datetimeformat = "d.m.Y, H:i";
                 break;
             default:
                 $dateformat = "Y-m-d";
-                $datetimeformat = "Y-m-d, m:h";
+                $datetimeformat = "Y-m-d, g:i a";
                 break;
         }
 
