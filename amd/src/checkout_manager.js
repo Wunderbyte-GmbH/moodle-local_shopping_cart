@@ -40,16 +40,33 @@ const WEBSERVICE = {
 const EVENTSLISTENING = {
     ADDRESSREDRAWN: 'local_shopping_cart/addressesRedrawn',
 };
+
+const IDS = {
+    VATNUMBER: 'shopping-cart-checkout-manager-vat-number',
+    VERIFYVAT: 'shopping-cart-checkout-manager-verify-vat',
+    COUNTRYSELECT: 'shopping-cart-checkout-manager-country-select',
+};
+
 /**
  * Initializes the checkout manager functionality.
  */
 function init() {
+    const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
+    initListeners(formBody);
+    document.addEventListener(EVENTSLISTENING.ADDRESSREDRAWN, getNewAddress);
+}
+
+/**
+ * Initializes the checkout manager functionality.
+ * @param {HTMLElement} formBody - The name of the web service.
+ */
+function initListeners(formBody) {
     initControlListener();
-    initChangeListener();
-    initVatNumberVerifyListener();
-    document.addEventListener(EVENTSLISTENING.ADDRESSREDRAWN, function() {
-        getNewAddress();
-    });
+    if (formBody != undefined) {
+        initChangeListener();
+        initVatNumberVerifyListener(formBody);
+    }
+
 }
 
 /**
@@ -57,7 +74,7 @@ function init() {
  */
 function getNewAddress() {
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
-    const currentstep = formBody ? formBody.dataset.currentstep : null;
+    const currentstep = getDatasetValue(formBody, 'currentstep');
     if (currentstep !== null) {
         triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
             action: '',
@@ -70,57 +87,56 @@ function getNewAddress() {
  * Initializes the change listener for the form body.
  */
 function initVatNumberVerifyListener() {
-    const vatNumber = document.getElementById('shopping-cart-checkout-manager-verify-vat');
+    const vatNumber = document.getElementById(IDS.VERIFYVAT);
     if (vatNumber) {
-        const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
-        vatNumber.addEventListener('click', function() {
-            const countrySelect = document.getElementById('shopping-cart-checkout-manager-country-select');
-            const countryCode = countrySelect.value;
-
-            const vatNumberInput = document.getElementById('shopping-cart-checkout-manager-vat-number');
-            const vatNumber = vatNumberInput.value;
-
-            if (!countryCode || !vatNumber) {
-                alert('Please select a country and enter a valid VAT number.');
-                return;
-            }
-            const vatCountryCodeNumber = `${countryCode},${vatNumber}`;
-            const changedInput = {
-                'vatCodeCountry': vatCountryCodeNumber,
-            };
-            triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-                action: formBody.dataset.action,
-                currentstep: formBody.dataset.currentstep,
-                identifier: formBody.dataset.identifier,
-                changedinput: JSON.stringify(changedInput)
-            });
-        });
+        vatNumber.addEventListener('click', vatNumberVerifyCallback);
     }
 }
 
 /**
  * Initializes the change listener for the form body.
  */
-function initControlListener() {
-    const buttonSelectors = [SELECTORS.BUTTONS, SELECTORS.PROGRESSBUTTONS];
-    buttonSelectors.forEach(selector => {
-        const buttons = document.querySelectorAll(selector);
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                const action = this.getAttribute('data-action');
-                const currentstep = this.getAttribute('data-currentstep');
-                if (
-                    action != undefined &&
-                    currentstep != undefined
-                ) {
-                    triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-                        action: action,
-                        currentstep: currentstep,
-                    });
-                }
-            });
-        });
+function vatNumberVerifyCallback() {
+    const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
+    const countryCode = document.getElementById(IDS.COUNTRYSELECT)?.value;
+    const vatNumber = document.getElementById(IDS.VATNUMBER)?.value;
+
+    if (!countryCode || !vatNumber) {
+        alert('alert');
+        return;
+    }
+    triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
+        action: getDatasetValue(formBody, 'action'),
+        currentstep: getDatasetValue(formBody, 'currentstep'),
+        identifier: getDatasetValue(formBody, 'identifier'),
+        changedinput: JSON.stringify({
+            'vatCodeCountry': `${countryCode},${vatNumber}`,
+        }),
     });
+}
+
+/**
+ * Initializes the change listener for the form body.
+ */
+function initControlListener() {
+    const selectors = `${SELECTORS.BUTTONS}, ${SELECTORS.PROGRESSBUTTONS}`;
+    document.querySelectorAll(selectors).forEach(button => {
+        button.addEventListener('click', controlCallback);
+    });
+}
+
+/**
+ * Initializes the change listener for the form body.
+ */
+function controlCallback() {
+    const action = this.getAttribute('data-action');
+    const currentstep = this.getAttribute('data-currentstep');
+    if (action && currentstep) {
+        triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
+            action: action,
+            currentstep: currentstep,
+        });
+    }
 }
 
 /**
@@ -128,49 +144,57 @@ function initControlListener() {
  */
 function initChangeListener() {
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
-    if (formBody) {
-        formBody.addEventListener('change', function(event) {
-            const target = event.target;
-            if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) {
-                const processElements = document.querySelectorAll('[data-shopping-cart-process-data="true"]');
-                const changedInputs = Array.from(processElements).map(element => {
-                    const value = element.type === 'checkbox' ? element.checked : element.value;
-                    if (
-                        element.type == 'radio'
-                    ) {
-                        if (element.checked) {
-                            return {
-                                name: element.name || 'unnamed',
-                                value: value,
-                            };
-                        }
-                        return null;
-                    } else {
-                        return {
-                            name: element.name || 'unnamed',
-                            value: value,
-                        };
-                    }
-                })
-                .filter(item => item !== null);
-                if (
-                    target.hasAttribute('data-skip-webservice')
-                ) {
-                    return;
-                }
-                if (target.type == 'checkbox') {
-                    target.value = target.checked;
-                }
-                triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-                    action: formBody.dataset.action,
-                    currentstep: formBody.dataset.currentstep,
-                    identifier: formBody.dataset.identifier,
-                    changedinput: JSON.stringify(changedInputs)
-                });
-            }
+    formBody.addEventListener('change', event => changeCallback(event, formBody));
+}
+
+/**
+ * Initializes the change listener for the form body.
+ * @param {Object} event - The name of the web service.
+ * @param {HTMLElement} formBody - The parameters for the web service call.
+ */
+function changeCallback(event, formBody) {
+    const target = event.target;
+    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) {
+        const changedInputs = getChangedInputs();
+        if (
+            target.hasAttribute('data-skip-webservice')
+        ) {
+            return;
+        }
+        if (target.type == 'checkbox') {
+            target.value = target.checked;
+        }
+
+        triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
+            action: getDatasetValue(formBody, 'action'),
+            currentstep: getDatasetValue(formBody, 'currentstep'),
+            identifier: getDatasetValue(formBody, 'identifier'),
+            changedinput: JSON.stringify(changedInputs)
         });
     }
 }
+
+/**
+ * Handles button control for the checkout process.
+ */
+function getChangedInputs() {
+    const processElements = document.querySelectorAll('[data-shopping-cart-process-data="true"]');
+    return Array.from(processElements).map(element => {
+        const value = element.type === 'checkbox' ? element.checked : element.value;
+        if (element.type === 'radio') {
+            return element.checked
+                ? {name: element.name || 'unnamed', value: value}
+                : [];
+        }
+
+        return {
+            name: element.name || 'unnamed',
+            value: value,
+        };
+    })
+    .filter(item => item !== null);
+}
+
 
 /**
  * Handles button control for the checkout process.
@@ -187,7 +211,7 @@ function triggerButtonControlWebService(serviceName, params) {
             updateCheckoutManagerPartials(response);
         }).fail(function(err) {
             // eslint-disable-next-line no-console
-            console.error('Failed to complete action. Error: ', err);
+            console.error('fail button trigger', err);
             return;
         });
     });
@@ -199,92 +223,121 @@ function triggerButtonControlWebService(serviceName, params) {
  */
 function updateCheckoutManagerPartials(data) {
     data.data = JSON.parse(data.data);
-    if (data.reloadbody) {
-        require(['core/templates'], function(templates) {
-            templates.render(SELECTORS.CHECKOUTMANAGERFORMTEMPLATE, data.data)
-                .then(function(html, js) {
-                    return templates.replaceNodeContents(document.querySelector(SELECTORS.CHECKOUTMANAGERFORMID), html, js);
-                })
-                .then(function() {
-                    if (data.jsscript) {
-                        const scriptContent = data.jsscript.replace(/<script[^>]*>|<\/script>/gi, '');
-                        try {
-                            templates.appendNodeContents(
-                                document.querySelector(SELECTORS.CHECKOUTMANAGERFORMID),
-                                '',
-                                scriptContent
-                        );
-
-                        } catch (err) {
-                            // eslint-disable-next-line no-console
-                            console.error('Error executing script:', err);
-                        }
-                    }
-                    return;
-                })
-                .catch(function(err) {
-                    // eslint-disable-next-line no-console
-                    console.error('Error rendering body: ', err);
-                    return;
-                });
-        });
-    } else {
-        require(['core/templates'], function(templates) {
-            const controlButtons = document.getElementById(SELECTORS.CHECKOUTMANAGERBUTTONSID);
-            const progressBar = document.getElementById(SELECTORS.CHECKOUTMANAGERPROGRESSBARID);
-            const feedbackMessageContainer = document.querySelector(SELECTORS.FEEDBACKMESSAGE);
-
-            if (!controlButtons) {
-                // eslint-disable-next-line no-console
-                console.error('Target div not found in the DOM.');
-                return;
-            }
-            // Render new content for the div
-            const renderButtonTemplate = templates.render(SELECTORS.CHECKOUTMANAGERBUTTONSTEMPLATE, data.data)
-                .then(function(html) {
-                    controlButtons.innerHTML = html;
-                    return;
-                })
-                .catch(function(err) {
-                    // eslint-disable-next-line no-console
-                    console.error('Error updating the specific div:', err);
-                });
-            const progressBarTemplate = templates.render(SELECTORS.CHECKOUTMANAGERPROGRESSBARTEMPLATE, data.data)
-                .then(function(html) {
-                    progressBar.innerHTML = html;
-                    return;
-                })
-                .catch(function(err) {
-                    // eslint-disable-next-line no-console
-                    console.error('Error updating the specific div:', err);
-                });
-            if (feedbackMessageContainer) {
-                const datafeedback = JSON.parse(data.managerdata);
-                if (
-                    feedbackMessageContainer &&
-                    datafeedback.feedback != undefined
-                ) {
-                    templates.render('local_shopping_cart/checkout_manager_feedback', datafeedback.feedback)
-                        .then(function(html) {
-                            feedbackMessageContainer.innerHTML = html;
-                            return;
-                        })
-                        .catch(function(err) {
-                            // eslint-disable-next-line no-console
-                            console.error('Error updating feedback message:', err);
-                        });
-                }
-            }
-            Promise.all([renderButtonTemplate, progressBarTemplate]).then(function() {
-                initControlListener();
-                return;
-            }).catch(function(err) {
-                // eslint-disable-next-line no-console
-                console.error('Render problem:', err);
-            });
-        });
-
-    }
+    require(['core/templates'], function(templates) {
+        if (data.reloadbody) {
+            staticReloadBody(templates, data);
+        } else {
+            newReloadBody(templates, data);
+        }
+    });
 }
 
-export {init};
+/**
+ * Utility to get dataset values safely.
+ * @param {Object} templates - The element with the dataset.
+ * @param {Array} data - The element with the dataset.
+ */
+function newReloadBody(templates, data) {
+    const controlButtons = document.getElementById(SELECTORS.CHECKOUTMANAGERBUTTONSID);
+    const progressBar = document.getElementById(SELECTORS.CHECKOUTMANAGERPROGRESSBARID);
+    const feedbackMessageContainer = document.querySelector(SELECTORS.FEEDBACKMESSAGE);
+
+    if (!controlButtons) {
+        // eslint-disable-next-line no-console
+        console.error('controlButtons');
+        return;
+    }
+    // Render new content for the div
+    const renderButtonTemplate = templates.render(SELECTORS.CHECKOUTMANAGERBUTTONSTEMPLATE, data.data)
+        .then(function(html) {
+            controlButtons.innerHTML = html;
+            return;
+        })
+        .catch(function(err) {
+            // eslint-disable-next-line no-console
+            console.error('fail render button', err);
+        });
+    const progressBarTemplate = templates.render(SELECTORS.CHECKOUTMANAGERPROGRESSBARTEMPLATE, data.data)
+        .then(function(html) {
+            progressBar.innerHTML = html;
+            return;
+        })
+        .catch(function(err) {
+            // eslint-disable-next-line no-console
+            console.error('fail render button', err);
+        });
+    if (feedbackMessageContainer) {
+        const datafeedback = JSON.parse(data.managerdata);
+        if (
+            feedbackMessageContainer &&
+            datafeedback.feedback != undefined
+        ) {
+            templates.render('local_shopping_cart/checkout_manager_feedback', datafeedback.feedback)
+                .then(function(html) {
+                    feedbackMessageContainer.innerHTML = html;
+                    return;
+                })
+                .catch(function(err) {
+                    // eslint-disable-next-line no-console
+                    console.error('fail render feedback', err);
+                });
+        }
+    }
+    Promise.all([renderButtonTemplate, progressBarTemplate]).then(function() {
+        initControlListener();
+        return;
+    }).catch(function(err) {
+        // eslint-disable-next-line no-console
+        console.error('fail init listener', err);
+    });
+}
+
+/**
+ * Utility to get dataset values safely.
+ * @param {Object} templates - The element with the dataset.
+ * @param {Array} data - The element with the dataset.
+ */
+function staticReloadBody(templates, data) {
+    templates.render(SELECTORS.CHECKOUTMANAGERFORMTEMPLATE, data.data)
+        .then(function(html, js) {
+            return templates.replaceNodeContents(document.querySelector(SELECTORS.CHECKOUTMANAGERFORMID), html, js);
+        })
+        .then(function() {
+            if (data.jsscript) {
+                const scriptContent = data.jsscript.replace(/<script[^>]*>|<\/script>/gi, '');
+                try {
+                    templates.appendNodeContents(
+                        document.querySelector(SELECTORS.CHECKOUTMANAGERFORMID),
+                        '',
+                        scriptContent
+                );
+
+                } catch (err) {
+                    // eslint-disable-next-line no-console
+                    console.error('fail script', err);
+                }
+            }
+            return;
+        })
+        .catch(function(err) {
+            // eslint-disable-next-line no-console
+            console.error('fail script', err);
+            return;
+        });
+}
+
+/**
+ * Utility to get dataset values safely.
+ * @param {HTMLElement} element - The element with the dataset.
+ * @param {string} key - The dataset key.
+ * @returns {string|null} - The value or null if not found.
+ */
+function getDatasetValue(element, key) {
+    return element?.dataset[key] || '';
+}
+
+export {
+    init,
+    getDatasetValue,
+    getChangedInputs
+};

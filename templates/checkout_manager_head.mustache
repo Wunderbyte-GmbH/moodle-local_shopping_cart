@@ -37,13 +37,18 @@
     }
 }}
 
-{{#checkout_manager_body.body}}
 <div
-    id="shopping-cart-checkout-manager-form-body"
-    data-identifier="{{identifier}}"
-    data-action=""
-    data-currentstep="{{checkout_manager_body.currentstep}}"
+    id="shopping-cart-checkout-manager-head"
 >
-    {{{template}}}
+    {{#credit}}
+        {{#checkout_manager_head.head}}
+            {{{template}}}
+        {{/checkout_manager_head.head}}
+    {{/credit}}
+    {{^credit}}
+        <div class="text-right mr-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+        {{#discount}}
+            <div class="text-right mr-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
+        {{/discount}}
+    {{/credit}}
 </div>
-{{/checkout_manager_body.body}}
