@@ -348,7 +348,7 @@ abstract class installments extends modifier_base {
         global $USER;
 
         $cache = \cache::make('local_shopping_cart', 'cashier');
-        $cachekey = (string) $userid . "_" . (string) $optionid; // (string) $userid . (string) $optionid;
+        $cachekey = (string) $userid . "_" . (string) $optionid;
 
         $expirationtime = get_config('local_shopping_cart', 'expirationtime');
         $data = [

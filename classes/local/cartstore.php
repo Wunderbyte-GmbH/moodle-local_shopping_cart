@@ -159,7 +159,7 @@ class cartstore {
      * @param int $itemid
      * @param float $percent
      * @param float $absolute
-     * @param float downpayment
+     * @param float $downpayment
      * @return array
      */
     public function add_discount_to_item(
