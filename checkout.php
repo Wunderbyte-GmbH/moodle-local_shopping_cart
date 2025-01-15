@@ -162,7 +162,7 @@ if ($hasallrequiredaddresses) {
     $data['show_selected_addresses'] = true;
 }
 //$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
-$checkoutmanager = new checkout_manager($data['userid']);
+$checkoutmanager = new checkout_manager($data);
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);
 if (empty($jsononly)) {

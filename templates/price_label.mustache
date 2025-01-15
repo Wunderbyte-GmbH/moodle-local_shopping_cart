@@ -48,7 +48,6 @@
     }
 }}
 
-
 <div>
     {{#installmentscheckboxid}}
         <div class="text-right mr-3 sc_installments">
@@ -101,7 +100,7 @@
 
     {{^credit}}
         <div class="text-right mr-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
-        {{#discount}}    
+        {{#discount}}
             <div class="text-right mr-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
         {{/discount}}
     {{/credit}}
@@ -127,7 +126,8 @@
         </div>
     {{/taxesenabled}}
 </div>
-
+{{#checkout_manager_head}}
+    {{/checkout_manager_head}}
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {
         fn.initPriceLabel({{userid}});

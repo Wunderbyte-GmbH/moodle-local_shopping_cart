@@ -51,16 +51,14 @@ abstract class checkout_base_item {
      * Renders checkout item.
      */
     public static function render_body($cachedata) {
-        $data = 'some fancy template';
-        return $data;
+        return '';
     }
 
     /**
      * Checks status of checkout item.
      */
     public static function check() {
-        $data = 'some status value';
-        return $data;
+        return true;
     }
 
     /**

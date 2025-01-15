@@ -54,7 +54,7 @@ class control_checkout_process extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'action' => new external_value(PARAM_TEXT, 'direction'),
+            'action' => new external_value(PARAM_TEXT, 'direction', VALUE_OPTIONAL),
             'currentstep' => new external_value(PARAM_INT, 'currentstep'),
             'identifier' => new external_value(PARAM_TEXT, 'identifier', VALUE_OPTIONAL),
             'changedinput' => new external_value(PARAM_RAW, 'changedinput', VALUE_OPTIONAL),
@@ -88,8 +88,13 @@ class control_checkout_process extends external_api {
         ]);
         $OUTPUT->header();
         $PAGE->start_collecting_javascript_requirements();
+
+        $cartstore = cartstore::instance((int)$USER->id);
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
+
         $checkoutmanager = new checkout_manager(
-            $USER->id,
+            $data,
             $params
         );
         $reloadbody = $changedinput ? false : true;
@@ -99,9 +104,7 @@ class control_checkout_process extends external_api {
         }
         $checkoutmanagerdata = $checkoutmanager->render_overview();
         $jsfooter = $PAGE->requires->get_end_code();
-        $cartstore = cartstore::instance((int)$USER->id);
-        $data = $cartstore->get_localized_data();
-        $cartstore->get_expanded_checkout_data($data);
+
         $data = array_merge($data, $checkoutmanagerdata);
         return [
             'data' => json_encode($data),
