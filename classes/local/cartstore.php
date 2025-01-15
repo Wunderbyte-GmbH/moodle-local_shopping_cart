@@ -168,7 +168,7 @@ class cartstore {
         int $itemid,
         float $percent,
         float $absolute,
-        float $downpayment = -1,
+        float $downpayment = -1
     ): array {
 
         $context = context_system::instance();
@@ -202,8 +202,8 @@ class cartstore {
             // If setting to round discounts is turned on, we round to full int.
             $item['discount'] = round(
                 $item['discount'],
-                    $discountprecision
-                );
+                $discountprecision
+            );
 
             $item['price'] =
                     $initialprice - $item['discount'];
@@ -243,7 +243,8 @@ class cartstore {
     public function get_item(
         string $component,
         string $area,
-        int $itemid) {
+        int $itemid
+    ) {
 
         $data = $this->get_cache();
 
