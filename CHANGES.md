@@ -1,3 +1,9 @@
+## Version 0.9.49 (2025011500)
+* Improvement: When no credits, it's 0 instead of empty in invoice.
+* Improvement: Do not hide receipts for cancelled items. #119
+* Bugfix: Fix erpnext.yml.
+* Bugfix: Correctly display time in receipt
+
 ## Version 0.9.48 (2024122000)
 * Improvement: Add possibility to differentiate between receipts and extra receipts.
 * Improvement: Add default html for extrareceiptshtml (#116).
