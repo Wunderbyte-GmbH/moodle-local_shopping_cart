@@ -60,6 +60,11 @@ class checkout_manager {
      * @var array
      */
     private $itemlist;
+    /**
+     * Optional properties for the checkout manager.
+     * @var array
+     */
+    private $cartstoredata;
 
     /**
      * Constructor with optional parameters.
@@ -68,16 +73,16 @@ class checkout_manager {
      * @param array $controlparameter Optional controlparameter.
      */
     public function __construct(
-        $identifier,
+        $data,
         $controlparameter = null
     ) {
         global $CFG;
-        $this->identifier = $identifier;
+        $this->cartstoredata = $data;
+        $this->identifier = $data['userid'];
         $this->controlparameter = $controlparameter;
-        $this->managercache = self::get_cache($identifier);
+        $this->managercache = self::get_cache($data['userid']);
         $this->itemlist = self::get_itemlist_preprocess();
         self::set_body_mandatory_count();
-        //$this->controlparameter['currentstep'] = 2;
     }
 
     /**
@@ -88,7 +93,22 @@ class checkout_manager {
             'checkout_manager_head' => [],
             'checkout_manager_body' => [],
         ];
+        $currentstep = self::set_current_step();
 
+        self::set_manager_data($checkoutmanager, $currentstep);
+
+        self::set_active_page($checkoutmanager['checkout_manager_body']['item_list'], $currentstep);
+
+        self::render_body_buttons($checkoutmanager['checkout_manager_body'], $currentstep);
+
+        self::render_checkout_head($checkoutmanager['checkout_manager_head']);
+        return $checkoutmanager;
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
+     */
+    public function set_manager_data(&$checkoutmanager, $currentstep) {
         foreach ($this->itemlist as $item) {
             $filename = basename($item, '.php');
             $classname = self::NAMESPACE_PREFIX . $filename;
@@ -103,24 +123,26 @@ class checkout_manager {
                 ];
             }
         }
-        $currentstep = self::set_current_step();
-        $checkoutmanager['checkout_manager_body']['currentstep'] = $currentstep;
         $checkoutmanager['checkout_manager_body']['show_progress_line'] =
             count($checkoutmanager['checkout_manager_body']['item_list']) > 1 ? true : false;
-        self::set_active_page($checkoutmanager['checkout_manager_body']['item_list'], $currentstep);
-        if (self::has_multiple_items($checkoutmanager['checkout_manager_body'])) {
-            $checkoutmanager['checkout_manager_body']['buttons'] =
+        $checkoutmanager['checkout_manager_body']['currentstep'] = $currentstep;
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
+     */
+    public function render_body_buttons(&$checkoutmanagerbody, $currentstep) {
+        if (self::has_multiple_items($checkoutmanagerbody)) {
+            $checkoutmanagerbody['buttons'] =
                 self::render_navigation_buttons(
-                    $checkoutmanager['checkout_manager_body']['item_list'],
+                    $checkoutmanagerbody['item_list'],
                     $currentstep
                 );
         }
-        $checkoutmanager['checkout_manager_body']['buttons']['checkout_button'] =
+        $checkoutmanagerbody['buttons']['checkout_button'] =
                 self::render_checkout_button();
-        $checkoutmanager['checkout_manager_body']['body'] =
-            self::render_checkout_body($checkoutmanager['checkout_manager_body']['item_list']);
-        self::render_checkout_head($checkoutmanager['checkout_manager_head']);
-        return $checkoutmanager;
+        $checkoutmanagerbody['body'] =
+            self::render_checkout_body($checkoutmanagerbody['item_list']);
     }
 
     /**
@@ -160,6 +182,11 @@ class checkout_manager {
                 }
                 if ($iteminstance->is_head() === false) {
                     $bodycounter += 1;
+                } else {
+                    $this->managercache['steps'][$filename] = $iteminstance->check_status(
+                        $this->managercache['steps'][$filename],
+                        $changedinput
+                    );
                 }
             }
         }
@@ -214,13 +241,20 @@ class checkout_manager {
                     }
                 }
             }
-            if (
-                $mandatorycachedcounter <= $mandatorycurrentcounter &&
-                $bodycounter <= count($this->managercache['viewed'])
-            ) {
+            if (self::is_checkout_allowed($mandatorycachedcounter, $mandatorycurrentcounter, $bodycounter)) {
                 $this->managercache['checkout_validation'] = true;
             }
         }
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
+     */
+    public function is_checkout_allowed($cachedcounter, $currentcounter, $bodycounter) {
+        return (
+            $cachedcounter <= $currentcounter &&
+            $bodycounter <= count($this->managercache['viewed'] ?? [])
+        );
     }
 
     /**
@@ -281,13 +315,13 @@ class checkout_manager {
      * Applies the given price modifiers on the cached data.
      * @param array $itemlist
      */
-    public static function render_checkout_head(&$checkoutmanagerhead) {
+    public function render_checkout_head(&$checkoutmanagerhead) {
         if (isset($checkoutmanagerhead['item_list'])) {
             $checkoutmanagerhead['body'] = [];
             foreach ($checkoutmanagerhead['item_list'] as $item) {
                 if (self::class_exists_is_active($item['classname'])) {
                     $iteminstance = new $item['classname']();
-                    $checkoutmanagerhead['head'][] = $iteminstance->render_body([]);
+                    $checkoutmanagerhead['head'][] = $iteminstance->render_body($this->cartstoredata);
                 }
             }
         }

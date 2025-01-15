@@ -45,5 +45,5 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     And the "Checkout" "button" should be disabled
     And I should see "Are you agree with conditions?" in the ".form_termsandconditions" "css_element"
     ## Access by "name" attribute because "id" does not work for some strange reasons
-    When I set the field "accepttermsnandconditions" to "checked"
+    When I set the field "accepttermsandconditions" to "checked"
     Then the "Checkout" "button" should be enabled

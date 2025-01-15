@@ -26,7 +26,7 @@
 namespace local_shopping_cart\local\checkout_process\items;
 
 use local_shopping_cart\local\checkout_process\checkout_base_item;
-use local_shopping_cart\local\vatnrchecker as vatnrcheckerhelper;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use moodle_exception;
 
 /**
@@ -38,12 +38,6 @@ use moodle_exception;
  */
 class vatnrchecker extends checkout_base_item {
     /**
-     * VATNRCHECKERURL
-     * @var string
-     */
-    const VATNRCHECKERURL = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number';
-
-    /**
      * Renders checkout item.
      * @return bool
      */
@@ -51,7 +45,6 @@ class vatnrchecker extends checkout_base_item {
         if (
             get_config('local_shopping_cart', 'showvatnrchecker')
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
-            && !empty(get_config('local_shopping_cart', 'onlywithvatnrnumber'))
         ) {
             return true;
         }
@@ -113,8 +106,7 @@ class vatnrchecker extends checkout_base_item {
      * @return array
      */
     public static function get_country_code_name() {
-        $vatnrchecker = new vatnrcheckerhelper();
-        $countries = $vatnrchecker->return_countrycodes_array();
+        $countries = vatnumberhelper::get_countrycodes_array();
 
         $formattedcountrycodes = [];
         foreach ($countries as $code => $name) {
@@ -151,8 +143,7 @@ class vatnrchecker extends checkout_base_item {
         try {
             $changedinput = self::get_input_data($changedinput);
             if (isset($changedinput['country']) && isset($changedinput['vatnumber'])) {
-                $vatnrchecker = new vatnrcheckerhelper();
-                $vatnumbercheck = $vatnrchecker->check_vatnr_number(
+                $vatnumbercheck = vatnumberhelper::check_vatnr_number(
                     $changedinput['country'],
                     $changedinput['vatnumber']
                 );

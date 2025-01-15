@@ -63,8 +63,10 @@ class shopping_cart_credits extends checkout_base_item {
      */
     public static function render_body($cachedata) {
         global $PAGE;
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template("local_shopping_cart/shopping_cart_credits", $cachedata);
         return [
-            'template' => 'tbd',
+            'template' => $template,
         ];
     }
 
@@ -73,11 +75,14 @@ class shopping_cart_credits extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function check_status(): array {
+    public static function check_status(
+        $managercachestep,
+        $changedinput
+    ): array {
         return [
-            'data' => 'testing',
+            'data' => '',
             'mandatory' => self::is_mandatory(),
-            'valid' => false,
+            'valid' => true,
         ];
     }
 }

@@ -62,7 +62,10 @@ class addresses extends checkout_base_item {
     public static function render_body($cachedata) {
         global $PAGE;
         $data = self::get_template_render_data();
-        $data['required_addresses'] = self::set_data_from_cache($data['required_addresses'], $cachedata['data']);
+        $data['required_addresses'] = self::set_data_from_cache(
+            $data['required_addresses'],
+            $cachedata['data']
+        );
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/address", $data);
         return [
@@ -98,22 +101,10 @@ class addresses extends checkout_base_item {
      * @return array all required template data
      */
     public static function get_template_render_data(): array {
-        global $USER, $DB;
-        $userid = $USER->id;
-        $data["usermail"] = $USER->email;
-        $data["username"] = $USER->firstname . $USER->lastname;
-        $data["userid"] = $userid;
-
-        // Get saved addresses for current user.
-        $sql = "SELECT *
-                FROM {local_shopping_cart_address}
-                WHERE userid=:userid
-                ORDER BY id DESC";
-
-        $params = ['userid' => $userid];
-        $addressesfromdb = $DB->get_records_sql($sql, $params);
-
+        $data = self::get_user_data();
+        $addressesfromdb = self::get_saved_addresses_from_user($data["userid"]);
         $countries = get_string_manager()->get_list_of_countries();
+
         $savedaddresses = [];
         foreach ($addressesfromdb as $dbaddress) {
             $dbaddress->country = $countries[$dbaddress->state];
@@ -138,10 +129,39 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required addresses with a key and localized string
      */
+    public static function get_user_data(): array {
+        global $USER;
+        return [
+            "usermail" => $USER->email,
+            "username" => $USER->firstname . $USER->lastname,
+            "userid" => $USER->id,
+        ];
+    }
+
+    /**
+     * Generates complete required-address data as specified by the plugin config.
+     *
+     * @return array list of all required addresses with a key and localized string
+     */
+    public static function get_saved_addresses_from_user($userid): array {
+        global $DB;
+        $sql = "SELECT *
+                FROM {local_shopping_cart_address}
+                WHERE userid=:userid
+                ORDER BY id DESC";
+
+        $params = ['userid' => $userid];
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Generates complete required-address data as specified by the plugin config.
+     *
+     * @return array list of all required addresses with a key and localized string
+     */
     public static function get_required_address_data(): array {
         $requiredaddresseslocalized = [];
         $requiredaddresskeys = self::get_required_address_keys();
-        // Insert localized string for required address types.
         foreach ($requiredaddresskeys as $addresstype) {
             $requiredaddresseslocalized[$addresstype] = [
                     "addresskey" => $addresstype,
