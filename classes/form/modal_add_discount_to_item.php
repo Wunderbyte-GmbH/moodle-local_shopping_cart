@@ -182,11 +182,12 @@ class modal_add_discount_to_item extends dynamic_form {
         $discount = $item['discount'] ?? 0;
 
         // We have to guess if the value comes from percentage or absolute.
-        if (!empty($discount) && !empty($item['price'])
-            && (0 === (($discount * 100) % $item['price']))) {
-
+        if (!empty($discount) && !empty($item['price'])) {
+            $mod = fmod($discount * 100, $item['price']); // Use fmod for float modulo.
+            if (abs($mod) < 0.001) { // Check if the result is close to zero.
+                $data->discountpercent = ($discount * 100) / $item['price'];
+            }
             // This seems to come from percentage, because we get a nice number.
-            $data->discountpercent = ($discount * 100) / $item['price'];
         } else {
             $data->discountabsolute = $discount;
         }
