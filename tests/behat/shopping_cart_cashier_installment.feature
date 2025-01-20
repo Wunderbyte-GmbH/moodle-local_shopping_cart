@@ -56,7 +56,7 @@ Feature: Configure curtom installment settings (down payment, discount, etc).
     And I should see "20 EUR instead of 42.42 EUR"
     And I should see "2" occurrences of "11.21 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "20.00 EUR" in the ".sc_totalprice" "css_element"
-    ## Modify down payment and Validate installment.
+    ## Modify down payment and validate installment.
     And I click on "#shopping_cart-cashiers-cart .shoppingcart-discount-icon" "css_element"
     And the field "Down payment" matches value "20"
     And I set the field "Down payment" to "10"
@@ -69,16 +69,21 @@ Feature: Configure curtom installment settings (down payment, discount, etc).
     And I should see "10 EUR instead of 42.42 EUR"
     And I should see "2" occurrences of "16.21 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
-    ## Modify down payment for the 2nd time and Validate installment again.
+    ## Modify down payment for the 2nd time along with discount and validate installment again.
     And I click on "#shopping_cart-cashiers-cart .shoppingcart-discount-icon" "css_element"
     And the field "Down payment" matches value "20"
     And I set the field "Down payment" to "15"
+    And I set the field "Percentage" to "5"
+    And I set the field "Amount" to "5"
+    And I press "Save changes"
+    And I should see "Can you use only one of these fields at the time"
+    And I set the field "Amount" to ""
     And I press "Save changes"
     And I should not see "Down payment for Test item 5:"
-    And I should see "42.42 EUR" in the ".sc_totalprice" "css_element"
+    And I should see "40.42 EUR" in the ".sc_totalprice" "css_element"
     And I set the field "Use installment payments" to "1"
     And I wait "1" seconds
     And I should see "Down payment for Test item 5:"
-    And I should see "15 EUR instead of 42.42 EUR"
-    And I should see "2" occurrences of "13.71 EUR on" in the ".sc_installments .furtherpayments" "css_element"
+    And I should see "15 EUR instead of 40.42 EUR"
+    And I should see "2" occurrences of "12.71 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "15.00 EUR" in the ".sc_totalprice" "css_element"
