@@ -424,7 +424,7 @@ class create_invoice {
                         if (empty($entity)) {
                             continue;
                         }
-                        $optionsettings->location = $entity->name;
+                        $optionsettings->location = $entity->name ?? '';
                         break;
                     }
                 }
