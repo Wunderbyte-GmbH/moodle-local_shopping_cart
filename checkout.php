@@ -24,11 +24,10 @@
  */
 
 
-use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\create_invoice;
-use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
@@ -144,7 +143,7 @@ foreach ($requiredaddresskeys as $addresstype) {
         $addressid = "";
     }
     if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
-        $address = addresses::get_address_for_user($userid, $addressid);
+        $address = address_operations::get_specific_user_addresses($addressid);
         if ($address !== false) {
             $address->label = ucfirst($requriedaddresses[$addresstype]['addresslabel']);
             $address->country = $countries[$address->state];

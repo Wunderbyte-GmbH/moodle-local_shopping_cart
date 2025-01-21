@@ -30,6 +30,7 @@ use core\task\manager;
 use core_user;
 use local_shopping_cart\interfaces\invoice;
 use curl;
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart_history;
 use local_shopping_cart\task\create_invoice_task;
@@ -357,17 +358,8 @@ class erpnext_invoice implements invoice {
      */
     public function get_billing_address(): string {
         $address = '';
-        global $DB;
+        $addressrecord = address_operations::get_specific_user_addresses($this->invoicedata['address_billing']);
 
-        // Get billing address.
-        $data = [
-            'id' => $this->invoicedata['address_billing'],
-        ];
-
-        $addressrecord = $DB->get_record(
-            'local_shopping_cart_address',
-            $data
-        );
         if ($addressrecord) {
             // Check if address exists in erp.
             $addresstitle =

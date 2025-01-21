@@ -24,7 +24,6 @@
 
 use local_shopping_cart\addresses;
 use local_shopping_cart\local\cartstore;
-use local_shopping_cart\shopping_cart;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');

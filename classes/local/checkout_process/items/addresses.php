@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local\checkout_process\items;
 
 use local_shopping_cart\local\checkout_process\checkout_base_item;
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 
 /**
  * Class checkout
@@ -98,11 +99,11 @@ class addresses extends checkout_base_item {
     /**
      * Generates the data for rendering the templates/address.mustache template.
      *
-     * @return array all required template data
+     * @return object all required template data
      */
     public static function get_template_render_data(): array {
         $data = self::get_user_data();
-        $addressesfromdb = self::get_saved_addresses_from_user($data["userid"]);
+        $addressesfromdb = address_operations::get_all_user_addresses($data["userid"]);
         $countries = get_string_manager()->get_list_of_countries();
 
         $savedaddresses = [];
@@ -136,22 +137,6 @@ class addresses extends checkout_base_item {
             "username" => $USER->firstname . $USER->lastname,
             "userid" => $USER->id,
         ];
-    }
-
-    /**
-     * Generates complete required-address data as specified by the plugin config.
-     *
-     * @return array list of all required addresses with a key and localized string
-     */
-    public static function get_saved_addresses_from_user($userid): array {
-        global $DB;
-        $sql = "SELECT *
-                FROM {local_shopping_cart_address}
-                WHERE userid=:userid
-                ORDER BY id DESC";
-
-        $params = ['userid' => $userid];
-        return $DB->get_records_sql($sql, $params);
     }
 
     /**

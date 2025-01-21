@@ -35,7 +35,6 @@ use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_bookingfee;
 use local_shopping_cart\shopping_cart_history;
-use local_shopping_cart\shopping_cart_rebookingcredit;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();

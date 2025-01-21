@@ -16,6 +16,8 @@
 
 namespace local_shopping_cart\form;
 
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -142,7 +144,7 @@ class modal_new_address extends dynamic_form {
 
         $data = $this->get_data();
 
-        $newaddressid = addresses::add_address_for_user($data);
+        $newaddressid = address_operations::add_address_for_user($data);
 
         $result = new stdClass();
         $result->templatedata = addresses::get_template_render_data();

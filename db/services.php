@@ -156,4 +156,11 @@ $functions = [
             'capabilities'  => 'mod/booking:readresponses',
             'ajax'          => 1,
         ],
+        'local_shopping_cart_delete_address' => [
+            'classname'     => 'local_shopping_cart\external\delete_user_address',
+            'description'   => 'Deletes user address',
+            'type'          => 'write',
+            'capabilities'  => '',
+            'ajax'          => 1,
+        ],
 ];
