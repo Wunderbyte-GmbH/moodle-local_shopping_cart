@@ -129,7 +129,6 @@ class shopping_cart {
             }
 
             if (get_config('local_shopping_cart', 'allowchooseaccount')) {
-
                 $searchdata = [
                     'itemid' => $cartitem['itemid'],
                     'componentname' => $cartitem['componentname'],
@@ -417,7 +416,6 @@ class shopping_cart {
         }
 
         if (isset($response) && isset($response['success']) && $response['success'] == 1) {
-
             $context = context_system::instance();
             // Trigger item deleted event.
             $event = item_deleted::create([
@@ -730,8 +728,8 @@ class shopping_cart {
             }
             // Now the user either has enough credit to pay for herself, or she is a cashier.
             $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
-
         } else {
+            // phpcs:ignore moodle.Commenting.TodoComment.MissingInfoInline
             // TODO: Migrate everything to the cartstore & pricemodifiers.
 
             // Even if we get the data from history, we still need to look in cache.
@@ -776,7 +774,6 @@ class shopping_cart {
 
         // When we use credits, we have to log this in the ledger so cash report will have the correct sums!
         if (isset($data["usecredit"]) && $data["usecredit"] && isset($data["credit"]) && $data["credit"] > 0) {
-
             // If we have no identifier, we look for it in items.
             if (empty($identifier)) {
                 foreach ($data["items"] as $item) {
@@ -877,7 +874,6 @@ class shopping_cart {
                         ($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')
                     ) {
-
                             $historyitem = shopping_cart_history::return_item_from_history($item['itemid']);
 
                             $item['schistoryid'] = $item['itemid'];
@@ -916,9 +912,10 @@ class shopping_cart {
 
                     $item['id'] = $id;
                     // If we just paid for an installment, we need a very special treatment.
-                    if ($item['componentname'] === 'local_shopping_cart'
-                        && strpos($item['area'], 'installment') !== false) {
-
+                    if (
+                        $item['componentname'] === 'local_shopping_cart'
+                        && strpos($item['area'], 'installment') !== false
+                    ) {
                         $item['id'] = $id;
                     }
                 }
@@ -1120,7 +1117,6 @@ class shopping_cart {
         }
 
         if ($success == 1) {
-
             /* If the user canceled herself and a cancelation fee is set in config settings
             we deduce the standard fee from the credit. */
             if ($userid == $USER->id) {
@@ -1168,11 +1164,14 @@ class shopping_cart {
             [$newcredit] = shopping_cart_credits::add_credit($userid, $customcredit, $currency, $costcenter);
 
             // We also need to insert a record into the ledger table.
-            // First, add the prefix and annotation.
+            // GH-122 - Cancellations need their own identifier, so they can have their own receipts.
+            $record->identifier = shopping_cart_history::create_unique_cart_identifier($userid);
+            // Add the prefix and annotation.
             $record->itemname = get_string('canceled', 'local_shopping_cart') . " - " . $record->itemname;
             $record->annotation = get_string('canceled', 'local_shopping_cart');
             $record->credits = $customcredit;
             $record->fee = $cancelationfee;
+            $record->schistoryid = $historyid;
             self::add_record_to_ledger_table($record);
 
             $context = context_system::instance();
@@ -1191,9 +1190,9 @@ class shopping_cart {
         }
 
         return [
-                'success' => $success,
-                'error' => $error,
-                'credit' => $newcredit,
+            'success' => $success,
+            'error' => $error,
+            'credit' => $newcredit,
         ];
     }
 
@@ -1286,9 +1285,11 @@ class shopping_cart {
         $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
 
         // If the cancelationfee is < 0, or the time has expired, the user is not allowed to cancel.
-        if (($cancelationfee < 0) ||
-            (!empty($item->canceluntil)
-                && ($item->canceluntil < time()))) {
+        if (
+            ($cancelationfee < 0) ||
+            (!empty($item->canceluntil) &&
+                ($item->canceluntil < time()))
+        ) {
             // Cancelation after time has expired is only allowed for cashiers.
             if (!has_capability('local/shopping_cart:cashier', $context)) {
                 return false;
@@ -1311,7 +1312,8 @@ class shopping_cart {
             case LOCAL_SHOPPING_CART_PAYMENT_SUCCESS:
                 // We add a check to make sure we prevent duplicates!
                 // If itemid is 0, we cannot do this check, as we always want to write cash transfer, cash transaction, etc.
-                if (($record->itemid === 0) || (!$DB->get_record('local_shopping_cart_ledger', [
+                if (
+                    ($record->itemid === 0) || (!$DB->get_record('local_shopping_cart_ledger', [
                     'userid' => $record->userid, // Not nullable.
                     'itemid' => $record->itemid, // Not nullable.
                     'itemname' => $record->itemname ?? null,
@@ -1329,7 +1331,8 @@ class shopping_cart {
                     'area' => $record->area ?? null,
                     'annotation' => $record->annotation ?? null,
                     'schistoryid' => $record->schistoryid ?? null,
-                ]))) {
+                    ]))
+                ) {
                     // We only insert if entry does not exist yet.
 
                     $record->timecreated = $record->timecreated ?? time();
@@ -1347,7 +1350,7 @@ class shopping_cart {
                 $record->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS;
                 $record->gateway = null;
                 $record->orderid = null;
-                $record->schistoryid = null;
+                $record->schistoryid = $record->schistoryid ?? null;
                 $id = $DB->insert_record('local_shopping_cart_ledger', $record);
                 cache_helper::purge_by_event('setbackcachedcashreport');
                 break;
@@ -1393,7 +1396,7 @@ class shopping_cart {
      */
     public static function calculate_total_price(array $items, bool $calculatenetprice = false): float {
 
-        $price = round(array_reduce($items, function($sum, $item) use ($calculatenetprice) {
+        $price = round(array_reduce($items, function ($sum, $item) use ($calculatenetprice) {
             if ($calculatenetprice) {
                 // Calculate net price.
                 if (key_exists('price_net', $item)) {
@@ -1433,7 +1436,7 @@ class shopping_cart {
         int $userid,
         int $historyid,
         float $price = 0
-        ): array {
+    ): array {
 
         $item = shopping_cart_history::return_item_from_history($historyid);
 
@@ -1473,7 +1476,15 @@ class shopping_cart {
         $params = [];
         $values = explode(' ', $query);
         $fullsql = $DB->sql_concat(
-            '\' \'', 'u.id', '\' \'', 'u.firstname', '\' \'', 'u.lastname', '\' \'', 'u.email', '\' \''
+            '\' \'',
+            'u.id',
+            '\' \'',
+            'u.firstname',
+            '\' \'',
+            'u.lastname',
+            '\' \'',
+            'u.email',
+            '\' \''
         );
         $sql = "SELECT * FROM (
                     SELECT u.id, u.firstname, u.lastname, u.email, $fullsql AS fulltextstring
@@ -1487,7 +1498,6 @@ class shopping_cart {
             $firstrun = true;
             $counter = 1;
             foreach ($values as $value) {
-
                 $sql .= $firstrun ? ' WHERE ' : ' AND ';
                 $sql .= " " . $DB->sql_like('fulltextstring', ':param' . $counter, false) . " ";
                 // If it's numeric, we search for the full number - so we need to add blanks.
@@ -1543,12 +1553,10 @@ class shopping_cart {
         // We need the accounts to run through all the gateways.
         $accounts = \core_payment\helper::get_payment_accounts_to_manage(context_system::instance());
         foreach ($accounts as $account) {
-
             // Note: We currently never use this.
             $canmanage = has_capability('moodle/payment:manageaccounts', $account->get_context());
 
             foreach ($account->get_gateways() as $gateway) {
-
                 if (empty($gateway->get('enabled'))) {
                     continue;
                 }
@@ -1581,12 +1589,10 @@ class shopping_cart {
                     continue;
                 }
 
-                $transactioncompletestring = 'paygw_' .$name . '\external\transaction_complete';
+                $transactioncompletestring = 'paygw_' . $name . '\external\transaction_complete';
                 if (class_exists($transactioncompletestring)) {
-
                     // Now, we run through all pending payments we found above.
                     foreach ($records as $record) {
-
                         if ($record->timecreated <= $past) {
                             continue;
                         }
@@ -1607,7 +1613,8 @@ class shopping_cart {
                                 );
                             } else {
                                 throw new moodle_exception(
-                                    'ERROR: transaction_complete does not implement transaction_complete interface!');
+                                    'ERROR: transaction_complete does not implement transaction_complete interface!'
+                                );
                             }
                         } catch (\Throwable $e) {
                             echo "ERROR: " . $e;
@@ -1615,17 +1622,18 @@ class shopping_cart {
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
                         if (isset($response['success']) && $response['success']) {
-
                             // At this point, we need to do one more check.
                             // If, for some reason, the payment was successful...
                             // ...  but the shopping car history is not updated, we might run in a loop.
 
-                            if ($paymentid = $DB->get_field('payments', 'id', [
+                            if (
+                                $paymentid = $DB->get_field('payments', 'id', [
                                 'component' => 'local_shopping_cart',
                                 'itemid' => $record->identifier,
                                 'userid' => $record->userid,
                                 'gateway' => $name,
-                            ])) {
+                                ])
+                            ) {
                                 service_provider::deliver_order('', $record->identifier, $paymentid, $record->userid);
                             }
 
@@ -1662,7 +1670,7 @@ class shopping_cart {
                 $currencies[$c] = new lang_string($c, 'core_currencies');
             }
 
-            uasort($currencies, function($a, $b) {
+            uasort($currencies, function ($a, $b) {
                 return strcmp($a, $b);
             });
         } else {
@@ -1744,7 +1752,6 @@ class shopping_cart {
         ) {
             // We also check if the setting to only apply fixed percentage within service period is turned on.
             if (get_config('local_shopping_cart', 'fixedpercentageafterserviceperiodstart')) {
-
                 if (empty($item->serviceperiodstart)) {
                     $serviceperiodstart = $DB->get_field(
                         'local_shopping_cart_history',
@@ -1765,7 +1772,6 @@ class shopping_cart {
                     $item->quotaconsumed = 0.0;
                     return;
                 }
-
             } else {
                 $item->quotaconsumed = (float) 0.01 * get_config('local_shopping_cart', 'calculateconsumationfixedpercentage');
                 return;
@@ -1773,12 +1779,15 @@ class shopping_cart {
         } else if (get_config('local_shopping_cart', 'calculateconsumation')) {
             // Fetch consumed quota.
             $providerclass = self::get_service_provider_classname($item->componentname);
-            $item->quotaconsumed = component_class_callback($providerclass, 'quota_consumed',
-                    [
+            $item->quotaconsumed = component_class_callback(
+                $providerclass,
+                'quota_consumed',
+                [
                             'area' => $item->area,
                             'itemid' => $item->itemid,
                             'userid' => $userid,
-                    ]);
+                ]
+            );
         } else {
             $item->quotaconsumed = 0.0;
             return;

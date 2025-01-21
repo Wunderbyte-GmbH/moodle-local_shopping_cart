@@ -33,6 +33,7 @@ require_login();
 $id = required_param('id', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
 $idcol = optional_param('idcol', 'identifier', PARAM_TEXT);
+$paymentstatus = optional_param('paymentstatus', 2, PARAM_INT); // 2 means LOCAL_SHOPPING_CART_PAYMENT_SUCCESS.
 
 $context = context_system::instance();
 
@@ -46,4 +47,4 @@ $PAGE->set_url('/local_shopping_cart/receipt.php');
 $PAGE->set_title('Receipt');
 $PAGE->set_heading('Receipt');
 
-create_invoice::create_receipt($id, $userid, '', false, $idcol);
+create_invoice::create_receipt($id, $userid, '', false, $idcol, $paymentstatus);

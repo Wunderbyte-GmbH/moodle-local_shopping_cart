@@ -117,6 +117,10 @@ $string['calculateconsumationfixedpercentage_desc'] = 'If you choose a percentag
 $string['cancelationfee'] = 'Cancelation fee';
 $string['cancelationfee:description'] = 'Automatically deducted fee for cancelation by user.
                                         -1 means that cancelation by user is not possible.';
+$string['cancelconfirmation'] = 'Cancellation confirmation';
+$string['cancelconfirmationshtml'] = 'HTML template for cancellation confirmations';
+$string['cancelconfirmationshtmldesc'] = 'Leave this empty, if you want to use the same template as for the extra receipts.
+You can use the same placeholders as for the default receipts.';
 $string['canceldidntwork'] = 'Cancel didn\'t work';
 $string['canceled'] = 'Canceled';
 $string['cancellationsettings'] = 'Cancellation settings';
@@ -242,7 +246,7 @@ $string['creditsmanager:payback'] = 'Pay back credits';
 $string['creditsmanagercredits'] = 'Correction value or credits to pay back';
 $string['creditsmanagercredits_help'] = 'If you have chosen "Correct credits" then enter the correction value here.
 Example: A user has 110 EUR in credits but should actually have 100 EUR in credits. In this case the correction value is -10.
-If you have chosen "Pay back credits" then enter the amount to pay back and choose if you want to pay back via cash or bank transfer.';
+If you have chosen "Pay back credits" then enter the Add credit and choose if you want to pay back via cash or bank transfer.';
 $string['creditsmanagercreditscostcenter'] = 'Costcenter to which the credit is assigned to';
 $string['creditsmanagercreditscostcenter_help'] = 'Select the costcenter for which the credit can be redeemed in the future. If you leave this field empty, it depends on your plugin-settings whether it can be redeemed for all or only for a specific costcenter.';
 $string['creditsmanagermode'] = 'What do you want to do?';
@@ -250,7 +254,7 @@ $string['creditsmanagerreason'] = 'Reason';
 $string['creditsmanagersuccess'] = 'Credits have been booked successfully';
 $string['creditsused'] = 'Credits used';
 $string['creditsusedannotation'] = 'Extra row because credits were used';
-$string['credittopayback'] = 'Amount to pay back';
+$string['credittopayback'] = 'Credits (before cancelation fee)';
 $string['currency'] = 'Currency';
 $string['cy'] = "Cyprus";
 $string['cz'] = "Czech Republic";
@@ -583,7 +587,7 @@ $string['receipt:total'] = 'Total sum';
 $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
-[[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
+[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
 Before and afterwards you can also use [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]],
 [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
 Only use basic HTML supported by TCPDF';

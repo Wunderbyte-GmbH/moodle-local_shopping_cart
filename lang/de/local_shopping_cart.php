@@ -117,6 +117,10 @@ $string['calculateconsumationfixedpercentage_desc'] = 'Wenn Sie hier einen Proze
 $string['cancelationfee'] = 'Stornierungsgebühr';
 $string['cancelationfee:description'] = 'Automatisch vom Guthaben abgezogene Gebühr bei einer Stornierung durch die/den KäuferIn.
                                         -1 bedeutet, dass Stornierung durch Userin nicht möglich ist.';
+$string['cancelconfirmation'] = 'Stornierungsbestätigung';
+$string['cancelconfirmationshtml'] = 'HTML-Vorlage für Stornierungsbestätigungen';
+$string['cancelconfirmationshtmldesc'] = 'Leer lassen, um die gleiche Vorlage wie für Extra-Belege zu verwenden.
+Sie können die gleichen Platzhalter wie für die Standardbelege verwenden.';
 $string['canceldidntwork'] = 'Fehler beim Stornieren';
 $string['canceled'] = 'Storniert';
 $string['cancellationsettings'] = 'Stornierungseinstellungen';
@@ -246,7 +250,7 @@ $string['creditsmanagerreason'] = 'Grund';
 $string['creditsmanagersuccess'] = 'Guthabenbuchung wurde durchgeführt.';
 $string['creditsused'] = 'Guthaben eingelöst';
 $string['creditsusedannotation'] = 'Extra-Zeile für eingelöstes Guthaben';
-$string['credittopayback'] = 'Zurückerstatteter Betrag';
+$string['credittopayback'] = 'Guthaben (vor Abzug der Stornogebühr)';
 $string['currency'] = 'Währung';
 $string['cy'] = "Zypern";
 $string['cz'] = "Tschechien";
@@ -514,7 +518,7 @@ $string['receipt:total'] = 'Gesamtsumme';
 $string['receipt:transactionno'] = 'Transaktionsnummer';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
-[[price]], [[credits]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
+[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
 Außerhalb von [[items]] können Sie auch [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]],
 [[date]], [[invoice_number]] und [[order_number]] verwenden.
 Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';

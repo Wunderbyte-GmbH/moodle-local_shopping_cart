@@ -172,6 +172,7 @@ class create_invoice {
      * @param bool $asstring
      * @param string $idcol can be 'identifier' for normal receipts, or 'id' (ledger id)
      *                      for special receipts like for credits paid back for example
+     * @param int $paymentstatus the payment status from ledger table
      *
      * @return string
      */
@@ -180,7 +181,8 @@ class create_invoice {
         int $userid,
         string $filename = '',
         bool $asstring = false,
-        string $idcol = 'identifier'
+        string $idcol = 'identifier',
+        int $paymentstatus = 2 // 2 means LOCAL_SHOPPING_CART_PAYMENT_SUCCESS.
     ): string {
 
         global $CFG;
@@ -211,14 +213,23 @@ class create_invoice {
         $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
         // Set some content to print.
 
-        // Default HTML template.
-        $cfghtml = get_config('local_shopping_cart', 'receipthtml');
+        // HTML templates.
+        $cfghtml = get_config('local_shopping_cart', 'receipthtml'); // Default HTML template.
+        $extrareceiptshtml = get_config('local_shopping_cart', 'extrareceiptshtml'); // For extra receipts like credits correction.
+        $cancelconfirmationshtml = get_config('local_shopping_cart', 'cancelconfirmationshtml'); // For cancel confirmations.
 
         // Check if there as a separate HTML template for special rows without identifier.
         if ($idcol == "id") {
-            $extrareceiptshtml = get_config('local_shopping_cart', 'extrareceiptshtml');
             if (!empty(trim(strip_tags($extrareceiptshtml)))) {
                 // If it's not empty, we use it instead of the default HTML template.
+                $cfghtml = $extrareceiptshtml;
+            }
+        } else if ($paymentstatus == 3) { // 3 means LOCAL_SHOPPING_CART_PAYMENT_CANCELED.
+            // For cancel confirmations we have an identifier and a payment status of 3.
+            if (!empty(trim(strip_tags($cancelconfirmationshtml)))) {
+                $cfghtml = $cancelconfirmationshtml;
+            } else if (!empty(trim(strip_tags($extrareceiptshtml)))) {
+                // Fallback.
                 $cfghtml = $extrareceiptshtml;
             }
         }
@@ -402,6 +413,8 @@ class create_invoice {
             $tmp = str_replace("[[name]]", $item->itemname, $tmp);
             $tmp = str_replace("[[pos]]", $pos, $tmp);
             $tmp = str_replace("[[credits]]", $item->credits ?? 0, $tmp);
+            $tmp = str_replace("[[fee]]", $item->fee ?? 0, $tmp);
+            $tmp = str_replace("[[discount]]", $item->discount ?? 0, $tmp);
 
             // If it's a booking option, we add option-specific data.
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {

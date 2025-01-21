@@ -45,35 +45,37 @@ if ($hassiteconfig) {
     }
 
     if (empty($paymentaccounts)) {
-
         $moodleurl = new moodle_url('/payment/accounts.php');
         $urlobject = new stdClass();
         $urlobject->link = $moodleurl->out(false);
 
         // If we have no payment accounts then show a static text instead.
         $settings->add(new admin_setting_description(
-                'nopaymentaccounts',
-                new lang_string('nopaymentaccounts', 'local_shopping_cart'),
-                new lang_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
+            'nopaymentaccounts',
+            new lang_string('nopaymentaccounts', 'local_shopping_cart'),
+            new lang_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject)
         ));
-
     } else {
         // Connect payment account.
         $settings->add(
-                new admin_setting_configselect(
-                        'local_shopping_cart/accountid',
-                        new lang_string('accountid', 'local_shopping_cart'),
-                        new lang_string('accountid:description', 'local_shopping_cart'),
-                        null,
-                        $paymentaccounts
-                )
+            new admin_setting_configselect(
+                'local_shopping_cart/accountid',
+                new lang_string('accountid', 'local_shopping_cart'),
+                new lang_string('accountid:description', 'local_shopping_cart'),
+                null,
+                $paymentaccounts
+            )
         );
 
         // Allow chosing individual paymentaccount for each item.
         $settings->add(
-                new admin_setting_configcheckbox('local_shopping_cart/allowchooseaccount',
-                        new lang_string('allowchooseaccount', 'local_shopping_cart'),
-                        new lang_string('allowchooseaccount_desc', 'local_shopping_cart'), 0));
+            new admin_setting_configcheckbox(
+                'local_shopping_cart/allowchooseaccount',
+                new lang_string('allowchooseaccount', 'local_shopping_cart'),
+                new lang_string('allowchooseaccount_desc', 'local_shopping_cart'),
+                0
+            )
+        );
     }
 
     // Currency dropdown.
@@ -88,183 +90,215 @@ if ($hassiteconfig) {
 
     $settings->add(
         new admin_setting_configselect(
-                'local_shopping_cart/globalcurrency',
-                get_string('globalcurrency', 'local_shopping_cart'),
-                get_string('globalcurrencydesc', 'local_shopping_cart'),
-                'EUR', $currencies));
+            'local_shopping_cart/globalcurrency',
+            get_string('globalcurrency', 'local_shopping_cart'),
+            get_string('globalcurrencydesc', 'local_shopping_cart'),
+            'EUR',
+            $currencies
+        )
+    );
 
     // Max items in cart.
     $settings->add(
-            new admin_setting_configtext(
-                    'local_shopping_cart/maxitems',
-                    new lang_string('maxitems', 'local_shopping_cart'),
-                    new lang_string('maxitems:description', 'local_shopping_cart'),
-                    10,
-                    PARAM_INT
-            )
+        new admin_setting_configtext(
+            'local_shopping_cart/maxitems',
+            new lang_string('maxitems', 'local_shopping_cart'),
+            new lang_string('maxitems:description', 'local_shopping_cart'),
+            10,
+            PARAM_INT
+        )
     );
 
     // Item expiriation time in minutes.
     $settings->add(
-            new admin_setting_configtext(
-                    'local_shopping_cart/expirationtime',
-                    new lang_string('expirationtime', 'local_shopping_cart'),
-                    new lang_string('expirationtime:description', 'local_shopping_cart'),
-                    15,
-                    PARAM_INT
-            )
-    );
-
-    $settings->add(
-            new admin_setting_configtext(
-                    'local_shopping_cart/expirationtime',
-                    new lang_string('expirationtime', 'local_shopping_cart'),
-                    new lang_string('expirationtime:description', 'local_shopping_cart'),
-                    15,
-                    PARAM_INT
-            )
-    );
-
-    $settings->add(
         new admin_setting_configtext(
-                'local_shopping_cart/bookingfee',
-                get_string('bookingfee', 'local_shopping_cart'),
-                get_string('bookingfee_desc', 'local_shopping_cart'),
-                0,
-                PARAM_FLOAT
+            'local_shopping_cart/expirationtime',
+            new lang_string('expirationtime', 'local_shopping_cart'),
+            new lang_string('expirationtime:description', 'local_shopping_cart'),
+            15,
+            PARAM_INT
         )
     );
 
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/bookingfeevariable',
-                get_string('bookingfeevariable', 'local_shopping_cart'),
-                get_string('bookingfeevariable_desc', 'local_shopping_cart'), 0)
-        );
+        new admin_setting_configtext(
+            'local_shopping_cart/expirationtime',
+            new lang_string('expirationtime', 'local_shopping_cart'),
+            new lang_string('expirationtime:description', 'local_shopping_cart'),
+            15,
+            PARAM_INT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_shopping_cart/bookingfee',
+            get_string('bookingfee', 'local_shopping_cart'),
+            get_string('bookingfee_desc', 'local_shopping_cart'),
+            0,
+            PARAM_FLOAT
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/bookingfeevariable',
+            get_string('bookingfeevariable', 'local_shopping_cart'),
+            get_string('bookingfeevariable_desc', 'local_shopping_cart'),
+            0
+        )
+    );
     $bookingfeevariable = get_config('local_shopping_cart', 'bookingfeevariable') == 1;
     if ($bookingfeevariable) {
-        $settings->add (
-                new admin_setting_configtextarea(
+        $settings->add(
+            new admin_setting_configtextarea(
                 'local_shopping_cart/definefeesforcostcenters',
                 get_string('definefeesforcostcenters', 'local_shopping_cart'),
                 get_string('definefeesforcostcenters_desc', 'local_shopping_cart'),
-                '', PARAM_TEXT, 30, 10)
-                );
+                '',
+                PARAM_TEXT,
+                30,
+                10
+            )
+        );
     }
 
     $settings->add(
-            new admin_setting_configcheckbox('local_shopping_cart/bookingfeeonlyonce',
-                    get_string('bookingfeeonlyonce', 'local_shopping_cart'),
-                    get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'), 1)
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/bookingfeeonlyonce',
+            get_string('bookingfeeonlyonce', 'local_shopping_cart'),
+            get_string('bookingfeeonlyonce_desc', 'local_shopping_cart'),
+            1
+        )
     );
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-            new admin_setting_configcheckbox('local_shopping_cart/rounddiscounts',
-                    new lang_string('rounddiscounts', 'local_shopping_cart'),
-                    new lang_string('rounddiscounts_desc', 'local_shopping_cart'), 1));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/rounddiscounts',
+            new lang_string('rounddiscounts', 'local_shopping_cart'),
+            new lang_string('rounddiscounts_desc', 'local_shopping_cart'),
+            1
+        )
+    );
 
     // Setting to enable address processing during checkout.
     $settings->add(
-            new admin_setting_configmulticheckbox('local_shopping_cart/addresses_required',
-                    new lang_string('addresses_required:title', 'local_shopping_cart'),
-                    new lang_string('addresses_required:desc', 'local_shopping_cart'),
-                    [""],
-                    [
+        new admin_setting_configmulticheckbox(
+            'local_shopping_cart/addresses_required',
+            new lang_string('addresses_required:title', 'local_shopping_cart'),
+            new lang_string('addresses_required:desc', 'local_shopping_cart'),
+            [""],
+            [
                             'billing' => ucfirst(new lang_string('addresses:billing', 'local_shopping_cart')),
                             'shipping' => ucfirst(new lang_string('addresses:shipping', 'local_shopping_cart')),
                     ]
-            ));
+        )
+    );
 
         // If no costcenter is specified in credits, they can be redeemed for items from this costcenter.
         $settings->add(
-                new admin_setting_configtext(
-                        'local_shopping_cart/defaultcostcenterforcredits',
-                        get_string('defaultcostcenterforcredits', 'local_shopping_cart'),
-                        get_string('defaultcostcenterforcredits_desc', 'local_shopping_cart'),
-                        '',
-                        PARAM_TEXT
-                )
-            );
+            new admin_setting_configtext(
+                'local_shopping_cart/defaultcostcenterforcredits',
+                get_string('defaultcostcenterforcredits', 'local_shopping_cart'),
+                get_string('defaultcostcenterforcredits_desc', 'local_shopping_cart'),
+                '',
+                PARAM_TEXT
+            )
+        );
 
         $settings->add(
-        new admin_setting_configtextarea(
+            new admin_setting_configtextarea(
                 'local_shopping_cart/costcenterstrings',
                 get_string('costcenterstrings', 'local_shopping_cart'),
                 get_string('costcenterstrings_desc', 'local_shopping_cart'),
                 '',
                 PARAM_RAW
-        )
+            )
         );
 
     // Setting to activate manual rebooking for cashier.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/manualrebookingisallowed',
-                get_string('manualrebookingisallowed', 'local_shopping_cart'),
-                get_string('manualrebookingisallowed_desc', 'local_shopping_cart'), 0));
-
-    $settings->add(
-        new admin_setting_configtext(
-                'local_shopping_cart/prolongedpaymenttime',
-                get_string('prolongedpaymenttime', 'local_shopping_cart'),
-                get_string('prolongedpaymenttime_desc', 'local_shopping_cart'),
-                0,
-                PARAM_INT
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/manualrebookingisallowed',
+            get_string('manualrebookingisallowed', 'local_shopping_cart'),
+            get_string('manualrebookingisallowed_desc', 'local_shopping_cart'),
+            0
         )
     );
 
     $settings->add(
         new admin_setting_configtext(
-                'local_shopping_cart/uniqueidentifier',
-                get_string('uniqueidentifier', 'local_shopping_cart'),
-                get_string('uniqueidentifier_desc', 'local_shopping_cart'),
-                0,
-                PARAM_INT
+            'local_shopping_cart/prolongedpaymenttime',
+            get_string('prolongedpaymenttime', 'local_shopping_cart'),
+            get_string('prolongedpaymenttime_desc', 'local_shopping_cart'),
+            0,
+            PARAM_INT
         )
     );
 
     $settings->add(
-            new admin_setting_confightmleditor(
-                    'local_shopping_cart/additonalcashiersection',
-                    new lang_string('additonalcashiersection', 'local_shopping_cart'),
-                    new lang_string('additonalcashiersection:description', 'local_shopping_cart'),
-                    '..',
-                    PARAM_RAW
-            )
+        new admin_setting_configtext(
+            'local_shopping_cart/uniqueidentifier',
+            get_string('uniqueidentifier', 'local_shopping_cart'),
+            get_string('uniqueidentifier_desc', 'local_shopping_cart'),
+            0,
+            PARAM_INT
+        )
     );
 
     $settings->add(
         new admin_setting_confightmleditor(
-                'local_shopping_cart/additonalcashiersection',
-                get_string('additonalcashiersection', 'local_shopping_cart'),
-                get_string('additonalcashiersection:description', 'local_shopping_cart'),
-                '..',
-                PARAM_RAW
+            'local_shopping_cart/additonalcashiersection',
+            new lang_string('additonalcashiersection', 'local_shopping_cart'),
+            new lang_string('additonalcashiersection:description', 'local_shopping_cart'),
+            '..',
+            PARAM_RAW
+        )
+    );
+
+    $settings->add(
+        new admin_setting_confightmleditor(
+            'local_shopping_cart/additonalcashiersection',
+            get_string('additonalcashiersection', 'local_shopping_cart'),
+            get_string('additonalcashiersection:description', 'local_shopping_cart'),
+            '..',
+            PARAM_RAW
         )
     );
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/accepttermsandconditions',
-                get_string('accepttermsandconditions', 'local_shopping_cart'),
-                get_string('accepttermsandconditions:description', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/accepttermsandconditions',
+            get_string('accepttermsandconditions', 'local_shopping_cart'),
+            get_string('accepttermsandconditions:description', 'local_shopping_cart'),
+            0
+        )
+    );
 
     $settings->add(
-            new admin_setting_configtextarea(
-                    'local_shopping_cart/termsandconditions',
-                    get_string('termsandconditions', 'local_shopping_cart'),
-                    get_string('termsandconditions:description', 'local_shopping_cart'),
-                    null,
-                    PARAM_RAW
-            )
+        new admin_setting_configtextarea(
+            'local_shopping_cart/termsandconditions',
+            get_string('termsandconditions', 'local_shopping_cart'),
+            get_string('termsandconditions:description', 'local_shopping_cart'),
+            null,
+            PARAM_RAW
+        )
     );
 
     // If this setting is turned on, all customers have to pay the sellers tax template.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/owncountrytax',
-                get_string('owncountrytax', 'local_shopping_cart'),
-                get_string('owncountrytax_desc', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/owncountrytax',
+            get_string('owncountrytax', 'local_shopping_cart'),
+            get_string('owncountrytax_desc', 'local_shopping_cart'),
+            0
+        )
+    );
 
-    $defaultreceipthtml =
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+    /* $defaultreceipthtml =
     '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
     <tr>
     <td><!--<img src="url-to-your-logo"--></td>
@@ -317,15 +351,15 @@ if ($hassiteconfig) {
     <td colspan="3"><b>Total sum: </b></td>
     <td style="text-align: right;"><b>[[sum]] EUR</b></td>
     </tr>
-    </table>';
+    </table>'; */
 
     $settings->add(
         new admin_setting_configtextarea(
-                'local_shopping_cart/receipthtml',
-                get_string('receipthtml', 'local_shopping_cart'),
-                get_string('receipthtml:description', 'local_shopping_cart'),
-                $defaultreceipthtml,
-                PARAM_RAW
+            'local_shopping_cart/receipthtml',
+            get_string('receipthtml', 'local_shopping_cart'),
+            get_string('receipthtml:description', 'local_shopping_cart'),
+            '', /* $defaultreceipthtml */
+            PARAM_RAW
         )
     );
 
@@ -338,7 +372,8 @@ if ($hassiteconfig) {
         )
     );
 
-    $defaultextrareceipthtml =
+    // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+    /* $defaultextrareceipthtml =
         '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
         <tr>
         <td><!--<img src="url-to-your-logo"--></td>
@@ -384,36 +419,52 @@ if ($hassiteconfig) {
         Signature:
         <div style="border: 1px solid #000;">
         <br><br><br>
-        </div>';
+        </div>'; */
 
     $settings->add(
         new admin_setting_configtextarea(
-                'local_shopping_cart/extrareceiptshtml',
-                get_string('extrareceiptshtml', 'local_shopping_cart'),
-                get_string('extrareceiptshtmldesc', 'local_shopping_cart'),
-                $defaultextrareceipthtml,
-                PARAM_RAW
+            'local_shopping_cart/extrareceiptshtml',
+            get_string('extrareceiptshtml', 'local_shopping_cart'),
+            get_string('extrareceiptshtmldesc', 'local_shopping_cart'),
+            '', /* $defaultextrareceipthtml */
+            PARAM_RAW
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtextarea(
+            'local_shopping_cart/cancelconfirmationshtml',
+            get_string('cancelconfirmationshtml', 'local_shopping_cart'),
+            get_string('cancelconfirmationshtmldesc', 'local_shopping_cart'),
+            '',
+            PARAM_RAW
         )
     );
 
     // Cancellation settings.
-    $cancellationsettings = new admin_settingpage('local_shopping_cart_cancellation_settings',
-        get_string('cancellationsettings', 'local_shopping_cart'));
+    $cancellationsettings = new admin_settingpage(
+        'local_shopping_cart_cancellation_settings',
+        get_string('cancellationsettings', 'local_shopping_cart')
+    );
 
     $cancellationsettings->add(
         new admin_setting_configtext(
-                'local_shopping_cart/cancelationfee',
-                get_string('cancelationfee', 'local_shopping_cart'),
-                get_string('cancelationfee:description', 'local_shopping_cart'),
-                -1,
-                PARAM_FLOAT
+            'local_shopping_cart/cancelationfee',
+            get_string('cancelationfee', 'local_shopping_cart'),
+            get_string('cancelationfee:description', 'local_shopping_cart'),
+            -1,
+            PARAM_FLOAT
         )
     );
 
     $cancellationsettings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/calculateconsumation',
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/calculateconsumation',
             get_string('calculateconsumation', 'local_shopping_cart'),
-            get_string('calculateconsumation_desc', 'local_shopping_cart'), 0));
+            get_string('calculateconsumation_desc', 'local_shopping_cart'),
+            0
+        )
+    );
 
     $fixedpercentages[-1] = get_string('nofixedpercentage', 'local_shopping_cart');
     foreach (range(5, 100, 5) as $number) {
@@ -421,49 +472,77 @@ if ($hassiteconfig) {
     }
 
     $cancellationsettings->add(
-        new admin_setting_configselect('local_shopping_cart/calculateconsumationfixedpercentage',
+        new admin_setting_configselect(
+            'local_shopping_cart/calculateconsumationfixedpercentage',
             get_string('calculateconsumationfixedpercentage', 'local_shopping_cart'),
-            get_string('calculateconsumationfixedpercentage_desc', 'local_shopping_cart'), -1, $fixedpercentages));
+            get_string('calculateconsumationfixedpercentage_desc', 'local_shopping_cart'),
+            -1,
+            $fixedpercentages
+        )
+    );
 
     $cancellationsettings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/fixedpercentageafterserviceperiodstart',
-                get_string('fixedpercentageafterserviceperiodstart', 'local_shopping_cart'),
-                get_string('fixedpercentageafterserviceperiodstart_desc', 'local_shopping_cart'), 1));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/fixedpercentageafterserviceperiodstart',
+            get_string('fixedpercentageafterserviceperiodstart', 'local_shopping_cart'),
+            get_string('fixedpercentageafterserviceperiodstart_desc', 'local_shopping_cart'),
+            1
+        )
+    );
 
         // This way of rebooking doesn't seem useful anymore...
         // Since the functions introduced in the rebooking section (see further below).
         // Therefore will be only displayed if already in use.
     if (!empty(get_config('local_shopping_cart', 'allowrebookingcredit'))) {
         $cancellationsettings->add(
-                new admin_setting_configcheckbox('local_shopping_cart/allowrebookingcredit',
+            new admin_setting_configcheckbox(
+                'local_shopping_cart/allowrebookingcredit',
                 get_string('allowrebookingcredit', 'local_shopping_cart'),
-                get_string('allowrebookingcredit_desc', 'local_shopping_cart'), 0));
+                get_string('allowrebookingcredit_desc', 'local_shopping_cart'),
+                0
+            )
+        );
     };
 
     $ADMIN->add('local_shopping_cart', $cancellationsettings);
 
     // Cash report settings.
-    $cashreportsettings = new admin_settingpage('local_shopping_cart_cashreport_settings',
-        get_string('cashreportsettings', 'local_shopping_cart'));
+    $cashreportsettings = new admin_settingpage(
+        'local_shopping_cart_cashreport_settings',
+        get_string('cashreportsettings', 'local_shopping_cart')
+    );
     $cashreportsettings->add(
-            new admin_setting_configcheckbox('local_shopping_cart/cashreportshowcustomorderid',
-                    get_string('cashreport:showcustomorderid', 'local_shopping_cart'),
-                    get_string('cashreport:showcustomorderid_desc', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/cashreportshowcustomorderid',
+            get_string('cashreport:showcustomorderid', 'local_shopping_cart'),
+            get_string('cashreport:showcustomorderid_desc', 'local_shopping_cart'),
+            0
+        )
+    );
     $cashreportsettings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/showdailysums',
-                get_string('showdailysums', 'local_shopping_cart'),
-                '', 1));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/showdailysums',
+            get_string('showdailysums', 'local_shopping_cart'),
+            '',
+            1
+        )
+    );
     $cashreportsettings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/showdailysumscurrentcashier',
-                get_string('showdailysumscurrentcashier', 'local_shopping_cart'),
-                '', 1));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/showdailysumscurrentcashier',
+            get_string('showdailysumscurrentcashier', 'local_shopping_cart'),
+            '',
+            1
+        )
+    );
 
     $cashreportsettings->add(
         new admin_setting_configtextarea(
-                'local_shopping_cart/dailysumspdfhtml',
-                get_string('dailysumspdfhtml', 'local_shopping_cart'),
-                get_string('dailysumspdfhtml:description', 'local_shopping_cart'),
-                '', PARAM_RAW
+            'local_shopping_cart/dailysumspdfhtml',
+            get_string('dailysumspdfhtml', 'local_shopping_cart'),
+            get_string('dailysumspdfhtml:description', 'local_shopping_cart'),
+            '',
+            PARAM_RAW
         )
     );
 
@@ -479,20 +558,25 @@ if ($hassiteconfig) {
         '50000' => '50000',
         '100000' => '100000',
     ];
-    $cashreportsettings->add(new admin_setting_configselect('local_shopping_cart/downloadcashreportlimit',
-            get_string('downloadcashreportlimit', 'local_shopping_cart'),
-            get_string('downloadcashreportlimitdesc', 'local_shopping_cart'),
-            '10000', // Default value.
-            $limitopts
+    $cashreportsettings->add(new admin_setting_configselect(
+        'local_shopping_cart/downloadcashreportlimit',
+        get_string('downloadcashreportlimit', 'local_shopping_cart'),
+        get_string('downloadcashreportlimitdesc', 'local_shopping_cart'),
+        '10000', // Default value.
+        $limitopts
     ));
     $ADMIN->add('local_shopping_cart', $cashreportsettings);
 
     // Setting to enable taxes processing.
     $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', new lang_string('taxsettings', 'local_shopping_cart'));
     $taxsettings->add(
-            new admin_setting_configcheckbox('local_shopping_cart/enabletax',
-                    new lang_string('enabletax', 'local_shopping_cart'),
-                    new lang_string('enabletax_desc', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/enabletax',
+            new lang_string('enabletax', 'local_shopping_cart'),
+            new lang_string('enabletax_desc', 'local_shopping_cart'),
+            0
+        )
+    );
 
     $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
     if ($taxprocessingenabled) {
@@ -515,31 +599,31 @@ if ($hassiteconfig) {
                 </div>
                 </div>';
         $taxsettings->add(
-                new admin_setting_taxcategories(
-                        'local_shopping_cart/taxcategories',
-                        new lang_string('taxcategories', 'local_shopping_cart'),
-                        new lang_string('taxcategories_desc', 'local_shopping_cart') . $taxcategoriesexample,
-                        '20',
-                        PARAM_TEXT
-                )
+            new admin_setting_taxcategories(
+                'local_shopping_cart/taxcategories',
+                new lang_string('taxcategories', 'local_shopping_cart'),
+                new lang_string('taxcategories_desc', 'local_shopping_cart') . $taxcategoriesexample,
+                '20',
+                PARAM_TEXT
+            )
         );
 
         $taxsettings->add(
-                new admin_setting_configtext(
-                        'local_shopping_cart/defaulttaxcategory',
-                        new lang_string('defaulttaxcategory', 'local_shopping_cart'),
-                        new lang_string('defaulttaxcategory_desc', 'local_shopping_cart'),
-                        "",
-                        PARAM_TEXT
-                )
+            new admin_setting_configtext(
+                'local_shopping_cart/defaulttaxcategory',
+                new lang_string('defaulttaxcategory', 'local_shopping_cart'),
+                new lang_string('defaulttaxcategory_desc', 'local_shopping_cart'),
+                "",
+                PARAM_TEXT
+            )
         );
         $taxsettings->add(
-                new admin_setting_configcheckbox(
-                        'local_shopping_cart/itempriceisnet',
-                        get_string('itempriceisnet', 'local_shopping_cart'),
-                        get_string('itempriceisnet_desc', 'local_shopping_cart'),
-                        '1'
-                )
+            new admin_setting_configcheckbox(
+                'local_shopping_cart/itempriceisnet',
+                get_string('itempriceisnet', 'local_shopping_cart'),
+                get_string('itempriceisnet_desc', 'local_shopping_cart'),
+                '1'
+            )
         );
     }
     $ADMIN->add('local_shopping_cart', $taxsettings);
@@ -548,33 +632,36 @@ if ($hassiteconfig) {
     $installmentsettings = new admin_settingpage(
         'local_shopping_cart_installment_settings',
         get_string('installmentsettings', 'local_shopping_cart')
-        );
+    );
     $installmentsettings->add(
-            new admin_setting_configcheckbox('local_shopping_cart/enableinstallments',
-                    get_string('enableinstallments', 'local_shopping_cart'),
-                    get_string('enableinstallments_desc', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/enableinstallments',
+            get_string('enableinstallments', 'local_shopping_cart'),
+            get_string('enableinstallments_desc', 'local_shopping_cart'),
+            0
+        )
+    );
 
     $installmentsenabled = get_config('local_shopping_cart', 'enableinstallments') == 1;
     if ($installmentsenabled) {
+        $installmentsettings->add(
+            new admin_setting_configtext(
+                'local_shopping_cart/timebetweenpayments',
+                get_string('timebetweenpayments', 'local_shopping_cart'),
+                get_string('timebetweenpayments_desc', 'local_shopping_cart'),
+                30,
+                PARAM_INT
+            )
+        );
 
         $installmentsettings->add(
-                new admin_setting_configtext(
-                        'local_shopping_cart/timebetweenpayments',
-                        get_string('timebetweenpayments', 'local_shopping_cart'),
-                        get_string('timebetweenpayments_desc', 'local_shopping_cart'),
-                        30,
-                        PARAM_INT
-                )
-            );
-
-        $installmentsettings->add(
-        new admin_setting_configtext(
+            new admin_setting_configtext(
                 'local_shopping_cart/reminderdaysbefore',
                 get_string('reminderdaysbefore', 'local_shopping_cart'),
                 get_string('reminderdaysbefore_desc', 'local_shopping_cart'),
                 3,
                 PARAM_INT
-        )
+            )
         );
     }
     $ADMIN->add('local_shopping_cart', $installmentsettings);
@@ -582,9 +669,10 @@ if ($hassiteconfig) {
     defined('MOODLE_INTERNAL') || die;
 
     // Add a heading for the section.
-    $settings->add(new admin_setting_heading('local_shopping_cart/invoicingplatformheading',
-            get_string('invoicingplatformheading', 'local_shopping_cart'),
-            get_string('invoicingplatformdescription', 'local_shopping_cart')
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/invoicingplatformheading',
+        get_string('invoicingplatformheading', 'local_shopping_cart'),
+        get_string('invoicingplatformdescription', 'local_shopping_cart')
     ));
 
     // Add used platforms here. Currently we only support ERPNext.
@@ -594,43 +682,48 @@ if ($hassiteconfig) {
         'erpnext' => get_string('erpnext', 'local_shopping_cart'),
         'saveinvoicenumber' => get_string('saveinvoicenumber', 'local_shopping_cart'),
     ];
-    $settings->add(new admin_setting_configselect('local_shopping_cart/invoicingplatform',
-            get_string('chooseplatform', 'local_shopping_cart'),
-            get_string('chooseplatformdesc', 'local_shopping_cart'),
-            'noinvoice', // Default value.
-            $options
+    $settings->add(new admin_setting_configselect(
+        'local_shopping_cart/invoicingplatform',
+        get_string('chooseplatform', 'local_shopping_cart'),
+        get_string('chooseplatformdesc', 'local_shopping_cart'),
+        'noinvoice', // Default value.
+        $options
     ));
 
     // Add a text field for the Base URL.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/startinvoicenumber',
-            get_string('startinvoicenumber', 'local_shopping_cart'),
-            get_string('startinvoicenumber_desc', 'local_shopping_cart'),
-            "INV-10000",
-            PARAM_TEXT
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/startinvoicenumber',
+        get_string('startinvoicenumber', 'local_shopping_cart'),
+        get_string('startinvoicenumber_desc', 'local_shopping_cart'),
+        "INV-10000",
+        PARAM_TEXT
     ));
 
     // Add a text field for the Base URL.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/pathtoinvoices',
-            get_string('pathtoinvoices', 'local_shopping_cart'),
-            get_string('pathtoinvoices_desc', 'local_shopping_cart'),
-            "/local_shopping_cart_invoices",
-            PARAM_TEXT
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/pathtoinvoices',
+        get_string('pathtoinvoices', 'local_shopping_cart'),
+        get_string('pathtoinvoices_desc', 'local_shopping_cart'),
+        "/local_shopping_cart_invoices",
+        PARAM_TEXT
     ));
 
     // Add a text field for the Base URL.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/baseurl',
-            get_string('baseurl', 'local_shopping_cart'),
-            get_string('baseurldesc', 'local_shopping_cart'),
-            '',
-            PARAM_URL
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/baseurl',
+        get_string('baseurl', 'local_shopping_cart'),
+        get_string('baseurldesc', 'local_shopping_cart'),
+        '',
+        PARAM_URL
     ));
 
     // Add a text field for the Token.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/token',
-            get_string('token', 'local_shopping_cart'),
-            get_string('tokendesc', 'local_shopping_cart'),
-            '',
-            PARAM_TEXT
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/token',
+        get_string('token', 'local_shopping_cart'),
+        get_string('tokendesc', 'local_shopping_cart'),
+        '',
+        PARAM_TEXT
     ));
 
     $countries = get_string_manager()->get_list_of_countries(true, 'en');
@@ -641,89 +734,109 @@ if ($hassiteconfig) {
     }
     // Create the country setting.
     $settings->add(new admin_setting_configselect(
-            'local_shopping_cart/defaultcountry',
-            get_string('choosedefaultcountry', 'local_shopping_cart'),
-            get_string('choosedefaultcountrydesc', 'local_shopping_cart'),
-            'Austria', // Default value (empty for none selected).
-            $newcountries
+        'local_shopping_cart/defaultcountry',
+        get_string('choosedefaultcountry', 'local_shopping_cart'),
+        get_string('choosedefaultcountrydesc', 'local_shopping_cart'),
+        'Austria', // Default value (empty for none selected).
+        $newcountries
     ));
 
     // Add a heading for the rebooking section.
-    $settings->add(new admin_setting_heading('local_shopping_cart/rebookingheading',
-            get_string('rebookingheading', 'local_shopping_cart'),
-            get_string('rebookingheadingdescription', 'local_shopping_cart')
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/rebookingheading',
+        get_string('rebookingheading', 'local_shopping_cart'),
+        get_string('rebookingheadingdescription', 'local_shopping_cart')
     ));
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/allowrebooking',
-                get_string('allowrebooking', 'local_shopping_cart'),
-                get_string('allowrebooking_desc', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/allowrebooking',
+            get_string('allowrebooking', 'local_shopping_cart'),
+            get_string('allowrebooking_desc', 'local_shopping_cart'),
+            0
+        )
+    );
 
     // Add a text field for the Token.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/rebookingperiod',
-            get_string('rebookingperiod', 'local_shopping_cart'),
-            get_string('rebookingperioddesc', 'local_shopping_cart'),
-            '',
-            PARAM_INT
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/rebookingperiod',
+        get_string('rebookingperiod', 'local_shopping_cart'),
+        get_string('rebookingperioddesc', 'local_shopping_cart'),
+        '',
+        PARAM_INT
     ));
 
     // Add a text field for the Token.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/rebookingmaxnumber',
-            get_string('rebookingmaxnumber', 'local_shopping_cart'),
-            get_string('rebookingmaxnumberdesc', 'local_shopping_cart'),
-            '',
-            PARAM_INT
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/rebookingmaxnumber',
+        get_string('rebookingmaxnumber', 'local_shopping_cart'),
+        get_string('rebookingmaxnumberdesc', 'local_shopping_cart'),
+        '',
+        PARAM_INT
     ));
 
     $settings->add(
         new admin_setting_configtext(
-                'local_shopping_cart/rebookingfee',
-                get_string('rebookingfee', 'local_shopping_cart'),
-                get_string('rebookingfee_desc', 'local_shopping_cart'),
-                0,
-                PARAM_FLOAT
+            'local_shopping_cart/rebookingfee',
+            get_string('rebookingfee', 'local_shopping_cart'),
+            get_string('rebookingfee_desc', 'local_shopping_cart'),
+            0,
+            PARAM_FLOAT
         )
-        );
+    );
 
     // Add a heading for the section.
-    $settings->add(new admin_setting_heading('local_shopping_cart/vatnrcheckerheading',
-            get_string('vatnrcheckerheading', 'local_shopping_cart'),
-            get_string('vatnrcheckerheadingdescription', 'local_shopping_cart')
-            ));
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/vatnrcheckerheading',
+        get_string('vatnrcheckerheading', 'local_shopping_cart'),
+        get_string('vatnrcheckerheadingdescription', 'local_shopping_cart')
+    ));
 
     // Checkbox to show vatnr check on checkout.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/showvatnrchecker',
-                get_string('showvatnrchecker', 'local_shopping_cart'),
-                get_string('showvatnrcheckerdescription', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/showvatnrchecker',
+            get_string('showvatnrchecker', 'local_shopping_cart'),
+            get_string('showvatnrcheckerdescription', 'local_shopping_cart'),
+            0
+        )
+    );
 
 
     $settings->add(
-        new admin_setting_configselect('local_shopping_cart/owncountrycode',
-                get_string('owncountrycode', 'local_shopping_cart'),
-                get_string('owncountrycode_desc', 'local_shopping_cart'),
-                null,
-                vatnrchecker::return_countrycodes_array()
-    ));
+        new admin_setting_configselect(
+            'local_shopping_cart/owncountrycode',
+            get_string('owncountrycode', 'local_shopping_cart'),
+            get_string('owncountrycode_desc', 'local_shopping_cart'),
+            null,
+            vatnrchecker::return_countrycodes_array()
+        )
+    );
 
     // Add a text field for the Token.
-    $settings->add(new admin_setting_configtext('local_shopping_cart/ownvatnrnumber',
-            get_string('ownvatnrnumber', 'local_shopping_cart'),
-            get_string('ownvatnrnumber_desc', 'local_shopping_cart'),
-            '',
-            PARAM_ALPHANUM
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/ownvatnrnumber',
+        get_string('ownvatnrnumber', 'local_shopping_cart'),
+        get_string('ownvatnrnumber_desc', 'local_shopping_cart'),
+        '',
+        PARAM_ALPHANUM
     ));
 
     // Add a heading for the section.
-    $settings->add(new admin_setting_heading('local_shopping_cart/privacyheading',
-            get_string('privacyheading', 'local_shopping_cart'),
-            get_string('privacyheadingdescription', 'local_shopping_cart')
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/privacyheading',
+        get_string('privacyheading', 'local_shopping_cart'),
+        get_string('privacyheadingdescription', 'local_shopping_cart')
     ));
 
     // Setting to round percentage discounts to full integers.
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/deleteledger',
-                get_string('deleteledger', 'local_shopping_cart'),
-                get_string('deleteledgerdescription', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/deleteledger',
+            get_string('deleteledger', 'local_shopping_cart'),
+            get_string('deleteledgerdescription', 'local_shopping_cart'),
+            0
+        )
+    );
 }

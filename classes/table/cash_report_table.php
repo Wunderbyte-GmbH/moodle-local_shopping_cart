@@ -199,9 +199,13 @@ class cash_report_table extends wunderbyte_table {
                     'id' => $values->identifier,
                     'idcol' => 'identifier', // Use the identifier to create the receipt.
                     'userid' => $values->userid,
+                    'paymentstatus' => $values->paymentstatus,
                 ]
             );
-            $out = html_writer::tag('a', get_string('receipt', 'local_shopping_cart'), [
+            $labelstring = $values->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ?
+                'cancelconfirmation' :
+                'receipt';
+            $out = html_writer::tag('a', get_string($labelstring, 'local_shopping_cart'), [
                 'href' => $url->out(false),
                 'target' => '_blank',
             ]);

@@ -40,7 +40,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_cancel_all_addcredit extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -93,7 +92,6 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
         $mform->setDefault('cancelationfee', $cancelationfee);
         $mform->setType('cancelationfee', PARAM_FLOAT);
-
     }
 
     /**
@@ -130,7 +128,6 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $area = $data->area;
 
         foreach ($bookedusers as $buser) {
-
             $credit = $buser->price - $cancelationfee;
 
             // Negative credits are not allowed.
@@ -152,8 +149,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
         }
 
         // For the booking component, we have a special treatment here.
-        if ($componentname === 'mod_booking'
-            && $area === 'option') {
+        if ($componentname === 'mod_booking' && $area === 'option') {
             $pluginmanager = \core_plugin_manager::instance();
             $plugins = $pluginmanager->get_plugins_of_type('mod');
             if (isset($plugins['booking'])) {

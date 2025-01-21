@@ -87,6 +87,7 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
         int $historyid,
         float $credit
     ): void {
+        global $DB;
 
         $user = $this->getDataGenerator()->create_user();
 
@@ -105,6 +106,7 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
         $this->assertEquals($addresult['success'], 1, 'Item was not successfully added to cart.');
 
         $price = $addresult['price'];
+        $originalprice = $price;
 
         // Step 2: Apply discount.
         $this->setAdminUser();
@@ -117,7 +119,7 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
             $discount['absolute']
         );
 
-        // Check if discount is applied (mocked or verified result)
+        // Check if discount is applied (mocked or verified result).
         $cartitems = $cartstore->get_items();
         $this->assertNotEmpty($cartitems, 'Cart items should not be empty after adding.');
 
@@ -138,8 +140,30 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
 
         $historyitem = get_history_item::execute($component, $area, $itemid, $user->id);
 
+        // Test discount.
+        $historyitemidentifier = $DB->get_field('local_shopping_cart_history', 'identifier', ['id' => $historyitem['id']]);
+        $ledgeritems = shopping_cart_history::return_data_from_ledger_via_identifier($historyitemidentifier);
+        $ledgeritem = reset($ledgeritems);
+        $discount = (float) $ledgeritem->discount;
+        $this->assertEquals($discount, $originalprice - $price, 'Discount was not applied correctly.');
+
         // Step 4: Cancel purchase.
         $cancelresult = cancel_purchase::execute($component, $area, $itemid, $user->id, $historyitem['id'], 0);
+
+        // When we cancel, the ledger record will get a different identifier than the history item.
+        $ledgerrecordcancelled = $DB->get_record(
+            'local_shopping_cart_ledger',
+            [
+                'schistoryid' => $historyitem['id'],
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+            ]
+        );
+        $this->assertNotEquals(
+            $ledgerrecordcancelled->identifier,
+            $historyitemidentifier,
+            'Identifier was not changed but should be changed for cancelled ledger record.'
+        );
+
         $this->assertArrayHasKey('success', $cancelresult);
         $this->assertEquals($cancelresult['success'], 1, 'Purchase was not successfully canceled.');
     }
