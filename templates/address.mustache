@@ -60,7 +60,16 @@
                     </div>
                 {{/saved_addresses}}
             </fieldset>
-            <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+            <div class="d-flex justify-content-between mt-2">
+                <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+                <a
+                    href=""
+                    class="shopping-cart-delete-selected-address text-danger"
+                    data-addresskey="{{addresskey}}"
+                >
+                    {{#str}} addresses:delete:selected, local_shopping_cart{{/str}}
+                </a>
+            </div>
         </div>
     {{/required_addresses}}
 </div>
