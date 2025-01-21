@@ -16,6 +16,7 @@
 
 namespace local_shopping_cart;
 
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use stdClass;
 
 /**
@@ -26,11 +27,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class addresses {
-    /**
-     * Database table name for all addresses.
-     */
-    private const DATABASE_TABLE = 'local_shopping_cart_address';
-
     /**
      * Generates the data for rendering the templates/address.mustache template.
      *
@@ -44,13 +40,7 @@ class addresses {
         $data["userid"] = $userid;
 
         // Get saved addresses for current user.
-        $sql = "SELECT *
-                FROM {" . self::DATABASE_TABLE . "}
-                WHERE userid=:userid
-                ORDER BY id DESC";
-
-        $params = ['userid' => $userid];
-        $addressesfromdb = $DB->get_records_sql($sql, $params);
+        $addressesfromdb = address_operations::get_all_user_addresses($userid);
 
         $countries = get_string_manager()->get_list_of_countries();
         $savedaddresses = [];
@@ -100,33 +90,6 @@ class addresses {
     }
 
     /**
-     * Saves a new Address in the database for the current $USER.
-     *
-     * @param stdClass $address the already validated address data from the form
-     * @return int the id of the newly created address
-     */
-    public static function add_address_for_user(stdClass $address): int {
-        global $DB, $USER;
-
-        $address->userid = $USER->id;
-
-        return $DB->insert_record(self::DATABASE_TABLE, $address, true);
-    }
-
-    /**
-     * Returns a single address for the given $userid.
-     *
-     * @param int $userid id of the user
-     * @param int $addressid id of the address
-     * @return stdClass|false the address or false if no matching address was found
-     */
-    public static function get_address_for_user(int $userid, int $addressid): ?stdClass {
-        global $DB;
-
-        return $DB->get_record_select(self::DATABASE_TABLE, 'userid=? AND id=?', [$userid, $addressid]);
-    }
-
-    /**
      * Returns a single address for the given user as a string representation
      *
      * @param int $userid id of the user
@@ -134,7 +97,7 @@ class addresses {
      * @return string|null the address in a single line string, or false if no matching address was found
      */
     public static function get_address_string_for_user(int $userid, int $addressid): ?string {
-        $address = self::get_address_for_user($userid, $addressid);
+        $address = address_operations::get_specific_user_addresses($addressid);
         if ($address) {
             $countries = get_string_manager()->get_list_of_countries();
             return $address->address . trim(" " . $address->address2) . ", " . $address->zip . " " . $address->city . ", " .

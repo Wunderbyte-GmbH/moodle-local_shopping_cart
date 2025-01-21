@@ -27,6 +27,7 @@ namespace local_shopping_cart\local;
 
 use coding_exception;
 use local_shopping_cart\form\dynamicvatnrchecker;
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -968,7 +969,7 @@ class cartstore {
         }
 
         if ($billingaddressid != null) {
-            $billingaddress = addresses::get_address_for_user($this->userid, $billingaddressid);
+            $billingaddress = address_operations::get_specific_user_addresses($billingaddressid);
             $taxcountrycode = $billingaddress->state;
         }
         $data["taxcountrycode"] = $taxcountrycode;
