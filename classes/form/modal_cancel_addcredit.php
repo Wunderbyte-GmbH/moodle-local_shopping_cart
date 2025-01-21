@@ -36,7 +36,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_cancel_addcredit extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -64,7 +63,7 @@ class modal_cancel_addcredit extends dynamic_form {
                 $this->_ajaxformdata["area"],
                 $this->_ajaxformdata["itemid"],
                 $this->_ajaxformdata["userid"],
-                $this->_ajaxformdata["historyid"],
+                $this->_ajaxformdata["historyid"]
             );
             $consumed->percentage = $consumed->quota * 100 . '%';
             $consumed->price = $consumed->initialprice;
@@ -82,24 +81,48 @@ class modal_cancel_addcredit extends dynamic_form {
 
         if (empty($consumed->quota)) {
             $remainingvalue = $this->_ajaxformdata["price"];
-            $mform->addElement('static', 'bodytext', '',
-                get_string('confirmcancelbody', 'local_shopping_cart', $consumed));
+            $mform->addElement(
+                'static',
+                'bodytext',
+                '',
+                get_string('confirmcancelbody', 'local_shopping_cart', $consumed)
+            );
         } else if ($consumed->quota == 1) {
             $remainingvalue = 0;
             $cancelationfee = 0;
-            $mform->addElement('static', 'bodytext', '',
-                get_string('confirmcancelbodynocredit', 'local_shopping_cart', $consumed));
+            $mform->addElement(
+                'static',
+                'bodytext',
+                '',
+                get_string(
+                    'confirmcancelbodynocredit',
+                    'local_shopping_cart',
+                    $consumed
+                )
+            );
         } else {
             $remainingvalue = $consumed->remainingvalue;
-            $mform->addElement('static', 'bodytext', '',
-                get_string('confirmcancelbodyconsumption', 'local_shopping_cart', $consumed));
+            $mform->addElement(
+                'static',
+                'bodytext',
+                '',
+                get_string(
+                    'confirmcancelbodyconsumption',
+                    'local_shopping_cart',
+                    $consumed
+                )
+            );
         }
 
         $mform->addElement('float', 'credittopayback', get_string('credittopayback', 'local_shopping_cart'));
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
 
-        $mform->addElement('advcheckbox', 'applytocomponent', get_string('applytocomponent', 'local_shopping_cart'),
-            get_string('applytocomponent_desc', 'local_shopping_cart'));
+        $mform->addElement(
+            'advcheckbox',
+            'applytocomponent',
+            get_string('applytocomponent', 'local_shopping_cart'),
+            get_string('applytocomponent_desc', 'local_shopping_cart')
+        );
 
         $mform->setDefault('cancelationfee', $cancelationfee);
         $mform->setDefault('credittopayback', $remainingvalue);
@@ -146,8 +169,16 @@ class modal_cancel_addcredit extends dynamic_form {
         // Subtract cancellation fee from credit to get credit for the user.
         $credit = $credittopayback - $cancelationfee;
 
-        shopping_cart::cancel_purchase($data->itemid, $data->area, $data->userid, $data->componentname, $data->historyid,
-            $credit, $cancelationfee, $applytocomponent);
+        shopping_cart::cancel_purchase(
+            $data->itemid,
+            $data->area,
+            $data->userid,
+            $data->componentname,
+            $data->historyid,
+            $credit,
+            $cancelationfee,
+            $applytocomponent
+        );
 
         return $data;
     }
@@ -215,8 +246,11 @@ class modal_cancel_addcredit extends dynamic_form {
             $errors["cancelationfee"] = get_string('error:negativevaluenotallowed', 'local_shopping_cart');
         }
 
-        if (isset($data["credittopayback"]) && isset($data["cancelationfee"])
-            && $data["cancelationfee"] > $data["credittopayback"]) {
+        if (
+            isset($data["credittopayback"])
+            && isset($data["cancelationfee"])
+            && $data["cancelationfee"] > $data["credittopayback"]
+        ) {
             $errors["cancelationfee"] = get_string('error:cancelationfeetoohigh', 'local_shopping_cart');
         }
 
