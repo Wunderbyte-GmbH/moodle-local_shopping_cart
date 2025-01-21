@@ -87,3 +87,17 @@ Feature: Configure curtom installment settings (down payment, discount, etc).
     And I should see "15 EUR instead of 40.42 EUR"
     And I should see "2" occurrences of "12.71 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "15.00 EUR" in the ".sc_totalprice" "css_element"
+    ## Modify down payment for the 3rd time along with negative discount and validate installment again.
+    And I click on "#shopping_cart-cashiers-cart .shoppingcart-discount-icon" "css_element"
+    And the field "Down payment" matches value "20"
+    And I set the field "Down payment" to "13"
+    And I set the field "Amount" to "-5"
+    And I press "Save changes"
+    And I should not see "Down payment for Test item 5:"
+    And I should see "47.42 EUR" in the ".sc_totalprice" "css_element"
+    And I set the field "Use installment payments" to "1"
+    And I wait "1" seconds
+    And I should see "Down payment for Test item 5:"
+    And I should see "13 EUR instead of 47.42 EUR"
+    And I should see "2" occurrences of "17.21 EUR on" in the ".sc_installments .furtherpayments" "css_element"
+    And I should see "13.00 EUR" in the ".sc_totalprice" "css_element"
