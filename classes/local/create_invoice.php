@@ -234,6 +234,64 @@ class create_invoice {
             }
         }
 
+        // Fallback, if no HTML is set.
+        if (empty(trim(strip_tags($cfghtml)))) {
+            $cfghtml =
+                '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
+                    <tr>
+                        <td><!--<img src="url-to-your-logo"--></td>
+                        <td style="text-align: right">
+                        Date: [[date]]<br><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:1.3em; font-weight: bold;">
+                        <br><br>
+                        Booking confirmation<br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">Transaction number: [[id]]</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left;">
+                        [[firstname]] [[lastname]]<br>
+                        [[mail]]
+                        </td>
+                    </tr>
+                </table>
+                <br><br><br>
+                <table cellpadding="5" cellspacing="0" style="width: 100%;" border="0">
+                    <tr style="background-color: #cccccc; padding:5px;">
+                        <td style="text-align: center; width: 10%;"><b>#</b></td>
+                        <td style="text-align: left; width: 30%;"><b>Name</b></td>
+                        <td style="text-align: left; width: 15%;"><b>Location</b></td>
+                        <td style="text-align: left; width: 10%;"><b>Day & Time</b></td>
+                        <td style="text-align: center; width: 10%;"><b>Total</b></td>
+                        <td style="text-align: center; width: 10%;"><b>Outstanding</b></td>
+                        <td style="text-align: center; width: 15%;"><b>Paid</b></td>
+                    </tr>
+                    [[items]]
+                    <tr>
+                        <td style="text-align: center;">[[pos]]</td>
+                        <td style="text-align: left;">[[name]]</td>
+                        <td style="text-align: left;">[[location]]</td>
+                        <td style="text-align: left;">[[dayofweektime]]</td>
+                        <td style="text-align: right;">[[originalprice]] EUR</td>
+                        <td style="text-align: right;">[[outstandingprice]] EUR</td>
+                        <td style="text-align: right;">[[price]] EUR</td>
+                    </tr>
+                    [[/items]]
+                </table>
+                <hr>
+                <table cellpadding="5" cellspacing="0" style="width: 100%;" border="0">
+                    <tr>
+                        <td colspan="3"><b>Total sum: </b></td>
+                        <td style="text-align: right;"><b>[[sum]] EUR</b></td>
+                    </tr>
+                </table>';
+        }
+
         switch ($idcol) {
             case 'id':
                 // In this case $identifier stores the ledger id.
@@ -540,7 +598,7 @@ class create_invoice {
 
         // Print text using writeHTMLCell().
         // Now, we write the HTML into a TCPDF cell.
-        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+        $pdf->writeHTMLCell(0, 0, null, null, $html, 0, 1, 0, true, '', true);
         ob_end_clean();
 
         $filename = $user->firstname . '_' . $user->lastname . '_' . $date . '.pdf';

@@ -71,9 +71,22 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
 
     /**
      * Function to test puchase and cancelation.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param string $itemname
+     * @param int $userid
+     * @param int $paymenttype
+     * @param string $annotation
+     * @param array $discount
+     * @param int $historyid
+     * @param float $credit
+     *
      * @covers \local_shopping_cart\shopping_cart
      * @dataProvider shoppingcartprovider
      * @runInSeparateProcess
+     * @return void
      */
     public function test_shoppingcart(
         string $component,
