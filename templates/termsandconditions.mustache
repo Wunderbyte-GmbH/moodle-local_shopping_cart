@@ -126,9 +126,12 @@
     }
 }}
 
+
 <div class="form_termsandconditions mt-2 d-flex justify-content-end">
+
     <div class="form-container" style="max-width: 400px; width: 100%;">
         <!-- First Form Group -->
+        {{#termsandconditions}}
         <div class="form-group mb-4">
             <div class="text-muted border p-2 bg-light rounded">
                 {{{termsandconditions}}}
@@ -151,8 +154,10 @@
                 </label>
             </div>
         </div>
+        {{/termsandconditions}}
 
         <!-- Second Form Group -->
+        {{#additionalconditions}}
         <div class="form-group">
             <div class="text-muted border p-2 bg-light rounded">
                 {{{additionalconditions}}}
@@ -175,6 +180,7 @@
                 </label>
             </div>
         </div>
+        {{/additionalconditions}}
     </div>
 </div>
 
