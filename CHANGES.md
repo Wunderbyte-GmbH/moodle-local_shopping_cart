@@ -1,3 +1,15 @@
+## Version 0.9.50 (2025012200)
+* New feature: Cancel confirmations in cash report (#122).
+* Improvement: Allow to increase price MUSI-573 #112
+* Improvement: Enable cashier to change value of downpayment MUSI-590 #113
+* Improvement: Linting (php 7.4 compatibility).
+* Bugfix: Don't use implicit int conversion #121
+* Bugfix: Missing entity name could create a problem.
+* Tests: new behat Scenario: Shopping Cart cashier: use installment and change downpayment (#121)
+* Tests: adjust behat to test downpayment along with discount (#121)
+* Tests: Add new unit test to test purchase and cancelation with discounts (to be extended).
+* Tests: Fix behat and PHPDoc.
+
 ## Version 0.9.49 (2025011500)
 * Improvement: When no credits, it's 0 instead of empty in invoice.
 * Improvement: Do not hide receipts for cancelled items. #119
