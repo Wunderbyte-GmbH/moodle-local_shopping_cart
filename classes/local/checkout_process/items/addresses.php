@@ -40,7 +40,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public static function is_active() {
+    public function is_active() {
         if (get_config('local_shopping_cart', 'addresses_required')) {
             return true;
         }
@@ -51,7 +51,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public static function get_icon_progress_bar() {
+    public function get_icon_progress_bar() {
         return 'fa-solid fa-address-book';
     }
 
@@ -60,7 +60,7 @@ class addresses extends checkout_base_item {
      * @param array $cachedata
      * @return array
      */
-    public static function render_body($cachedata) {
+    public function render_body($cachedata) {
         global $PAGE;
         $data = self::get_template_render_data();
         $data['required_addresses'] = self::set_data_from_cache(
@@ -79,7 +79,7 @@ class addresses extends checkout_base_item {
      * @param array $data
      * @param array $cachedata
      */
-    public static function set_data_from_cache(&$requiredaddresses, $cachedata) {
+    public function set_data_from_cache(&$requiredaddresses, $cachedata) {
         foreach ($requiredaddresses as &$requiredaddress) {
             $newsavedaddresses = [];
             foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
@@ -101,7 +101,7 @@ class addresses extends checkout_base_item {
      *
      * @return object all required template data
      */
-    public static function get_template_render_data(): array {
+    public function get_template_render_data(): array {
         $data = self::get_user_data();
         $addressesfromdb = address_operations::get_all_user_addresses($data["userid"]);
         $countries = get_string_manager()->get_list_of_countries();
@@ -130,7 +130,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required addresses with a key and localized string
      */
-    public static function get_user_data(): array {
+    public function get_user_data(): array {
         global $USER;
         return [
             "usermail" => $USER->email,
@@ -144,7 +144,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required addresses with a key and localized string
      */
-    public static function get_required_address_data(): array {
+    public function get_required_address_data(): array {
         $requiredaddresseslocalized = [];
         $requiredaddresskeys = self::get_required_address_keys();
         foreach ($requiredaddresskeys as $addresstype) {
@@ -159,7 +159,7 @@ class addresses extends checkout_base_item {
     /**
      * Renders checkout item.
      */
-    public static function is_mandatory() {
+    public function is_mandatory() {
         return true;
     }
 
@@ -168,7 +168,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function get_required_address_keys(): array {
+    private function get_required_address_keys(): array {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
         return $requiredaddresskeys;
@@ -179,7 +179,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function check_status(
+    public function check_status(
         $managercachestep,
         $validationdata
     ) {
@@ -205,16 +205,35 @@ class addresses extends checkout_base_item {
      *
      * @return bool list of all required address keys
      */
-    public static function is_valid(
+    private function is_valid(
         $requiredaddresskeys,
         $data
     ) {
         $requiredkeys = $requiredaddresskeys ? count($requiredaddresskeys) : null;
         $currentkeys = count($data);
-
-        if ($requiredkeys === $currentkeys) {
+        if (
+            $requiredkeys === $currentkeys &&
+            self::is_address_valid($requiredaddresskeys)
+        ) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     *
+     * @return bool list of all required address keys
+     */
+    private function is_address_valid(
+        $requiredaddresskeys
+    ) {
+        $addressesfromdb = address_operations::get_all_user_addresses($this->identifier);
+        foreach ($requiredaddresskeys as $requiredaddresskey) {
+            if (!isset($addressesfromdb[$requiredaddresskey])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

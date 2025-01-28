@@ -41,7 +41,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public static function is_active() {
+    public function is_active() {
         if (
             get_config('local_shopping_cart', 'showvatnrchecker')
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
@@ -55,7 +55,7 @@ class vatnrchecker extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public static function get_icon_progress_bar() {
+    public function get_icon_progress_bar() {
         return 'fa-solid fa-file-invoice';
     }
 
@@ -63,7 +63,7 @@ class vatnrchecker extends checkout_base_item {
      * Checks status of checkout item.
      * @return array
      */
-    public static function render_body($cachedata) {
+    public function render_body($cachedata) {
         global $PAGE;
         $data = [];
         $data['countries'] = self::get_country_code_name();
@@ -80,7 +80,7 @@ class vatnrchecker extends checkout_base_item {
      * @param array $vatnrcheckerdata
      * @param array $cachedata
      */
-    public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata) {
+    public function set_data_from_cache(&$vatnrcheckerdata, $cachedata) {
         $cacheddata = self::get_input_data($cachedata);
         self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
         $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
@@ -91,7 +91,7 @@ class vatnrchecker extends checkout_base_item {
      * @param array $vatnrcheckerdata
      * @param array $country
      */
-    public static function set_cached_selected_country(&$vatnrcheckerdata, $countrycode) {
+    public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode) {
         foreach ($vatnrcheckerdata['countries'] as &$country) {
             if ($country['code'] == $countrycode) {
                 $country['selected'] = true;
@@ -105,7 +105,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return array
      */
-    public static function get_country_code_name() {
+    public function get_country_code_name() {
         $countries = vatnumberhelper::get_countrycodes_array();
 
         $formattedcountrycodes = [];
@@ -122,7 +122,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return bool list of all required address keys
      */
-    public static function is_mandatory() {
+    public function is_mandatory() {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
             return true;
         }
@@ -134,7 +134,7 @@ class vatnrchecker extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function check_status(
+    public function check_status(
         $managercachestep,
         $changedinput
     ): array {
@@ -168,7 +168,7 @@ class vatnrchecker extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function get_input_data(
+    public function get_input_data(
         $changedinput
     ) {
         $changedinput = json_decode($changedinput);
@@ -184,7 +184,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public static function get_validation_feedback() {
+    public function get_validation_feedback() {
         return get_string('vatnrvalidationfeedback', 'local_shopping_cart');
     }
 
@@ -192,7 +192,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public static function get_error_feedback() {
+    public function get_error_feedback() {
         return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
 }
