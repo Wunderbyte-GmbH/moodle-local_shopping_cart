@@ -39,21 +39,21 @@ class shopping_cart_credits extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public static function get_icon_progress_bar() {
+    public function get_icon_progress_bar() {
         return 'fa-solid fa-coins';
     }
 
     /**
      * Renders checkout item.
      */
-    public static function is_head() {
+    public function is_head() {
         return true;
     }
 
     /**
      * Renders checkout item.
      */
-    public static function is_mandatory() {
+    public function is_mandatory() {
         return false;
     }
 
@@ -61,7 +61,7 @@ class shopping_cart_credits extends checkout_base_item {
      * Renders checkout item.
      * @return array
      */
-    public static function render_body($cachedata) {
+    public function render_body($cachedata) {
         global $PAGE;
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/shopping_cart_credits", $cachedata);
@@ -75,7 +75,7 @@ class shopping_cart_credits extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function check_status(
+    public function check_status(
         $managercachestep,
         $changedinput
     ): array {
