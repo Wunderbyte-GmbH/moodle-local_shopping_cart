@@ -113,7 +113,7 @@ class checkout_manager {
             $filename = basename($item, '.php');
             $classname = self::NAMESPACE_PREFIX . $filename;
             if (self::class_exists_is_active($classname)) {
-                $iteminstance = new $classname();
+                $iteminstance = new $classname($this->identifier);
                 $renderdestination = $iteminstance->is_head() ? 'head' : 'body';
                 $checkoutmanager['checkout_manager_' . $renderdestination]['item_list'][] = [
                     'item' => $iteminstance->get_icon_progress_bar(),
@@ -164,7 +164,7 @@ class checkout_manager {
             $filename = basename($item, '.php');
             $classname = self::NAMESPACE_PREFIX . $filename;
             if (self::class_exists_is_active($classname)) {
-                $iteminstance = new $classname();
+                $iteminstance = new $classname($this->identifier);
                 if ($bodycounter == $this->controlparameter['currentstep']) {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
                         $this->managercache['steps'][$filename],
@@ -206,7 +206,7 @@ class checkout_manager {
                 $filename = basename($item, '.php');
                 $classname = self::NAMESPACE_PREFIX . $filename;
                 if (self::class_exists_is_active($classname)) {
-                    $iteminstance = new $classname();
+                    $iteminstance = new $classname($this->identifier);
                     if ($iteminstance->is_head() === false) {
                         $bodycounter += 1;
                     }
@@ -320,7 +320,7 @@ class checkout_manager {
             $checkoutmanagerhead['body'] = [];
             foreach ($checkoutmanagerhead['item_list'] as $item) {
                 if (self::class_exists_is_active($item['classname'])) {
-                    $iteminstance = new $item['classname']();
+                    $iteminstance = new $item['classname']($this->identifier);
                     $checkoutmanagerhead['head'][] = $iteminstance->render_body($this->cartstoredata);
                 }
             }
@@ -335,7 +335,7 @@ class checkout_manager {
         try {
             foreach ($itemlist as $item) {
                 if ($item['status'] == 'active') {
-                    $iteminstance = new $item['classname']();
+                    $iteminstance = new $item['classname']($this->identifier);
                     $classname = self::get_class_name($item['classname']);
                     if (!isset($this->managercache['viewed'])) {
                         $this->managercache['viewed'] = [];
@@ -418,9 +418,9 @@ class checkout_manager {
      * @param string $classname
      * @return bool
      */
-    public static function class_exists_is_active($classname) {
+    public function class_exists_is_active($classname) {
         if (class_exists($classname)) {
-            $iteminstance = new $classname();
+            $iteminstance = new $classname($this->identifier);
             if ($iteminstance->is_active()) {
                 return true;
             }

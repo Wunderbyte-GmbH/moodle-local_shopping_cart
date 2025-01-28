@@ -40,7 +40,7 @@ class termsandconditions extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public static function is_active() {
+    public function is_active() {
         if (
             get_config('local_shopping_cart', 'accepttermsandconditions') ||
             get_config('local_shopping_cart', 'acceptadditionalconditions')
@@ -54,14 +54,14 @@ class termsandconditions extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public static function get_icon_progress_bar() {
+    public function get_icon_progress_bar() {
         return 'fa-solid fa-file-signature';
     }
 
     /**
      * Renders checkout item.
      */
-    public static function is_mandatory() {
+    public function is_mandatory() {
         return true;
     }
 
@@ -69,7 +69,7 @@ class termsandconditions extends checkout_base_item {
      * Renders checkout item.
      * @return array
      */
-    public static function render_body($cachedata) {
+    public function render_body($cachedata) {
         global $PAGE;
         $data = [];
         if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
@@ -92,7 +92,7 @@ class termsandconditions extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    public static function check_status(
+    public function check_status(
         $managercachestep,
         $validationdata
     ) {
@@ -113,7 +113,7 @@ class termsandconditions extends checkout_base_item {
      * @param array $validationdata
      * @return bool list of all required address keys
      */
-    public static function is_valid($validationdata) {
+    public function is_valid($validationdata) {
         foreach ($validationdata as $validationvalue) {
             if (
                 !isset($validationvalue->value) ||
@@ -130,7 +130,7 @@ class termsandconditions extends checkout_base_item {
      * @param array $termsandconditions
      * @param array $cachedata
      */
-    public static function set_data_from_cache(&$termsandconditions, $cachedata) {
+    public function set_data_from_cache(&$termsandconditions, $cachedata) {
         $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
     }
 }

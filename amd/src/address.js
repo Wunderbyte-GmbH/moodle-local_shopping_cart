@@ -103,6 +103,7 @@ function confirmAndDeleteAddress(addressId, button) {
     });
 
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+        deselectAddressCheckbox(button.dataset.addresskey);
         const response = e.detail;
         deleteAddress(response);
         redrawRenderedAddresses(response.templatedata);
@@ -113,11 +114,24 @@ function confirmAndDeleteAddress(addressId, button) {
 }
 
 /**
+ * @param {String} addressType
+ */
+function deselectAddressCheckbox(addressType) {
+    const selectedRadio = document.querySelector(`input[name="selectedaddress_${addressType}"]:checked`);
+    if (selectedRadio) {
+        selectedRadio.checked = false;
+        const event = new Event('change', {bubbles: true});
+        selectedRadio.dispatchEvent(event);
+    }
+}
+
+/**
  * Trigger the address deletion via a web service.
  * @param {string} response
  */
 function deleteAddress(response) {
     if (response == 1) {
+
         getString('addresses:delete:success', 'local_shopping_cart').then(successMessage => {
             showNotification(successMessage, 'success');
             return;
@@ -177,7 +191,6 @@ export function newAddressModal(button) {
 function redrawRenderedAddresses(data) {
     Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
         Templates.replaceNodeContents(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
-        // Dispatch a custom event after rendering the addresses
         const event = new CustomEvent('local_shopping_cart/addressesRedrawn', {});
         document.dispatchEvent(event);
         return null;
