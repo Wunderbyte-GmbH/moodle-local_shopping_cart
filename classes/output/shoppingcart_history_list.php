@@ -168,8 +168,13 @@ class shoppingcart_history_list implements renderable, templatable {
                                 FROM {local_shopping_cart_ledger}
                                WHERE schistoryid = :schistoryid
                                  AND identifier <> :identifier
-                                 AND identifier IS NOT NULL",
-                    ['schistoryid' => $schistoryid, 'identifier' => $item->identifier]
+                                 AND identifier IS NOT NULL
+                                 AND paymentstatus = :paymentstatus",
+                    [
+                        'schistoryid' => $schistoryid,
+                        'identifier' => $item->identifier,
+                        'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+                    ]
                 );
                 if (!empty($additionalidentifiers)) {
                     $item->hasinstallments = true;
@@ -186,6 +191,36 @@ class shoppingcart_history_list implements renderable, templatable {
                             ]),
                         ];
                     }
+                }
+                // If it was canceled, we might have an identifier for the canceled item.
+                $canceledidentifier = $DB->get_field_sql(
+                    "SELECT identifier
+                       FROM {local_shopping_cart_ledger}
+                      WHERE schistoryid = :schistoryid
+                        AND identifier <> :identifier
+                        AND identifier IS NOT NULL
+                        AND paymentstatus = :paymentstatus
+                      LIMIT 1",
+                    [
+                        'schistoryid' => $schistoryid,
+                        'identifier' => $item->identifier,
+                        'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+                    ]
+                );
+                if (!empty($canceledidentifier)) {
+                    $item->cancelconfirmation = [
+                        'identifier' => $canceledidentifier,
+                        'cancelconfirmationurl' => new moodle_url(
+                            '/local/shopping_cart/receipt.php',
+                            [
+                                'success' => 1,
+                                'id' => $canceledidentifier,
+                                'idcol' => 'identifier', // Use the identifier to create the receipt.
+                                'userid' => $item->userid,
+                                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+                            ]
+                        ),
+                    ];
                 }
             }
 

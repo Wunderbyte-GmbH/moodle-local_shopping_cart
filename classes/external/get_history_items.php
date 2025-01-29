@@ -125,6 +125,12 @@ class get_history_items extends external_api {
                         )
                     ),
                     'canceled' => new external_value(PARAM_BOOL, 'Canceled'),
+                    'cancelconfirmation' => new external_single_structure(
+                        [
+                            'identifier' => new external_value(PARAM_INT, 'Identifier'),
+                            'cancelconfirmationurl' => new external_value(PARAM_URL, 'Cancel confirmation url'),
+                        ]
+                    ),
                     'showrebooking' => new external_value(PARAM_BOOL, 'Show rebooking', VALUE_DEFAULT, false),
                     'rebooking' => new external_value(PARAM_BOOL, 'Rebooking', VALUE_DEFAULT, false),
                     'currency' => new external_value(PARAM_ALPHA, 'Currency'),

@@ -60,11 +60,11 @@
    }
 }}
 <li class="list-group-item flex-column align-items-start text-dark">
-    <div class="d-flex w-100 justify-content-between">
-        <h5>{{itemname}}</h5>
+    <div class="d-flex w-100 h5 justify-content-between {{#canceled}}text-danger{{/canceled}}">
+        {{itemname}}
         {{> local_shopping_cart/item_price }}
     </div>
-    <div class="d-flex w-100 justify-content-between">
+    <div class="d-flex w-100 justify-content-between {{#canceled}}text-danger{{/canceled}}">
         <p><span><small>{{date}}</small></span></p>
         <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small></span></p>
     </div>
@@ -109,6 +109,11 @@
             </div>
         </div>
     {{/hasinstallments}}
+    {{#cancelconfirmation}}
+    <a href="{{{cancelconfirmationurl}}}" target="_blank" class="shopping_cart_history_cancelconfirmation_button btn btn-danger btn-sm pull-left">
+        <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} cancelconfirmation, local_shopping_cart {{/str}}
+    </a>
+    {{/cancelconfirmation}}
     {{> local_shopping_cart/button_cancel }}
     {{#showrebooking}}
     <button type="button"
