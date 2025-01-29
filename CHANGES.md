@@ -1,3 +1,6 @@
+## Version 0.9.51 (2025012900)
+* Improvement: Show cancel confirmations in shopping cart history. #124
+
 ## Version 0.9.50 (2025012200)
 * New feature: Cancel confirmations in cash report (#122).
 * Improvement: Allow to increase price MUSI-573 #112
