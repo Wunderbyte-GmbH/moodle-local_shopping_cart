@@ -296,6 +296,7 @@ class create_invoice {
             case 'id':
                 // In this case $identifier stores the ledger id.
                 $items = shopping_cart_history::return_data_from_ledger_via_id($identifier);
+                $identifier = $items[array_key_first($items)]->identifier;
                 break;
             case 'identifier':
             default:

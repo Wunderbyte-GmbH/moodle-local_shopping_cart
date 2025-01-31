@@ -191,7 +191,17 @@ class cash_report_table extends wunderbyte_table {
      */
     public function col_receipt(object $values): string {
 
-        if (!empty($values->identifier)) {
+        if (
+            !in_array(
+                $values->payment,
+                [
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION,
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER,
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION,
+                ]
+            )
+        ) {
             $url = new moodle_url(
                 '/local/shopping_cart/receipt.php',
                 [

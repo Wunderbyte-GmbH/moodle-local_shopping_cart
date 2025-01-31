@@ -463,6 +463,7 @@ class shopping_cart_credits {
                 $ledgerrecord->itemname = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                 break;
         }
+        $ledgerrecord->identifier = shopping_cart_history::create_unique_cart_identifier($userid);
         $ledgerrecord->price = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->currency = $currency;
@@ -588,6 +589,7 @@ class shopping_cart_credits {
             $ledgerrecord->credits = (float) $data->creditsmanagercredits;
             $ledgerrecord->currency = $currency;
             $ledgerrecord->componentname = 'local_shopping_cart';
+            $ledgerrecord->identifier = shopping_cart_history::create_unique_cart_identifier($data->userid);
             $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
             $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
             $ledgerrecord->usermodified = $USER->id;
@@ -601,5 +603,4 @@ class shopping_cart_credits {
         }
         return true;
     }
-
 }

@@ -603,6 +603,39 @@ class shopping_cart_history {
     }
 
     /**
+     * Return extra ledger data from DB via userid
+     *
+     * @param int $userid
+     * @return array
+     */
+    public static function return_extra_lines_from_ledger(int $userid): array {
+        global $DB;
+
+        [$inorequal, $params] = $DB->get_in_or_equal(
+            [
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION,
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER,
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION,
+            ],
+            SQL_PARAMS_NAMED
+        );
+
+        $sql = "SELECT *
+                FROM {local_shopping_cart_ledger} scl
+                WHERE scl.userid = :userid
+                AND scl.payment $inorequal
+                ";
+        $params['userid'] = $userid;
+        if (
+            $data = $DB->get_records_sql($sql, $params)
+        ) {
+            return $data;
+        }
+        return [];
+    }
+
+    /**
      * Return ledger data from DB via ledger id (cash report data).
      * This function won't return data if the payment is already aborted.
      *

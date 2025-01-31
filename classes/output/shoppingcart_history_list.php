@@ -133,6 +133,10 @@ class shoppingcart_history_list implements renderable, templatable {
             }
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
+
+            $ledgeritems = shopping_cart_history::return_extra_lines_from_ledger($userid);
+
+            $items = array_merge($ledgeritems, $items);
         }
         $iscashier = false;
         $context = context_system::instance();

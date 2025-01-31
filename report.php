@@ -183,7 +183,7 @@ if (!empty($colselects)) {
 $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
         " AS uniqueid, scl.id, scl.userid, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
-        u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, " .
+        u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, scl.schistoryid, " .
         $ootid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
