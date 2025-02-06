@@ -218,8 +218,26 @@ class create_invoice {
         $extrareceiptshtml = get_config('local_shopping_cart', 'extrareceiptshtml'); // For extra receipts like credits correction.
         $cancelconfirmationshtml = get_config('local_shopping_cart', 'cancelconfirmationshtml'); // For cancel confirmations.
 
+        switch ($idcol) {
+            case 'id':
+                // In this case $identifier stores the ledger id.
+                $items = shopping_cart_history::return_data_from_ledger_via_id($identifier);
+                $newidentifier = $items[array_key_first($items)]->identifier;
+                if (!empty($newidentifier)) {
+                    $identifier = $newidentifier;
+                }
+                break;
+            case 'identifier':
+            default:
+                $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
+                break;
+        }
+
+        $timecreated = $items[array_key_first($items)]->timecreated;
+        $payment = $items[array_key_first($items)]->payment;
+
         // Check if there as a separate HTML template for special rows without identifier.
-        if ($idcol == "id") {
+        if (in_array($payment, [8, 9])) {
             if (!empty(trim(strip_tags($extrareceiptshtml)))) {
                 // If it's not empty, we use it instead of the default HTML template.
                 $cfghtml = $extrareceiptshtml;
@@ -292,20 +310,6 @@ class create_invoice {
                 </table>';
         }
 
-        switch ($idcol) {
-            case 'id':
-                // In this case $identifier stores the ledger id.
-                $items = shopping_cart_history::return_data_from_ledger_via_id($identifier);
-                $identifier = $items[array_key_first($items)]->identifier;
-                break;
-            case 'identifier':
-            default:
-                $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
-                break;
-        }
-
-        $timecreated = $items[array_key_first($items)]->timecreated;
-
         // Make sure items are sorted from the most expensive on top to a credit (negative).
         usort($items, function ($a, $b) {
             return $b->price <=> $a->price; // Spaceship operator for comparison.
@@ -368,9 +372,9 @@ class create_invoice {
 
         switch ($idcol) {
             case 'id':
-                $invoicenumber = "X{$identifier}"; // Special invoices start with X and have the ledger id as invoice number.
-                $cfghtml = str_replace("[[id]]", "X{$identifier}", $cfghtml);
-                $cfghtml = str_replace("[[order_number]]", "X{$identifier}", $cfghtml);
+                $invoicenumber = "{$identifier}"; // Special invoices start with X and have the ledger id as invoice number.
+                $cfghtml = str_replace("[[id]]", "{$identifier}", $cfghtml);
+                $cfghtml = str_replace("[[order_number]]", "{$identifier}", $cfghtml);
                 break;
             case 'identifier':
             default:

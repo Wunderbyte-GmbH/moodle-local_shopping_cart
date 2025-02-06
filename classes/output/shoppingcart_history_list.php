@@ -137,6 +137,10 @@ class shoppingcart_history_list implements renderable, templatable {
             $ledgeritems = shopping_cart_history::return_extra_lines_from_ledger($userid);
 
             $items = array_merge($ledgeritems, $items);
+
+            usort($items, function ($a, $b) {
+                return $b->timemodified <=> $a->timemodified;
+            });
         }
         $iscashier = false;
         $context = context_system::instance();
@@ -151,6 +155,30 @@ class shoppingcart_history_list implements renderable, templatable {
 
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
+            // We might have an item from ledger.
+            if (empty($item->uniqueid)) {
+                // Receipt URL for the item.
+
+                $urloptions = [
+                    'id' => $item->identifier,
+                    'userid' => $item->userid,
+                ];
+
+                if (empty($item->identifier)) {
+                    $urloptions['idcol'] = 'id';
+                    $urloptions['id'] = $item->id;
+                }
+
+                $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", $urloptions);
+
+                // We want to show the credits at the place of the price.
+                $item->price = $item->credits;
+                $item->date = date('Y-m-d', $item->timemodified);
+                $item->buttonclass = ' hidden ';
+                $this->historyitems[] = (array)$item;
+                continue;
+            }
+
             // Receipt URL for the item.
             $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", [
                 'id' => $item->identifier,
