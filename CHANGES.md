@@ -1,3 +1,7 @@
+## Version 0.9.52 (2025020700)
+* Improvement: Improvement: Add setting to always return status 1 in verify purchase
+* Improvement: Add credit changes to shopping cart history for individual users #125
+
 ## Version 0.9.51 (2025012900)
 * Improvement: Show cancel confirmations in shopping cart history. #124
 
