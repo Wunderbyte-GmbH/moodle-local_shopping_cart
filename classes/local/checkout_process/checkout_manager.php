@@ -119,6 +119,7 @@ class checkout_manager {
                     'item' => $iteminstance->get_icon_progress_bar(),
                     'status' => 'inactive',
                     'valid' => self::is_step_valid($classname),
+                    'mandatory' => $iteminstance->is_mandatory(),
                     'classname' => $classname,
                 ];
             }
