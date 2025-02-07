@@ -187,6 +187,7 @@ $string['choosedefaultcountrydesc'] = 'Select the default country for your custo
 $string['choosehighertimestamp'] = 'Choose a later time';
 $string['chooseplatform'] = 'Choose Platform';
 $string['chooseplatformdesc'] = 'Select your invoicing platform.';
+$string['completeshoppingcartprecheckout'] = 'Submit all mandatory fields, before continuing with the payment process..';
 $string['confirmadditionalconditions'] = "I accept the additional conditions";
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
  The following users will get their money back as credit:

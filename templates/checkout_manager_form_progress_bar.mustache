@@ -58,6 +58,13 @@
                             <i class="icon fa-solid fa-check"></i>
                         </span>
                     {{/valid}}
+                    {{^valid}}
+                        {{#mandatory}}
+                            <span class="shopping-cart-checkout-manager-valid-checkmark" style="background-color: red !important;">
+                                <i class="icon fa-solid fa-exclamation"></i>
+                            </span>
+                        {{/mandatory}}
+                    {{/valid}}
             </button>
         </div>
     {{/checkout_manager_body.show_progress_line}}
