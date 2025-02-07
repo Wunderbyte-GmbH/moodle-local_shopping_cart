@@ -47,38 +47,57 @@
     }
 
 }}
-<div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
-    {{#isguestuser}}
-        <div class="mdl-align">
-            <p>{{#str}} paymentrequired {{/str}}</p>
-            <p><b>{{price}} {{currency}}</b></p>
-            <p><a href="{{wwwroot}}/login/">{{# str }} loginsite {{/str}}</a></p>
-        </div>
-    {{/isguestuser}}
-    {{^isguestuser}}
-        <button
-            class="btn btn-primary pull-right mr-3"
-            type="button"
-            id="gateways-modal-trigger-33"
-            data-action="core_payment/triggerPayment"
-            data-component="local_shopping_cart"
-            data-paymentarea="{{area}}"
-            data-identifier="{{identifier}}"
-            data-itemid="{{identifier}}"
-            data-userid="{{userid}}"
-            data-cost="{{price}} {{currency}}"
-            data-price="{{price}}"
-            data-currency="{{currency}}"
-            data-successurl="{{successurl}}"
-            data-description="my shopping cart checkout"
-            data-installment="{{installment}}"
-            data-skip-webservice="true"
-            {{#termsandconditions}} disabled {{/termsandconditions}}
-        >
-            {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
-        </button>
-    {{/isguestuser}}
-</div>
+{{#checkout_manager_body.buttons.checkout_button}}
+    <div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
+        {{#isguestuser}}
+            <div class="mdl-align">
+                <p>{{#str}} paymentrequired {{/str}}</p>
+                <p><b>{{price}} {{currency}}</b></p>
+                <p><a href="{{wwwroot}}/login/">{{# str }} loginsite {{/str}}</a></p>
+            </div>
+        {{/isguestuser}}
+        {{^isguestuser}}
+            <button
+                class="btn btn-primary pull-right mr-3"
+                type="button"
+                id="gateways-modal-trigger-33"
+                data-action="core_payment/triggerPayment"
+                data-component="local_shopping_cart"
+                data-paymentarea="{{area}}"
+                data-identifier="{{identifier}}"
+                data-itemid="{{identifier}}"
+                data-userid="{{userid}}"
+                data-cost="{{price}} {{currency}}"
+                data-price="{{price}}"
+                data-currency="{{currency}}"
+                data-successurl="{{successurl}}"
+                data-description="my shopping cart checkout"
+                data-installment="{{installment}}"
+                data-skip-webservice="true"
+                {{#termsandconditions}} disabled {{/termsandconditions}}
+            >
+                {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
+            </button>
+        {{/isguestuser}}
+    </div>
+{{/checkout_manager_body.buttons.checkout_button}}
+{{^checkout_manager_body.buttons.checkout_button}}
+    <div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
+        {{^isguestuser}}
+            <button
+                class="btn btn-primary pull-right mr-3"
+                type="button"
+                id="gateways-modal-trigger-33"
+                disabled
+            >
+                {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
+            </button>
+            <br>
+            {{#str}} completeshoppingcartprecheckout, local_shopping_cart {{/str}}
+
+        {{/isguestuser}}
+    </div>
+{{/checkout_manager_body.buttons.checkout_button}}
 {{#js}}
     require(['core_payment/gateways_modal'], function(fn) {
         fn.init();
