@@ -86,6 +86,8 @@ $string['allowrebookingcredit'] = 'Rebooking credit';
 $string['allowrebookingcredit_desc'] = 'If you activate rebooking credit, a user will get refunded the cancelation and booking fee
 if (s)he cancels an item within the cancelation period and books another item.';
 $string['alreadyincart'] = 'The item is already in your cart.';
+$string['alwaysanswerwithsuccessinverifypurchase'] = 'Always answer with success in verify purchase webservice.';
+$string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'This feature can normally be ignored, as it\'s only used by some payment providers.';
 $string['annotation'] = 'Annotation';
 $string['annotation_rebook_desc'] = 'Enter an annotation or the OrderID of the payment transaction you want to rebook.';
 $string['appliedtoallitemsincart'] = 'The time of reservation selected, will be applied to all items currently in the shopping cart of this user.';

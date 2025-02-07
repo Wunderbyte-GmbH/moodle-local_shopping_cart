@@ -86,6 +86,8 @@ $string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
 $string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
 wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['alreadyincart'] = 'Das gewählte Item ist bereits im Warenkorb.';
+$string['alwaysanswerwithsuccessinverifypurchase'] = 'Immer mit erfolgreich auf im Validierungs Webservice antworten';
+$string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'Dieses Feature wird nur von manchen Payment Providern verwendet und kann üblicherweise ignoriert werden.';
 $string['annotation'] = 'Anmerkung';
 $string['annotation_rebook_desc'] = 'Geben Sie eine Anmerkung oder die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
 $string['appliedtoallitemsincart'] = 'Der ausgewählte Zeipunkt des Reservierungsendes wird auf alle Artikel im Warenkorb des/der Nutzer/in angewendet.';

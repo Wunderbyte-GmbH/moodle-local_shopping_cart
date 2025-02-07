@@ -93,11 +93,15 @@ class verify_purchase extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        $success = shopping_cart_history::has_successful_checkout($params['identifier']);
+        if (get_config('local_shopping_cart', 'alwaysanswerwithsuccessinverifypurchase')) {
+            $success = 1;
+        } else {
+            $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
-        // Translate success.
-        // Success 1 means here not ok.
-        $success = $success ? 0 : 1;
+            // Translate success.
+            // Success 1 means here not ok.
+            $success = $success ? 0 : 1;
+        }
 
         return ['status' => $success];
     }

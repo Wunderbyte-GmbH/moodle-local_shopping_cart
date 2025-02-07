@@ -247,6 +247,16 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to activate manual rebooking for cashier.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/alwaysanswerwithsuccessinverifypurchase',
+            get_string('alwaysanswerwithsuccessinverifypurchase', 'local_shopping_cart'),
+            get_string('alwaysanswerwithsuccessinverifypurchase_desc', 'local_shopping_cart'),
+            1
+        )
+    );
+
     $settings->add(
         new admin_setting_confightmleditor(
             'local_shopping_cart/additonalcashiersection',
