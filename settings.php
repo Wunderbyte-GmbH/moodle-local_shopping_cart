@@ -382,6 +382,15 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/showextrareceiptstousers',
+            get_string('showextrareceiptstousers', 'local_shopping_cart'),
+            '',
+            0
+        )
+    );
+
     // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
     /* $defaultextrareceipthtml =
         '<table cellpadding="5" cellspacing="0" style="width: 100%; ">

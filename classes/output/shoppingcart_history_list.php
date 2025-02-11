@@ -136,11 +136,13 @@ class shoppingcart_history_list implements renderable, templatable {
 
             $ledgeritems = shopping_cart_history::return_extra_lines_from_ledger($userid);
 
-            $items = array_merge($ledgeritems, $items);
+            if (get_config('local_shopping_cart', 'showextrareceiptstousers')) {
+                $items = array_merge($ledgeritems, $items);
 
-            usort($items, function ($a, $b) {
-                return $b->timemodified <=> $a->timemodified;
-            });
+                usort($items, function ($a, $b) {
+                    return $b->timemodified <=> $a->timemodified;
+                });
+            }
         }
         $iscashier = false;
         $context = context_system::instance();
@@ -156,7 +158,11 @@ class shoppingcart_history_list implements renderable, templatable {
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
             // We might have an item from ledger.
-            if (empty($item->uniqueid)) {
+            if (
+                get_config('local_shopping_cart', 'showextrareceiptstousers')
+                && empty($item->uniqueid)
+                && in_array($item->payment, [8, 9])
+            ) {
                 // Receipt URL for the item.
 
                 $urloptions = [
@@ -417,6 +423,10 @@ class shoppingcart_history_list implements renderable, templatable {
         if (!empty($historyarray['currency'])) {
             $data['currency'] = $historyarray["currency"];
         }
+
+        usort($data['historyitems'], function ($a, $b) {
+            return $b['price'] <=> $a['price']; // Ascending order
+        });
     }
 
     /**

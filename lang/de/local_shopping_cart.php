@@ -557,6 +557,7 @@ $string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
 $string['showdailysums'] = '&sum; Tageseinnahmen anzeigen';
 $string['showdailysumscurrentcashier'] = '&sum; Tageseinnahmen der aktuell eingeloggten Kassier:in anzeigen';
 $string['showdescription'] = 'Zeige Beschreibung';
+$string['showextrareceiptstousers'] = "Zeige Buchungsbestätigungen für Guthabenbuchungen in der Buchungsübersicht der Nutzer:innen";
 $string['showorderid'] = 'Order-ID anzeigen...';
 $string['showvatnrchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls auf Umsatzsteuer";
 $string['showvatnrcheckerdescription'] = "Bei erfolgreicher Überprüfung kann auf die Einhebung der Umsatzsteuer verzichtet werden";
