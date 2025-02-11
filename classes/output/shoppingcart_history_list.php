@@ -425,7 +425,7 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         usort($data['historyitems'], function ($a, $b) {
-            return $b['price'] <=> $a['price']; // Ascending order
+            return $b['price'] <=> $a['price'];
         });
     }
 
