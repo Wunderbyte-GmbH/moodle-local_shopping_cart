@@ -102,9 +102,22 @@ class service_provider implements \core_payment\local\callback\service_provider 
             // At this point, the user will consume any credit she might have.
             // This might reduce the price, down to 0. But the reduction to 0 should be...
             // ... treated beforehand, because it will throw an error in payment.
+
+            // We need to check here if the current cache is still in sync with the stored cache.
+            foreach ($records as $record) {
+                if ($shoppingcart->usecredit != $record->usecredit) {
+                    $record->usecache = $shoppingcart->usecache;
+                    $record->timemodified = time();
+                    $DB->update_record('local_shopping_cart_history', [
+                        'id' => $record->id,
+                        'usecredit' => $shoppingcart->usecredit,
+                        'timemodified' => time(),
+                    ]);
+                }
+            }
+
             $price = shopping_cart_credits::get_price_from_shistorycart($shoppingcart);
             $currency = $shoppingcart->currency;
-
         }
 
         // We can only buy items with the same payment account. Therefore, we can just take the first and test it.
