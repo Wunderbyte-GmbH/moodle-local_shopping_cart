@@ -71,6 +71,7 @@ class termsandconditions extends checkout_base_item {
      */
     public function render_body($cachedata) {
         global $PAGE;
+
         $data = [];
         if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
             $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
@@ -79,7 +80,6 @@ class termsandconditions extends checkout_base_item {
             $data['additionalconditions'] = get_config('local_shopping_cart', 'additionalconditions');
         }
         self::set_data_from_cache($data, $cachedata['data']);
-
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/termsandconditions", $data);
         return [
