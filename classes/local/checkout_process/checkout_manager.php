@@ -125,7 +125,7 @@ class checkout_manager {
             }
         }
         $checkoutmanager['checkout_manager_body']['show_progress_line'] =
-            count($checkoutmanager['checkout_manager_body']['item_list']) > 1 ? true : false;
+            count(($checkoutmanager['checkout_manager_body']['item_list']) ?? []) > 1 ? true : false;
         $checkoutmanager['checkout_manager_body']['currentstep'] = $currentstep;
     }
 
@@ -142,8 +142,12 @@ class checkout_manager {
         }
         $checkoutmanagerbody['body'] =
             self::render_checkout_body($checkoutmanagerbody['item_list']);
-        $checkoutmanagerbody['buttons']['checkout_button'] =
+        if (empty($checkoutmanagerbody['item_list'])) {
+            $checkoutmanagerbody['buttons']['checkout_button'] = true;
+        } else {
+            $checkoutmanagerbody['buttons']['checkout_button'] =
                 self::render_checkout_button();
+        }
     }
 
     /**
@@ -281,7 +285,10 @@ class checkout_manager {
      * Applies the given price modifiers on the cached data.
      */
     public function set_active_page(&$itemlist, $currentstep) {
-        foreach ($itemlist as $key => &$item) {
+        if (empty($itemlist)) {
+            return;
+        }
+        foreach (($itemlist) as $key => &$item) {
             $item['step'] = $key;
             if ($key == $currentstep) {
                 $item['status'] = 'active';
