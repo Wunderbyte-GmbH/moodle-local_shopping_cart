@@ -77,6 +77,8 @@ class control_checkout_process extends external_api {
         string $changedinput = ''
     ): array {
         global $PAGE, $OUTPUT, $USER;
+        $PAGE->requires->css('/local/shopping_cart/styles.css');
+
         require_login();
         $PAGE->set_context(context_system::instance());
 
@@ -86,9 +88,6 @@ class control_checkout_process extends external_api {
             'identifier' => optional_param('identifier', null, PARAM_TEXT),
             'changedinput' => optional_param('changedinput', null, PARAM_RAW),
         ]);
-        $OUTPUT->header();
-        $PAGE->start_collecting_javascript_requirements();
-
         $cartstore = cartstore::instance((int)$USER->id);
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
@@ -97,6 +96,9 @@ class control_checkout_process extends external_api {
             $data,
             $params
         );
+        $OUTPUT->header();
+        $PAGE->start_collecting_javascript_requirements();
+
         $reloadbody = $changedinput ? false : true;
         $managerdata = null;
         if (!$reloadbody) {

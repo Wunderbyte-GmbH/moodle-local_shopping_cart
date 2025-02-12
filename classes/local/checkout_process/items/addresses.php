@@ -65,7 +65,7 @@ class addresses extends checkout_base_item {
         $data = self::get_template_render_data();
         $data['required_addresses'] = self::set_data_from_cache(
             $data['required_addresses'],
-            $cachedata['data']
+            $cachedata['data'] ?? []
         );
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/address", $data);
@@ -84,7 +84,9 @@ class addresses extends checkout_base_item {
             $newsavedaddresses = [];
             foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
                 $savedaddresscopy = clone $savedaddress;
-                if ($savedaddresscopy->id == $cachedata['selectedaddress_' . $requiredaddress['addresskey']]) {
+                if (
+                    $savedaddresscopy->id == ($cachedata['selectedaddress_' . $requiredaddress['addresskey']] ?? 0)
+                ) {
                     $savedaddresscopy->selected = true;
                 } else {
                     unset($savedaddresscopy->selected);

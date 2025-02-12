@@ -39,6 +39,8 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 require_login();
 
 global $USER, $PAGE, $OUTPUT, $CFG, $ME;
+$PAGE->requires->css('/local/shopping_cart/styles.css');
+
 
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
@@ -162,6 +164,7 @@ if ($hasallrequiredaddresses) {
 }
 //$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 $checkoutmanager = new checkout_manager($data);
+
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);
 if (empty($jsononly)) {

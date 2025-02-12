@@ -140,10 +140,10 @@ class checkout_manager {
                     $currentstep
                 );
         }
-        $checkoutmanagerbody['buttons']['checkout_button'] =
-                self::render_checkout_button();
         $checkoutmanagerbody['body'] =
             self::render_checkout_body($checkoutmanagerbody['item_list']);
+        $checkoutmanagerbody['buttons']['checkout_button'] =
+                self::render_checkout_button();
     }
 
     /**
