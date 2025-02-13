@@ -42,7 +42,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Provide an invalid VAT number 1st
-    And I set the field "usevatnr" to "1"
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U1100"
     And I click on "Verify validity of VAT number" "button"
@@ -73,7 +72,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
     ## Provide a valid VAT number
-    And I set the field "usevatnr" to "1"
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
@@ -106,7 +104,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I should see "2" occurrences of "11.21 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "21.00 EUR" in the ".sc_totalprice" "css_element"
     ## Provide a valid VAT number.
-    And I set the field "usevatnr" to "1"
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
