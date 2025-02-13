@@ -60,6 +60,7 @@ class invoicenumber {
             $where = ' WHERE invoiceid LIKE :prefix ';
         } else {
             $where = '';
+            $params = [];
         }
 
         $sql = "SELECT COALESCE(MAX(invoiceid), '0') AS highestinvoiceid
