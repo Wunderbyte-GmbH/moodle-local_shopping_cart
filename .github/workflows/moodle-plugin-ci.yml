@@ -199,5 +199,25 @@ jobs:
         run: moodle-plugin-ci phpunit
 
       - name: Behat features
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci behat --profile chrome
+        ## Run --dump to get faild page HTML in the output stream
+        ## run: moodle-plugin-ci behat --profile chrome --dump
+
+      - name: Upload Behat Faildump
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Behat Faildump (${{ join(matrix.*, ', ') }})
+          path: ${{ github.workspace }}/moodledata/behat_dump
+          retention-days: 2
+          if-no-files-found: ignore
+
+      # Inwoke remote SSH connection if necessary
+      #- name: Setup tmate session
+      #  if: ${{ failure() }}
+      #  uses: mxschmitt/action-tmate@v3
+
+      - name: Mark cancelled jobs as failed.
+        if: ${{ cancelled() }}
+        run: exit 1
