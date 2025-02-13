@@ -95,9 +95,11 @@ shopping_cart::convert_prices_to_number_format($data);
 
 // Here, we want to sort by the timecreated timestamp.
 // Newest items should come first.
-usort($data['historyitems'], function ($a, $b) {
-    return $b['timemodified'] <=> $a['timemodified'];
-});
+if (!empty($data['historyitems'])) {
+    usort($data['historyitems'], function ($a, $b) {
+        return $b['timemodified'] <=> $a['timemodified'];
+    });
+}
 
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 
