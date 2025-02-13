@@ -265,7 +265,7 @@ class checkout_manager {
     /**
      * Applies the given price modifiers on the cached data.
      */
-    public function get_cache($identifier) {
+    public static function get_cache($identifier) {
         $cache = cache::make('local_shopping_cart', 'cachebookingpreprocess');
         if (!$cache->has($identifier)) {
             $cache->set($identifier, []);
@@ -449,5 +449,19 @@ class checkout_manager {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Function to return the stored selected addresses
+     *
+     * @param int $userid
+     *
+     * @return array
+     *
+     */
+    public static function return_stored_addresses_for_user(int $userid) {
+        $data = self::get_cache($userid);
+
+        return $data["steps"]["addresses"]["data"] ?? [];
     }
 }

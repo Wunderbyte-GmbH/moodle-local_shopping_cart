@@ -64,17 +64,17 @@ class address_operations {
 
     /**
      * Generates complete required-address data as specified by the plugin config.
-     * @param array $userid
+     * @param int $addressid
      * @return object
      */
-    public static function get_specific_user_addresses(int $addressid): array {
+    public static function get_specific_user_addresses(int $addressid): object {
         global $DB;
         $sql = "SELECT *
                 FROM {" . self::DATABASE_TABLE . "}
                 WHERE id=:addressid
                 ORDER BY id DESC";
 
-        $params = ['id' => $addressid];
+        $params = ['addressid' => $addressid];
         return $DB->get_record_sql($sql, $params);
     }
 

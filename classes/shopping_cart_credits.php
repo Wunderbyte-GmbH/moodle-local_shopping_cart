@@ -433,7 +433,7 @@ class shopping_cart_credits {
         int $method = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
         string $costcenter = ''
     ) {
-        global $USER;
+        global $USER, $DB;
 
         [$balance, $currency] = self::get_balance($userid, $costcenter, false);
 
@@ -463,6 +463,10 @@ class shopping_cart_credits {
                 $ledgerrecord->itemname = get_string('paymentmethodcreditspaidbackcash', 'local_shopping_cart');
                 break;
         }
+
+        $addresses = $DB->get_records('local_shopping_cart_address', ['userid' => $userid], 'id DESC');
+        $address = reset($addresses);
+
         $ledgerrecord->identifier = shopping_cart_history::create_unique_cart_identifier($userid);
         $ledgerrecord->price = (float) (-1.0) * $data['deductible'];
         $ledgerrecord->credits = (float) (-1.0) * $data['deductible'];
@@ -474,6 +478,7 @@ class shopping_cart_credits {
         $ledgerrecord->usermodified = $USER->id;
         $ledgerrecord->timemodified = $now;
         $ledgerrecord->timecreated = $now;
+        $ledgerrecord->address_billing = $address->id ?? null;
         shopping_cart::add_record_to_ledger_table($ledgerrecord);
 
         return true;

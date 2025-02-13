@@ -24,6 +24,8 @@
 
 namespace local_shopping_cart;
 
+use local_shopping_cart\local\checkout_process\checkout_manager;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../lib.php');
@@ -273,12 +275,14 @@ class shopping_cart_history {
 
         $now = time();
 
+        $addresses = checkout_manager::return_stored_addresses_for_user($data->userid);
+
         $returnid = 0;
         if (isset($data->items)) {
             foreach ($data->items as $item) {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
-                $item['address_billing'] = $data->address_billing ?? null;
-                $item['address_shipping'] = $data->address_shipping ?? null;
+                $item['address_billing'] = $addresses["selectedaddress_billing"] ?? null;
+                $item['address_shipping'] = $addresses["selectedaddress_shipping"] ?? null;
                 $uidcountrynr = null;
                 if (isset($data->vatnrnumber)) {
                     $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
