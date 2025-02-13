@@ -486,8 +486,6 @@ class shoppingcart_history_list implements renderable, templatable {
         return $returnarray;
     }
 
-
-
     /**
      * Prepare data for use in a template
      *
