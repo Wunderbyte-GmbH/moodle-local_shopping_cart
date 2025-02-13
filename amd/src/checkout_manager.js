@@ -19,6 +19,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {addZeroPriceListener} from 'local_shopping_cart/cart';
+
 const SELECTORS = {
     CHECKOUTMANAGERFORMID: '#shopping-cart-checkout-manager-form',
     CHECKOUTMANAGERFORMTEMPLATE: 'local_shopping_cart/checkout_manager_form',
@@ -30,7 +32,8 @@ const SELECTORS = {
     PROGRESSBUTTONS: '.shopping-cart-checkout-manager-status-bar button',
     CHECKBOXITEMBODY: '#shopping-cart-checkout-manager-form-body',
     NEWADDRESSBUTTON: '.shopping-cart-new-address',
-    FEEDBACKMESSAGE: '.shopping-cart-checkout-manager-alert-container'
+    FEEDBACKMESSAGE: '.shopping-cart-checkout-manager-alert-container',
+    PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button'
 };
 
 const WEBSERVICE = {
@@ -285,6 +288,7 @@ function newReloadBody(templates, data) {
     }
     Promise.all([renderButtonTemplate, progressBarTemplate]).then(function() {
         initControlListener();
+        callZeroPriceListener();
         return;
     }).catch(function(err) {
         // eslint-disable-next-line no-console
@@ -316,6 +320,8 @@ function staticReloadBody(templates, data) {
                     // eslint-disable-next-line no-console
                     console.error('fail script', err);
                 }
+
+                callZeroPriceListener();
             }
             return;
         })
@@ -341,3 +347,21 @@ export {
     getDatasetValue,
     getChangedInputs
 };
+
+/**
+ * Call the zero price listener.
+ *
+ * @return [type]
+ *
+ */
+function callZeroPriceListener() {
+    // Initially, we need to add the zeroPriceListener once.
+    const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
+    if (paymentbutton) {
+        const data = {
+            price: paymentbutton.dataset.price,
+            currency: paymentbutton.dataset.currency,
+        };
+        addZeroPriceListener(data);
+    }
+}

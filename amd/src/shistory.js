@@ -53,9 +53,6 @@ let notenoughcredits = 'notenoughcredits';
 
 export const init = (cancelationFee = null) => {
 
-    // eslint-disable-next-line no-console
-    console.log('init');
-
     const buttons = document.querySelectorAll(SELECTORS.CANCELBUTTON);
 
     buttons.forEach(button => {
