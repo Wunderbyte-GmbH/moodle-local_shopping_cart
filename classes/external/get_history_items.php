@@ -103,38 +103,44 @@ class get_history_items extends external_api {
                     'componentname' => new external_value(PARAM_TEXT, 'Componentname'),
                     'buttonclass' => new external_value(PARAM_TEXT, 'Buttonclass'),
                     'price' => new external_value(PARAM_FLOAT, 'Price'),
-                    'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quota consumed'),
-                    'round' => new external_value(PARAM_INT, 'Round'),
+                    'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quota consumed', VALUE_DEFAULT, 0),
+                    'round' => new external_value(PARAM_INT, 'Round', VALUE_DEFAULT, 0),
                     'price_gross' => new external_value(PARAM_FLOAT, 'Gros price of item', VALUE_DEFAULT, null),
                     'price_net' => new external_value(PARAM_FLOAT, 'Net price of item', VALUE_DEFAULT, null),
                     'taxpercentage_visual' => new external_value(PARAM_TEXT, 'Tax percentage visual', VALUE_DEFAULT, null),
                     'date' => new external_value(PARAM_TEXT, 'Date string name'),
-                    'paymentstring' => new external_value(PARAM_TEXT, 'Paid with'),
-                    'orderid' => new external_value(PARAM_TEXT, 'Order id'),
-                    'customorderid' => new external_value(PARAM_TEXT, 'Custom order id'),
-                    'gateway' => new external_value(PARAM_TEXT, 'Gateway'),
-                    'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until'),
+                    'paymentstring' => new external_value(PARAM_TEXT, 'Paid with', VALUE_DEFAULT, ''),
+                    'orderid' => new external_value(PARAM_TEXT, 'Order id', VALUE_DEFAULT, ''),
+                    'customorderid' => new external_value(PARAM_TEXT, 'Custom order id', VALUE_DEFAULT, ''),
+                    'gateway' => new external_value(PARAM_TEXT, 'Gateway', VALUE_DEFAULT, ''),
+                    'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until', VALUE_DEFAULT, ''),
                     'hasinstallments' => new external_value(PARAM_BOOL, 'Has installments', VALUE_DEFAULT, false),
                     'receipturl' => new external_value(PARAM_URL, 'Receipt url'),
                     'installmentreceipturls' => new external_multiple_structure(
                         new external_single_structure(
                             [
                                 'identifier' => new external_value(PARAM_INT, 'Identifier'),
-                                'installmentreceipturl' => new external_value(PARAM_URL, 'Receipt url'),
+                                'installmentreceipturl' => new external_value(PARAM_URL, 'Receipt url', VALUE_DEFAULT, ''),
                             ]
-                        )
+                        ),
+                        'installmentreceipturls',
+                        VALUE_DEFAULT,
+                        []
                     ),
-                    'canceled' => new external_value(PARAM_BOOL, 'Canceled'),
+                    'canceled' => new external_value(PARAM_BOOL, 'Canceled', VALUE_DEFAULT, false),
                     'cancelconfirmation' => new external_single_structure(
                         [
                             'identifier' => new external_value(PARAM_INT, 'Identifier'),
                             'cancelconfirmationurl' => new external_value(PARAM_URL, 'Cancel confirmation url'),
-                        ]
+                        ],
+                        '',
+                        VALUE_DEFAULT,
+                        null
                     ),
                     'showrebooking' => new external_value(PARAM_BOOL, 'Show rebooking', VALUE_DEFAULT, false),
                     'rebooking' => new external_value(PARAM_BOOL, 'Rebooking', VALUE_DEFAULT, false),
-                    'currency' => new external_value(PARAM_ALPHA, 'Currency'),
-                    'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus'),
+                    'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
+                    'paymentstatus' => new external_value(PARAM_INT, 'Paymentstatus', VALUE_DEFAULT, 0),
                 ]
             )
         );
