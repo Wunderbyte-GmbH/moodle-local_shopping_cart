@@ -73,8 +73,10 @@ $selectuserform = new dynamic_select_users();
 $data['selectuserform'] = html_writer::div($selectuserform->render(), '', ['data-id' => 'sc-selectuserformcontainer']);
 
 // We only allow manual booking, if the user has the capability to do this.
-if (has_capability('local/shopping_cart:cashiermanualrebook', $context)
-    && get_config('local_shopping_cart', 'manualrebookingisallowed')) {
+if (
+    has_capability('local/shopping_cart:cashiermanualrebook', $context)
+    && get_config('local_shopping_cart', 'manualrebookingisallowed')
+) {
     $data['allowmanualrebooking'] = true;
 }
 
@@ -90,6 +92,12 @@ if ($CFG->version >= 2023042400) {
 
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
+
+// Here, we want to sort by the timecreated timestamp.
+// Newest items should come first.
+usort($data['historyitems'], function ($a, $b) {
+    return $b['timemodified'] <=> $a['timemodified'];
+});
 
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 
