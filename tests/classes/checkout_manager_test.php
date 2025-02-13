@@ -60,8 +60,8 @@ final class checkout_manager_test extends advanced_testcase {
 
         $checkoutmanager = new checkout_manager($mockdata, $mockcontrol);
         $this->assertNotEmpty($checkoutmanager, 'The checkout_manager instance should be created.');
-        $this->assertEquals(3, $checkoutmanager->get_cache(1)['body_mandatory_count']['body_count']);
-        $this->assertEquals(2, $checkoutmanager->get_cache(1)['body_mandatory_count']['mandatory_count']);
+        $this->assertEquals(3, checkout_manager::get_cache(1)['body_mandatory_count']['body_count']);
+        $this->assertEquals(2, checkout_manager::get_cache(1)['body_mandatory_count']['mandatory_count']);
     }
 
     /**
@@ -143,7 +143,7 @@ final class checkout_manager_test extends advanced_testcase {
         $checkoutmanager = new checkout_manager($mockdata);
         $checkoutmanager->set_body_mandatory_count();
 
-        $this->assertArrayHasKey('body_mandatory_count', $checkoutmanager->get_cache(1));
+        $this->assertArrayHasKey('body_mandatory_count', checkout_manager::get_cache(1));
     }
 
     /**
@@ -174,7 +174,7 @@ final class checkout_manager_test extends advanced_testcase {
 
         // Set and retrieve from cache.
         $checkoutmanager->set_cache();
-        $cachedata = $checkoutmanager->get_cache(1);
+        $cachedata = checkout_manager::get_cache(1);
 
         $this->assertIsArray($cachedata, 'Cache data should be an array.');
     }

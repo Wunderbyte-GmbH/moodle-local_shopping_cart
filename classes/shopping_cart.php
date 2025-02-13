@@ -1343,6 +1343,8 @@ class shopping_cart {
                     'area' => $record->area ?? null,
                     'annotation' => $record->annotation ?? null,
                     'schistoryid' => $record->schistoryid ?? null,
+                    'address_billing' => $record->address_billing ?? null,
+                    'address_shipping' => $record->address_shipping ?? null,
                     ]))
                 ) {
                     // We only insert if entry does not exist yet.
