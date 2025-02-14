@@ -276,6 +276,7 @@ class shopping_cart_history {
         $now = time();
 
         $addresses = checkout_manager::return_stored_addresses_for_user($data->userid);
+        $vatnumbercountrycode = checkout_manager::return_stored_vatnuber_country_code($data->userid);
 
         $returnid = 0;
         if (isset($data->items)) {
@@ -283,11 +284,8 @@ class shopping_cart_history {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $addresses["selectedaddress_billing"] ?? null;
                 $item['address_shipping'] = $addresses["selectedaddress_shipping"] ?? null;
-                $uidcountrynr = null;
-                if (isset($data->vatnrnumber)) {
-                    $uidcountrynr = $data->vatnrcountry . $data->vatnrnumber;
-                }
-                $item['vatnumber'] = $uidcountrynr;
+                $item['taxcountrycode'] = $vatnumbercountrycode["taxcountrycode"] ?? null;
+                $item['vatnumber'] = $vatnumbercountrycode["vatnumber"] ?? null;
                 if (self::write_to_db((object)$item) == 0) {
                     $returnid = 0;
                 }
@@ -311,7 +309,6 @@ class shopping_cart_history {
             ) {
                 $data->timecreated = $now;
                 $data->usecredit = shopping_cart_credits::use_credit_fallback(null, $data->userid);
-
                 if ($id = $DB->insert_record('local_shopping_cart_history', $data)) {
                     // We also need to insert the record into the ledger table.
                     // We only write the old schistoryid, if we have it.

@@ -464,4 +464,27 @@ class checkout_manager {
 
         return $data["steps"]["addresses"]["data"] ?? [];
     }
+
+    /**
+     * Function to return the stored selected addresses
+     * @param int $userid
+     * @return array
+     */
+    public static function return_stored_vatnuber_country_code(int $userid) {
+        $taxcountryinformation = [];
+        $data = self::get_cache($userid);
+        $vatnrcheckerdata = json_decode($data["steps"]["vatnrchecker"]["data"]);
+        if (isset($vatnrcheckerdata->vatCodeCountry)) {
+            $explodedvatnrcheckerdata = explode(',', $vatnrcheckerdata->vatCodeCountry);
+            $taxcountryinformation = [
+                'taxcountrycode' => $explodedvatnrcheckerdata[0] ?? '',
+                'vatnumber' => str_replace(
+                    $explodedvatnrcheckerdata[0],
+                    '',
+                    $explodedvatnrcheckerdata[1] ?? ''
+                ),
+            ];
+        }
+        return $taxcountryinformation;
+    }
 }
