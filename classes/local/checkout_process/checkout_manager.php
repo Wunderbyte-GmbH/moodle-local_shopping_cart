@@ -386,6 +386,9 @@ class checkout_manager {
      *
      */
     public function render_checkout_body($itemlist): mixed {
+        if (empty($itemlist)) {
+            return false;
+        }
         try {
             foreach ($itemlist as $item) {
                 if ($item['status'] == 'active') {
@@ -403,6 +406,7 @@ class checkout_manager {
         } catch (Exception $e) {
             return false;
         }
+        return false;
     }
 
     /**
