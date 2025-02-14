@@ -549,9 +549,9 @@ div.shopping-cart-items-container div.item-description {
     justify-content: space-between;
     position: relative;
     margin: 20px 0;
-  }
+}
 
-  .shopping-cart-checkout-manager-status-bar-line {
+.shopping-cart-checkout-manager-status-bar-line {
     position: absolute;
     top: 50%;
     left: 0;
@@ -559,18 +559,18 @@ div.shopping-cart-items-container div.item-description {
     height: 4px;
     background-color: #ccc;
     z-index: 1;
-  }
+}
 
-  .shopping-cart-checkout-manager-status-item {
+.shopping-cart-checkout-manager-status-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     position: relative;
     z-index: 2;
-  }
+}
 
-  .shopping-cart-checkout-manager-status-item .circle {
+.shopping-cart-checkout-manager-status-item .circle {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -581,19 +581,19 @@ div.shopping-cart-items-container div.item-description {
     font-size: 24px;
     border: 2px solid #ccc;
     background-color: gray;
-  }
+}
 
-  .shopping-cart-checkout-manager-status-item.active .circle {
+.shopping-cart-checkout-manager-status-item.active .circle {
     background-color: green;
     border-color: green;
-  }
+}
 
-  .shopping-cart-checkout-manager-status-item.inactive .circle {
+.shopping-cart-checkout-manager-status-item.inactive .circle {
     background-color: gray;
     border-color: gray;
-  }
+}
 
-  .shopping-cart-checkout-manager-valid-checkmark {
+.shopping-cart-checkout-manager-valid-checkmark {
     position: absolute;
     top: -5px;
     right: -5px;
@@ -608,17 +608,18 @@ div.shopping-cart-items-container div.item-description {
     font-size: 12px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
     line-height: 1;
-  }
+}
 
-  .shopping-cart-checkout-manager-valid-checkmark .icon {
+.shopping-cart-checkout-manager-valid-checkmark .icon {
     line-height: 1;
     vertical-align: middle;
     padding-left: 7px;
-  }
+}
 
-.shopping-cart-checkout-manager-valid-checkmark-mandatory{
+.shopping-cart-checkout-manager-valid-checkmark-mandatory {
     background-color: red !important;
 }
-.shopping-cart-checkout-manager-form-container{
-    max-width: 400px; width: 100%;
+.shopping-cart-checkout-manager-form-container {
+    max-width: 400px;
+    width: 100%;
 }

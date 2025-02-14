@@ -19,7 +19,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import ModalFactory from 'core/modal_factory';
-import {get_string} from 'core/str';
+import {get_string as getString} from 'core/str';
 
 import {reinit} from 'local_shopping_cart/cart';
 
@@ -108,8 +108,8 @@ function vatNumberVerifyCallback() {
 
     if (!countryCode || !vatNumber) {
         ModalFactory.create({type: ModalFactory.types.CANCEL}).then(modal => {
-            modal.setTitle(get_string('errorinvalidvatdatatitle', 'local_shopping_cart'));
-            modal.setBody(get_string('errorinvalidvatdatadescription', 'local_shopping_cart'));
+            modal.setTitle(getString('errorinvalidvatdatatitle', 'local_shopping_cart'));
+            modal.setBody(getString('errorinvalidvatdatadescription', 'local_shopping_cart'));
             modal.show();
             return modal;
         }).catch(e => {
@@ -215,7 +215,7 @@ function getChangedInputs() {
  * @param {Object} params - The parameters for the web service call.
  */
 function triggerButtonControlWebService(serviceName, params) {
-    require(['core/ajax'], function (Ajax) {
+    require(['core/ajax'], function(Ajax) {
         const requests = Ajax.call([{
             methodname: serviceName,
             args: params,
