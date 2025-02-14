@@ -133,7 +133,7 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Renders checkout item.
-     * @return bool 
+     * @return bool
      */
     public function is_mandatory(): bool {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {

@@ -105,7 +105,7 @@ abstract class checkout_base_item {
      * @return string
      */
     public function get_validation_feedback(): string {
-        return null;
+        return '';
     }
 
     /**
@@ -113,6 +113,6 @@ abstract class checkout_base_item {
      * @return string
      */
     public function get_error_feedback(): string {
-        return null;
+        return '';
     }
 }

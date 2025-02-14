@@ -58,5 +58,4 @@ abstract class termsandconditions extends modifier_base {
 
         return $data;
     }
-
 }
