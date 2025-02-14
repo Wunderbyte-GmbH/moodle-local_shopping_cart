@@ -54,10 +54,10 @@ class control_checkout_process extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'action' => new external_value(PARAM_TEXT, 'direction', VALUE_OPTIONAL),
+            'action' => new external_value(PARAM_TEXT, 'direction', VALUE_DEFAULT, ''),
             'currentstep' => new external_value(PARAM_INT, 'currentstep'),
-            'identifier' => new external_value(PARAM_TEXT, 'identifier', VALUE_OPTIONAL),
-            'changedinput' => new external_value(PARAM_RAW, 'changedinput', VALUE_OPTIONAL),
+            'identifier' => new external_value(PARAM_TEXT, 'identifier', VALUE_DEFAULT, ''),
+            'changedinput' => new external_value(PARAM_RAW, 'changedinput', VALUE_DEFAULT, ''),
         ]);
     }
 
