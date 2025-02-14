@@ -152,6 +152,11 @@ class vatnrchecker extends checkout_base_item {
                     $changedinput['country'],
                     $changedinput['vatnumber']
                 );
+
+                if ($vatnumbercheck) {
+                    $cartstore = cartstore::instance($this->identifier);
+                    $cartstore->set_vatnr_data($changedinput['country'], $changedinput['vatnumber'], '', '', '');
+                }
             }
         } catch (\Exception $e) {
             throw new moodle_exception(

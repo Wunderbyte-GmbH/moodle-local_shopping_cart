@@ -477,7 +477,7 @@ class checkout_manager {
     public static function return_stored_vatnuber_country_code(int $userid) {
         $taxcountryinformation = [];
         $data = self::get_cache($userid);
-        $vatnrcheckerdata = json_decode($data["steps"]["vatnrchecker"]["data"]);
+        $vatnrcheckerdata = json_decode($data["steps"]["vatnrchecker"]["data"] ?? '');
         if (isset($vatnrcheckerdata->vatCodeCountry)) {
             $explodedvatnrcheckerdata = explode(',', $vatnrcheckerdata->vatCodeCountry);
             $taxcountryinformation = [
