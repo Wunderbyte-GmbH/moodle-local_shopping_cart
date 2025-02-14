@@ -40,7 +40,7 @@ class termsandconditions extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active() {
+    public function is_active(): bool {
         if (
             get_config('local_shopping_cart', 'accepttermsandconditions') ||
             get_config('local_shopping_cart', 'acceptadditionalconditions')
@@ -54,22 +54,28 @@ class termsandconditions extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar() {
+    public function get_icon_progress_bar(): string {
         return 'fa-solid fa-file-signature';
     }
 
     /**
      * Renders checkout item.
+     *
+     * @return bool
      */
-    public function is_mandatory() {
+    public function is_mandatory(): bool {
         return true;
     }
 
     /**
      * Renders checkout item.
+     *
+     * @param mixed $cachedata
+     *
      * @return array
+     *
      */
-    public function render_body($cachedata) {
+    public function render_body($cachedata): array {
         global $PAGE;
 
         $data = [];
@@ -91,12 +97,16 @@ class termsandconditions extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return array list of all required address keys
+     * @param mixed $managercachestep
+     * @param mixed $validationdata
+     *
+     * @return array
+     *
      */
     public function check_status(
         $managercachestep,
         $validationdata
-    ) {
+    ): array {
         $validationdata = json_decode($validationdata);
         $data = [];
         foreach ($validationdata as $validationvalue) {
@@ -111,10 +121,11 @@ class termsandconditions extends checkout_base_item {
 
     /**
      * Returns the required-address keys as specified in the plugin config.
+     *
      * @param array $validationdata
      * @return bool list of all required address keys
      */
-    public function is_valid($validationdata) {
+    public function is_valid($validationdata): bool {
         foreach ($validationdata as $validationvalue) {
             if (
                 !isset($validationvalue->value) ||
@@ -130,8 +141,10 @@ class termsandconditions extends checkout_base_item {
      * Generates the data for rendering the templates/address.mustache template.
      * @param array $termsandconditions
      * @param array $cachedata
+     *
+     * @return void
      */
-    public function set_data_from_cache(&$termsandconditions, $cachedata) {
+    public function set_data_from_cache(&$termsandconditions, $cachedata): void {
         $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
     }
 }

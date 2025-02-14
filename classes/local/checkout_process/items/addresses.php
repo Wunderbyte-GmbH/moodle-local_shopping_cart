@@ -41,7 +41,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active() {
+    public function is_active(): bool {
         if (get_config('local_shopping_cart', 'addresses_required')) {
             return true;
         }
@@ -52,7 +52,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public function get_icon_progress_bar() {
+    public function get_icon_progress_bar(): string {
         return 'fa-solid fa-address-book';
     }
 
@@ -61,7 +61,7 @@ class addresses extends checkout_base_item {
      * @param array $cachedata
      * @return array
      */
-    public function render_body($cachedata) {
+    public function render_body($cachedata): array {
         global $PAGE;
         $data = self::get_template_render_data();
         $data['required_addresses'] = self::set_data_from_cache(
@@ -77,7 +77,7 @@ class addresses extends checkout_base_item {
 
     /**
      * Generates the data for rendering the templates/address.mustache template.
-     * @param array $data
+     * @param array $requiredaddresses
      * @param array $cachedata
      */
     public function set_data_from_cache(&$requiredaddresses, $cachedata) {
@@ -102,7 +102,7 @@ class addresses extends checkout_base_item {
     /**
      * Generates the data for rendering the templates/address.mustache template.
      *
-     * @return object all required template data
+     * @return array all required template data
      */
     public function get_template_render_data(): array {
         $data = self::get_user_data();
@@ -162,7 +162,7 @@ class addresses extends checkout_base_item {
     /**
      * Renders checkout item.
      */
-    public function is_mandatory() {
+    public function is_mandatory(): bool {
         return true;
     }
 
@@ -180,12 +180,16 @@ class addresses extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
+     * @param mixed $managercachestep
+     * @param mixed $validationdata
+     *
      * @return array list of all required address keys
+     *
      */
     public function check_status(
         $managercachestep,
         $validationdata
-    ) {
+    ): array {
         $data = $managercachestep['data'] ?? [];
         $requiredaddresskeys = self::get_required_address_keys();
         $validationdata = json_decode($validationdata);
@@ -206,12 +210,16 @@ class addresses extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return bool list of all required address keys
+     * @param mixed $requiredaddresskeys
+     * @param mixed $data
+     *
+     * @return bool
+     *
      */
     private function is_valid(
         $requiredaddresskeys,
         $data
-    ) {
+    ): bool {
         $requiredkeys = $requiredaddresskeys ? count($requiredaddresskeys) : null;
         $currentkeys = count($data);
         if (
@@ -237,11 +245,14 @@ class addresses extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return bool list of all required address keys
+     * @param array $requiredaddresskeys
+     *
+     * @return bool
+     *
      */
     private function is_address_valid(
         $requiredaddresskeys
-    ) {
+    ): bool {
         $addressesfromdb = address_operations::get_all_user_addresses($this->identifier);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
             if (!isset($addressesfromdb[$requiredaddresskey])) {

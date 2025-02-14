@@ -522,9 +522,12 @@ class cartstore {
     /**
      * Return the data with localized strings.
      *
-     * @return mixed
+     * @param mixed $data
+     *
+     * @return void
+     *
      */
-    public function get_expanded_checkout_data(&$data) {
+    public function get_expanded_checkout_data(&$data): void {
         global $USER;
         $data["mail"] = $USER->email;
         $data["name"] = $USER->firstname . $USER->lastname;
@@ -555,6 +558,7 @@ class cartstore {
         ) {
             $vatnrchecker = new dynamicvatnrchecker();
             $vatnrchecker->set_data_for_dynamic_submission();
+            // phpcs:ignore
             //$data['showvatnrchecker'] = $vatnrchecker->render();
         }
         $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
@@ -567,7 +571,7 @@ class cartstore {
      *
      * @return void
      */
-    public function reset_instance(int $userid) {
+    public function reset_instance(int $userid): void {
 
         self::$instance[$userid] = null;
     }
@@ -577,7 +581,7 @@ class cartstore {
      * @return bool
      * @throws coding_exception
      */
-    public function has_items() {
+    public function has_items(): bool {
 
         if ($items = $this->get_items()) {
             if (count($items) > 0) {
@@ -598,7 +602,8 @@ class cartstore {
     public function already_in_cart(
         string $component,
         string $area,
-        int $itemid) {
+        int $itemid
+    ): bool {
 
         $data = $this->get_cache();
 

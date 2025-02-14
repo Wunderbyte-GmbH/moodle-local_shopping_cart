@@ -42,7 +42,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active() {
+    public function is_active(): bool {
         if (
             get_config('local_shopping_cart', 'showvatnrchecker')
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
@@ -56,15 +56,19 @@ class vatnrchecker extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar() {
+    public function get_icon_progress_bar(): string {
         return 'fa-solid fa-file-invoice';
     }
 
     /**
-     * Checks status of checkout item.
+     * Render body.
+     *
+     * @param mixed $cachedata
+     *
      * @return array
+     *
      */
-    public function render_body($cachedata) {
+    public function render_body($cachedata): array {
         global $PAGE;
         $data = [];
         $data['countries'] = self::get_country_code_name();
@@ -80,8 +84,10 @@ class vatnrchecker extends checkout_base_item {
      * Generates the data for rendering the templates/address.mustache template.
      * @param array $vatnrcheckerdata
      * @param array $cachedata
+     *
+     * @return void
      */
-    public function set_data_from_cache(&$vatnrcheckerdata, $cachedata) {
+    public function set_data_from_cache(&$vatnrcheckerdata, $cachedata): void {
         $cacheddata = self::get_input_data($cachedata);
         self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
         $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
@@ -91,8 +97,10 @@ class vatnrchecker extends checkout_base_item {
      * Generates the data for rendering the templates/address.mustache template.
      * @param array $vatnrcheckerdata
      * @param array $country
+     *
+     * @return void
      */
-    public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode) {
+    public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
 
         $cartstore = cartstore::instance($this->identifier);
         $cartstore->set_countrycode($countrycode);
@@ -110,7 +118,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return array
      */
-    public function get_country_code_name() {
+    public function get_country_code_name(): array {
         $countries = vatnumberhelper::get_countrycodes_array();
 
         $formattedcountrycodes = [];
@@ -125,9 +133,9 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Renders checkout item.
-     * @return bool list of all required address keys
+     * @return bool 
      */
-    public function is_mandatory() {
+    public function is_mandatory(): bool {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
             return true;
         }
@@ -137,7 +145,11 @@ class vatnrchecker extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return array list of all required address keys
+     * @param mixed $managercachestep
+     * @param mixed $changedinput
+     *
+     * @return array
+     *
      */
     public function check_status(
         $managercachestep,
@@ -173,14 +185,18 @@ class vatnrchecker extends checkout_base_item {
             'valid' => $vatnumbercheck,
         ];
     }
+
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return array list of all required address keys
+     * @param mixed $changedinput
+     *
+     * @return array
+     *
      */
     public function get_input_data(
         $changedinput
-    ) {
+    ): array {
         if (!is_array($changedinput)) {
             $changedinput = json_decode($changedinput);
         }
@@ -196,7 +212,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_validation_feedback() {
+    public function get_validation_feedback(): string {
         return get_string('vatnrvalidationfeedback', 'local_shopping_cart');
     }
 
@@ -204,7 +220,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_error_feedback() {
+    public function get_error_feedback(): string {
         return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
 }

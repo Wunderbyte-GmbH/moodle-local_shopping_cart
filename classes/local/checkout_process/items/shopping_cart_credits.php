@@ -39,29 +39,37 @@ class shopping_cart_credits extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public function get_icon_progress_bar() {
+    public function get_icon_progress_bar(): string {
         return 'fa-solid fa-coins';
     }
 
     /**
      * Renders checkout item.
+     *
+     * @return bool
      */
-    public function is_head() {
+    public function is_head(): bool {
         return true;
     }
 
     /**
      * Renders checkout item.
+     *
+     * @return bool
      */
-    public function is_mandatory() {
+    public function is_mandatory(): bool {
         return false;
     }
 
     /**
      * Renders checkout item.
+     *
+     * @param mixed $cachedata
+     *
      * @return array
+     *
      */
-    public function render_body($cachedata) {
+    public function render_body($cachedata): array {
         global $PAGE;
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/shopping_cart_credits", $cachedata);
@@ -73,7 +81,11 @@ class shopping_cart_credits extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @return array list of all required address keys
+     * @param mixed $managercachestep
+     * @param mixed $changedinput
+     *
+     * @return array
+     *
      */
     public function check_status(
         $managercachestep,

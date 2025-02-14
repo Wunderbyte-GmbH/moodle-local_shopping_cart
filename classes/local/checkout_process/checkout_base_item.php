@@ -41,6 +41,8 @@ abstract class checkout_base_item {
 
     /**
      * Renders checkout item.
+     *
+     * @param string $identifier
      * @return bool
      */
     public function __construct(
@@ -48,31 +50,37 @@ abstract class checkout_base_item {
     ) {
         $this->identifier = $identifier;
     }
+
     /**
      * Renders checkout item.
+     * @return bool
      */
-    public function is_head() {
+    public function is_head(): bool {
         return false;
     }
 
     /**
      * Renders checkout item.
+     * @return bool
      */
-    public function is_active() {
+    public function is_active(): bool {
         return true;
     }
 
     /**
      * Renders checkout item.
+     * @param array $cachedata
+     * @return string
      */
-    public function render_body($cachedata) {
+    public function render_body($cachedata): string {
         return '';
     }
 
     /**
      * Checks status of checkout item.
+     * @return bool
      */
-    public function check() {
+    public function check(): bool {
         return true;
     }
 
@@ -80,7 +88,7 @@ abstract class checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar() {
+    public function get_icon_progress_bar(): string {
         return 'fa-solid fa-cart-shopping';
     }
 
@@ -88,7 +96,7 @@ abstract class checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_status_progress_bar() {
+    public function get_status_progress_bar(): string {
         return 'inactive';
     }
 
@@ -96,7 +104,7 @@ abstract class checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_validation_feedback() {
+    public function get_validation_feedback(): string {
         return null;
     }
 
@@ -104,7 +112,7 @@ abstract class checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_error_feedback() {
+    public function get_error_feedback(): string {
         return null;
     }
 }
