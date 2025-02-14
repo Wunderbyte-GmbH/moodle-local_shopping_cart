@@ -296,6 +296,9 @@ class vatnrchecker {
         $isowncountry,
         $uid
     ) {
+        if ($isowncountry) {
+            return 'EU Reverse Charge';
+        }
         if (!is_null($uid)) {
             return 'Export VAT';
         }

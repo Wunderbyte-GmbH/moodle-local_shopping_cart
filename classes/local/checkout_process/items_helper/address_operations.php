@@ -65,7 +65,7 @@ class address_operations {
     /**
      * Generates complete required-address data as specified by the plugin config.
      * @param int $addressid
-     * @return object
+     * @return mixed
      */
     public static function get_specific_user_addresses(int $addressid): object {
         global $DB;
