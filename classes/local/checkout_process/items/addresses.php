@@ -185,7 +185,7 @@ class addresses extends checkout_base_item {
         $managercachestep,
         $validationdata
     ) {
-        $data = $managercachestep['data'];
+        $data = $managercachestep['data'] ?? [];
         $requiredaddresskeys = self::get_required_address_keys();
         $validationdata = json_decode($validationdata);
         foreach ($requiredaddresskeys as $requiredaddresskey) {

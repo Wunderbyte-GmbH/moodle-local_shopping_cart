@@ -168,11 +168,15 @@ class checkout_manager {
         foreach ($this->itemlist as $item) {
             $filename = basename($item, '.php');
             $classname = self::NAMESPACE_PREFIX . $filename;
-            if (self::class_exists_is_active($classname)) {
+            if (
+                self::class_exists_is_active($classname)
+            ) {
                 $iteminstance = new $classname($this->identifier);
-                if ($bodycounter == $this->controlparameter['currentstep']) {
+                if (
+                    $bodycounter == $this->controlparameter['currentstep']
+                ) {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
-                        $this->managercache['steps'][$filename],
+                        $this->managercache['steps'][$filename] ?? [],
                         $changedinput
                     );
                     if ($this->managercache['steps'][$filename]['valid']) {
@@ -189,7 +193,7 @@ class checkout_manager {
                     $bodycounter += 1;
                 } else {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
-                        $this->managercache['steps'][$filename],
+                        $this->managercache['steps'][$filename] ?? [],
                         $changedinput
                     );
                 }
