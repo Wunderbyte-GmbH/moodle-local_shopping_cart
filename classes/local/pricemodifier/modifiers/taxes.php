@@ -87,7 +87,8 @@ abstract class taxes extends modifier_base {
     public static function update_item_price_data(
             array $items,
             int $userid,
-            ?taxcategories $taxcategories): array {
+            ?taxcategories $taxcategories
+        ): array {
 
         $cartstore = cartstore::instance($userid);
         $countrycode = $cartstore->get_countrycode();

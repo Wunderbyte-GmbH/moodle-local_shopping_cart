@@ -21,7 +21,7 @@
 import ModalFactory from 'core/modal_factory';
 import {get_string} from 'core/str';
 
-import {addZeroPriceListener} from 'local_shopping_cart/cart';
+import {reinit} from 'local_shopping_cart/cart';
 
 const SELECTORS = {
     CHECKOUTMANAGERFORMID: '#shopping-cart-checkout-manager-form',
@@ -368,10 +368,6 @@ function callZeroPriceListener() {
     // Initially, we need to add the zeroPriceListener once.
     const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
     if (paymentbutton) {
-        const data = {
-            price: paymentbutton.dataset.price,
-            currency: paymentbutton.dataset.currency,
-        };
-        addZeroPriceListener(data);
+        reinit();
     }
 }
