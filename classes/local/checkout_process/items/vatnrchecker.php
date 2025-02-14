@@ -67,7 +67,7 @@ class vatnrchecker extends checkout_base_item {
         global $PAGE;
         $data = [];
         $data['countries'] = self::get_country_code_name();
-        self::set_data_from_cache($data, $cachedata['data']);
+        self::set_data_from_cache($data, $cachedata['data'] ?? []);
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/vatnrchecker", $data);
         return [
@@ -171,8 +171,10 @@ class vatnrchecker extends checkout_base_item {
     public function get_input_data(
         $changedinput
     ) {
-        $changedinput = json_decode($changedinput);
-        $vatcodecountry = explode(',', $changedinput->vatCodeCountry);
+        if (!is_array($changedinput)) {
+            $changedinput = json_decode($changedinput);
+        }
+        $vatcodecountry = explode(',', $changedinput->vatCodeCountry ?? ',');
         [$countrycode, $vatnumber] = $vatcodecountry;
         return [
             'country' => $countrycode,
