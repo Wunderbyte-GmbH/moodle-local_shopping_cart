@@ -96,7 +96,7 @@ class vatnrchecker extends checkout_base_item {
     /**
      * Generates the data for rendering the templates/address.mustache template.
      * @param array $vatnrcheckerdata
-     * @param array $country
+     * @param string $countrycode
      *
      * @return void
      */

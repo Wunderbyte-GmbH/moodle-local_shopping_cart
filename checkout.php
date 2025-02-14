@@ -162,6 +162,7 @@ if ($hasallrequiredaddresses) {
     $data['selected_addresses'] = $selectedaddresses;
     $data['show_selected_addresses'] = true;
 }
+// phpcs:ignore
 //$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 $checkoutmanager = new checkout_manager($data);
 

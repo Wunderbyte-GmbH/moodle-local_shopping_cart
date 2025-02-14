@@ -80,7 +80,7 @@ class address_operations {
 
     /**
      * Generates complete required-address data as specified by the plugin config.
-     * @param array $userid
+     * @param int $userid
      * @return array
      */
     public static function get_all_user_addresses(int $userid): array {
