@@ -18,6 +18,8 @@
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+import ModalFactory from 'core/modal_factory';
+import {get_string} from 'core/str';
 
 import {addZeroPriceListener} from 'local_shopping_cart/cart';
 
@@ -105,7 +107,15 @@ function vatNumberVerifyCallback() {
     const vatNumber = document.getElementById(IDS.VATNUMBER)?.value;
 
     if (!countryCode || !vatNumber) {
-        alert('alert');
+        ModalFactory.create({type: ModalFactory.types.CANCEL}).then(modal => {
+            modal.setTitle(get_string('errorinvalidvatdatatitle', 'local_shopping_cart'));
+            modal.setBody(get_string('errorinvalidvatdatadescription', 'local_shopping_cart'));
+            modal.show();
+            return modal;
+        }).catch(e => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
         return;
     }
     triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
