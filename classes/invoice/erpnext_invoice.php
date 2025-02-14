@@ -358,7 +358,7 @@ class erpnext_invoice implements invoice {
      */
     public function get_billing_address(): string {
         $address = '';
-        $addressrecord = address_operations::get_specific_user_addresses($this->invoicedata['address_billing']);
+        $addressrecord = address_operations::get_specific_user_addresses($this->invoicedata['address_billing'] ?? 0);
 
         if ($addressrecord) {
             // Check if address exists in erp.
@@ -438,7 +438,11 @@ class erpnext_invoice implements invoice {
                 }
             }
 
-            if (isset($item->vatnumber) && !is_null($item->vatnumber)) {
+            if (
+                isset($item->vatnumber) &&
+                !is_null($item->vatnumber) &&
+                $this->invoicedata['taxes_and_charges'] != 'EU Reverse Charge'
+            ) {
                 $itemdata['rate'] = (float) $item->price;
             } else {
                 $itemdata['rate'] = (float) $item->price - (float) $item->tax;
@@ -493,7 +497,6 @@ class erpnext_invoice implements invoice {
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
             return false;
-
         } else {
             $responsetaxid = json_decode($response);
             if (
@@ -626,7 +629,7 @@ class erpnext_invoice implements invoice {
         // Decode the JSON response into an associative array.
         $resparray = json_decode($response, true);
         // Check if the response contains data.
-        if (isset($resparray['data']) ||isset($resparray['message'])) {
+        if (isset($resparray['data']) || isset($resparray['message'])) {
             return true; // Entry exists or entry was successfully created.
         }
         // Check if the response contains an error message.
