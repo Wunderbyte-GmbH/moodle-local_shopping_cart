@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shopping_cart\tests;
+namespace local_shopping_cart\classes;
 
 use advanced_testcase;
 use local_shopping_cart\local\checkout_process\items\vatnrchecker;
@@ -30,6 +30,8 @@ use local_shopping_cart\local\checkout_process\items\vatnrchecker;
 
 /**
  * Test for vatnrchecker
+ *
+ * @covers \local\checkout_process\items\vatnrchecker
  */
 final class vatnrchecker_test extends advanced_testcase {
     /**
