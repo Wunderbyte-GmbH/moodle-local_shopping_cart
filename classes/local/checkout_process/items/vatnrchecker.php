@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart\local\checkout_process\items;
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use moodle_exception;
@@ -92,6 +93,10 @@ class vatnrchecker extends checkout_base_item {
      * @param array $country
      */
     public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode) {
+
+        $cartstore = cartstore::instance($this->identifier);
+        $cartstore->set_countrycode($countrycode);
+
         foreach ($vatnrcheckerdata['countries'] as &$country) {
             if ($country['code'] == $countrycode) {
                 $country['selected'] = true;

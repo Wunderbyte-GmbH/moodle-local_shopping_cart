@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart\local\checkout_process\items;
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 
@@ -217,6 +218,17 @@ class addresses extends checkout_base_item {
             $requiredkeys === $currentkeys &&
             self::is_address_valid($requiredaddresskeys)
         ) {
+            $cartstore = cartstore::instance($this->identifier);
+
+            $cartstoredata = [];
+            if (!empty($requiredaddresskeys["selectedaddress_billing"])) {
+                $cartstoredata['billing'] = $requiredaddresskeys["selectedaddress_billing"];
+            }
+            if (!empty($requiredaddresskeys["selectedaddress_shipping"])) {
+                $cartstoredata['shipping'] = $requiredaddresskeys["selectedaddress_shipping"];
+            }
+            $cartstore->local_shopping_cart_save_address_in_cache($cartstoredata);
+
             return true;
         }
         return false;
