@@ -291,8 +291,13 @@ class checkout_manager {
 
     /**
      * Applies the given price modifiers on the cached data.
+     *
+     * @param mixed $identifier
+     *
+     * @return mixed
+     *
      */
-    public static function get_cache($identifier) {
+    public static function get_cache($identifier): mixed {
         $cache = cache::make('local_shopping_cart', 'cachebookingpreprocess');
         if (!$cache->has($identifier)) {
             $cache->set($identifier, []);
@@ -447,10 +452,10 @@ class checkout_manager {
 
     /**
      * Applies the given price modifiers on the cached data.
-     * @param string $classname
-     * @return bool
+     * @param string $classnamepath
+     * @return mixed
      */
-    public function is_step_valid($classnamepath) {
+    public function is_step_valid($classnamepath): mixed {
         $classname = self::get_class_name($classnamepath);
         if (isset($this->managercache['steps'][$classname]['valid'])) {
             return $this->managercache['steps'][$classname]['valid'];
@@ -460,7 +465,7 @@ class checkout_manager {
 
     /**
      * Applies the given price modifiers on the cached data.
-     * @param string $classname
+     * @param string $classnamepath
      * @return string
      */
     public function get_class_name($classnamepath): string {

@@ -70,10 +70,10 @@ abstract class checkout_base_item {
     /**
      * Renders checkout item.
      * @param array $cachedata
-     * @return string
+     * @return array
      */
-    public function render_body($cachedata): string {
-        return '';
+    public function render_body($cachedata): array {
+        return [];
     }
 
     /**

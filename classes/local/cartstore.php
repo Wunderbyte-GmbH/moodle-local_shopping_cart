@@ -712,7 +712,6 @@ class cartstore {
             }
         }
         return false;
-
     }
 
     /**
@@ -759,7 +758,6 @@ class cartstore {
                 'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
             ];
             $this->set_cache($cachedata);
-
         }
         $this->cachedata = $cachedata;
         return $cachedata;
