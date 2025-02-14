@@ -54,7 +54,7 @@ class address_operations {
 
     /**
      * Function to return an array of localized country codes.
-     * @param int $params
+     * @param int $addressid
      * @return bool
      */
     public static function delete_user_address(int $addressid) {
@@ -81,7 +81,7 @@ class address_operations {
     /**
      * Generates complete required-address data as specified by the plugin config.
      * @param array $userid
-     * @return object
+     * @return array
      */
     public static function get_all_user_addresses(int $userid): array {
         global $DB;
