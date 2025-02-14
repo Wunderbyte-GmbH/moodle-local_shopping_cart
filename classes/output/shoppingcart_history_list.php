@@ -441,8 +441,8 @@ class shoppingcart_history_list implements renderable, templatable {
             $this->historyitems[$key]['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
 
             if ($this->taxesenabled) {
-                $this->historyitems[$key]['price_gross'] = number_format(round((float) $item['price_gross'] ?? 0, 2), 2, '.', '');
-                $this->historyitems[$key]['price_net'] = number_format(round((float) $item['price_net'] ?? 0, 2), 2, '.', '');
+                $this->historyitems[$key]['price_gross'] = number_format(round((float) ($item['price_gross'] ?? 0), 2), 2, '.', '');
+                $this->historyitems[$key]['price_net'] = number_format(round((float) ($item['price_net'] ?? 0), 2), 2, '.', '');
             }
             $this->historyitems[$key]['receipturl'] = $item['receipturl']->out(false);
         }

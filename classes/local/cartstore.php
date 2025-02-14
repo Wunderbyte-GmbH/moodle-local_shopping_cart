@@ -995,4 +995,17 @@ class cartstore {
 
         return $data['taxcountrycode'] ?? $data['vatnrcountry'] ?? null;
     }
+
+    /**
+     * Set cached countrycode.
+     * @param string $taxcountrycode
+     * @return void
+     */
+    public function set_countrycode($taxcountrycode) {
+        $data = $this->get_cache();
+
+        $data["taxcountrycode"] = $taxcountrycode;
+
+        $this->set_cache($data);
+    }
 }
