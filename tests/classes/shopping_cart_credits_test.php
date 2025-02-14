@@ -14,11 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shopping_cart\tests;
-
-use advanced_testcase;
-use local_shopping_cart\local\checkout_process\items\shopping_cart_credits;
-
 /**
  * Unit tests for the shopping_cart_credits class.
  *
@@ -28,8 +23,15 @@ use local_shopping_cart\local\checkout_process\items\shopping_cart_credits;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_shopping_cart\classes;
+
+use advanced_testcase;
+use local_shopping_cart\local\checkout_process\items\shopping_cart_credits;
+
 /**
  * Test for shopping_cart_credits
+ *
+ * @covers \local\checkout_process\items\shopping_cart_credits
  */
 final class shopping_cart_credits_test extends advanced_testcase {
     /**
