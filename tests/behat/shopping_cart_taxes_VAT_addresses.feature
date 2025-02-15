@@ -61,10 +61,11 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     ## Select billing address
     And I should see "Wienn" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Wienn" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I wait until the page is ready
     And I press "Next Step"
     And I wait until the page is ready
-    ## And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ## And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
@@ -92,10 +93,11 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     ## Select billing address
     And I should see "Berlin" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Berlin" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I wait until the page is ready
     And I press "Next Step"
     And I wait until the page is ready
-    ## And I should see "11.90 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ## And I should see "(10.00 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "11.90 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "Select your country" to "Germany"
     And I set the field "Enter your VAT number" to "812526315"
@@ -124,10 +126,11 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     ## Select billing address
     And I should see "Berlin" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Berlin" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I wait until the page is ready
     And I press "Next Step"
     And I wait until the page is ready
-    ## And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ## And I should see "(8.40 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(8.40 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "Select your country" to "Germany"
     And I set the field "Enter your VAT number" to "812526315"
