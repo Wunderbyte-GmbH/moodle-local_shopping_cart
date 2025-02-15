@@ -380,12 +380,12 @@ class checkout_manager {
      *
      * @param mixed $itemlist
      *
-     * @return bool|array
+     * @return array
      *
      */
-    public function render_checkout_body($itemlist): bool|array {
+    public function render_checkout_body($itemlist): array {
         if (empty($itemlist)) {
-            return false;
+            return [];
         }
         try {
             foreach ($itemlist as $item) {
@@ -402,9 +402,9 @@ class checkout_manager {
                 }
             }
         } catch (Exception $e) {
-            return false;
+            return [];
         }
-        return false;
+        return [];
     }
 
     /**
