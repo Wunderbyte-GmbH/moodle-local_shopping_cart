@@ -106,8 +106,6 @@ class service_provider implements \core_payment\local\callback\service_provider 
             // We need to check here if the current cache is still in sync with the stored cache.
             foreach ($records as $record) {
                 if ($shoppingcart->usecredit != $record->usecredit) {
-                    $record->usecache = $shoppingcart->usecache;
-                    $record->timemodified = time();
                     $DB->update_record('local_shopping_cart_history', [
                         'id' => $record->id,
                         'usecredit' => $shoppingcart->usecredit,
