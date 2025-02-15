@@ -102,9 +102,6 @@ class vatnrchecker extends checkout_base_item {
      */
     public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
 
-        $cartstore = cartstore::instance($this->identifier);
-        $cartstore->set_countrycode($countrycode);
-
         foreach ($vatnrcheckerdata['countries'] as &$country) {
             if ($country['code'] == $countrycode) {
                 $country['selected'] = true;
@@ -165,9 +162,11 @@ class vatnrchecker extends checkout_base_item {
                     $changedinput['vatnumber']
                 );
 
+                $cartstore = cartstore::instance($this->identifier);
                 if ($vatnumbercheck) {
-                    $cartstore = cartstore::instance($this->identifier);
                     $cartstore->set_vatnr_data($changedinput['country'], $changedinput['vatnumber'], '', '', '');
+                } else if ($changedinput['country'] === "novatnr" || empty($changedinput['vatnumber'])) {
+                    $cartstore->unset_vatnr_data();
                 }
             }
         } catch (\Exception $e) {
