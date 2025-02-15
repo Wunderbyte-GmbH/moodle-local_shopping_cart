@@ -40,7 +40,7 @@ class termsandconditions extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active(): bool {
+    public static function is_active(): bool {
         if (
             get_config('local_shopping_cart', 'accepttermsandconditions') ||
             get_config('local_shopping_cart', 'acceptadditionalconditions')
@@ -54,7 +54,7 @@ class termsandconditions extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar(): string {
+    public static function get_icon_progress_bar(): string {
         return 'fa-solid fa-file-signature';
     }
 
@@ -63,7 +63,7 @@ class termsandconditions extends checkout_base_item {
      *
      * @return bool
      */
-    public function is_mandatory(): bool {
+    public static function is_mandatory(): bool {
         return true;
     }
 

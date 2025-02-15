@@ -42,7 +42,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active(): bool {
+    public static function is_active(): bool {
         if (
             get_config('local_shopping_cart', 'showvatnrchecker')
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
@@ -56,7 +56,7 @@ class vatnrchecker extends checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar(): string {
+    public static function get_icon_progress_bar(): string {
         return 'fa-solid fa-file-invoice';
     }
 
@@ -132,7 +132,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_mandatory(): bool {
+    public static function is_mandatory(): bool {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
             return true;
         }
@@ -211,7 +211,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_validation_feedback(): string {
+    public static function get_validation_feedback(): string {
         return get_string('vatnrvalidationfeedback', 'local_shopping_cart');
     }
 
@@ -219,7 +219,7 @@ class vatnrchecker extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_error_feedback(): string {
+    public static function get_error_feedback(): string {
         return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
 }

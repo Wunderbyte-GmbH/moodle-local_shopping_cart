@@ -55,7 +55,7 @@ abstract class checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_head(): bool {
+    public static function is_head(): bool {
         return false;
     }
 
@@ -63,7 +63,7 @@ abstract class checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active(): bool {
+    public static function is_active(): bool {
         return true;
     }
 
@@ -88,7 +88,7 @@ abstract class checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_icon_progress_bar(): string {
+    public static function get_icon_progress_bar(): string {
         return 'fa-solid fa-cart-shopping';
     }
 
@@ -104,7 +104,7 @@ abstract class checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_validation_feedback(): string {
+    public static function get_validation_feedback(): string {
         return '';
     }
 
@@ -112,7 +112,7 @@ abstract class checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public function get_error_feedback(): string {
+    public static function get_error_feedback(): string {
         return '';
     }
 }
