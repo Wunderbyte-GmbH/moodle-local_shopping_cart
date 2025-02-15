@@ -107,6 +107,7 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
+    And I wait "1" seconds
     ## VAT verification reloads page and does not preserve installment status - reactivate it.
     And I should see "42.42 EUR" in the ".sc_totalprice" "css_element"
     And I set the field "Use installment payments" to "1"
