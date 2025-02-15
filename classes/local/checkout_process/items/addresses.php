@@ -41,7 +41,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return bool
      */
-    public function is_active(): bool {
+    public static function is_active(): bool {
         if (get_config('local_shopping_cart', 'addresses_required')) {
             return true;
         }
@@ -52,7 +52,7 @@ class addresses extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public function get_icon_progress_bar(): string {
+    public static function get_icon_progress_bar(): string {
         return 'fa-solid fa-address-book';
     }
 
@@ -133,7 +133,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required addresses with a key and localized string
      */
-    public function get_user_data(): array {
+    public static function get_user_data(): array {
         global $USER;
         return [
             "usermail" => $USER->email,
@@ -162,7 +162,7 @@ class addresses extends checkout_base_item {
     /**
      * Renders checkout item.
      */
-    public function is_mandatory(): bool {
+    public static function is_mandatory(): bool {
         return true;
     }
 

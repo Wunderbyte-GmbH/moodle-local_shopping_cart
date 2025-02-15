@@ -39,7 +39,7 @@ class shopping_cart_credits extends checkout_base_item {
      * Renders checkout item.
      * @return string
      */
-    public function get_icon_progress_bar(): string {
+    public static function get_icon_progress_bar(): string {
         return 'fa-solid fa-coins';
     }
 
@@ -48,7 +48,7 @@ class shopping_cart_credits extends checkout_base_item {
      *
      * @return bool
      */
-    public function is_head(): bool {
+    public static function is_head(): bool {
         return true;
     }
 
@@ -57,7 +57,7 @@ class shopping_cart_credits extends checkout_base_item {
      *
      * @return bool
      */
-    public function is_mandatory(): bool {
+    public static function is_mandatory(): bool {
         return false;
     }
 
