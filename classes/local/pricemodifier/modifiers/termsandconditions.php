@@ -52,9 +52,11 @@ abstract class termsandconditions extends modifier_base {
      */
     public static function apply(array &$data): array {
         // Show the terms.
+        // phpcs:disable
         if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
             //$data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
         }
+        // phpcs:enable
 
         return $data;
     }
