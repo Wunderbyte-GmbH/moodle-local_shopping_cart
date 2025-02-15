@@ -616,9 +616,12 @@ div.shopping-cart-items-container div.item-description {
     padding-left: 7px;
 }
 
+/* stylelint-disable declaration-no-important */
 .shopping-cart-checkout-manager-valid-checkmark-mandatory {
     background-color: red !important;
 }
+/* stylelint-enable declaration-no-important */
+
 .shopping-cart-checkout-manager-form-container {
     max-width: 400px;
     width: 100%;
