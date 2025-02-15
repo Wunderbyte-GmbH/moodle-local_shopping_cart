@@ -179,6 +179,7 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 // We want to show the credits at the place of the price.
                 $item->price = $item->credits;
+                $item->taxesenabled = false;
                 $item->date = date('Y-m-d', $item->timemodified);
                 $item->buttonclass = ' hidden ';
                 $this->historyitems[] = (array)$item;
