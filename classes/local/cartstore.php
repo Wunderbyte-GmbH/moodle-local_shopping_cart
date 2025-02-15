@@ -909,6 +909,26 @@ class cartstore {
     }
 
     /**
+     * Gets the openinstallments.
+     * @return bool
+     * @throws coding_exception
+     */
+    public function unset_vatnr_data() {
+
+        $data = $this->get_cache();
+
+        $data['vatnrcountry'] = null;
+        $data['vatnrnumber'] = null;
+        $data['companyname'] = null;
+        $data['street'] = null;
+        $data['place'] = null;
+
+        $this->set_cache($data);
+
+        return true;
+    }
+
+    /**
      * Returns cached data only if vatnr is set.
      * VATNR data has the keys vatnrcountry, vatnrnumber, companyname, street & place.
      * @return array
@@ -1007,7 +1027,7 @@ class cartstore {
     public function get_countrycode() {
         $data = $this->get_cache();
 
-        return $data['taxcountrycode'] ?? $data['vatnrcountry'] ?? null;
+        return $data['vatnrcountry'] ?? $data['taxcountrycode'] ?? null;
     }
 
     /**
