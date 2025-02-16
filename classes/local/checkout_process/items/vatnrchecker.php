@@ -87,7 +87,7 @@ class vatnrchecker extends checkout_base_item {
      *
      * @return void
      */
-    public function set_data_from_cache(&$vatnrcheckerdata, $cachedata): void {
+    public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata): void {
         $cacheddata = self::get_input_data($cachedata);
         self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
         $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
@@ -100,7 +100,7 @@ class vatnrchecker extends checkout_base_item {
      *
      * @return void
      */
-    public function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
+    public static function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
 
         foreach ($vatnrcheckerdata['countries'] as &$country) {
             if ($country['code'] == $countrycode) {
@@ -115,7 +115,7 @@ class vatnrchecker extends checkout_base_item {
      * Renders checkout item.
      * @return array
      */
-    public function get_country_code_name(): array {
+    public static function get_country_code_name(): array {
         $countries = vatnumberhelper::get_countrycodes_array();
 
         $formattedcountrycodes = [];
@@ -193,7 +193,7 @@ class vatnrchecker extends checkout_base_item {
      * @return array
      *
      */
-    public function get_input_data(
+    public static function get_input_data(
         $changedinput
     ): array {
         if (!is_array($changedinput)) {
