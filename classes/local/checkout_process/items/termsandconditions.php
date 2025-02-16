@@ -144,7 +144,7 @@ class termsandconditions extends checkout_base_item {
      *
      * @return void
      */
-    public function set_data_from_cache(&$termsandconditions, $cachedata): void {
+    public static function set_data_from_cache(&$termsandconditions, $cachedata): void {
         $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
     }
 }

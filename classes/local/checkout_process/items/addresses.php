@@ -80,7 +80,7 @@ class addresses extends checkout_base_item {
      * @param array $requiredaddresses
      * @param array $cachedata
      */
-    public function set_data_from_cache(&$requiredaddresses, $cachedata) {
+    public static function set_data_from_cache(&$requiredaddresses, $cachedata) {
         foreach ($requiredaddresses as &$requiredaddress) {
             $newsavedaddresses = [];
             foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
@@ -171,7 +171,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    private function get_required_address_keys(): array {
+    private static function get_required_address_keys(): array {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
         return $requiredaddresskeys;
