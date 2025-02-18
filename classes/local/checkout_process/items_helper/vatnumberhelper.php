@@ -101,9 +101,10 @@ class vatnumberhelper {
      * Function to verify VATNR of business partner online.
      * @param string $countrycode
      * @param string $vatnrnumber
+     * @param ?object $client
      * @return string
      */
-    public static function check_vatnr_number(string $countrycode, string $vatnrnumber) {
+    public static function check_vatnr_number(string $countrycode, string $vatnrnumber, ?object $client = null) {
         $response = [];
 
         if (
@@ -120,7 +121,7 @@ class vatnumberhelper {
                 $response = self::validate_with_hmrc($vatnrnumber);
                 break;
             case 'eu':
-                $response = self::validate_with_vies($countrycode, $vatnrnumber);
+                $response = self::validate_with_vies($countrycode, $vatnrnumber, $client);
                 break;
             default:
                 $response = self::validate_with_vatcomply($vatnrnumber);
@@ -213,11 +214,13 @@ class vatnumberhelper {
      * Function to return an array of localized country codes.
      * @param string $countrycode
      * @param string $vatnumber
+     * @param ?object $client
+     *
      * @return array
      */
-    public static function validate_with_vies($countrycode, $vatnumber) {
+    public static function validate_with_vies($countrycode, $vatnumber, ?object $client = null) {
         try {
-            $client = new SoapClient(self::WSDL);
+            $client = $client ?? new SoapClient(self::WSDL);
             return (array) $client->checkVat([
                 'countryCode' => $countrycode,
                 'vatNumber' => $vatnumber,
