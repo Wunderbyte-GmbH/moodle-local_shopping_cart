@@ -189,7 +189,7 @@ class checkout_manager {
             ) {
                 $iteminstance = new $classname($this->identifier);
                 if (
-                    $bodycounter == $this->controlparameter['currentstep']
+                    $bodycounter === ($this->controlparameter['currentstep'] ?? null)
                 ) {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
                         $this->managercache['steps'][$filename] ?? [],
@@ -527,7 +527,10 @@ class checkout_manager {
         $taxcountryinformation = [];
         $data = self::get_cache($userid);
         $vatnrcheckerdata = json_decode($data["steps"]["vatnrchecker"]["data"] ?? '');
-        if (isset($vatnrcheckerdata->vatCodeCountry)) {
+        if (
+            isset($vatnrcheckerdata->vatCodeCountry) &&
+            $data["steps"]["vatnrchecker"]['valid']
+        ) {
             $explodedvatnrcheckerdata = explode(',', $vatnrcheckerdata->vatCodeCountry);
             $taxcountryinformation = [
                 'taxcountrycode' => $explodedvatnrcheckerdata[0] ?? '',

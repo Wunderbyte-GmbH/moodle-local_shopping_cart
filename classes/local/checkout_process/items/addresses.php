@@ -197,7 +197,10 @@ class addresses extends checkout_base_item {
         $validationdata = json_decode($validationdata);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
             foreach ($validationdata as $address) {
-                if (mb_strpos($address->name, $requiredaddresskey) !== false) {
+                if (
+                    isset($address->name) &&
+                    mb_strpos($address->name, $requiredaddresskey) !== false
+                ) {
                     $data[$address->name] = $address->value;
                 }
             }
