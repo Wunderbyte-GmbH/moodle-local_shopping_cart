@@ -165,7 +165,7 @@ class vatnrchecker extends checkout_base_item {
                 $cartstore = cartstore::instance(self::$identifier);
                 if ($vatnumbercheck) {
                     $cartstore->set_vatnr_data($changedinput['country'], $changedinput['vatnumber'], '', '', '');
-                } else if ($changedinput['country'] === "novatnr" || empty($changedinput['vatnumber'])) {
+                } else {
                     $cartstore->unset_vatnr_data();
                 }
             }
