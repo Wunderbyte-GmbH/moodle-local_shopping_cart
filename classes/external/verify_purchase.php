@@ -94,7 +94,7 @@ class verify_purchase extends external_api {
         }
 
         if (get_config('local_shopping_cart', 'alwaysanswerwithsuccessinverifypurchase')) {
-            $success = 1;
+            $success = 0;
         } else {
             $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
