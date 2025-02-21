@@ -30,7 +30,6 @@ use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
 use paygw_payone\external\get_config_for_js;
-use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -95,7 +94,12 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
             while (str_contains($stepdata['changedinput'], 'REPLACE_WITH_ADDRESSID')) {
                 $replacement = array_shift($addresids);
                 $replacecount = 1;
-                $stepdata['changedinput'] = str_replace('REPLACE_WITH_ADDRESSID', $replacement, $stepdata['changedinput'], $replacecount);
+                $stepdata['changedinput'] = str_replace(
+                    'REPLACE_WITH_ADDRESSID',
+                    $replacement,
+                    $stepdata['changedinput'],
+                    $replacecount
+                );
             }
             $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
             $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
@@ -117,88 +121,11 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
     }
 
     /**
-     * Generate fake addresses for a given user.
-     *
-     * @param object $user
-     * @return array
-     */
-    private function generate_fake_addresses(object $user): array {
-        global $DB;
-        $addressids = [];
-        for ($i = 0; $i < 3; $i++) {
-            $record = new stdClass();
-            $record->userid = $user->id;
-            $record->name = $user->firstname . ' ' . $user->lastname;
-            $record->state = 'AT';
-            $record->address = 'Fakestreet ' . $i;
-            $record->city = 'Fakecity ' . $i;
-            $record->zip = '12345' . $i;
-            $record->phone = '0043 93453234' . $i;
-            $addressids[] = $DB->insert_record('local_shopping_cart_address', $record);
-        }
-        return $addressids;
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertcartstorevatnumber($managercache, $historyrecords): void {
-        foreach ($historyrecords as $historyrecord) {
-            $this->assertNotNull($historyrecord->taxcountrycode);
-            $this->assertNotNull($historyrecord->vatnumber);
-        }
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertcartstorevatnumbernull($managercache, $historyrecords): void {
-        foreach ($historyrecords as $historyrecord) {
-            $this->assertNull($historyrecord->taxcountrycode);
-            $this->assertNull($historyrecord->vatnumber);
-        }
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertvalidcheckout($managercache, $historyrecords): void {
-        $this->assertTrue($managercache['checkout_validation']);
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertinvalidcheckout($managercache, $historyrecords): void {
-        $this->assertFalse($managercache['checkout_validation']);
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertcartstoretax($managercache, $historyrecords): void {
-        foreach ($historyrecords as $historyrecord) {
-            $this->assertNotNull($historyrecord->taxpercentage);
-            $this->assertNotNull($historyrecord->tax);
-        }
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertcartstoretaxnull($managercache, $historyrecords): void {
-        foreach ($historyrecords as $historyrecord) {
-            $this->assertEquals((int)$historyrecord->taxpercentage, 0);
-            $this->assertEquals((int)$historyrecord->tax, 0);
-        }
-    }
-
-    /**
      * Data provider for checkout process tests.
      *
      * @return array[]
      */
-    public function checkoutprocessdataprovider(): array {
+    public static function checkoutprocessdataprovider(): array {
         return [
             'Only vatnumber mandatory, valid' => [
                 [

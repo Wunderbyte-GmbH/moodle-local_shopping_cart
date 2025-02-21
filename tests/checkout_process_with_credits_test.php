@@ -28,6 +28,7 @@ namespace local_shopping_cart;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
+use paygw_payone\external\get_config_for_js;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -96,8 +97,10 @@ final class checkout_process_with_credits_test extends checkout_process_test_set
             if ($stepdata['purgecache']) {
                 \cache_helper::purge_all();
             }
-            service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
         }
+
+        service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
+        $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
 
         $historyrecords = $DB->get_records('local_shopping_cart_history');
         $cartstore = cartstore::instance($student1->id);
@@ -108,63 +111,11 @@ final class checkout_process_with_credits_test extends checkout_process_test_set
     }
 
     /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertbalanceisnull($historyrecords, $cartstore, $userid): void {
-        $balanceafter = shopping_cart_credits::get_balance($userid);
-        $this->assertEquals((float)0, (float)$balanceafter[0]);
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function assertbalanceisnotnull($historyrecords, $cartstore, $userid): void {
-        $balanceafter = shopping_cart_credits::get_balance($userid);
-        $this->assertNotEquals((float)0, (float)$balanceafter[0]);
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function payedpriceisless($historyrecords, $cartstore): void {
-        global $DB;
-        $paidprice = 0;
-        $itemprice = 0;
-        foreach ($historyrecords as $item) {
-            $itemprice += (float)$item->price;
-        }
-
-        $cartinformation = $DB->get_records('local_shopping_cart_ledger');
-        foreach ($cartinformation as $ledgeritem) {
-            $paidprice += (float)$ledgeritem->price;
-        }
-        $this->assertNotEquals($paidprice, $itemprice);
-    }
-
-    /**
-     * Assertion: The transaction should be valid.
-     */
-    public function payedpriceissame($historyrecords, $cartstore): void {
-        global $DB;
-        $paidprice = 0;
-        $itemprice = 0;
-        foreach ($historyrecords as $item) {
-            $itemprice += (float)$item->price;
-        }
-
-        $cartinformation = $DB->get_records('local_shopping_cart_ledger');
-        foreach ($cartinformation as $ledgeritem) {
-            $paidprice += (float)$ledgeritem->price;
-        }
-        $this->assertEquals($paidprice, $itemprice);
-    }
-
-    /**
      * Data provider for checkout process tests.
      *
      * @return array[]
      */
-    public function checkoutprocessdataprovider(): array {
+    public static function checkoutprocessdataprovider(): array {
         return [
             'User has cerdits, but does not uses credits, cache cleared' => [
                 [
