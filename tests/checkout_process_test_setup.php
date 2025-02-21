@@ -138,4 +138,133 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
             return $sdkmock;
         };
     }
+
+    /**
+     * Generate fake addresses for a given user.
+     *
+     * @param object $user
+     * @return array
+     */
+    protected function generate_fake_addresses(object $user): array {
+        global $DB;
+        $addressids = [];
+        for ($i = 0; $i < 3; $i++) {
+            $record = new stdClass();
+            $record->userid = $user->id;
+            $record->name = $user->firstname . ' ' . $user->lastname;
+            $record->state = 'AT';
+            $record->address = 'Fakestreet ' . $i;
+            $record->city = 'Fakecity ' . $i;
+            $record->zip = '12345' . $i;
+            $record->phone = '0043 93453234' . $i;
+            $addressids[] = $DB->insert_record('local_shopping_cart_address', $record);
+        }
+        return $addressids;
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertbalanceisnull($historyrecords, $cartstore, $userid): void {
+        $balanceafter = shopping_cart_credits::get_balance($userid);
+        $this->assertEquals((float)0, (float)$balanceafter[0], 'assertbalanceisnull');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertbalanceisnotnull($historyrecords, $cartstore, $userid): void {
+        $balanceafter = shopping_cart_credits::get_balance($userid);
+        $this->assertNotEquals((float)0, (float)$balanceafter[0], 'assertbalanceisnotnull');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function payedpriceisless($historyrecords, $cartstore): void {
+        global $DB;
+        $paidprice = 0;
+        $itemprice = 0;
+        foreach ($historyrecords as $item) {
+            $itemprice += (float)$item->price;
+        }
+
+        $cartinformation = $DB->get_records('local_shopping_cart_ledger');
+        foreach ($cartinformation as $ledgeritem) {
+            $paidprice += (float)$ledgeritem->price;
+        }
+        $this->assertNotEquals($paidprice, $itemprice, 'payedpriceisless');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function payedpriceissame($historyrecords, $cartstore): void {
+        global $DB;
+        $paidprice = 0;
+        $itemprice = 0;
+        foreach ($historyrecords as $item) {
+            $itemprice += (float)$item->price;
+        }
+
+        $cartinformation = $DB->get_records('local_shopping_cart_ledger');
+        foreach ($cartinformation as $ledgeritem) {
+            $paidprice += (float)$ledgeritem->price;
+        }
+        $this->assertEquals($paidprice, $itemprice, 'payedpriceissame');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertcartstorevatnumber($managercache, $historyrecords): void {
+        foreach ($historyrecords as $historyrecord) {
+            $this->assertNotNull($historyrecord->taxcountrycode, 'assertcartstorevatnumber_taxcountrycode');
+            $this->assertNotNull($historyrecord->vatnumber, 'assertcartstorevatnumber_vatnumber');
+        }
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertcartstorevatnumbernull($managercache, $historyrecords): void {
+        foreach ($historyrecords as $historyrecord) {
+            $this->assertNull($historyrecord->taxcountrycode, 'assertcartstorevatnumbernull_taxcountrycode');
+            $this->assertNull($historyrecord->vatnumber, 'assertcartstorevatnumbernull_vatnumber');
+        }
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertvalidcheckout($managercache, $historyrecords): void {
+        $this->assertTrue($managercache['checkout_validation'], 'assertvalidcheckout');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertinvalidcheckout($managercache, $historyrecords): void {
+        $this->assertFalse($managercache['checkout_validation'], 'assertinvalidcheckout');
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertcartstoretax($managercache, $historyrecords): void {
+        foreach ($historyrecords as $historyrecord) {
+            $this->assertNotNull($historyrecord->taxpercentage, 'assertcartstoretax_taxpercentage');
+            $this->assertNotNull($historyrecord->tax, 'assertcartstoretax_tax');
+        }
+    }
+
+    /**
+     * Assertion: The transaction should be valid.
+     */
+    public function assertcartstoretaxnull($managercache, $historyrecords): void {
+        foreach ($historyrecords as $historyrecord) {
+            $this->assertEquals((int)$historyrecord->taxpercentage, 0, 'assertcartstoretaxnull_taxpercentage');
+            $this->assertEquals((int)$historyrecord->tax, 0, 'assertcartstoretaxnull_tax');
+        }
+    }
 }
