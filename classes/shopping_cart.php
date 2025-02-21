@@ -623,7 +623,8 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
         $items = $cartstore->get_items();
-        $cartstore->set_expiration($expirationtime);
+        // When the currently used expiration time is higher than the one we want to set, we take the higher one.
+        $expirationtime = $cartstore->set_expiration($expirationtime);
 
         foreach ($items as $taskdata) {
             // We don't touch booking fee.
@@ -631,6 +632,10 @@ class shopping_cart {
             if ($taskdata['componentname'] === 'local_shpping_cart') {
                 continue;
             }
+
+            // We need to unset expiration time to make sure we don't recreate the tasks.
+            unset($taskdata['expirationtime']);
+
             $deleteitemtask = new delete_item_task();
             $deleteitemtask->set_userid($userid);
             $deleteitemtask->set_next_run_time($expirationtime);

@@ -89,6 +89,7 @@ class cartstore {
 
         $data = $this->get_cache();
         $expirationtime = shopping_cart::get_expirationtime();
+        $expirationtime = $this->set_expiration($expirationtime);
 
         $itemdata = $item->as_array();
         $itemdata['expirationtime'] = $expirationtime;
@@ -368,16 +369,26 @@ class cartstore {
     /**
      * Expirationtime.
      * @param int $expirationtime
-     * @return void
+     * @return int
      * @throws coding_exception
      */
     public function set_expiration(int $expirationtime) {
 
         $data = $this->get_cache();
 
-        $data['expirationtime'] = $expirationtime;
+        if (($data['expirationtime'] ?? 0) > $expirationtime) {
+            $expirationtime = $data['expirationtime'];
+        } else {
+            $data['expirationtime'] = $expirationtime;
+        }
+
+        foreach ($data['items'] ?? [] as $key => $item) {
+            $data['items'][$key]['expirationtime'] = $expirationtime;
+        }
 
         $this->set_cache($data);
+
+        return $expirationtime;
     }
 
     /**
