@@ -29,17 +29,7 @@ use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
-use OnlinePayments\Sdk\Domain\AmountOfMoney;
-use OnlinePayments\Sdk\Domain\CardInfo;
-use OnlinePayments\Sdk\Domain\CreatedPaymentOutput;
-use OnlinePayments\Sdk\Domain\CreateHostedCheckoutResponse;
-use OnlinePayments\Sdk\Domain\GetHostedCheckoutResponse;
-use OnlinePayments\Sdk\Domain\PaymentOutput;
-use OnlinePayments\Sdk\Domain\PaymentResponse;
-use OnlinePayments\Sdk\Domain\PaymentStatusOutput;
-use OnlinePayments\Sdk\Domain\RedirectPaymentMethodSpecificOutput;
 use paygw_payone\external\get_config_for_js;
-use paygw_payone\payone_sdk;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -47,6 +37,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/payment/gateway/payone/thirdparty/vendor/autoload.php');
+require_once($CFG->dirroot . '/local/shopping_cart/tests/checkout_process_test_setup.php');
 
 /**
  * Testing checkout in payment gateway paygw_payone
@@ -57,93 +48,7 @@ require_once($CFG->dirroot . '/payment/gateway/payone/thirdparty/vendor/autoload
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-final class checkout_process_test extends \advanced_testcase {
-    /** @var \core_payment\account account */
-    private $account;
-
-    /**
-     * Setup function.
-     */
-    protected function setUp(): void {
-        parent::setUp();
-        $this->resetAfterTest(true);
-        set_config('country', 'AT');
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_payment');
-        $this->account = $generator->create_payment_account(['name' => 'PayOne1']);
-
-        $record = new stdClass();
-        $record->accountid = $this->account->get('id');
-        $record->gateway = 'payone';
-        $record->enabled = 1;
-        $record->timecreated = time();
-        $record->timemodified = time();
-
-        $config = new stdClass();
-        $config->environment = 'sandbox';
-        // Load the credentials from Github.
-        $config->brandname = getenv('BRANDNAME') ?: 'fakename';
-        $config->clientid = getenv('CLIENTID') ?: 'fakeclientid';
-        $config->secret = getenv('PAYONE_SECRET') ?: 'fakesecret';
-
-        $record->config = json_encode($config);
-
-        $accountgateway1 = \core_payment\helper::save_payment_gateway($record);
-
-        // Mock responsedata from payment gateway
-        $responsedata = $this->createMock(CreateHostedCheckoutResponse::class);
-        $responsedata->method('getHostedCheckoutId')
-            ->willReturnCallback(function () {
-                return str_pad(rand(1000000000, 9999999999), 10, '0', STR_PAD_LEFT);
-            });
-        $responsedata->method('getRedirectUrl')->willReturn('https://payment.preprod.payone.com/hostedcheckout/PaymentMethods/');
-
-        $amoutofmoney = $this->createMock(AmountOfMoney::class);
-        $amoutofmoney->method('getAmount')->willReturn(4410);
-        $amoutofmoney->method('getCurrencyCode')->willReturn('EUR');
-
-        $statusoutput = $this->createMock(PaymentStatusOutput::class);
-        $statusoutput->method('getStatusCode')->willReturn('800.100.100');
-
-        $redirectspecificoutput = $this->createMock(RedirectPaymentMethodSpecificOutput::class);
-        $redirectspecificoutput->method('getPaymentProductId')->willReturn('VC');
-
-        // Mock orderdetails
-        $paymentoutput = $this->createMock(PaymentOutput::class);
-        $paymentoutput->method('getAmountOfMoney')->willReturn($amoutofmoney);
-        $paymentoutput->method('getRedirectPaymentMethodSpecificOutput')->willReturn($redirectspecificoutput);
-
-        $cardpaymentmethod = $this->createMock(CardInfo::class);
-        $cardpaymentmethod->method('getPaymentProductId')->willReturn('test_product_id');
-
-        $paymentresponse = $this->createMock(PaymentResponse::class);
-        $paymentresponse->method('getPaymentOutput')->willReturn($paymentoutput);
-        $paymentresponse->method('getStatusOutput')->willReturn($statusoutput);
-        $paymentresponse->method('getStatus')->willReturn('CAPTURED');
-
-        $createdpaymentoutput = $this->createMock(CreatedPaymentOutput::class);
-        $createdpaymentoutput->method('getPayment')->willReturn($paymentresponse);
-        $createdpaymentoutput->method('getPaymentStatusCategory')->willReturn('SUCCESSFUL');
-
-        $orderdetails = $this->createMock(GetHostedCheckoutResponse::class);
-        $orderdetails->method('getStatus')->willReturn('PAYMENT_CREATED');
-        $orderdetails->method('getCreatedPaymentOutput')->willReturn($createdpaymentoutput);
-
-        $sdkmock = $this->getMockBuilder(payone_sdk::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get_redirect_link_for_payment', 'check_status'])
-            ->getMock();
-
-        $sdkmock->method('get_redirect_link_for_payment')
-            ->willReturn($responsedata);
-
-        $sdkmock->method('check_status')
-            ->willReturn($orderdetails);
-
-        payone_sdk::$factory = function () use ($sdkmock) {
-            return $sdkmock;
-        };
-    }
-
+final class checkout_process_test extends \local_shopping_cart\checkout_process_test_setup {
     /**
      * Test transaction complete process
      *
@@ -178,8 +83,6 @@ final class checkout_process_test extends \advanced_testcase {
         $cartstore = cartstore::instance($student1->id);
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
-
-        // Everything above is setup.
 
         foreach ($config as $key => $value) {
             set_config($key, $value, 'local_shopping_cart');
