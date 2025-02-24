@@ -636,10 +636,17 @@ class shopping_cart {
             // We need to unset expiration time to make sure we don't recreate the tasks.
             unset($taskdata['expirationtime']);
 
+            $customdata = [
+                'itemid' => $taskdata['itemid'],
+                'userid' => $userid,
+                'componentname' => $taskdata['componentname'],
+                "area" => "option",
+            ];
+
             $deleteitemtask = new delete_item_task();
             $deleteitemtask->set_userid($userid);
             $deleteitemtask->set_next_run_time($expirationtime);
-            $deleteitemtask->set_custom_data($taskdata);
+            $deleteitemtask->set_custom_data($customdata);
             \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
         }
     }

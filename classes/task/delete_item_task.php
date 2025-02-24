@@ -72,6 +72,5 @@ class delete_item_task extends \core\task\adhoc_task {
 
         mtrace('Deleted item ' . $taskdata->itemid . ' in area "' . $taskdata->area .
             '" from ' . $taskdata->componentname . ' for user ' . $userid);
-
     }
 }
