@@ -69,7 +69,7 @@ class shopping_cart_credits extends checkout_base_item {
      * @return array
      *
      */
-    public function render_body($cachedata): array {
+    public static function render_body($cachedata): array {
         global $PAGE;
         $template = $PAGE->get_renderer('local_shopping_cart')
             ->render_from_template("local_shopping_cart/shopping_cart_credits", $cachedata);
@@ -87,7 +87,7 @@ class shopping_cart_credits extends checkout_base_item {
      * @return array
      *
      */
-    public function check_status(
+    public static function check_status(
         $managercachestep,
         $changedinput
     ): array {

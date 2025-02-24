@@ -75,7 +75,7 @@ class termsandconditions extends checkout_base_item {
      * @return array
      *
      */
-    public function render_body($cachedata): array {
+    public static function render_body($cachedata): array {
         global $PAGE;
 
         $data = [];
@@ -103,7 +103,7 @@ class termsandconditions extends checkout_base_item {
      * @return array
      *
      */
-    public function check_status(
+    public static function check_status(
         $managercachestep,
         $validationdata
     ): array {
@@ -125,7 +125,7 @@ class termsandconditions extends checkout_base_item {
      * @param array $validationdata
      * @return bool list of all required address keys
      */
-    public function is_valid($validationdata): bool {
+    public static function is_valid($validationdata): bool {
         foreach ($validationdata as $validationvalue) {
             if (
                 !isset($validationvalue->value) ||

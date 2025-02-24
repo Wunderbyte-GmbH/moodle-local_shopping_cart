@@ -61,7 +61,7 @@ class addresses extends checkout_base_item {
      * @param array $cachedata
      * @return array
      */
-    public function render_body($cachedata): array {
+    public static function render_body($cachedata): array {
         global $PAGE;
         $data = self::get_template_render_data();
         $data['required_addresses'] = self::set_data_from_cache(
@@ -104,7 +104,7 @@ class addresses extends checkout_base_item {
      *
      * @return array all required template data
      */
-    public function get_template_render_data(): array {
+    public static function get_template_render_data(): array {
         $data = self::get_user_data();
         $addressesfromdb = address_operations::get_all_user_addresses($data["userid"]);
         $countries = get_string_manager()->get_list_of_countries();
@@ -147,7 +147,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required addresses with a key and localized string
      */
-    public function get_required_address_data(): array {
+    public static function get_required_address_data(): array {
         $requiredaddresseslocalized = [];
         $requiredaddresskeys = self::get_required_address_keys();
         foreach ($requiredaddresskeys as $addresstype) {
@@ -186,7 +186,7 @@ class addresses extends checkout_base_item {
      * @return array list of all required address keys
      *
      */
-    public function check_status(
+    public static function check_status(
         $managercachestep,
         $validationdata
     ): array {
@@ -216,7 +216,7 @@ class addresses extends checkout_base_item {
      * @return bool
      *
      */
-    private function is_valid(
+    private static function is_valid(
         $requiredaddresskeys,
         $data
     ): bool {
@@ -226,7 +226,7 @@ class addresses extends checkout_base_item {
             $requiredkeys === $currentkeys &&
             self::is_address_valid($requiredaddresskeys)
         ) {
-            $cartstore = cartstore::instance($this->identifier);
+            $cartstore = cartstore::instance(self::$identifier);
 
             $cartstoredata = [];
             if (!empty($requiredaddresskeys["selectedaddress_billing"])) {
@@ -250,10 +250,10 @@ class addresses extends checkout_base_item {
      * @return bool
      *
      */
-    private function is_address_valid(
+    private static function is_address_valid(
         $requiredaddresskeys
     ): bool {
-        $addressesfromdb = address_operations::get_all_user_addresses($this->identifier);
+        $addressesfromdb = address_operations::get_all_user_addresses(self::$identifier);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
             if (!isset($addressesfromdb[$requiredaddresskey])) {
                 return false;

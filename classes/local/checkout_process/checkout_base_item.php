@@ -37,7 +37,7 @@ abstract class checkout_base_item {
      * Optional properties for the checkout manager.
      * @var string
      */
-    public $identifier;
+    public static $identifier;
 
     /**
      * Renders checkout item.
@@ -48,7 +48,7 @@ abstract class checkout_base_item {
     public function __construct(
         $identifier = null
     ) {
-        $this->identifier = $identifier;
+        self::$identifier = $identifier;
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class checkout_base_item {
      * @param array $cachedata
      * @return array
      */
-    public function render_body($cachedata): array {
+    public static function render_body($cachedata): array {
         return [];
     }
 
@@ -80,7 +80,7 @@ abstract class checkout_base_item {
      * Checks status of checkout item.
      * @return bool
      */
-    public function check(): bool {
+    public static function check(): bool {
         return true;
     }
 
@@ -96,7 +96,7 @@ abstract class checkout_base_item {
      * Checks status of checkout item.
      * @return string
      */
-    public function get_status_progress_bar(): string {
+    public static function get_status_progress_bar(): string {
         return 'inactive';
     }
 

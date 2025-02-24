@@ -68,7 +68,7 @@ class vatnrchecker extends checkout_base_item {
      * @return array
      *
      */
-    public function render_body($cachedata): array {
+    public static function render_body($cachedata): array {
         global $PAGE;
         $data = [];
         $data['countries'] = self::get_country_code_name();
@@ -148,7 +148,7 @@ class vatnrchecker extends checkout_base_item {
      * @return array
      *
      */
-    public function check_status(
+    public static function check_status(
         $managercachestep,
         $changedinput
     ): array {
@@ -162,7 +162,7 @@ class vatnrchecker extends checkout_base_item {
                     $changedinput['vatnumber']
                 );
 
-                $cartstore = cartstore::instance($this->identifier);
+                $cartstore = cartstore::instance(self::$identifier);
                 if ($vatnumbercheck) {
                     $cartstore->set_vatnr_data($changedinput['country'], $changedinput['vatnumber'], '', '', '');
                 } else if ($changedinput['country'] === "novatnr" || empty($changedinput['vatnumber'])) {
