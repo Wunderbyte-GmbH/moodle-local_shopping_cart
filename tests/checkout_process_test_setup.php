@@ -84,7 +84,6 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
         $accountgateway1 = \core_payment\helper::save_payment_gateway($record);
 
-        // Mock responsedata from payment gateway
         $responsedata = $this->createMock(CreateHostedCheckoutResponse::class);
         $responsedata->method('getHostedCheckoutId')
             ->willReturnCallback(function () {
@@ -102,7 +101,6 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
         $redirectspecificoutput = $this->createMock(RedirectPaymentMethodSpecificOutput::class);
         $redirectspecificoutput->method('getPaymentProductId')->willReturn('VC');
 
-        // Mock orderdetails
         $paymentoutput = $this->createMock(PaymentOutput::class);
         $paymentoutput->method('getAmountOfMoney')->willReturn($amoutofmoney);
         $paymentoutput->method('getRedirectPaymentMethodSpecificOutput')->willReturn($redirectspecificoutput);
@@ -164,6 +162,10 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $historyrecords
+     * @param object $cartstore
+     * @param int $userid
+     *
      */
     public function assertbalanceisnull($historyrecords, $cartstore, $userid): void {
         $balanceafter = shopping_cart_credits::get_balance($userid);
@@ -172,6 +174,9 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $historyrecords
+     * @param object $cartstore
+     * @param int $userid
      */
     public function assertbalanceisnotnull($historyrecords, $cartstore, $userid): void {
         $balanceafter = shopping_cart_credits::get_balance($userid);
@@ -180,6 +185,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $historyrecords
+     * @param object $cartstore
      */
     public function payedpriceisless($historyrecords, $cartstore): void {
         global $DB;
@@ -198,6 +205,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $historyrecords
+     * @param object $cartstore
      */
     public function payedpriceissame($historyrecords, $cartstore): void {
         global $DB;
@@ -216,6 +225,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertcartstorevatnumber($managercache, $historyrecords): void {
         foreach ($historyrecords as $historyrecord) {
@@ -226,6 +237,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertcartstorevatnumbernull($managercache, $historyrecords): void {
         foreach ($historyrecords as $historyrecord) {
@@ -236,6 +249,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertvalidcheckout($managercache, $historyrecords): void {
         $this->assertTrue($managercache['checkout_validation'], 'assertvalidcheckout');
@@ -250,6 +265,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertcartstoretax($managercache, $historyrecords): void {
         foreach ($historyrecords as $historyrecord) {
@@ -260,6 +277,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertcartstoretaxnull($managercache, $historyrecords): void {
         foreach ($historyrecords as $historyrecord) {
