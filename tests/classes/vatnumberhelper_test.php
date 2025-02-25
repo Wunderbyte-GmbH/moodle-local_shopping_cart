@@ -27,6 +27,7 @@ namespace local_shopping_cart\classes;
 
 use advanced_testcase;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
+use SoapClient;
 
 /**
  * Test for vatnumberhelper
@@ -35,11 +36,23 @@ use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
  */
 final class vatnumberhelper_test extends advanced_testcase {
     /**
+     * Soap Mock instance.
+     *
+     * @var object
+     */
+    protected object $soapmock;
+
+    /**
      * Set up the test environment.
      */
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
+        // Mock SoapClient.
+        $this->soapmock = $this->getMockBuilder(SoapClient::class)
+            ->setConstructorArgs(["https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"])
+            ->setMethods(['checkVat'])
+            ->getMock();
     }
 
     /**
@@ -58,7 +71,8 @@ final class vatnumberhelper_test extends advanced_testcase {
      * Test the check_vatnr_number method.
      */
     public function test_invalid_check_vatnr_number(): void {
-        $result = vatnumberhelper::check_vatnr_number('DE', '123456789');
+        $this->soapmock->method('checkVat')->willReturn(['valid' => false]);
+        $result = vatnumberhelper::check_vatnr_number('DE', '123456789', $this->soapmock);
         $this->assertFalse($result, 'Expected check_vatnr_number to return true for a valid VAT number.');
     }
 
@@ -66,7 +80,8 @@ final class vatnumberhelper_test extends advanced_testcase {
      * Test the check_vatnr_number method.
      */
     public function test_valid_check_vatnr_number(): void {
-        $result = vatnumberhelper::check_vatnr_number('AT', 'ATU74259768');
+        $this->soapmock->method('checkVat')->willReturn(['valid' => true]);
+        $result = vatnumberhelper::check_vatnr_number('AT', 'ATU74259768', $this->soapmock);
         $this->assertTrue($result, 'Expected check_vatnr_number to return true for a valid VAT number.');
     }
 

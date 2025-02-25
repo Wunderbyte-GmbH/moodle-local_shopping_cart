@@ -27,11 +27,31 @@ namespace local_shopping_cart;
 
 use local_shopping_cart\local\vatnrchecker;
 use PHPUnit\Framework\TestCase;
+use SoapClient;
 /**
  * Test for taxcategories
  * @covers \taxcategories
  */
 final class vatnrchecker_test extends TestCase {
+    /**
+     * Soap Mock instance.
+     *
+     * @var object
+     */
+    protected object $soapmock;
+
+    /**
+     * Tests set up.
+     */
+    public function setUp(): void {
+        parent::setUp();
+        // Mock SoapClient.
+        $this->soapmock = $this->getMockBuilder(SoapClient::class)
+            ->setConstructorArgs(["https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"])
+            ->setMethods(['checkVat'])
+            ->getMock();
+    }
+
     /**
      * Test vatnrchecker - invalid eu
      * @covers \vatnrchecker::check_vatnr_number
@@ -41,7 +61,9 @@ final class vatnrchecker_test extends TestCase {
         $countrycode = 'AT';
         $vatnrnumber = '123456789';
 
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber);
+        $this->soapmock->method('checkVat')->willReturn(['valid' => false]);
+
+        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber, $this->soapmock);
 
         $this->assertFalse($checkvatnr);
     }
@@ -55,7 +77,9 @@ final class vatnrchecker_test extends TestCase {
         $countrycode = 'AT';
         $vatnrnumber = 'U74259768';
 
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber);
+        $this->soapmock->method('checkVat')->willReturn(['valid' => true]);
+
+        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber, $this->soapmock);
 
         $this->assertTrue($checkvatnr);
     }
