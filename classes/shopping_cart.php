@@ -24,7 +24,9 @@
  */
 
 namespace local_shopping_cart;
+use core\task\manager;
 use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\local\taskmanager;
 use local_shopping_cart\output\shoppingcart_history_list;
 
 defined('MOODLE_INTERNAL') || die();
@@ -647,7 +649,12 @@ class shopping_cart {
             $deleteitemtask->set_userid($userid);
             $deleteitemtask->set_next_run_time($expirationtime);
             $deleteitemtask->set_custom_data($customdata);
-            \core\task\manager::reschedule_or_queue_adhoc_task($deleteitemtask);
+            $storedexpirationtime = taskmanager::reschedule_or_queue_adhoc_task_to_later($deleteitemtask);
+
+            // Here we check if we had a task scheduled for later.
+            if ($storedexpirationtime > $expirationtime) {
+                $expirationtime = $cartstore->set_expiration($storedexpirationtime);
+            }
         }
     }
 
