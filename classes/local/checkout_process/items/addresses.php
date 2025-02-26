@@ -253,7 +253,8 @@ class addresses extends checkout_base_item {
     private static function is_address_valid(
         $requiredaddresskeys
     ): bool {
-        $addressesfromdb = address_operations::get_all_user_addresses(self::$identifier);
+        $data = self::get_user_data();
+        $addressesfromdb = address_operations::get_all_user_addresses($data["userid"]);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
             if (!isset($addressesfromdb[$requiredaddresskey])) {
                 return false;
