@@ -128,5 +128,4 @@ final class addresses_test extends advanced_testcase {
         ];
         $this->assertFalse(addresses::is_valid($requiredkeys, $data), 'Expected is_valid to return false when a key is missing.');
     }
-
 }

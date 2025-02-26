@@ -171,7 +171,7 @@ class addresses extends checkout_base_item {
      *
      * @return array list of all required address keys
      */
-    private static function get_required_address_keys(): array {
+    public static function get_required_address_keys(): array {
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
         $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
         return $requiredaddresskeys;
@@ -216,7 +216,7 @@ class addresses extends checkout_base_item {
      * @return bool
      *
      */
-    private static function is_valid(
+    public static function is_valid(
         $requiredaddresskeys,
         $data
     ): bool {
