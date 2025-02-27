@@ -136,9 +136,11 @@ class addresses extends checkout_base_item {
     public static function get_user_data(): array {
         global $USER;
         return [
-            "usermail" => $USER->email ?? '',
-            "username" => $USER->firstname . $USER->lastname,
-            "userid" => $USER->id,
+            "userid" => $USER->id ?? 0,
+            "username" => $USER->username ?? '',
+            "firstname" => $USER->firstname ?? '',
+            "lastname" => $USER->lastname ?? '',
+            "email" => $USER->email ?? '',
         ];
     }
 

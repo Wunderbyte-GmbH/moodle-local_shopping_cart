@@ -33,10 +33,12 @@ class addresses {
      * @return array all required template data
      */
     public static function get_template_render_data(): array {
-        global $USER, $DB;
-        $userid = $USER->id;
-        $data["usermail"] = $USER->email;
-        $data["username"] = $USER->firstname . $USER->lastname;
+        global $USER;
+        $userid = $USER->id ?? 0;
+        $data["email"] = $USER->email ?? "";
+        $data["username"] = $USER->username ?? "";
+        $data["firstname"] = $USER->firstname ?? "";
+        $data["lastname"] = $USER->lastname ?? "";
         $data["userid"] = $userid;
 
         // Get saved addresses for current user.

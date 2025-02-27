@@ -82,18 +82,21 @@ final class addresses_test extends advanced_testcase {
     public function test_get_user_data(): void {
         global $USER;
         $USER = (object)[
-            'email' => 'test@example.com',
+            'userid' => 42,
+            'username' => 'johndoe',
             'firstname' => 'John',
             'lastname' => 'Doe',
-            'id' => 42,
+            'email' => 'test@example.com',
         ];
 
         $result = addresses::get_user_data();
 
         // Assertions.
-        $this->assertEquals('test@example.com', $result['usermail'], 'Expected usermail to match.');
-        $this->assertEquals('JohnDoe', $result['username'], 'Expected username to match.');
         $this->assertEquals(42, $result['userid'], 'Expected userid to match.');
+        $this->assertEquals('johndoe', $result['username'], 'Expected username to match.');
+        $this->assertEquals('John', $result['firstname'], 'Expected firstname to match.');
+        $this->assertEquals('Doe', $result['lastname'], 'Expected lastname to match.');
+        $this->assertEquals('test@example.com', $result['email'], 'Expected email to match.');
     }
 
     /**
