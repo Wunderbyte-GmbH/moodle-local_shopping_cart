@@ -82,7 +82,7 @@ final class addresses_test extends advanced_testcase {
     public function test_get_user_data(): void {
         global $USER;
         $USER = (object)[
-            'userid' => 42,
+            'id' => 42,
             'username' => 'johndoe',
             'firstname' => 'John',
             'lastname' => 'Doe',
