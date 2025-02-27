@@ -32,7 +32,6 @@ use templatable;
  * @package local_shopping_cart
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Render add to cart button
      *
@@ -53,5 +52,17 @@ class renderer extends plugin_renderer_base {
     public function render_history_card(templatable $data) {
         $data = $data->export_for_template($this);
         return $this->render_from_template('local_shopping_cart/history_card', $data);
+    }
+
+    /**
+     * Function to render userinfocard.
+     * @param templatable $data
+     * @return string|bool
+     */
+    public function render_userinfocard(templatable $data) {
+        $o = '';
+        $data = $data->export_for_template($this);
+        $o .= $this->render_from_template('local_shopping_cart/userinfocard', $data);
+        return $o;
     }
 }

@@ -694,6 +694,7 @@ $string['useraddeditem'] = 'User with the userid {$a->userid} added item {$a->it
 $string['userboughtitem'] = 'User with the userid {$a->userid} bought item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userdeleteditem'] = 'User with the userid {$a->userid} deleted item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['userid'] = 'Userid';
+$string['userinfocard'] = 'Show user information';
 $string['usermodified'] = 'Modified by';
 $string['usernotboughtitem'] = 'User with the userid {$a->userid} could not buy item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid}';
 $string['usevatnr'] = "Enter VAT number";

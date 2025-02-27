@@ -625,6 +625,7 @@ $string['useraddeditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->i
 $string['userboughtitem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gekauft';
 $string['userdeleteditem'] = 'Nutzer/in mit der id {$a->userid} hat Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} gelöscht';
 $string['userid'] = 'Nutzer:in id';
+$string['userinfocard'] = 'Zeige Nutzer:innen-Informationen';
 $string['usermodified'] = 'Bearbeitet von';
 $string['usernotboughtitem'] = 'Nutzer/in mit der id {$a->userid} konnte den Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} nicht kaufen';
 $string['usevatnr'] = "UID eingeben";

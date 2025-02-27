@@ -32,4 +32,14 @@ $shortcodes = [
         'wraps' => false,
         'description' => 'shoppingcarthistory',
     ],
+    'userinfocard' => [
+        'callback' => 'local_shopping_cart\shortcodes::userinfocard',
+        'wraps' => false,
+        'description' => 'userinfocard',
+    ],
+    'userinformation' => [
+        'callback' => 'local_shopping_cart\shortcodes::userinfocard',
+        'wraps' => false,
+        'description' => 'userinfocard',
+    ],
 ];
