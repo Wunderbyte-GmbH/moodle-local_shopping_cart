@@ -32,14 +32,18 @@ $shortcodes = [
         'wraps' => false,
         'description' => 'shoppingcarthistory',
     ],
-    'userinfocard' => [
-        'callback' => 'local_shopping_cart\shortcodes::userinfocard',
-        'wraps' => false,
-        'description' => 'userinfocard',
-    ],
-    'userinformation' => [
-        'callback' => 'local_shopping_cart\shortcodes::userinfocard',
-        'wraps' => false,
-        'description' => 'userinfocard',
-    ],
 ];
+
+// Define aliases for user information card.
+$userinfoaliases = [
+    'userinfocard',
+    'userinformation',
+    'userinfo',
+];
+foreach ($userinfoaliases as $alias) {
+    $shortcodes[$alias] = [
+        'callback' => 'local_shopping_cart\shortcodes::userinfocard',
+        'wraps' => false,
+        'description' => 'userinfocard',
+    ];
+}
