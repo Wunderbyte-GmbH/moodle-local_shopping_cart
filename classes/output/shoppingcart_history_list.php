@@ -231,21 +231,26 @@ class shoppingcart_history_list implements renderable, templatable {
                         ];
                     }
                 }
-                // If it was canceled, we might have an identifier for the canceled item.
-                $canceledidentifier = $DB->get_field_sql(
-                    "SELECT identifier
-                       FROM {local_shopping_cart_ledger}
-                      WHERE schistoryid = :schistoryid
-                        AND identifier <> :identifier
-                        AND identifier IS NOT NULL
-                        AND paymentstatus = :paymentstatus
-                      LIMIT 1",
-                    [
-                        'schistoryid' => $schistoryid,
-                        'identifier' => $item->identifier,
-                        'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
-                    ]
-                );
+                if ($item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED) {
+                    // If it was canceled, we might have an identifier for the canceled item.
+                    $canceledidentifier = $DB->get_field_sql(
+                        "SELECT identifier
+                        FROM {local_shopping_cart_ledger}
+                        WHERE schistoryid = :schistoryid
+                            AND identifier <> :identifier
+                            AND identifier IS NOT NULL
+                            AND paymentstatus = :paymentstatus
+                        LIMIT 1",
+                        [
+                            'schistoryid' => $schistoryid,
+                            'identifier' => $item->identifier,
+                            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+                        ]
+                    );
+                } else {
+                    $canceledidentifier = null;
+                }
+
                 if (!empty($canceledidentifier)) {
                     $item->cancelconfirmation = [
                         'identifier' => $canceledidentifier,
