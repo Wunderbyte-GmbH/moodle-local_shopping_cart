@@ -168,6 +168,10 @@ $checkoutmanager = new checkout_manager($data);
 
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);
+
+// Use paymentarea main instead of empty.
+$data['area'] = 'main';
+
 if (empty($jsononly)) {
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
