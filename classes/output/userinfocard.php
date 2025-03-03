@@ -43,7 +43,8 @@ class userinfocard implements renderable, templatable {
     /**
      * Constructor.
      *
-     * @param integer $userid
+     * @param int $userid
+     * @param string $fields
      */
     public function __construct(int $userid, string $fields) {
 

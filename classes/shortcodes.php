@@ -118,7 +118,8 @@ class shortcodes {
 
     /**
      * Helper function to remove quotation marks from args.
-     * @param array &$args reference to arguments array
+     *
+     * @param array $args reference to arguments array
      */
     private static function fix_args(array &$args) {
         foreach ($args as $key => &$value) {
