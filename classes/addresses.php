@@ -99,7 +99,7 @@ class addresses {
      * @return string|null the address in a single line string, or false if no matching address was found
      */
     public static function get_address_string_for_user(int $userid, int $addressid): ?string {
-        $address = address_operations::get_specific_user_addresses($addressid);
+        $address = address_operations::get_specific_user_address($addressid);
         if ($address) {
             $countries = get_string_manager()->get_list_of_countries();
             return $address->address . trim(" " . $address->address2) . ", " . $address->zip . " " . $address->city . ", " .

@@ -34,11 +34,6 @@ namespace local_shopping_cart\local\checkout_process\items_helper;
  */
 class address_operations {
     /**
-     * Database table name for all addresses.
-     */
-    private const DATABASE_TABLE = 'local_shopping_cart_address';
-
-    /**
      * Saves a new Address in the database for the current $USER.
      *
      * @param object $address the already validated address data from the form
@@ -49,7 +44,7 @@ class address_operations {
         $address->address2 = $record->address2 ?? '';
         $address->phone = $record->phone ?? '';
         $address->userid = $USER->id;
-        return $DB->insert_record(self::DATABASE_TABLE, $address, true);
+        return $DB->insert_record('local_shopping_cart_address', $address, true);
     }
 
     /**
@@ -59,7 +54,7 @@ class address_operations {
      */
     public static function delete_user_address(int $addressid) {
         global $DB;
-        return $DB->delete_records(self::DATABASE_TABLE, ['id' => $addressid]);
+        return $DB->delete_records('local_shopping_cart_address', ['id' => $addressid]);
     }
 
     /**
@@ -67,11 +62,11 @@ class address_operations {
      * @param int $addressid
      * @return mixed
      */
-    public static function get_specific_user_addresses(int $addressid): object {
+    public static function get_specific_user_address(int $addressid): object {
         global $DB;
         $sql = "SELECT *
-                FROM {" . self::DATABASE_TABLE . "}
-                WHERE id=:addressid
+                FROM {local_shopping_cart_address}
+                WHERE id = :addressid
                 ORDER BY id DESC";
 
         $params = ['addressid' => $addressid];
@@ -86,8 +81,8 @@ class address_operations {
     public static function get_all_user_addresses(int $userid): array {
         global $DB;
         $sql = "SELECT *
-                FROM {" . self::DATABASE_TABLE . "}
-                WHERE userid=:userid
+                FROM {local_shopping_cart_address}
+                WHERE userid = :userid
                 ORDER BY id DESC";
 
         $params = ['userid' => $userid];

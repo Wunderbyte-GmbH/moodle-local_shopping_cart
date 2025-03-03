@@ -145,7 +145,7 @@ foreach ($requiredaddresskeys as $addresstype) {
         $addressid = "";
     }
     if ($addressid && !empty(trim($addressid)) && is_numeric($addressid)) {
-        $address = address_operations::get_specific_user_addresses($addressid);
+        $address = address_operations::get_specific_user_address($addressid);
         if ($address !== false) {
             $address->label = ucfirst($requriedaddresses[$addresstype]['addresslabel']);
             $address->country = $countries[$address->state];

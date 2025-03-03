@@ -129,9 +129,9 @@ class addresses extends checkout_base_item {
     }
 
     /**
-     * Generates complete required-address data as specified by the plugin config.
+     * Get some data of current user.
      *
-     * @return array list of all required addresses with a key and localized string
+     * @return array array containing user data
      */
     public static function get_user_data(): array {
         global $USER;
