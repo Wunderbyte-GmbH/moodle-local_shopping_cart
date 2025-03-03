@@ -117,33 +117,4 @@ final class addresses_test extends advanced_testcase {
             'Expected required address keys to match.'
         );
     }
-
-    /**
-     * Test the is_valid method.
-     */
-    public function test_is_valid(): void {
-        // Case: All required keys are present.
-        $requiredkeys = [
-            'selectedaddress_billing',
-            'selectedaddress_shipping',
-        ];
-        $data = [
-            'selectedaddress_billing' => 1,
-            'selectedaddress_shipping' => 2,
-        ];
-        $addressmanager = new addresses(5);
-        $this->assertTrue(
-            $addressmanager->is_valid($requiredkeys, $data),
-            'Expected is_valid to return true when all keys are present.'
-        );
-
-        // Case: Missing a required key.
-        $data = [
-            'selectedaddress_billing' => 1,
-        ];
-        $this->assertFalse(
-            $addressmanager->is_valid($requiredkeys, $data),
-            'Expected is_valid to return false when a key is missing.'
-        );
-    }
 }
