@@ -140,5 +140,4 @@ final class vatnrchecker_test extends advanced_testcase {
         $result = vatnrchecker::get_error_feedback();
         $this->assertIsString($result, 'Expected error feedback to be a string.');
     }
-
 }

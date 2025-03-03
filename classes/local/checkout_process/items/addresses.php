@@ -188,7 +188,7 @@ class addresses extends checkout_base_item {
      * @return array list of all required address keys
      *
      */
-    public static function check_status(
+    public function check_status(
         $managercachestep,
         $validationdata
     ): array {
@@ -218,7 +218,7 @@ class addresses extends checkout_base_item {
      * @return bool
      *
      */
-    public static function is_valid(
+    public function is_valid(
         $requiredaddresskeys,
         $data
     ): bool {
@@ -226,7 +226,7 @@ class addresses extends checkout_base_item {
         $currentkeys = count($data);
         if (
             $requiredkeys === $currentkeys &&
-            self::is_address_valid($requiredaddresskeys)
+            $this->is_address_valid($requiredaddresskeys)
         ) {
             $cartstore = cartstore::instance(self::$identifier);
 
