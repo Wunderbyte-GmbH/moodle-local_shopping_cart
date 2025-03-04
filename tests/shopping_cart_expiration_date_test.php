@@ -47,6 +47,9 @@ global $CFG;
  * @category   test
  * @copyright  2024 Wunderbyte Gmbh <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @runInSeparateProcess
+ * @runTestsInSeparateProcesses
  */
 final class shopping_cart_expiration_date_test extends \advanced_testcase {
     /** @var \core_payment\account account */
@@ -90,6 +93,7 @@ final class shopping_cart_expiration_date_test extends \advanced_testcase {
      * @covers \local_shopping_cart\gateway
      * @covers \local_shopping_cart\payment\service_provider::get_payable()
      * @throws \coding_exception
+     *
      */
     public function test_add_item_set_expiration_date_delete_item_task(): void {
         global $DB, $CFG;
