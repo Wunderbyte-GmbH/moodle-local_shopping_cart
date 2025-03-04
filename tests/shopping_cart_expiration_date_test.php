@@ -97,6 +97,8 @@ final class shopping_cart_expiration_date_test extends \advanced_testcase {
         // Create users.
         $student1 = $this->getDataGenerator()->create_user();
         $this->setUser($student1);
+        // Clean cart for user.
+        shopping_cart::delete_all_items_from_cart($student1->id);
         // Validate payment account if it has a config.
         $record1 = $DB->get_record('payment_accounts', ['id' => $this->account->get('id')]);
         $this->assertEquals('PayOne1', $record1->name);
