@@ -180,19 +180,19 @@ const initVATNRChecker = () => {
 
 };
 
-export const buttoninit = (itemid, component, area) => {
+export const buttoninit = (itemid, component, area, userid) => {
 
     // If we don't have an itemid, we need to look for all the buttons.
-    if (!itemid || !component || !area) {
+    if (!itemid || !component || !area || userid === undefined) {
         const selector = '[data-objecttable="local_shopping_cart"';
         const allbuttons = document.querySelectorAll(
             selector);
-
         allbuttons.forEach(button => {
             const itemid = button.dataset.itemid;
             const area = button.dataset.area;
             const component = button.dataset.component;
-            buttoninit(itemid, component, area);
+            let userid = button.dataset.userid?.trim() ? button.dataset.userid : 0;
+            buttoninit(itemid, component, area, userid);
         });
         return;
     }
@@ -238,7 +238,7 @@ export const buttoninit = (itemid, component, area) => {
             } else {
                 // Event.preventDefault();
                 // Event.stopPropagation();
-                addItem(itemid, component, area);
+                addItem(itemid, component, area, userid);
             }
         });
     });
@@ -252,8 +252,6 @@ export const buttoninit = (itemid, component, area) => {
  * @param {*} userid
  */
 export const reinit = (userid = 0) => {
-
-    userid = transformUserIdForCashier(userid);
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
@@ -374,8 +372,6 @@ export const deleteAllItems = (userid = 0) => {
 
 export const deleteItem = (itemid, component, area, userid) => {
 
-    userid = transformUserIdForCashier(userid);
-
     Ajax.call([{
         methodname: "local_shopping_cart_delete_item",
         args: {
@@ -415,9 +411,7 @@ export const deleteItem = (itemid, component, area, userid) => {
     }]);
 };
 
-export const addItem = (itemid, component, area) => {
-
-    let userid = transformUserIdForCashier();
+export const addItem = (itemid, component, area, userid) => {
 
     if (!Number.isInteger(userid)) {
         userid = parseInt(userid);
@@ -984,28 +978,6 @@ export function initPriceLabel(userid) {
 
         });
     }
-}
-
-/**
- * We need to know if we are on the cashier page to transform userid if necessary.
- * @param {integer} userid
- * @returns {integer}
- */
-function transformUserIdForCashier(userid = null) {
-
-    const oncashier = window.location.href.indexOf("cashier.php");
-
-    if ((userid == CASHIERUSER || !(userid === 0 || userid === "0")) && oncashier > 0) {
-        userid = CASHIERUSER;
-    } else if (userid === null) {
-        userid = 0;
-    }
-
-    if (!Number.isInteger(userid)) {
-        userid = parseInt(userid);
-    }
-
-    return userid;
 }
 
 /**
