@@ -1,3 +1,65 @@
+## Version 0.9.56 (2025030400)
+* Improvement: userinfocard now supports aliases userinfo and userinformation.
+* Improvement: Add payment area to shopping cart.
+* Improvement: Userinfocard shortcode for shopping cart.
+* Bugfix: Global $USER uses id (not userid).
+* Bugfix: Fix get_user_data and test.
+* Bugfix: Fix tests for Moodle 4.2.
+* Bugfix: No button for cancel confirmation if only one item in cart was cancelled.
+* Bugfix: Make sure that delete_item task is only scheduled backwards and cart expiration time is set accordingly.
+* Test: delete redundant test.
+* Test: Next step to fix address tests, but still not working.
+* Test: add mocking of soap client to the tests.
+
+## Version 0.9.55 (2025021700)
+* Improvement: use modal factory checkout manager.
+* Improvement: apply taxes if owncountry.
+* Bugfix: Display credit bookings correctly even when tax is enabled.
+* Bugfix: Make sure combination of vat & taxes is applied correctly.
+* Bugfix: Avoid error on empty itemlist.
+* Bugfix: Fix some errors in vat checker.
+* Bugfix: use cartstore cache for saving values for tax & vat calculation.
+* Bugfix: fix option values external classes.
+* Bugfix: Add addresses to ledger in all cases.
+* Bugfix: Add missing params variable when creating invoice.
+* Bugfix: zero price is correctly attached when switching between prepages.
+* Bugfix: Fix reload_history webservice by making properties optional.
+* Test: finalize behat adjustments to the new UI.
+* Test: adjust behat (delays).
+* Test: adjust betah to updated UI of vatnr form.
+* Test: an attempt to adjust shopping_cart_taxes_VAT_addresses.feature to the UI changes.
+* Test: an attempt to fix behat in the shopping_cart_taxes_VAT.feature.
+
+## Version 0.9.54 (2025021102)
+* Improvement: strings localized, mandatory icon.
+* Improvement: Clean checkout template.
+* Improvement: deselect address after deleting.
+* Improvement: Show terms and conditions optionally.
+* Improvement: Delete address.
+* Improvement: Refactored class structure.
+* Improvement: Body process implementation.
+* Improvement: Add missing language string for cachedef.
+* Improvement: vatnrchecker get cached data.
+* Improvement: Cache address data.
+* Improvement: vat nr checker update.
+* Improvement: New item setup.
+* Bugfix: No error on empty item_list.
+* Bugfix: Render checkout manager page when not address is there.
+* Bugfix: checkout button, render order.
+* Bugfix: only with vat number setting.
+* Bugfix: Avoid missing userid message when only showing success.
+* Bugfix: Don't use $componentname when it's not defined.
+* Bugfix: Make sure that task delete_item is not duplicated involuntarily.
+* Bugfix: Don't delete items by duplicated task when we extend expiration time.
+* Bugfix: Fix return value for verify purchase.
+* Bugfix: Fix sorting of shopping cart history items on cashier.php.
+* Bugfix: Don't apply usercredit when input was changed in last moment.
+* Bugfix: Show correct items in checkout page.
+* Test: setup test environment.
+
+## Version 0.9.53 (2025021100)
+* Bugfix: Show correct items in checkout page.
+
 ## Version 0.9.52 (2025020700)
 * Improvement: Improvement: Add setting to always return status 1 in verify purchase
 * Improvement: Add credit changes to shopping cart history for individual users #125
