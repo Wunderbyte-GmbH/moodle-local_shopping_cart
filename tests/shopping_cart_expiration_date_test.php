@@ -48,7 +48,7 @@ global $CFG;
  * @copyright  2024 Wunderbyte Gmbh <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class shopping_cart_expiration_date extends \advanced_testcase {
+final class shopping_cart_expiration_date_test extends \advanced_testcase {
     /** @var \core_payment\account account */
     private $account;
 
@@ -130,7 +130,7 @@ final class shopping_cart_expiration_date extends \advanced_testcase {
         $tasks = $DB->get_records('task_adhoc', ['classname' => '\local_shopping_cart\task\delete_item_task']);
         $this->assertEquals(2, count($tasks));
 
-        // With this code, we instantiate the checkout for this user:
+        // With this code, we instantiate the checkout for this user.
         $cartstore = cartstore::instance($student1->id);
         $data = $cartstore->get_localized_data();
 
@@ -146,7 +146,7 @@ final class shopping_cart_expiration_date extends \advanced_testcase {
         $historyrecords = $DB->get_records('local_shopping_cart_history');
         $this->assertEquals(0, count($historyrecords));
 
-        // With this code, we instantiate the checkout for this user:
+        // With this code, we instantiate the checkout for this user.
         $cartstore = cartstore::instance($student1->id);
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
