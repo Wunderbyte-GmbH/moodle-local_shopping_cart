@@ -706,7 +706,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024120201, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2025030401) {
+    if ($oldversion < 2025030500) {
 
         // Define table local_shopping_cart_reservations to be created.
         $table = new xmldb_table('local_shopping_cart_reservations');
@@ -729,7 +729,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2025030401, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2025030500, 'local', 'shopping_cart');
     }
 
 
