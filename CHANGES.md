@@ -1,3 +1,6 @@
+## Version 0.9.58 (2025030501)
+* Bugfix: Add new reservations table for persistant cart
+
 ## Version 0.9.57 (2025030500)
 * Bugfix: Make sure userid is applied correctly for cashier checkout.
 

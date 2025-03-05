@@ -706,12 +706,12 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024120201, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2025030500) {
+    if ($oldversion < 2025030501) {
 
-        // Define table local_shopping_cart_reservations to be created.
-        $table = new xmldb_table('local_shopping_cart_reservations');
+        // Define table local_shopping_cart_reserv to be created.
+        $table = new xmldb_table('local_shopping_cart_reserv');
 
-        // Adding fields to table local_shopping_cart_reservations.
+        // Adding fields to table local_shopping_cart_reserv.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null);
@@ -720,16 +720,16 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
-        // Adding keys to table local_shopping_cart_reservations.
+        // Adding keys to table local_shopping_cart_reserv.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
-        // Conditionally launch create table for local_shopping_cart_reservations.
+        // Conditionally launch create table for local_shopping_cart_reserv.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2025030500, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2025030501, 'local', 'shopping_cart');
     }
 
 

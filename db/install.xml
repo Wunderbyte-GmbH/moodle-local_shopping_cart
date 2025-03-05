@@ -181,7 +181,7 @@
                 <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Userid who added address"/>
             </INDEXES>
         </TABLE>
-        <TABLE NAME="local_shopping_cart_reservations" COMMENT="This table holds temporary reservations to reestablish in case we lose the cache.">
+        <TABLE NAME="local_shopping_cart_reserv" COMMENT="This table holds temporary reservations to reestablish in case we lose the cache.">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

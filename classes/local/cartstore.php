@@ -318,7 +318,7 @@ class cartstore {
 
         if (
             $record = $DB->get_record(
-                'local_shopping_cart_reservations',
+                'local_shopping_cart_reserv',
                 [
                     'userid' => $data['userid'],
                 ]
@@ -327,10 +327,10 @@ class cartstore {
             $record->json = json_encode($data);
             $record->usermodified = $USER->id;
             $record->expirationtime = $data['expirationtime'];
-            $DB->update_record('local_shopping_cart_reservations', $record);
+            $DB->update_record('local_shopping_cart_reserv', $record);
         } else {
             $DB->insert_record(
-                'local_shopping_cart_reservations',
+                'local_shopping_cart_reserv',
                 [
                     'userid' => $data['userid'],
                     'json' => json_encode($data),
@@ -354,7 +354,7 @@ class cartstore {
         global $DB;
 
         return $DB->delete_records(
-            'local_shopping_cart_reservations',
+            'local_shopping_cart_reserv',
             [
                 'userid' => $this->userid,
             ]
@@ -375,7 +375,7 @@ class cartstore {
 
         if (
             $json = $DB->get_field(
-                'local_shopping_cart_reservations',
+                'local_shopping_cart_reserv',
                 'json',
                 [
                     'userid' => $this->userid,
