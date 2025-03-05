@@ -100,6 +100,10 @@ class modal_modify_time_of_deletion_task extends dynamic_form {
 
         shopping_cart::add_or_reschedule_addhoc_tasks($data->taskdeletiontimestamp, $userid);
 
+        // We need to set these items permanently.
+        $cartstore = cartstore::instance($userid);
+        $cartstore->save_cart_to_db();
+
         return $data;
     }
 

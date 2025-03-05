@@ -145,6 +145,7 @@ class cartstore {
                     $data['expirationtime'] = 0;
                     unset($data['paymentaccountid']);
                     unset($data['costcenter']);
+                    $this->delete_saved_items_from_db();
                 }
                 $this->set_cache($data);
             }
@@ -285,7 +286,8 @@ class cartstore {
      * @throws coding_exception
      */
     public function save_item(
-        array $item) {
+        array $item
+    ) {
 
         $data = $this->get_cache();
 
@@ -298,6 +300,95 @@ class cartstore {
             }
         }
         return false;
+    }
+
+    /**
+     * This function saves items in DB.
+     *
+     * @return [type]
+     *
+     */
+    public function save_cart_to_db() {
+
+        global $DB, $USER;
+
+        $data = $this->get_cache();
+
+        $now = time();
+
+        if (
+            $record = $DB->get_record(
+                'local_shopping_cart_reservations',
+                [
+                    'userid' => $data['userid'],
+                ]
+            )
+        ) {
+            $record->json = json_encode($data);
+            $record->usermodified = $USER->id;
+            $record->expirationtime = $data['expirationtime'];
+            $DB->update_record('local_shopping_cart_reservations', $record);
+        } else {
+            $DB->insert_record(
+                'local_shopping_cart_reservations',
+                [
+                    'userid' => $data['userid'],
+                    'json' => json_encode($data),
+                    'expirationtime' => $data['expirationtime'],
+                    'usermodified' => $USER->id,
+                    'timecreated' => $now,
+                    'timemodified' => $now,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Is called when cart is empty to make sure that there is no saved item either.
+     *
+     * @return bool
+     *
+     */
+    public function delete_saved_items_from_db() {
+
+        global $DB;
+
+        return $DB->delete_records(
+            'local_shopping_cart_reservations',
+            [
+                'userid' => $this->userid,
+            ]
+        );
+    }
+
+    /**
+     * This function saves items in DB.
+     *
+     * @return bool
+     *
+     */
+    public function restore_cart_from_db() {
+
+        global $DB, $USER;
+
+        $now = time();
+
+        if (
+            $json = $DB->get_field(
+                'local_shopping_cart_reservations',
+                'json',
+                [
+                    'userid' => $this->userid,
+                ]
+            )
+        ) {
+            $data = json_decode($json, true);
+            $data['nowdate'] = $now;
+            $this->set_cache($data);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -321,6 +412,7 @@ class cartstore {
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
                 $this->set_cache($data);
+                $this->delete_saved_items_from_db();
             }
         }
     }
@@ -744,31 +836,35 @@ class cartstore {
         $cachedata = $cache->get($cachekey);
 
         if (empty($cachedata)) {
-            $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
-            $usecredit = 1;
+            if (!$this->restore_cart_from_db()) {
+                $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
+                $usecredit = 1;
 
-            [$credit, $currency] = shopping_cart_credits::get_balance($this->userid);
+                [$credit, $currency] = shopping_cart_credits::get_balance($this->userid);
 
-            $cachedata = [
-                'userid' => $this->userid,
-                'credit' => $credit,
-                'remainingcredit' => $credit,
-                'currency' => $currency,
-                'count' => 0,
-                'maxitems' => get_config('local_shopping_cart', 'maxitems'),
-                'items' => [],
-                'price' => 0.00,
-                'taxesenabled' => $taxesenabled,
-                'initialtotal' => 0.00,
-                'deductible' => 0.00,
-                'checkboxid' => bin2hex(random_bytes(3)),
-                'usecredit' => $usecredit,
-                'useinstallments' => 0,
-                'expirationtime' => 0,
-                'nowdate' => time(),
-                'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
-            ];
-            $this->set_cache($cachedata);
+                $cachedata = [
+                    'userid' => $this->userid,
+                    'credit' => $credit,
+                    'remainingcredit' => $credit,
+                    'currency' => $currency,
+                    'count' => 0,
+                    'maxitems' => get_config('local_shopping_cart', 'maxitems'),
+                    'items' => [],
+                    'price' => 0.00,
+                    'taxesenabled' => $taxesenabled,
+                    'initialtotal' => 0.00,
+                    'deductible' => 0.00,
+                    'checkboxid' => bin2hex(random_bytes(3)),
+                    'usecredit' => $usecredit,
+                    'useinstallments' => 0,
+                    'expirationtime' => 0,
+                    'nowdate' => time(),
+                    'checkouturl' => $CFG->wwwroot . "/local/shopping_cart/checkout.php",
+                ];
+                $this->set_cache($cachedata);
+            } else {
+                $cachedata = $this->get_cache();
+            }
         }
         $this->cachedata = $cachedata;
         return $cachedata;
