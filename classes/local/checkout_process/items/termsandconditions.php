@@ -79,8 +79,12 @@ class termsandconditions extends checkout_base_item {
         global $PAGE;
 
         $data = [];
-        if (get_config('local_shopping_cart', 'accepttermsandconditions')) {
-            $data['termsandconditions'] = get_config('local_shopping_cart', 'termsandconditions');
+        $termsandconditions = get_config('local_shopping_cart', 'termsandconditions');
+        if (
+            get_config('local_shopping_cart', 'accepttermsandconditions')
+            && !empty(trim(strip_tags($termsandconditions)))
+        ) {
+            $data['termsandconditions'] = $termsandconditions;
         }
         if (get_config('local_shopping_cart', 'acceptadditionalconditions')) {
             $data['additionalconditions'] = get_config('local_shopping_cart', 'additionalconditions');
