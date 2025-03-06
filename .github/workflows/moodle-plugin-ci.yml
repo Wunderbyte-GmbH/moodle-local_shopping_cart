@@ -152,14 +152,23 @@ jobs:
         ## Run --dump to get faild page HTML in the output stream
         ## run: moodle-plugin-ci behat --profile chrome --dump
 
-#      - name: Upload Behat Faildump
-#        if: ${{ failure() }}
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: Behat Faildump (${{ join(matrix.*, ', ') }})
-#          path: ${{ github.workspace }}/moodledata/behat_dump
-#          retention-days: 2
-#          if-no-files-found: ignore
+
+      - name: Prepare Behat Faildump for upload
+        if: ${{ failure() }}
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+        run: |
+          # We don't need to copy anything as we'll upload directly from the source
+          # Just ensuring the directory exists for the upload step
+          mkdir -p ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodledata/behat_dump
+
+      - name: Upload Behat Faildump
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Behat-Faildump-${{ matrix.php }}-${{ matrix.database }}-${{ matrix.moodle-branch }}
+          path: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodledata/behat_dump
+          retention-days: 2
+          if-no-files-found: ignore
 
       # Inwoke remote SSH connection if necessary
       #- name: Setup tmate session
