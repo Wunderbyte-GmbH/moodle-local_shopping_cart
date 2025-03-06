@@ -155,7 +155,6 @@ jobs:
         ## run: moodle-plugin-ci behat --profile chrome --dump
 
       - name: Upload Behat Faildump
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
