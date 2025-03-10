@@ -51,7 +51,6 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cartstore {
-
     /** @var array */
     protected static $instance = [];
 
@@ -219,8 +218,10 @@ class cartstore {
             }
             $item['discount'] = $absolute;
             // If setting to round discounts is turned on, we round to full int.
-            $item['discount'] = round($item['discount'],
-                    $discountprecision);
+            $item['discount'] = round(
+                $item['discount'],
+                $discountprecision
+            );
             $item['price'] =
                     $initialprice - $item['discount'];
         } else {
@@ -525,7 +526,6 @@ class cartstore {
         $cache = \cache::make('local_shopping_cart', 'schistory');
         // If there is a schistory cache...
         if ($data = $cache->get('schistorycache')) {
-
             $identifier = $data['identifier'];
             // We need to replace it.
             $data = $this->get_data();
@@ -561,8 +561,11 @@ class cartstore {
         $data = self::get_cache();
 
         // If we have cachedrawdata, we need to check the expiration date.
-        if (isset($data['expirationtime']) && !is_null($data['expirationtime'])
-                    && $data['expirationtime'] < time()) {
+        if (
+            isset($data['expirationtime'])
+            && !is_null($data['expirationtime'])
+            && $data['expirationtime'] < time()
+        ) {
                 self::delete_all_items();
                 $data = self::get_cache();
         }
@@ -776,8 +779,10 @@ class cartstore {
 
         $items = $this->get_items();
         foreach ($items as $item) {
-            if (($item['area'] === 'rebookitem')
-                && ($item['componentname'] === 'local_shopping_cart') ) {
+            if (
+                ($item['area'] === 'rebookitem')
+                && ($item['componentname'] === 'local_shopping_cart')
+            ) {
                 return true;
             }
         }
@@ -875,7 +880,6 @@ class cartstore {
             $now = time();
 
             foreach ($openinstallements as $openinstallment) {
-
                 if (strpos($openinstallment['area'], 'installment') === false) {
                     continue;
                 }
@@ -928,16 +932,16 @@ class cartstore {
         $data = $this->get_cache();
 
         foreach ($data['items'] as $item) {
-
             if ($item['componentname'] !== $component) {
                 continue;
             }
 
             $identifierarray = explode('_', $item['linkeditem'] ?? '');
 
-            if (($area != $identifierarray[0] ?? '')
-                || ($itemid != $identifierarray[1] ?? 0)) {
-
+            if (
+                ($area != $identifierarray[0] ?? '')
+                || ($itemid != $identifierarray[1] ?? 0)
+            ) {
                 continue;
             }
             $returnarray[] = $item;
