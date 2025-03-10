@@ -1144,6 +1144,12 @@ class shopping_cart {
                     && $cancelationfeesettings > 0
                 ) {
                     $customcredit -= $cancelationfeesettings;
+                }
+
+                if (
+                    get_config('local_shopping_cart', 'calculateconsumation')
+                    || get_config('local_shopping_cart', 'calculateconsumationfixedpercentage') > 0
+                ) {
                     $applygivenquota = 1;
                 }
             }
