@@ -148,22 +148,34 @@ final class shopping_cart_cache_test extends advanced_testcase {
         }
         $data = $cartstore->get_data();
         $data = checkout::prepare_checkout($data);
-
         service_provider::get_payable('', $data['identifier']);
 
         $historyrecords = $DB->get_records('local_shopping_cart_history', ['identifier' => $data['identifier']]);
+        $this->assertCount(1, $historyrecords, 'There should be exactly one history item for the identifier.');
 
+        // We only want one, but we fetch all of them to see errors.
+        $reservedrecords = $DB->get_records('local_shopping_cart_reserv', ['userid' => $data['userid']]);
+        $this->assertCount(1, $reservedrecords, 'There should be exactly one reservedrecords item for the user.');
+
+        // We now add another item, although we have already one in the cart.
+        $addresult = add_item_to_cart::execute('local_shopping_cart', 'testarea', 3, $user->id);
+        $historyrecords = $DB->get_records('local_shopping_cart_history', ['identifier' => $data['identifier']]);
+
+        // $data = $cartstore->get_data();
+        $data = checkout::prepare_checkout($data);
+        service_provider::get_payable('', $data['identifier']);
 
         // Step 3: Confirm purchase.
-        $purchaseresult = confirm_cash_payment::execute($user->id, $paymenttype, $annotation);
-        $this->assertArrayHasKey('status', $purchaseresult);
-        $this->assertEquals($purchaseresult['status'], 1, 'Purchase was not successfully confirmed.');
+        $purchaseresult = service_provider::deliver_order('', $data['identifier'], 0, $user->id);
 
         $historyitem = get_history_item::execute($component, $area, $itemid, $user->id);
 
         // Test discount.
         $historyitemidentifier = $DB->get_field('local_shopping_cart_history', 'identifier', ['id' => $historyitem['id']]);
         $ledgeritems = shopping_cart_history::return_data_from_ledger_via_identifier($historyitemidentifier);
+
+        $this->assertCount(1, $ledgeritems, 'There should be exactly one ledger item for the history item.');
+
         $ledgeritem = reset($ledgeritems);
         $discount = (float) $ledgeritem->discount;
         $this->assertEquals($discount, $originalprice - $price, 'Discount was not applied correctly.');
