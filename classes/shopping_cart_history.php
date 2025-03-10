@@ -25,6 +25,7 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\reservations;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -280,6 +281,11 @@ class shopping_cart_history {
 
         $returnid = 0;
         if (isset($data->items)) {
+            // When we write the items to the shopping_cart history, we also save the whole cart cache.
+            $cartstore = cartstore::instance($data->userid);
+            $cacheddata = $cartstore->get_data();
+            reservations::save_reservation($cacheddata);
+
             foreach ($data->items as $item) {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $addresses["selectedaddress_billing"] ?? null;

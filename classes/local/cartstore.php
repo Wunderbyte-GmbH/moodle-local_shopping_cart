@@ -314,33 +314,7 @@ class cartstore {
 
         $data = $this->get_cache();
 
-        $now = time();
-
-        if (
-            $record = $DB->get_record(
-                'local_shopping_cart_reserv',
-                [
-                    'userid' => $data['userid'],
-                ]
-            )
-        ) {
-            $record->json = json_encode($data);
-            $record->usermodified = $USER->id;
-            $record->expirationtime = $data['expirationtime'];
-            $DB->update_record('local_shopping_cart_reserv', $record);
-        } else {
-            $DB->insert_record(
-                'local_shopping_cart_reserv',
-                [
-                    'userid' => $data['userid'],
-                    'json' => json_encode($data),
-                    'expirationtime' => $data['expirationtime'],
-                    'usermodified' => $USER->id,
-                    'timecreated' => $now,
-                    'timemodified' => $now,
-                ]
-            );
-        }
+        reservations::save_reservation($data);
     }
 
     /**
@@ -351,14 +325,7 @@ class cartstore {
      */
     public function delete_saved_items_from_db() {
 
-        global $DB;
-
-        return $DB->delete_records(
-            'local_shopping_cart_reserv',
-            [
-                'userid' => $this->userid,
-            ]
-        );
+        return reservations::delete_reservation($this->userid);
     }
 
     /**
