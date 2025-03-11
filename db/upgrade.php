@@ -37,7 +37,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2022050400) {
-
         // Define table local_shopping_cart_credits to be created.
         $table = new xmldb_table('local_shopping_cart_credits');
 
@@ -65,7 +64,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022071600) {
-
         // Define field id to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('canceluntil', XMLDB_TYPE_INTEGER, '10', null, null, null, null, null);
@@ -80,7 +78,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022072100) {
-
         // Changing type of field price on table local_shopping_cart_history to number.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('price', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null, 'itemname');
@@ -93,7 +90,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022072500) {
-
         // Changing type of field credits on table local_shopping_cart_credits to number.
         $table = new xmldb_table('local_shopping_cart_credits');
 
@@ -114,7 +110,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022081400) {
-
         // Define field discount to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('discount', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, null, 'price');
@@ -129,7 +124,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022081500) {
-
         // Define table local_shopping_cart_ledger to be created.
         $table = new xmldb_table('local_shopping_cart_ledger');
 
@@ -167,7 +161,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022101000) {
-
         // Define field id to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('serviceperiodstart', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'canceluntil');
@@ -188,7 +181,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022101000, 'local', 'shopping_cart');
     }
     if ($oldversion < 2022110300) {
-
         // Changing type of field itemid on table local_shopping_cart_history to int.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'userid');
@@ -338,7 +330,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022121500) {
-
         // Define field area to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('area', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'serviceperiodend');
@@ -362,7 +353,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023052200) {
-
         // Define table local_shopping_cart_id to be created.
         $table = new xmldb_table('local_shopping_cart_id');
 
@@ -383,7 +373,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023061600) {
-
         // Define field annotation to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_ledger');
         $field = new xmldb_field('annotation', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'area');
@@ -398,7 +387,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023090601) { // Replace XXXXXXXXXX with the required version number.
-
         // Define the table structure.
         $table = new xmldb_table('local_shopping_cart_invoices');
 
@@ -421,7 +409,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023101100) {
-
         // Define field usecredit to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('address_billing', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'area');
@@ -438,7 +425,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023102300) {
-
         // Define field costcenter to be added to local_shopping_cart_ledger and to local_shopping_cart_history.
         $scledger = new xmldb_table('local_shopping_cart_ledger');
         $schistory = new xmldb_table('local_shopping_cart_history');
@@ -456,7 +442,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024032000) {
-
         // Define field schistoryid to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_ledger');
         $field = new xmldb_field('schistoryid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'annotation');
@@ -474,7 +459,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024042400) {
-
         // Define table local_shopping_cart_iteminfo to be created.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
 
@@ -512,7 +496,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024042401) {
-
         // Define field schistoryid to be added to local_shopping_cart_ledger.
         $table = new xmldb_table('local_shopping_cart_iteminfo');
         $field = new xmldb_field('allowinstallment', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'area');
@@ -544,7 +527,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024052900) {
-
         // This is just to fix some erronous entries in the ledger, due to minor previous bugs.
         fix_ledger_bug();
 
@@ -552,7 +534,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024052902) {
-
         // Define table local_shopping_cart_address to be created.
         $table = new xmldb_table('local_shopping_cart_address');
 
@@ -608,7 +589,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024052906) {
-
         // Define field id to be added to local_shopping_cart_history.
         $tablehistory = new xmldb_table('local_shopping_cart_history');
         $tableledger = new xmldb_table('local_shopping_cart_ledger');
@@ -660,7 +640,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2024082800) {
-
         // Define field costcenter to be added to local_shopping_cart_credits.
         $table = new xmldb_table('local_shopping_cart_credits');
         $field = new xmldb_field('costcenter', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'timemodified');
@@ -707,7 +686,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2025030501) {
-
         // Define table local_shopping_cart_reserv to be created.
         $table = new xmldb_table('local_shopping_cart_reserv');
 
@@ -731,7 +709,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2025030501, 'local', 'shopping_cart');
     }
-
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
