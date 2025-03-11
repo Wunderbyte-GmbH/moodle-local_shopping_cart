@@ -34,7 +34,6 @@ use ReflectionClass;
  * @covers \cartitem
  */
 final class cartitem_test extends TestCase {
-
     /**
      * Test taxcategory not set
      * @covers \cartitem->tax_category
@@ -43,13 +42,15 @@ final class cartitem_test extends TestCase {
      */
     public function test_taxcategory_not_set(): void {
         $price = 10.00;
-        $cartitem = new cartitem(1,
-                'Testitem 1',
-                $price,
-                get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-                'local_shopping_cart',
-                'main',
-                'My Testitem 1 description');
+        $cartitem = new cartitem(
+            1,
+            'Testitem 1',
+            $price,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'main',
+            'My Testitem 1 description'
+        );
 
         $this->assertNull($cartitem->tax_category());
     }
@@ -62,18 +63,20 @@ final class cartitem_test extends TestCase {
      */
     public function test_taxcategory_set(): void {
         $price = 10.00;
-        $cartitem = new cartitem(1,
-                'Testitem 1',
-                $price,
-                get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-                'local_shopping_cart',
-                'main',
-                'My Testitem 1 description',
-                '',
-                null,
-                null,
-                null,
-                'A');
+        $cartitem = new cartitem(
+            1,
+            'Testitem 1',
+            $price,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'main',
+            'My Testitem 1 description',
+            '',
+            null,
+            null,
+            null,
+            'A'
+        );
 
         $this->assertEquals('A', $cartitem->tax_category());
     }
@@ -88,13 +91,14 @@ final class cartitem_test extends TestCase {
         $reflection = new ReflectionClass(cartitem::class);
         $definedproperties = $reflection->getProperties();
 
-        $cartitem = new cartitem(1,
-                'Testitem 1',
-                10.0,
-                get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
-                'local_shopping_cart',
-                'main',
-                'My Testitem 1 description',
+        $cartitem = new cartitem(
+            1,
+            'Testitem 1',
+            10.0,
+            get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR',
+            'local_shopping_cart',
+            'main',
+            'My Testitem 1 description',
         );
 
         $cartitemarray = $cartitem->as_array();
@@ -145,5 +149,4 @@ final class cartitem_test extends TestCase {
 
         $this->assertEquals($costcenter, $cartitem->costcenter);
     }
-
 }

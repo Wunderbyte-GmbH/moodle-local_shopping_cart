@@ -114,7 +114,9 @@
         <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} cancelconfirmation, local_shopping_cart {{/str}}
     </a>
     {{/cancelconfirmation}}
+    {{^rebooking}}
     {{> local_shopping_cart/button_cancel }}
+    {{/rebooking}}
     {{#showrebooking}}
     <button type="button"
         class="shopping_cart_history_rebook_button btn btn-sm pull-left {{#rebooking}}btn-warning{{/rebooking}} {{^rebooking}}btn-primary{{/rebooking}}"

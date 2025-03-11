@@ -180,7 +180,7 @@ class shopping_cart_credits {
             $usecredit = self::use_credit_fallback($usecredit, $userid);
         }
 
-        if (empty($data['costcenter']) && !empty($data['items'] )) {
+        if (empty($data['costcenter']) && !empty($data['items'])) {
             foreach ($data['items'] as $item) {
                 $item = (array)$item;
                 $data['costcenter'] = empty($data['costcenter']) ? ($item['costcenter'] ?? '') : $data['costcenter'];
@@ -386,7 +386,7 @@ class shopping_cart_credits {
         }
 
         if ($sumtodeduct > 0) {
-            // TODO: should we use defaultcostcenter there first?
+            // Todo: Should we use defaultcostcenter first?
             $data = new stdClass();
             $data->userid = $userid;
             $data->costcenter = $checkoutdata['costcenter'] ?? '';

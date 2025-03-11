@@ -357,7 +357,7 @@ class shoppingcart_history_list implements renderable, templatable {
 
             if (get_config('local_shopping_cart', 'allowrebooking')) {
                 // Get the marked information.
-                $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, $userid);
+                $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, (int) $userid);
 
                 if (rebookings::allow_rebooking($item, $userid)) {
                     $item->showrebooking = true; // If it is shown at all.

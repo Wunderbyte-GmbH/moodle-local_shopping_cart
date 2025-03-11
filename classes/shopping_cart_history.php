@@ -1066,12 +1066,12 @@ class shopping_cart_history {
     /**
      * Return true or false, depending on item.
      * @param int $historyid
-     * @param mixed $userid
-     * @return true
+     * @param int $userid
+     * @return bool
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function is_marked_for_rebooking(int $historyid, $userid) {
+    public static function is_marked_for_rebooking(int $historyid, int $userid): bool {
 
         $cachekey = 'rebook_userid_' . $userid;
         $cache = \cache::make('local_shopping_cart', 'cacherebooking');

@@ -46,7 +46,6 @@ require_once(__DIR__ . '/../lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart_rebookingcredit {
-
     /**
      * entities constructor.
      */
@@ -75,22 +74,31 @@ class shopping_cart_rebookingcredit {
 
         $canceledrecords = self::get_records_canceled_with_future_canceluntil($userid);
 
-        if (!empty($canceledrecords)
+        if (
+            !empty($canceledrecords)
             && $area != 'bookingfee'
-            && $area != 'rebookingcredit') {
-
-            $normalitemsonly = array_filter($items,
-                fn($a) => ($a["area"] != 'bookingfee' && $a["area"] != 'rebookingcredit'));
+            && $area != 'rebookingcredit'
+        ) {
+            $normalitemsonly = array_filter(
+                $items,
+                fn($a) => ($a["area"] != 'bookingfee' && $a["area"] != 'rebookingcredit')
+            );
             $itemcount = count($normalitemsonly);
 
             // We can only add as many rebookingcredits as we have canceled records.
             if ($itemcount <= count($canceledrecords)) {
-                $rebookingcreditrecords = array_filter($items,
-                    fn($a) => ($a["area"] == 'rebookingcredit'));
+                $rebookingcreditrecords = array_filter(
+                    $items,
+                    fn($a) => ($a["area"] == 'rebookingcredit')
+                );
                 if (!empty($rebookingcreditrecords)) {
                     $rebookingcredititem = reset($rebookingcreditrecords);
-                    shopping_cart::delete_item_from_cart('local_shopping_cart', 'rebookingcredit',
-                        $rebookingcredititem['itemid'], $userid);
+                    shopping_cart::delete_item_from_cart(
+                        'local_shopping_cart',
+                        'rebookingcredit',
+                        $rebookingcredititem['itemid'],
+                        $userid
+                    );
                 }
 
                 // Add the rebookingcredit to the shopping cart.
@@ -111,11 +119,15 @@ class shopping_cart_rebookingcredit {
 
         // If the user has recently cancelled an option we'll refund the rebookingcredit.
         // This will always only work with the MOST RECENTLY canceled option.
-        $canceledrecords = $DB->get_records_select('local_shopping_cart_history',
-            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil", [
+        $canceledrecords = $DB->get_records_select(
+            'local_shopping_cart_history',
+            "userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil",
+            [
             'userid' => $userid,
             'canceluntil' => $now,
-        ], '');
+            ],
+            ''
+        );
 
         return $canceledrecords;
     }
@@ -128,12 +140,15 @@ class shopping_cart_rebookingcredit {
      */
     private static function rebookingcredit_already_used($userid) {
         global $DB;
-        return $DB->record_exists_select('local_shopping_cart_ledger',
-            "area = 'rebookingcredit' AND userid = :userid AND timecreated BETWEEN :lowesttimecreated AND :now", [
+        return $DB->record_exists_select(
+            'local_shopping_cart_ledger',
+            "area = 'rebookingcredit' AND userid = :userid AND timecreated BETWEEN :lowesttimecreated AND :now",
+            [
             'lowesttimecreated' => self::get_lowest_timecreated_of_canceledrecords($userid),
             'userid' => $userid,
             'now' => time(),
-        ]);
+            ]
+        );
     }
 
     /**
@@ -146,13 +161,15 @@ class shopping_cart_rebookingcredit {
         global $DB;
         // If the user has recently cancelled an option we'll refund the rebookingcredit.
         // This will always only work with the MOST RECENTLY canceled option.
-        $lowesttimecreated = $DB->get_field_sql("SELECT MIN(timecreated) AS lowesttimecreated
+        $lowesttimecreated = $DB->get_field_sql(
+            "SELECT MIN(timecreated) AS lowesttimecreated
             FROM {local_shopping_cart_history}
             WHERE userid = :userid AND paymentstatus = 3 AND area = 'option' AND canceluntil > :canceluntil",
             [
                 'userid' => $userid,
                 'canceluntil' => time(),
-            ]);
+            ]
+        );
 
         return $lowesttimecreated;
     }
@@ -170,7 +187,8 @@ class shopping_cart_rebookingcredit {
     public static function add_rebookingcredit_item_to_cart(int $userid, int $itemcount = 1): bool {
 
         // If rebookingcredit is turned off in settings, we never add it at all.
-        if (!get_config('local_shopping_cart', 'allowrebookingcredit')
+        if (
+            !get_config('local_shopping_cart', 'allowrebookingcredit')
             || self::rebookingcredit_already_used($userid) // If it was already used, we do not add.
         ) {
             return false;
@@ -194,14 +212,12 @@ class shopping_cart_rebookingcredit {
         // First, we calculate the total price.
 
         foreach ($data["items"] as $key => $item) {
-
             $item = (array)$item;
             $totalprice += $item['price'];
         }
 
         // Now we need to correct the price of the single items.
         foreach ($data["items"] as $key => $item) {
-
             // We handle items as arrays.
             $item = (array)$item;
             $data['items'][$key] = $item;
@@ -215,9 +231,9 @@ class shopping_cart_rebookingcredit {
                 // If the totalprice is lower than 0, the rebooking must be corrected by the difference.
                 // So: Rebooking of -50 and new item of 30 will correct rebooking to -30.
                 if ($totalprice < 0) {
-
                     // We don't correct the price, when people can still cancel their bookings themselves.
-                    if ($data['items'][$keyofrebooking]['canceluntil'] > time()) {
+                    $canceluntil = $data['items'][$keyofrebooking]['canceluntil'];
+                    if ($canceluntil > time() || empty($canceluntil)) {
                         break;
                     }
 
@@ -281,15 +297,17 @@ class shopping_cart_rebookingcredit {
         $items = $cartstore->get_items();
 
         foreach ($items as $item) {
-            if (($item['area'] === 'bookingfee')
-                && ($item['componentname'] === 'local_shopping_cart') ) {
-
+            if (
+                ($item['area'] === 'bookingfee')
+                && ($item['componentname'] === 'local_shopping_cart')
+            ) {
                 shopping_cart::delete_item_from_cart(
                     'local_shopping_cart',
                     'bookingfee',
                     $item['itemid'],
                     $userid,
-                    false);
+                    false
+                );
             }
         }
     }
@@ -315,9 +333,10 @@ class shopping_cart_rebookingcredit {
         $context = context_system::instance();
 
         // If we are dealing with a rebooking item, we need to unsubscribe the user.
-        if (($component === 'local_shopping_cart')
-            && ($area === 'rebookitem')) {
-
+        if (
+            ($component === 'local_shopping_cart')
+            && ($area === 'rebookitem')
+        ) {
             // We need to correct $component, $area & $itemid.
             // For the rebooking item, the itemid corresponds to id of the original entry in sch.
             $historyitem = shopping_cart_history::return_item_from_history($itemid);
@@ -335,15 +354,19 @@ class shopping_cart_rebookingcredit {
             $event->trigger();
 
             $providerclass = shopping_cart::get_service_provider_classname($historyitem->componentname);
-            component_class_callback($providerclass, 'cancel_purchase',
-                [$historyitem->area, $historyitem->itemid, $userid]);
+            component_class_callback(
+                $providerclass,
+                'cancel_purchase',
+                [$historyitem->area, $historyitem->itemid, $userid]
+            );
 
-            list($success, $error, $credit, $currency, $record) = shopping_cart_history::cancel_purchase(
+            [$success, $error, $credit, $currency, $record] = shopping_cart_history::cancel_purchase(
                 $historyitem->itemid,
                 $userid,
                 $historyitem->componentname,
                 $historyitem->area,
-                $itemid);
+                $itemid
+            );
 
             if ($success === 1) {
                 return true;
@@ -351,7 +374,6 @@ class shopping_cart_rebookingcredit {
                 return false;
             }
         }
-
     }
 
     /**
