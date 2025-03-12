@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\local;
 
+use moodle_exception;
+
 /**
  * Class cartstore
  *
@@ -56,10 +58,15 @@ class reservations {
                 ]
             )
         ) {
-            $record->json = json_encode($data);
-            $record->usermodified = $USER->id;
-            $record->expirationtime = $data['expirationtime'];
-            $DB->update_record('local_shopping_cart_reserv', $record);
+            if (empty($record->identifier)) {
+                $record->json = json_encode($data);
+                $record->usermodified = $USER->id;
+                $record->expirationtime = $data['expirationtime'];
+                $DB->update_record('local_shopping_cart_reserv', $record);
+            } else {
+                // We don't update.
+                // throw new moodle_exception('tryingtoupdateunqiuecart', 'local_shopping_cart');
+            }
         } else {
             $DB->insert_record(
                 'local_shopping_cart_reserv',

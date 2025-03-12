@@ -271,7 +271,7 @@ class shopping_cart_history {
      * @return int true if the history was written to the database, false otherwise
      *  (e.g. if record already exists)
      */
-    private static function write_to_db(stdClass $data): int {
+    public static function write_to_db(stdClass $data): int {
         global $DB, $USER;
 
         $now = time();
@@ -281,7 +281,6 @@ class shopping_cart_history {
 
         $returnid = 0;
         if (isset($data->items)) {
-
             foreach ($data->items as $item) {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
                 $item['address_billing'] = $addresses["selectedaddress_billing"] ?? null;
@@ -315,6 +314,7 @@ class shopping_cart_history {
                     // We also need to insert the record into the ledger table.
                     // We only write the old schistoryid, if we have it.
                     $data->schistoryid = $data->schistoryid ?? $id;
+                    $data->id = $id;
 
                     /* There is one exception, when we don't write to ledger.
                      The reason is that we want to write installments in a separate process.
@@ -888,7 +888,7 @@ class shopping_cart_history {
         }
 
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
-            self::write_to_db((object)$shoppingcart);
+            // self::write_to_db((object)$shoppingcart);
 
             $shoppingcart['storedinhistory'] = true;
             $cache->set('schistorycache', $shoppingcart);

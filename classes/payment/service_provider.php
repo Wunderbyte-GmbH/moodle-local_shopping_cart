@@ -27,6 +27,7 @@ namespace local_shopping_cart\payment;
 
 use context_system;
 use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\reservations;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
@@ -60,57 +61,21 @@ class service_provider implements \core_payment\local\callback\service_provider 
     public static function get_payable(string $paymentarea, int $cartidentifier): \core_payment\local\entities\payable {
         global $DB;
 
-        // Instead of an item or user id, we use a cart identifier which basically is just a timestamp.
-        // This timestamp will give us a key to store the cart of a user in session cache and hold the items of the cart together.
-
-        $sc = new shopping_cart_history();
-        $cachedeleted = false;
-
-        try {
-            $shoppingcart = (object)$sc->fetch_data_from_schistory_cache($cartidentifier);
-        } catch (\Exception $e) {
-            $cachedeleted = true;
-        }
-
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
 
-        // We always check DB here, regardless if we have the cache or not.
-        // This is to make sure that we can't pay without writing identifier to db.
-        if (!$records = $DB->get_records('local_shopping_cart_history', ['identifier' => $cartidentifier])) {
-            throw new moodle_exception('identifierisnotindb', 'local_shopping_cart');
-        }
+        $shoppingcart = reservations::get_json_from_db_via_identifier($cartidentifier);
+        $cartstore = cartstore::instance($shoppingcart['userid']);
 
-        if ($cachedeleted) {
-            $shoppingcart = reservations::get_json_from_db_via_identifier($cartidentifier);
+        $cartstore->set_cache($shoppingcart);
 
-            $price = shopping_cart_credits::get_price_from_shistorycart((object)$shoppingcart);
-            $currency = $shoppingcart["currency"];
-        } else {
-            // At this point, the user will consume any credit she might have.
-            // This might reduce the price, down to 0. But the reduction to 0 should be...
-            // ... treated beforehand, because it will throw an error in payment.
-
-            // We need to check here if the current cache is still in sync with the stored cache.
-            foreach ($records as $record) {
-                if ($shoppingcart->usecredit != $record->usecredit) {
-                    $DB->update_record('local_shopping_cart_history', [
-                        'id' => $record->id,
-                        'usecredit' => $shoppingcart->usecredit,
-                        'timemodified' => time(),
-                    ]);
-                }
-            }
-
-            $price = shopping_cart_credits::get_price_from_shistorycart($shoppingcart);
-            $currency = $shoppingcart->currency;
-        }
+        $price = shopping_cart_credits::get_price_from_shistorycart((object)$shoppingcart);
 
         // We can only buy items with the same payment account. Therefore, we can just take the first and test it.
-        $record = reset($records);
+        $record = reset($shoppingcart['items']);
         $seachdata = [
-            'itemid' => $record->itemid,
-            'componentname' => $record->componentname,
-            'area' => $record->area,
+            'itemid' => $record['itemid'],
+            'componentname' => $record['componentname'],
+            'area' => $record['area'],
         ];
         if (!$record = $DB->get_record('local_shopping_cart_iteminfo', $seachdata)) {
             $jsonobject = new stdClass();
@@ -151,10 +116,23 @@ class service_provider implements \core_payment\local\callback\service_provider 
          // First, look in shopping cart history to identify the payment and what users have bought.
          // Now run through all the optionids (itemids) and confirm payment.
 
-        $data['items'] = shopping_cart_history::return_data_via_identifier($identifier);
+        $data = reservations::get_json_from_db_via_identifier($identifier);
 
-        if (count($data['items']) == 0) {
+        // Here we write all the items to history.
+        shopping_cart_history::write_to_db((object)$data);
+
+        // And now we retrieve them again.
+        $records = shopping_cart_history::return_data_via_identifier($data['identifier']);
+
+        if (count($records) == 0) {
             return false;
+        } else {
+            foreach ($records as $record) {
+                $key = "$record->componentname-$record->area-$record->itemid";
+                if (isset($data['items'][$key])) {
+                    $data['items'][$key]['id'] = $record->id;
+                }
+            }
         }
 
         shopping_cart::confirm_payment($userid, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);

@@ -536,7 +536,7 @@ class cartstore {
      * @return void
      * @throws coding_exception
      */
-    private function set_cache($cachedata) {
+    public function set_cache($cachedata) {
 
         $this->cachedata = $cachedata;
 

@@ -508,7 +508,7 @@ class shopping_cart_credits {
                 }
             }
         }
-
+        $data['usecredit'] = $shoppingcart->usecredit ?? null;
         $data['costcenter'] = $costcenter;
 
         if ($userid != 0) {
