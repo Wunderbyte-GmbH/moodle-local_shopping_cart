@@ -1,3 +1,10 @@
+## Version 0.9.59 (2025031200)
+* Improvement: Make sure that cancelling is not possible for items marked for rebooking.
+* Bugfix: Correctly apply consumption
+* Bugfix: Make sure that missing terms and conditions do not break the checkout process.
+* Bugfix: Also fix additional terms and conditions.
+* Tests: Include time_mock class and first test which makes use of it (rough draft, to be cleaned)
+
 ## Version 0.9.58 (2025030501)
 * Bugfix: Add new reservations table for persistant cart
 
