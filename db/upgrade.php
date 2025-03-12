@@ -710,6 +710,20 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025030501, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2025031201) {
+        // Define field identifier to be added to local_shopping_cart_reserv.
+        $table = new xmldb_table('local_shopping_cart_reserv');
+        $field = new xmldb_field('identifier', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'expirationtime');
+
+        // Conditionally launch add field identifier.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025031201, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

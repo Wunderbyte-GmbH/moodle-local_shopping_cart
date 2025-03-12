@@ -187,6 +187,7 @@
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="json" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="expirationtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Cart identifier"/>
                 <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
