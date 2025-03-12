@@ -469,7 +469,15 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
     } else {
         usecredit = usecredit ? 1 : 0;
     }
-    useinstallments = useinstallments ? 1 : 0;
+
+    const installmentcheckboxes = document.querySelectorAll(SELECTORS.INSTALLMENTSCHECKBOX);
+    if (installmentcheckboxes.length == 1) {
+        installmentcheckboxes.forEach(installmentcheckboxe => {
+            useinstallments = installmentcheckboxe.checked ? 1 : 0;
+        });
+    } else {
+        useinstallments = useinstallments ? 1 : 0;
+    }
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
