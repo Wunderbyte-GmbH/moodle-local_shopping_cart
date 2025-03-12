@@ -28,9 +28,11 @@ namespace local_shopping_cart\local\pricemodifier\modifiers;
 use dml_exception;
 use coding_exception;
 use local_shopping_cart\local\pricemodifier\modifier_base;
+use local_shopping_cart\local\reservations;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -84,6 +86,12 @@ abstract class checkout extends modifier_base {
 
         if (empty($identifier)) {
             $identifier = (string)shopping_cart_history::create_unique_cart_identifier($userid);
+        } else {
+            // When there is already a previous checkout with another set of items, we need a new identifier.
+            // So we compare the carts.
+            if (reservations::different_cart_with_same_identifier($data, $identifier)) {
+                $identifier = (string)shopping_cart_history::create_unique_cart_identifier($userid);
+            }
         }
 
         foreach ($data['items'] as $key => $item) {

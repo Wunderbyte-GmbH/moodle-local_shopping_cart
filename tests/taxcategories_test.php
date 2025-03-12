@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart;
 
+use advanced_testcase;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -33,7 +35,23 @@ use ReflectionClass;
  * Test for taxcategories
  * @covers \taxcategories
  */
-final class taxcategories_test extends TestCase {
+final class taxcategories_test extends advanced_testcase {
+    /**
+     * Set up the test environment.
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
+    }
 
     /**
      * Test complex raw string is valid: taxcategories::is_valid_raw_string()

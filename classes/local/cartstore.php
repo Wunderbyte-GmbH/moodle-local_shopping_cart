@@ -321,34 +321,29 @@ class cartstore {
     /**
      * Is called when cart is empty to make sure that there is no saved item either.
      *
+     * @param int $identifier
      * @return bool
      *
      */
-    public function delete_saved_items_from_db() {
+    public function delete_saved_items_from_db($identifier = null) {
 
-        return reservations::delete_reservation($this->userid);
+        return reservations::delete_reservation($this->userid, $identifier);
     }
 
     /**
      * This function saves items in DB.
      *
+     * @param int $identifier
+     *
      * @return bool
      *
      */
-    public function restore_cart_from_db() {
-
+    public function restore_cart_from_db($identifier = null) {
         global $DB, $USER;
 
         $now = time();
-
         if (
-            $json = $DB->get_field(
-                'local_shopping_cart_reserv',
-                'json',
-                [
-                    'userid' => $this->userid,
-                ]
-            )
+            $json = reservations::get_json_from_db($this->userid, $identifier)
         ) {
             $data = json_decode($json, true);
             $data['nowdate'] = $now;
@@ -1108,5 +1103,15 @@ class cartstore {
         $data["taxcountrycode"] = $taxcountrycode;
 
         $this->set_cache($data);
+    }
+
+    /**
+     * Resets everything, for unit tests.
+     *
+     * @return void
+     *
+     */
+    public static function reset() {
+        self::$instance = [];
     }
 }

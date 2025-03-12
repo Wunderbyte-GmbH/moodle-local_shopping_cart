@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart;
 
+use advanced_testcase;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\vatnrchecker;
 use PHPUnit\Framework\TestCase;
 use SoapClient;
@@ -32,7 +34,7 @@ use SoapClient;
  * Test for taxcategories
  * @covers \taxcategories
  */
-final class vatnrchecker_test extends TestCase {
+final class vatnrchecker_test extends advanced_testcase {
     /**
      * Soap Mock instance.
      *
@@ -50,6 +52,15 @@ final class vatnrchecker_test extends TestCase {
             ->setConstructorArgs(["https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"])
             ->setMethods(['checkVat'])
             ->getMock();
+    }
+
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
     }
 
     /**

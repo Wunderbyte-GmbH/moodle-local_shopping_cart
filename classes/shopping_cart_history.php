@@ -281,10 +281,6 @@ class shopping_cart_history {
 
         $returnid = 0;
         if (isset($data->items)) {
-            // When we write the items to the shopping_cart history, we also save the whole cart cache.
-            $cartstore = cartstore::instance($data->userid);
-            $cacheddata = $cartstore->get_data();
-            reservations::save_reservation($cacheddata);
 
             foreach ($data->items as $item) {
                 $item['taxcountrycode'] = $data->taxcountrycode ?? null;
@@ -864,6 +860,10 @@ class shopping_cart_history {
         $cache = \cache::make('local_shopping_cart', 'schistory');
         $cache->set('schistorycache', $data);
 
+        // When we write the items to the shopping_cart history, we also save the whole cart cache.
+        // During savind, we need to make sure that there is no conflicting checkout process already going on.
+        reservations::save_reservation((array)$data);
+
         return true;
     }
 
@@ -875,12 +875,16 @@ class shopping_cart_history {
     public function fetch_data_from_schistory_cache(string $identifier) {
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
-
         $shoppingcart = $cache->get('schistorycache');
 
         // We must never get the wrong identifier in this process.
         if (isset($shoppingcart['identifier']) && ($shoppingcart['identifier'] != $identifier)) {
             throw new moodle_exception('wrongidentifier', 'local_shopping_cart');
+        }
+
+        // The cart must still correspond to the identifier we first used.
+        if (reservations::different_cart_with_same_identifier($shoppingcart, $identifier)) {
+            throw new moodle_exception('differentcartwithsameidentifier', 'local_shopping_cart');
         }
 
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {

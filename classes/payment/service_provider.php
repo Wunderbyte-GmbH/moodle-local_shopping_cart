@@ -27,6 +27,7 @@ namespace local_shopping_cart\payment;
 
 use context_system;
 use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\local\reservations;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
@@ -80,24 +81,10 @@ class service_provider implements \core_payment\local\callback\service_provider 
         }
 
         if ($cachedeleted) {
-            // We have no good function to recreate cache from DB.
-            // So, we need to do this manually.
-            $price = 0;
-            $costcenter = '';
-            foreach ($records as $record) {
-                $price = $price + $record->price;
-                $currency = $record->currency;
-                $usecredit  = $record->usecredit;
-                $userid = $record->userid;
-                $costcenter = empty($costcenter) ? ($record->costcenter ?? '') : $costcenter;
-            }
+            $shoppingcart = reservations::get_json_from_db_via_identifier($cartidentifier);
 
-            if (!empty($price) && !empty($usecredit)) {
-                // We will reduce the price for the existing credit.
-                list($credit, $currency) = shopping_cart_credits::get_balance($userid, $costcenter);
-                $price = (float)$price - (float)$credit;
-            }
-
+            $price = shopping_cart_credits::get_price_from_shistorycart((object)$shoppingcart);
+            $currency = $shoppingcart["currency"];
         } else {
             // At this point, the user will consume any credit she might have.
             // This might reduce the price, down to 0. But the reduction to 0 should be...

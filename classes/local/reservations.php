@@ -52,6 +52,7 @@ class reservations {
                 'local_shopping_cart_reserv',
                 [
                     'userid' => $data['userid'],
+                    'identifier' => $data['identifier'] ?? null,
                 ]
             )
         ) {
@@ -66,6 +67,7 @@ class reservations {
                     'userid' => $data['userid'],
                     'json' => json_encode($data),
                     'expirationtime' => $data['expirationtime'],
+                    'identifier' => $data['identifier'] ?? null,
                     'usermodified' => $USER->id,
                     'timecreated' => $now,
                     'timemodified' => $now,
@@ -75,21 +77,98 @@ class reservations {
     }
 
     /**
+     * Method to get the json from the db
+     *
+     * @param int $userid
+     * @param ?int $identifier
+     *
+     * @return ?array
+     *
+     */
+    public static function get_json_from_db(int $userid, $identifier = null) {
+        global $DB;
+
+        $record = $DB->get_record(
+            'local_shopping_cart_reserv',
+            [
+                'userid' => $userid,
+                'identifier' => $identifier,
+            ]
+        );
+
+        return $record ? json_decode($record->json, true) : null;
+    }
+
+    /**
+     * Method to get the json from the db
+     *
+     * @param ?int $identifier
+     *
+     * @return ?array
+     *
+     */
+    public static function get_json_from_db_via_identifier($identifier = null) {
+        global $DB;
+
+        $record = $DB->get_record(
+            'local_shopping_cart_reserv',
+            [
+                'identifier' => $identifier,
+            ]
+        );
+
+        return $record ? json_decode($record->json, true) : null;
+    }
+
+    /**
      * Method to delete
      *
      * @param int $userid
+     * @param ?int $identifier
      *
-     * @return [type]
+     * @return bool
      *
      */
-    public static function delete_reservation(int $userid) {
+    public static function delete_reservation(int $userid, $identifier = null) {
         global $DB;
 
         return $DB->delete_records(
             'local_shopping_cart_reserv',
             [
                 'userid' => $userid,
+                'identifier' => $identifier,
             ]
         );
+    }
+
+    /**
+     * Method to check if the cart is different with the same identifier.
+     *
+     * @param mixed $data
+     * @param mixed $identifier
+     *
+     * @return bool
+     *
+     */
+    public static function different_cart_with_same_identifier($data, $identifier) {
+        $json = self::get_json_from_db($data['userid'], $identifier);
+
+        if (!$json) {
+            return false;
+        }
+
+        $items = $json['items'];
+
+        if (count($items) != count($data['items'])) {
+            return true;
+        }
+
+        foreach ($items as $item) {
+            if (count(array_filter($data['items'], fn($a) => $a['itemid'] == $item['itemid'])) == 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

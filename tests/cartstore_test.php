@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart;
 
+use advanced_testcase;
 use local_shopping_cart\local\cartstore;
 use PHPUnit\Framework\TestCase;
 use phpunit_util;
@@ -33,7 +34,23 @@ use phpunit_util;
  * Test for cartitem
  * @covers \cartitem
  */
-final class cartstore_test extends TestCase {
+final class cartstore_test extends advanced_testcase {
+    /**
+     * Set up the test environment.
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
+    }
 
     /**
      * Test taxcategory not set
@@ -146,6 +163,12 @@ final class cartstore_test extends TestCase {
      */
     public function test_cartstore_get_costcenter(): void {
 
+        set_config('enabletax', "1", 'local_shopping_cart');
+        set_config('defaulttaxcategory', 'A', 'local_shopping_cart');
+        set_config('taxcategories', 'A:15 B:10 C:0', 'local_shopping_cart');
+
+        set_config('itempriceisnet', "1", 'local_shopping_cart');
+
         $user1 = $this->get_data_generator()->create_user();
 
         $cartstore = cartstore::instance((int)$user1->id);
@@ -216,7 +239,7 @@ final class cartstore_test extends TestCase {
 
     /**
      * Get data generator
-     * @return testing_data_generator
+     * @return \testing_data_generator
      */
     public static function get_data_generator() {
         return phpunit_util::get_data_generator();

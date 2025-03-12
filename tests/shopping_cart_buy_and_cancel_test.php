@@ -35,6 +35,23 @@ use local_shopping_cart\local\cartstore;
  */
 final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
     /**
+     * Set up the test environment.
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
+    }
+
+    /**
      * Data provider for shopping cart tests.
      *
      * @return array
