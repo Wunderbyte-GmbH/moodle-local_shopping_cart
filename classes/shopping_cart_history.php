@@ -798,51 +798,6 @@ class shopping_cart_history {
     }
 
     /**
-     * Function prepare_data_from_cache and store it in the session cache of the user.
-     *
-     * @param int $userid
-     * @param int $identifier optional identifier
-     * @return array
-     */
-    public function prepare_data_from_cache(int $userid, int $identifier = 0): array {
-        global $USER;
-
-        $userfromid = $USER->id;
-        $userid = $USER->id;
-        $cartstore = cartstore::instance($userid);
-        $cachedrawdata = $cartstore->get_data();
-        $dataarr = [];
-
-        if (empty($identifier)) {
-            $identifier = self::create_unique_cart_identifier($userid);
-        }
-
-        foreach ($cachedrawdata['items'] as $item) {
-            $data = $item;
-            $data['currency'] = $item['currency'];
-            $data['expirationtime'] = $cachedrawdata["expirationtime"];
-            $data['identifier'] = $identifier; // The identifier of the cart session.
-            $data['usermodified'] = $userfromid; // The user who actually effected the transaction.
-            $data['userid'] = $userid; // The user for which the item was bought.
-            $data['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE; // This function is only used for online payment.
-            $data['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_PENDING;
-            $data['discount'] = $item['discount'] ?? null;
-            $dataarr['items'][] = $data;
-        }
-
-        $dataarr['price'] = $cachedrawdata['price'];
-        $dataarr['price_net'] = $cachedrawdata['price_net'];
-        $dataarr['currency'] = $cachedrawdata['currency'];
-
-        // As the identifier will always stay the same, we pass it here for easy acces.
-        $dataarr['identifier'] = $identifier;
-
-        $this->store_in_schistory_cache($dataarr);
-
-        return $dataarr;
-    }
-
-    /**
      * On loading the checkout.php, the shopping cart is stored in the schistory cache.
      * This is because we don't pass the individual items, but only a total sum and description to the payment provider.
      * To identify the items in the cart, we have to store them with an identifier.
@@ -851,7 +806,7 @@ class shopping_cart_history {
      * @param array $data
      * @return bool|null
      */
-    public function store_in_schistory_cache(array $data) {
+    public static function store_in_schistory_cache(array $data) {
 
         if (!isset($data['identifier'])) {
             return null;
@@ -859,10 +814,6 @@ class shopping_cart_history {
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
         $cache->set('schistorycache', $data);
-
-        // When we write the items to the shopping_cart history, we also save the whole cart cache.
-        // During savind, we need to make sure that there is no conflicting checkout process already going on.
-        reservations::save_reservation((array)$data);
 
         return true;
     }
@@ -872,26 +823,48 @@ class shopping_cart_history {
      * @param string $identifier
      * @return mixed|false
      */
-    public function fetch_data_from_schistory_cache(string $identifier) {
+    public static function fetch_data_from_schistory_cache(string $identifier) {
+
+        global $USER;
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
         $shoppingcart = $cache->get('schistorycache');
 
-        // We must never get the wrong identifier in this process.
-        if (isset($shoppingcart['identifier']) && ($shoppingcart['identifier'] != $identifier)) {
-            throw new moodle_exception('wrongidentifier', 'local_shopping_cart');
+        // If we have no valid cache, we need to get the information via the identifier.
+        if (!$shoppingcart) {
+            $nocache = true;
+            $shoppingcart = reservations::get_json_from_db_via_identifier($identifier);
+
+            if (empty($shoppingcart)) {
+                throw new moodle_exception('noshoppingcartfound', 'local_shopping_cart');
+            }
+        } else if (
+            // If there is a cart but it has the wrong identifier, we need to restore the cart from the database.
+            isset($shoppingcart['identifier'])
+            && $shoppingcart['identifier'] != $identifier
+        ) {
+            $shoppingcart = reservations::get_json_from_db_via_identifier($identifier);
+            $shoppingcart['storedinhistory'] = true;
+            self::store_in_schistory_cache($shoppingcart);
+        } else if (reservations::different_cart_with_same_identifier($shoppingcart, $identifier, true)) {
+            // The cart must still correspond to the identifier we first used.
+            // If there is nothing stored, we add it here.
+            $shoppingcart = reservations::get_json_from_db_via_identifier($identifier);
+            $shoppingcart['storedinhistory'] = true;
+            self::store_in_schistory_cache($shoppingcart);
         }
 
-        // The cart must still correspond to the identifier we first used.
-        if (reservations::different_cart_with_same_identifier($shoppingcart, $identifier)) {
-            throw new moodle_exception('differentcartwithsameidentifier', 'local_shopping_cart');
-        }
-
+        // This should, in every case, only happen once.
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
-            // self::write_to_db((object)$shoppingcart);
+            self::write_to_db((object)$shoppingcart);
+            // Here we are before checkout.
+            $expirationtime = shopping_cart::get_expirationtime();
+
+            // Add or reschedule all delete_item_tasks for all the items in the cart.
+            shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $USER->id);
 
             $shoppingcart['storedinhistory'] = true;
-            $cache->set('schistorycache', $shoppingcart);
+            self::store_in_schistory_cache($shoppingcart);
         } else if (!isset($shoppingcart['identifier'])) {
             throw new moodle_exception('noidentifierfound', 'local_shopping_cart');
         }

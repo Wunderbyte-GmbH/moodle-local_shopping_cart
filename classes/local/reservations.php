@@ -63,7 +63,9 @@ class reservations {
                 $record->usermodified = $USER->id;
                 $record->expirationtime = $data['expirationtime'];
                 $DB->update_record('local_shopping_cart_reserv', $record);
-            } else {
+            } else if (
+                $record->json != json_encode($data)
+            ) {
                 // We don't update.
                 // throw new moodle_exception('tryingtoupdateunqiuecart', 'local_shopping_cart');
             }
@@ -150,28 +152,54 @@ class reservations {
 
     /**
      * Method to check if the cart is different with the same identifier.
+     * This will also write to db if the cart is not there.
      *
      * @param mixed $data
      * @param mixed $identifier
+     * @param bool $storenewcart
      *
      * @return bool
      *
      */
-    public static function different_cart_with_same_identifier($data, $identifier) {
+    public static function different_cart_with_same_identifier(
+        $data,
+        $identifier,
+        $storenewcart = false
+    ) {
+        if (empty($data['userid'])) {
+            return false;
+        }
         $json = self::get_json_from_db($data['userid'], $identifier);
 
         if (!$json) {
+            if ($storenewcart) {
+                unset($data['historyitems']);
+                self::save_reservation($data);
+            }
             return false;
         }
+        foreach ($data as $key => $value) {
+            if (
+                in_array(
+                    $key,
+                    [
+                        'nowdate',
+                        'checkboxid',
+                        'historyitems',
+                        'storedinhistory',
+                    ]
+                )
+            ) {
+                continue;
+            }
 
-        $items = $json['items'];
-
-        if (count($items) != count($data['items'])) {
-            return true;
-        }
-
-        foreach ($items as $item) {
-            if (count(array_filter($data['items'], fn($a) => $a['itemid'] == $item['itemid'])) == 0) {
+            if (isset($json[$key]) && is_array($json[$key])) {
+                foreach ($value as $item) {
+                    if (count(array_filter($json[$key], fn($a) => $a['itemid'] == $item['itemid'])) == 0) {
+                        return true;
+                    }
+                }
+            } else if (!isset($json[$key]) || is_array($json[$key]) || $json[$key] != $value) {
                 return true;
             }
         }

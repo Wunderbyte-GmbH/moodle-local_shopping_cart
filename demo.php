@@ -177,8 +177,6 @@ echo $OUTPUT->render_from_template('local_shopping_cart/checkout_button', $data)
 echo '</div>';
 
 $history = new shopping_cart_history();
-// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-/* $data = $history->prepare_data_from_cache($USER->id);*/
 
 echo format_text("[shoppingcarthistory]");
 

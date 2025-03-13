@@ -59,5 +59,4 @@ class modifier_info {
             $modifier::apply($data);
         }
     }
-
 }

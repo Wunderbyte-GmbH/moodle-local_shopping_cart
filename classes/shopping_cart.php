@@ -753,12 +753,9 @@ class shopping_cart {
 
             // Even if we get the data from history, we still need to look in cache.
             // With this, we will know how much the user actually paid and how much comes from her credits.
-            shopping_cart_credits::prepare_checkout($data, $userid);
-
             // Now we need to store the new credit balance.
             if (
-                !empty($data['deductible'])
-                && ($data['credit'] != $data['remainingcredit'])
+                !empty($data['usecredit'])
             ) {
                 shopping_cart_credits::use_credit($userid, $data);
                 $creditsalreadyused = true;

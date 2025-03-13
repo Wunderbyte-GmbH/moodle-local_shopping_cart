@@ -61,14 +61,22 @@ class service_provider implements \core_payment\local\callback\service_provider 
     public static function get_payable(string $paymentarea, int $cartidentifier): \core_payment\local\entities\payable {
         global $DB;
 
+        // This function is called multiple times during the checkout process.
+        // As it's the only relyable place where we know that a checkout was started with a given identifier...
+        // ... we do the following:
+        // 1. Check if there is a valid cache.
+        // 2. If not, rebuild it from reservations table.
+        // 3. Check if the identifier is in the reservations table.
+        // 4. If not, add it and also add items to history table.
+        // 5. If we have cache and a reservations table entry, make sure they are the same, else throw an error.
+
+
+        $shoppingcart = shopping_cart_history::fetch_data_from_schistory_cache($cartidentifier);
+
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
 
-        $shoppingcart = reservations::get_json_from_db_via_identifier($cartidentifier);
-        $cartstore = cartstore::instance($shoppingcart['userid']);
 
-        $cartstore->set_cache($shoppingcart);
-
-        $price = shopping_cart_credits::get_price_from_shistorycart((object)$shoppingcart);
+        $price = round($shoppingcart['price'], 2);
 
         // We can only buy items with the same payment account. Therefore, we can just take the first and test it.
         $record = reset($shoppingcart['items']);
@@ -118,8 +126,12 @@ class service_provider implements \core_payment\local\callback\service_provider 
 
         $data = reservations::get_json_from_db_via_identifier($identifier);
 
+        foreach ($data['items'] as $key => $item) {
+            // $cacheitemkey = $component . '-' . $area . '-' . $itemid;
+        }
+
         // Here we write all the items to history.
-        shopping_cart_history::write_to_db((object)$data);
+        // shopping_cart_history::write_to_db((object)$data);
 
         // And now we retrieve them again.
         $records = shopping_cart_history::return_data_via_identifier($data['identifier']);
@@ -131,6 +143,12 @@ class service_provider implements \core_payment\local\callback\service_provider 
                 $key = "$record->componentname-$record->area-$record->itemid";
                 if (isset($data['items'][$key])) {
                     $data['items'][$key]['id'] = $record->id;
+                } else {
+
+
+
+
+                    throw new moodle_exception('shoppingcarthaschanged', 'local_shopping_cart');
                 }
             }
         }

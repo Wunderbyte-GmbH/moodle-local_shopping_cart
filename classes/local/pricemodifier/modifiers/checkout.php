@@ -106,8 +106,7 @@ abstract class checkout extends modifier_base {
         $data['identifier'] = $identifier;
 
         // Make sure we have this data in the schistory cache.
-        $history = new shopping_cart_history();
-        $history->store_in_schistory_cache($data);
+        shopping_cart_history::store_in_schistory_cache($data);
 
         $data['wwwroot'] = $CFG->wwwroot;
         $sp = new service_provider();

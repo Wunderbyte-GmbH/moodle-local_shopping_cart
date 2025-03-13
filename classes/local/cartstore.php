@@ -343,10 +343,10 @@ class cartstore {
 
         $now = time();
         if (
-            $json = reservations::get_json_from_db($this->userid, $identifier)
+            $data = reservations::get_json_from_db($this->userid, $identifier)
         ) {
-            $data = json_decode($json, true);
             $data['nowdate'] = $now;
+            unset($data['identifier']);
             $this->set_cache($data);
             return true;
         } else {
@@ -601,18 +601,9 @@ class cartstore {
         $data["name"] = $USER->firstname . $USER->lastname;
         $data["userid"] = $USER->id;
 
-        // Makes sure no open purchase stays active.
-        shopping_cart::check_for_ongoing_payment($USER->id);
-
         // This creates just our list of boght items.
         $historylist = new shoppingcart_history_list($USER->id);
         $historylist->insert_list($data);
-
-        // Here we are before checkout.
-        $expirationtime = shopping_cart::get_expirationtime();
-
-        // Add or reschedule all delete_item_tasks for all the items in the cart.
-        shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $USER->id);
 
         // The modifier "checkout" prepares our data for the checkout page.
         // During this process,the new identifier is created, if necessary.

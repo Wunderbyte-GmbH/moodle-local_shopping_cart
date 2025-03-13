@@ -218,14 +218,15 @@ final class shopping_cart_expiration_date_test extends \advanced_testcase {
 
         service_provider::get_payable('', $identifier);
 
+        // The new functionality will not change items which are once added to a cart.
         $historyrecords = $DB->get_records('local_shopping_cart_history');
-        $this->assertEquals(3, count($historyrecords));
+        $this->assertEquals(2, count($historyrecords));
 
         service_provider::deliver_order('', $identifier, 0, $student1->id);
 
         // We look in the ledger items.
         $schistorylist = new shoppingcart_history_list($student1->id, $identifier, true);
         $historylist = $schistorylist->return_list();
-        $this->assertEquals(3, count($historylist['historyitems']));
+        $this->assertEquals(2, count($historylist['historyitems']));
     }
 }
