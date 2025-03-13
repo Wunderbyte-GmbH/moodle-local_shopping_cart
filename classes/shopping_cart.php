@@ -1596,7 +1596,9 @@ class shopping_cart {
                     continue;
                 }
 
-                $sql = "SELECT DISTINCT sch.identifier, sch.userid, oo.timecreated, COALESCE(oo.tid, '') as tid
+                $uniqueid = $DB->sql_concat("COALESCE(oo.tid, '')", "'-'", "sch.identifier");
+
+                $sql = "SELECT DISTINCT $uniqueid as id, sch.identifier, sch.userid, oo.timecreated, COALESCE(oo.tid, '') as tid
                         FROM {local_shopping_cart_history} sch
                         JOIN {" . $table . "} oo
                         ON oo.itemid = sch.identifier AND oo.userid=sch.userid
