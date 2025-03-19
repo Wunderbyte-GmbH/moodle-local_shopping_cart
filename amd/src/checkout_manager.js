@@ -149,7 +149,7 @@ function controlCallback() {
     const currentstep = this.getAttribute('data-currentstep');
 
     const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
-    const identifier = paymentbutton ? paymentbutton.getAttribute('data-identifier') : '';
+    const identifier = paymentbutton ? paymentbutton.getAttribute('data-identifier') ?? '' : '';
 
     if (action && currentstep) {
         triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
