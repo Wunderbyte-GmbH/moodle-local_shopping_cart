@@ -85,11 +85,15 @@ class control_checkout_process extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), [
             'action' => $action,
             'currentstep' => $currentstep,
-            'identifier' => optional_param('identifier', null, PARAM_TEXT),
-            'changedinput' => optional_param('changedinput', null, PARAM_RAW),
+            'identifier' => $identifier,
+            'changedinput' => $changedinput,
         ]);
         $cartstore = cartstore::instance((int)$USER->id);
         $data = $cartstore->get_localized_data();
+
+        if (!empty($identifier)) {
+            $data['identifier'] = $identifier;
+        }
 
         $checkoutmanager = new checkout_manager(
             $data,

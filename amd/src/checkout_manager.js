@@ -80,10 +80,13 @@ function initListeners(formBody) {
 function getNewAddress() {
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
     const currentstep = getDatasetValue(formBody, 'currentstep');
+    const identifier = getDatasetValue(formBody, 'identifier');
+
     if (currentstep !== null) {
         triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
             action: '',
             currentstep: currentstep,
+            identifier: identifier,
         });
     }
 }
@@ -144,10 +147,15 @@ function initControlListener() {
 function controlCallback() {
     const action = this.getAttribute('data-action');
     const currentstep = this.getAttribute('data-currentstep');
+
+    const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
+    const identifier = paymentbutton ? paymentbutton.getAttribute('data-identifier') : '';
+
     if (action && currentstep) {
         triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
             action: action,
             currentstep: currentstep,
+            identifier: identifier,
         });
     }
 }
