@@ -128,6 +128,7 @@ const SELECTORS = {
             currency: paymentbutton.dataset.currency,
         };
         addZeroPriceListener(data);
+        addCheckoutModalListener();
     }
 
     const accepttermsbutton = document.querySelector(SELECTORS.ACCEPTTERMS);
@@ -571,6 +572,32 @@ export function addZeroPriceListener(data) {
 }
 
 /**
+ * Adds a clicklistener to all elements closing the modal to refresh the page when payment process is interupted.
+ */
+export function addCheckoutModalListener() {
+    document.body.addEventListener("click", function (event) {
+
+        const target = event.target;
+        // Check if click is on the modal backdrop
+        const isModalBackground = target.dataset.region === "modal-container"
+            && target.classList.contains("hide");
+
+        // Find the closest button (important for 'hide' action inside a button)
+        const closestButton = target.closest("button[data-action='hide']");
+        // Check if click is on an element inside modal that triggers closing
+        const isCloseAction =
+            target.closest('[data-region="modal-container"]') &&
+            (closestButton || target.dataset.action === "cancel");
+
+        if (isModalBackground || isCloseAction) {
+            setTimeout(() => {
+                location.reload();
+            }, 300); // Small delay to ensure modal closes before refresh
+        }
+    });
+}
+
+/**
  * Function to show notifications when items are added.
  * @param {*} data
  */
@@ -728,9 +755,6 @@ export function addItemShowNotification(data) {
  * @param {*} event
  */
 async function dealWithZeroPrice(event) {
-
-    // eslint-disable-next-line no-console
-    console.log('click event');
 
     event.stopPropagation();
     event.preventDefault();
