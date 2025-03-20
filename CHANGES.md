@@ -1,3 +1,6 @@
+## Version 1.0.0 (2025032000)
+* Improvement: Use persistent storage to harden the checkout process
+
 ## Version 0.9.59 (2025031200)
 * Improvement: Make sure that cancelling is not possible for items marked for rebooking.
 * Bugfix: Correctly apply consumption
