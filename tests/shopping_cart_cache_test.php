@@ -184,8 +184,9 @@ final class shopping_cart_cache_test extends advanced_testcase {
         $addresult = add_item_to_cart::execute('local_shopping_cart', 'testarea', 3, $user->id);
         $historyrecords = $DB->get_records('local_shopping_cart_history', ['identifier' => $data['identifier']]);
 
-        // $payable = service_provider::get_payable('', $data['identifier']);
-        // $this->assertEquals($payable->get_amount(), $price, 'Price was not correctly calculated.');
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* $payable = service_provider::get_payable('', $data['identifier']);
+        $this->assertEquals($payable->get_amount(), $price, 'Price was not correctly calculated.'); */
 
         $historyrecords = $DB->get_records('local_shopping_cart_history', ['identifier' => $data['identifier']]);
         $this->assertCount(1, $historyrecords, 'There should be exactly one history item for the identifier.');
@@ -254,7 +255,8 @@ final class shopping_cart_cache_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $userid = $user->id;
 
-        // $this->setUser($user);
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* $this->setUser($user); */
         $this->setAdminUser();
 
         $this->resetAfterTest();
@@ -264,7 +266,7 @@ final class shopping_cart_cache_test extends advanced_testcase {
             (object)['accountid' => $account->get('id'), 'gateway' => 'paypal', 'config' => 'T1']
         );
 
-        // Step 1: Add item to cart.
+        // First step: Add item to cart.
         $addresult = add_item_to_cart::execute($component, $area, $itemid, $userid);
         $this->assertArrayHasKey('success', $addresult);
         $this->assertEquals($addresult['success'], 1, 'Item was not successfully added to cart.');
@@ -272,8 +274,9 @@ final class shopping_cart_cache_test extends advanced_testcase {
         $price = $addresult['price'];
         $originalprice = $price;
 
-        // Step 2: Apply discount.
-        // $this->setUser($user);
+        // Second step: Apply discount.
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* $this->setUser($user); */
         $cartstore = cartstore::instance($user->id);
         $cartstore->add_discount_to_item(
             $component,

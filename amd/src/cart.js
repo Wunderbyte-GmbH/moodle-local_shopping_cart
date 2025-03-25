@@ -575,7 +575,7 @@ export function addZeroPriceListener(data) {
  * Adds a clicklistener to all elements closing the modal to refresh the page when payment process is interupted.
  */
 export function addCheckoutModalListener() {
-    document.body.addEventListener("click", function (event) {
+    document.body.addEventListener("click", function(event) {
 
         const target = event.target;
         // Check if click is on the modal backdrop

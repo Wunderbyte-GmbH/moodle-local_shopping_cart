@@ -49,7 +49,6 @@ require_once(__DIR__ . '/../../lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class service_provider implements \core_payment\local\callback\service_provider {
-
     /**
      * Callback function that returns the costs and the accountid
      * for the course that $userid of the buying user.
@@ -70,11 +69,9 @@ class service_provider implements \core_payment\local\callback\service_provider 
         // 4. If not, add it and also add items to history table.
         // 5. If we have cache and a reservations table entry, make sure they are the same, else throw an error.
 
-
         $shoppingcart = shopping_cart_history::fetch_data_from_schistory_cache($cartidentifier);
 
         $currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
-
 
         $price = round($shoppingcart['price'], 2);
 
@@ -119,19 +116,18 @@ class service_provider implements \core_payment\local\callback\service_provider 
      * @return bool Whether successful or not
      */
     public static function deliver_order(string $paymentarea, int $identifier, int $paymentid, int $userid): bool {
-        global $DB, $USER;
-
-         // First, look in shopping cart history to identify the payment and what users have bought.
-         // Now run through all the optionids (itemids) and confirm payment.
-
+        // First, look in shopping cart history to identify the payment and what users have bought.
+        // Now run through all the optionids (itemids) and confirm payment.
         $data = reservations::get_json_from_db_via_identifier($identifier);
 
-        foreach ($data['items'] as $key => $item) {
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* foreach ($data['items'] as $key => $item) {
             // $cacheitemkey = $component . '-' . $area . '-' . $itemid;
-        }
+        } */
 
         // Here we write all the items to history.
-        // shopping_cart_history::write_to_db((object)$data);
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        /* shopping_cart_history::write_to_db((object)$data); */
 
         // And now we retrieve them again.
         $records = shopping_cart_history::return_data_via_identifier($data['identifier']);
@@ -144,10 +140,6 @@ class service_provider implements \core_payment\local\callback\service_provider 
                 if (isset($data['items'][$key])) {
                     $data['items'][$key]['id'] = $record->id;
                 } else {
-
-
-
-
                     throw new moodle_exception('shoppingcarthaschanged', 'local_shopping_cart');
                 }
             }
