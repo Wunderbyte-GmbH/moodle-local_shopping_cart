@@ -161,20 +161,19 @@ class shoppingcart_history_list implements renderable, templatable {
             if (
                 get_config('local_shopping_cart', 'showextrareceiptstousers')
                 && empty($item->uniqueid)
-                && in_array($item->payment, [8, 9])
+                && in_array($item->payment, [
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER,
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH,
+                    LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION,
+                ])
             ) {
                 // Receipt URL for the item.
-
                 $urloptions = [
-                    'id' => $item->identifier,
+                    'success' => 1,
+                    'idcol' => 'id',
+                    'id' => $item->id,
                     'userid' => $item->userid,
                 ];
-
-                if (empty($item->identifier)) {
-                    $urloptions['idcol'] = 'id';
-                    $urloptions['id'] = $item->id;
-                }
-
                 $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", $urloptions);
 
                 // We want to show the credits at the place of the price.
@@ -187,10 +186,15 @@ class shoppingcart_history_list implements renderable, templatable {
             }
 
             // Receipt URL for the item.
-            $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", [
-                'id' => $item->identifier,
-                'userid' => $item->userid,
-            ]);
+            if (!empty($item->identifier) && !empty($item->userid)) {
+                $item->receipturl = new moodle_url("/local/shopping_cart/receipt.php", [
+                    'id' => $item->identifier,
+                    'userid' => $item->userid,
+                ]);
+            } else {
+                // Else we have no receipturl.
+                $item->receipturl = null;
+            }
 
             // Improvement: For installments, we need to aggregate all receipts (GH-92).
             $schistoryid = $DB->get_field_sql(
@@ -450,7 +454,11 @@ class shoppingcart_history_list implements renderable, templatable {
                 $this->historyitems[$key]['price_gross'] = number_format(round((float) ($item['price_gross'] ?? 0), 2), 2, '.', '');
                 $this->historyitems[$key]['price_net'] = number_format(round((float) ($item['price_net'] ?? 0), 2), 2, '.', '');
             }
-            $this->historyitems[$key]['receipturl'] = $item['receipturl']->out(false);
+            if (!empty($item['receipturl'])) {
+                $this->historyitems[$key]['receipturl'] = $item['receipturl']->out(false);
+            } else {
+                $this->historyitems[$key]['receipturl'] = null;
+            }
         }
 
         $returnarray = ['historyitems' => $this->historyitems];
