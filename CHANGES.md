@@ -1,3 +1,6 @@
+## Version 1.0.1 (2025032700)
+* Bugfix: Fixes for extra receipts in shopping cart history.
+
 ## Version 1.0.0 (2025032000)
 * Improvement: Use persistent storage to harden the checkout process
 
