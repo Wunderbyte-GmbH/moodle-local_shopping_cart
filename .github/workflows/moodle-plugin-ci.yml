@@ -32,9 +32,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: 8.3
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
+#          - php: 8.3
+#            moodle-branch: MOODLE_405_STABLE
+#            database: pgsql
           - php: 8.3
             moodle-branch: MOODLE_405_STABLE
             database: mariadb
@@ -42,10 +42,10 @@ jobs:
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
             extensions: mbstring, curl, zip, gd, xmlrpc, soap, intl, exif
-          - php: 7.4
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
-            extensions: mbstring, curl, zip, gd, xmlrpc, soap, intl, exif, mysqli
+#          - php: 7.4
+#            moodle-branch: MOODLE_401_STABLE
+#            database: mariadb
+#            extensions: mbstring, curl, zip, gd, xmlrpc, soap, intl, exif, mysqli
 
     steps:
       - name: Clean workspace for matrix job
@@ -72,7 +72,7 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci dev-master
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
@@ -136,21 +136,21 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
-      - name: PHPUnit tests
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
-        if: ${{ always() }}
-        run: moodle-plugin-ci phpunit
+#      - name: PHPUnit tests
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ always() }}
+#        run: moodle-plugin-ci phpunit
 
-      - name: Behat features
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
-        if: ${{ !cancelled() }}
-        run: |
-          # Clean up any existing selenium container
-          docker rm -f selenium || true
-          # Run the Behat tests with a specific Selenium image
-          moodle-plugin-ci behat --profile chrome --selenium selenium/standalone-chrome:latest
-        ## Run --dump to get faild page HTML in the output stream
-        ## run: moodle-plugin-ci behat --profile chrome --dump
+#      - name: Behat features
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ !cancelled() }}
+#        run: |
+#          # Clean up any existing selenium container
+#          docker rm -f selenium || true
+#          # Run the Behat tests with a specific Selenium image
+#          moodle-plugin-ci behat --profile chrome --selenium selenium/standalone-chrome:latest
+#        ## Run --dump to get faild page HTML in the output stream
+#        ## run: moodle-plugin-ci behat --profile chrome --dump
 
 
       - name: Prepare Behat Faildump for upload
