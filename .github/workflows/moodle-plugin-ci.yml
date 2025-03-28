@@ -132,14 +132,14 @@ jobs:
 #        run: moodle-plugin-ci mustache
 
       - name: Force rebuild JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
         run: |
           npm install
           npx grunt amd
           git status
 
       - name: Debug JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
         run: |
           ls -la amd/build/
           ls -la amd/src/
