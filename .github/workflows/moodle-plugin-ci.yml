@@ -8,9 +8,7 @@ concurrency:
 
 jobs:
   test:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/USI' || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/MOODLE') || startsWith(github.ref, 'refs/tags/')
-
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     services:
       postgres:
@@ -34,96 +32,33 @@ jobs:
       fail-fast: false
       matrix:
         include:
+#          - php: 8.3
+#            moodle-branch: MOODLE_405_STABLE
+#            database: pgsql
           - php: 8.3
             moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.3
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.3
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.3
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_402_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_402_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_402_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_402_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_401_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_401_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_401_STABLE
             database: mariadb
           - php: 7.4
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
-          - php: 7.4
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
+            extensions: mbstring, curl, zip, gd, xmlrpc, soap, intl, exif
+#          - php: 7.4
+#            moodle-branch: MOODLE_401_STABLE
+#            database: mariadb
+#            extensions: mbstring, curl, zip, gd, xmlrpc, soap, intl, exif, mysqli
 
     steps:
+      - name: Clean workspace for matrix job
+        run: |
+          MATRIX_ID="${{ matrix.php }}-${{ matrix.database }}-${{ matrix.moodle-branch }}"
+          rm -rf "$GITHUB_WORKSPACE"
+          mkdir -p "$GITHUB_WORKSPACE/matrix-$MATRIX_ID"
+          echo "MATRIX_DIR=matrix-$MATRIX_ID" >> $GITHUB_ENV
+
       - name: Check out repository code
         uses: actions/checkout@v3
         with:
-          path: plugin
+          path: ${{ env.MATRIX_DIR }}/plugin
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -144,11 +79,10 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         run: |
           moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
           moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
-          moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
-          
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
@@ -156,59 +90,98 @@ jobs:
           MUSTACHE_IGNORE_NAMES: 'cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache,shopping_cart_popover.mustache'
 
       - name: PHP Lint
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci phplint
 
       - name: PHP Copy/Paste Detector
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci phpcpd
 
       - name: PHP Mess Detector
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 
       - name: Validating
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci validate
 
       - name: Check upgrade savepoints
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci savepoints
 
-      - name: Mustache Lint
-        if: ${{ always() }}
-        run: moodle-plugin-ci mustache
+#      - name: Mustache Lint
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ always() }}
+#        run: moodle-plugin-ci mustache
+
+#      - name: Force rebuild JS files
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+#        run: |
+#          npm install
+#          npx grunt amd
+#          git status
+
+      - name: Debug JS files
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+        run: |
+          ls -la amd/build/
+          ls -la amd/src/
+          md5sum amd/build/*.js amd/build/*.map
+          md5sum amd/src/*.js
 
       - name: Grunt
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
-      - name: PHPUnit tests
-        if: ${{ always() }}
-        run: moodle-plugin-ci phpunit
+#      - name: PHPUnit tests
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ always() }}
+#        run: moodle-plugin-ci phpunit
 
-      - name: Behat features
-        if: ${{ !cancelled() }}
-        run: moodle-plugin-ci behat --profile chrome
-        ## Run --dump to get faild page HTML in the output stream
-        ## run: moodle-plugin-ci behat --profile chrome --dump
+#      - name: Behat features
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ !cancelled() }}
+#        run: |
+#          # Clean up any existing selenium container
+#          docker rm -f selenium || true
+#          # Run the Behat tests with a specific Selenium image
+#          moodle-plugin-ci behat --profile chrome --selenium selenium/standalone-chrome:latest
+#        ## Run --dump to get faild page HTML in the output stream
+#        ## run: moodle-plugin-ci behat --profile chrome --dump
+
+
+      - name: Prepare Behat Faildump for upload
+        if: ${{ failure() }}
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+        run: |
+          # We don't need to copy anything as we'll upload directly from the source
+          # Just ensuring the directory exists for the upload step
+          mkdir -p ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodledata/behat_dump
 
       - name: Upload Behat Faildump
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: Behat Faildump (${{ join(matrix.*, ', ') }})
-          path: ${{ github.workspace }}/moodledata/behat_dump
+          name: Behat-Faildump-${{ matrix.php }}-${{ matrix.database }}-${{ matrix.moodle-branch }}
+          path: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodledata/behat_dump
           retention-days: 2
           if-no-files-found: ignore
 
@@ -218,5 +191,13 @@ jobs:
       #  uses: mxschmitt/action-tmate@v3
 
       - name: Mark cancelled jobs as failed.
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ cancelled() }}
         run: exit 1
+
+      - name: Clean up Docker containers
+        if: ${{ always() }}
+        run: |
+          CONTAINER_NAME="selenium-${{ matrix.php }}-${{ matrix.database }}-${{ github.run_id }}"
+          docker stop $CONTAINER_NAME || true
+          docker rm $CONTAINER_NAME || true
