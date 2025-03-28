@@ -132,7 +132,7 @@ jobs:
 #        run: moodle-plugin-ci mustache
 
       - name: Force rebuild JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
         run: |
           npm install
           npx grunt amd
