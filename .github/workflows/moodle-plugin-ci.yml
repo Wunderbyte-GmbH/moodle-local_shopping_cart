@@ -170,6 +170,7 @@ jobs:
           md5sum amd/build/*.js amd/build/*.map
           md5sum amd/src/*.js
           cd ../../..
+          moodle-plugin-ci --version
           moodle-plugin-ci grunt --max-lint-warnings 0
 
 #      - name: PHPUnit tests
