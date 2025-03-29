@@ -139,7 +139,7 @@ jobs:
           git status
 
       - name: Debug JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
         run: |
           ls -la amd/build/
           ls -la amd/src/
