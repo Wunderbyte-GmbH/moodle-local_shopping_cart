@@ -140,20 +140,20 @@ jobs:
           ls -la $GITHUB_WORKSPACE/$MATRIX_DIR/moodle || echo "Moodle directory not found"
           ls -la $GITHUB_WORKSPACE/$MATRIX_DIR/moodle/local || echo "Local directory not found"
 
-      - name: Force rebuild JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
-        run: |
-          npm install
-          npx grunt amd
-          git status
+#      - name: Force rebuild JS files
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+#        run: |
+#          npm install
+#          npx grunt amd
+#          git status
 
-      - name: Debug JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
-        run: |
-          ls -la amd/build/
-          ls -la amd/src/
-          md5sum amd/build/*.js amd/build/*.map
-          md5sum amd/src/*.js
+#      - name: Debug JS files
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
+#        run: |
+#          ls -la amd/build/
+#          ls -la amd/src/
+#          md5sum amd/build/*.js amd/build/*.map
+#          md5sum amd/src/*.js
 
 #      - name: Grunt
 #        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
@@ -167,6 +167,10 @@ jobs:
           cd moodle/local/shopping_cart
           npm install
           npx grunt amd
+          ls -la amd/build/
+          ls -la amd/src/
+          md5sum amd/build/*.js amd/build/*.map
+          md5sum amd/src/*.js
           cd ../../..
           moodle-plugin-ci grunt --max-lint-warnings 0
 
