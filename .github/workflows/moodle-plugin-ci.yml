@@ -130,6 +130,15 @@ jobs:
 #        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
 #        if: ${{ always() }}
 #        run: moodle-plugin-ci mustache
+      - name: Check directory structure
+        if: ${{ always() }}
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "MATRIX_DIR: $MATRIX_DIR"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          ls -la $GITHUB_WORKSPACE/$MATRIX_DIR
+          ls -la $GITHUB_WORKSPACE/$MATRIX_DIR/moodle || echo "Moodle directory not found"
+          ls -la $GITHUB_WORKSPACE/$MATRIX_DIR/moodle/local || echo "Local directory not found"
 
       - name: Force rebuild JS files
         working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
@@ -146,10 +155,20 @@ jobs:
           md5sum amd/build/*.js amd/build/*.map
           md5sum amd/src/*.js
 
+#      - name: Grunt
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
+#        if: ${{ always() }}
+#        run: moodle-plugin-ci grunt --max-lint-warnings 0
+
       - name: Grunt
         working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
         if: ${{ always() }}
-        run: moodle-plugin-ci grunt --max-lint-warnings 0
+        run: |
+          cd moodle/local/shopping_cart
+          npm install
+          npx grunt amd
+          cd ../../..
+          moodle-plugin-ci grunt --max-lint-warnings 0
 
 #      - name: PHPUnit tests
 #        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}
