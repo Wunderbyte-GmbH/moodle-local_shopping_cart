@@ -165,8 +165,6 @@ jobs:
         if: ${{ always() }}
         run: |
           cd moodle/local/shopping_cart
-          npm install
-          npx grunt amd
           ls -la amd/build/
           ls -la amd/src/
           md5sum amd/build/*.js amd/build/*.map
