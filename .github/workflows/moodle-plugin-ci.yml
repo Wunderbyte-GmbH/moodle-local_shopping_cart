@@ -160,6 +160,28 @@ jobs:
           EOL
           )"
 
+      - name: Print All Dependencies
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+        run: npm list --depth=1 > build_dependencies.txt
+
+      - name: Print Build Tool Versions
+        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+        run: |
+          echo "=== Build Tool Versions ==="
+          echo "Node.js: $(node -v)"
+          echo "npm: $(npm -v)"
+          echo "Grunt CLI: $(npx grunt-cli --version 2>/dev/null || echo 'Not installed')"
+          echo "Grunt: $(grep -A 5 '"grunt"' package.json || echo 'Not in package.json')"
+          echo "Grunt actual: $(find node_modules -path '*/grunt/package.json' -exec grep -A 3 '"version"' {} \; 2>/dev/null || echo 'Not installed')"
+          echo "Rollup: $(find node_modules -path '*/rollup/package.json' -exec grep -A 3 '"version"' {} \; 2>/dev/null || echo 'Not installed')"
+          echo "Terser: $(find node_modules -path '*/terser/package.json' -exec grep -A 3 '"version"' {} \; 2>/dev/null || echo 'Not installed')"
+          echo "Babel: $(find node_modules -path '*/@babel/core/package.json' -exec grep -A 3 '"version"' {} \; 2>/dev/null || echo 'Not installed')"
+          echo "UglifyJS: $(find node_modules -path '*/uglify-js/package.json' -exec grep -A 3 '"version"' {} \; 2>/dev/null || echo 'Not installed')"
+          echo ""
+          echo "=== Minifier Configuration ==="
+          echo "Checking Gruntfile.js for minification config:"
+          grep -A 20 "terser\|uglify" Gruntfile.js 2>/dev/null || echo "No minifier config found in Gruntfile.js"
+
       - name: Debug JS files
         working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
         run: |
