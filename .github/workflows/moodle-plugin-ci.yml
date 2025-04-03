@@ -190,12 +190,12 @@ jobs:
           md5sum amd/build/*.js amd/build/*.map
           md5sum amd/src/*.js
 
-      - name: Force rebuild JS files
-        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
-        run: |
-          npm install
-          npx grunt amd
-          git status
+#     - name: Force rebuild JS files
+#        working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle/local/shopping_cart
+#        run: |
+#          npm install
+#          npx grunt amd
+#          git status
 
       - name: Debug JS files
         working-directory: ${{ github.workspace }}/${{ env.MATRIX_DIR }}/plugin
