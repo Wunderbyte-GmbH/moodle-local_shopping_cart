@@ -1,3 +1,6 @@
+## Version 1.0.2 (2025040400)
+* Bugfix: Fixed a bug where modal form did not open because description was null.
+
 ## Version 1.0.1 (2025032700)
 * Bugfix: Fixes for extra receipts in shopping cart history.
 
