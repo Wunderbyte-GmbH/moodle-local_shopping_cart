@@ -189,40 +189,67 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci mustache
 
-      - name: Analyze build environment differences
-        working-directory: plugin
+      - name: Grunt with environment analysis
+        if: ${{ always() }}
         run: |
-          bash -c "$(cat << 'EOL'
-          #!/bin/bash
-          # Script to identify environment differences affecting JS builds
+          # First, capture environment info in the plugin directory
+          cd plugin
+          
           # Create output directory for environment info
           mkdir -p env_debug
           echo "=== Collecting Environment Information ==="
-          # 1. Node.js and NPM versions
+          
+          # Current working directory
+          echo "Current directory: $(pwd)"
+          
+          # Node.js and NPM versions
           echo "Node.js version: $(node -v)" > env_debug/versions.txt
           echo "NPM version: $(npm -v)" >> env_debug/versions.txt
-          # 2. Grunt and other build tool versions
+          
+          # Grunt and other build tool versions
           echo "Grunt version: $(npx grunt --version)" >> env_debug/versions.txt
           echo "Rollup version: $(npx rollup --version 2>/dev/null || echo 'Not directly installed')" >> env_debug/versions.txt
-          # 3. List all installed packages with versions
+          
+          # List all installed packages with versions
           npm list --depth=0 > env_debug/npm_packages.txt
-          # 4. Check OS and environment
+          
+          # Check OS and environment
           uname -a > env_debug/os_info.txt
           echo "Shell: $SHELL" >> env_debug/os_info.txt
-          # 5. Examine build configuration
+          
+          # Print all environment variables
+          printenv > env_debug/all_env_vars.txt
+          
+          # Examine build configuration
           if [ -f "Gruntfile.js" ]; then
             cp Gruntfile.js env_debug/
           fi
           if [ -f "package.json" ]; then
             cp package.json env_debug/
           fi
-          # 6. Generate a sample build and compare
+          
+          # Generate a sample build and compare
           if [ -f "amd/build/address.min.js" ]; then
             cp amd/build/address.min.js env_debug/address.min.js.before
             cp amd/build/address.min.js.map env_debug/address.min.js.map.before
           fi
-          # Rebuild a single file
-          npx grunt amd --verbose > env_debug/rebuild_verbose.txt 2>&1
+          
+          # Output key findings before running grunt
+          echo "=== ENVIRONMENT INFO ==="
+          echo "Current directory: $(pwd)"
+          echo "Node.js version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+          echo "Grunt version: $(npx grunt --version)"
+          echo "Rollup version: $(npx rollup --version 2>/dev/null || echo 'Not directly installed')"
+          
+          # Return to root directory to run moodle-plugin-ci grunt
+          cd ..
+          echo "Running moodle-plugin-ci grunt from directory: $(pwd)"
+          moodle-plugin-ci grunt --max-lint-warnings 0
+          
+          # Go back to plugin directory for post-build analysis
+          cd plugin
+          
           # Save the rebuilt state
           if [ -f "amd/build/address.min.js" ]; then
             cp amd/build/address.min.js env_debug/address.min.js.after
@@ -235,22 +262,20 @@ jobs:
             echo "=== Source Map Differences ===" >> env_debug/differences.txt
             diff -u env_debug/address.min.js.map.before env_debug/address.min.js.map.after | head -50 >> env_debug/differences.txt
           fi
+          
           # Check line endings in source and built files
-          file amd/src/*.js > env_debug/line_endings_src.txt
-          file amd/build/*.js > env_debug/line_endings_build.txt
-          # Output key findings
-          echo "=== KEY FINDINGS ==="
+          file amd/src/*.js > env_debug/line_endings_src.txt 2>/dev/null || echo "No source JS files found"
+          file amd/build/*.js > env_debug/line_endings_build.txt 2>/dev/null || echo "No built JS files found"
+          
+          # Output key findings after running grunt
+          echo "=== POST-BUILD ENVIRONMENT INFO ==="
+          echo "Current directory: $(pwd)"
           cat env_debug/versions.txt
           echo ""
-          echo "=== FILE DIFFERENCES ==="
-          cat env_debug/differences.txt | head -20
-          echo "..."
-          EOL
-          )"
-
-      - name: Grunt
-        if: ${{ always() }}
-        run: moodle-plugin-ci grunt --max-lint-warnings 0
+          if [ -f "env_debug/differences.txt" ]; then
+            echo "=== FILE DIFFERENCES ==="
+            cat env_debug/differences.txt | head -20
+          fi
 
       - name: PHPUnit tests
         if: ${{ always() }}
