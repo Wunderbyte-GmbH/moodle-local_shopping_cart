@@ -143,26 +143,6 @@ jobs:
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
-      - name: Setup Node.js and npm
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-          # Navigate to the Moodle directory where .nvmrc exists
-          cd ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle || true
-
-          # Install and use Node.js version from .nvmrc
-          cat .nvmrc
-          # Install specific Node.js version
-          nvm install 22.14.0 --latest-npm || true
-          nvm use 22.14.0 || true
-
-          # Install dependencies
-          npm install || true
-          npm audit fix --force || true
-          npm install -g grunt-cli
-
       - name: Install moodle-plugin-ci
         run: |
           moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
