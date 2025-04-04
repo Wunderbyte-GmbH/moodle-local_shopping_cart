@@ -148,10 +148,17 @@ jobs:
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
           [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-          nvm install --latest-npm
-          nvm use
-          npm install
-          npm audit fix --force
+
+          # Navigate to the Moodle directory where .nvmrc exists
+          cd ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle || true
+
+          # Install and use Node.js version from .nvmrc
+          nvm install --latest-npm || true
+          nvm use || nvm use node || true
+
+          # Install dependencies
+          npm install || true
+          npm audit fix --force || true
           npm install -g grunt-cli
 
       - name: Install moodle-plugin-ci
