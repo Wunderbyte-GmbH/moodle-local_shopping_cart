@@ -153,8 +153,10 @@ jobs:
           cd ${{ github.workspace }}/${{ env.MATRIX_DIR }}/moodle || true
 
           # Install and use Node.js version from .nvmrc
-          nvm install --latest-npm || true
-          nvm use || nvm use node || true
+          cat .nvmrc
+          # Install specific Node.js version
+          nvm install 22.14.0 --latest-npm || true
+          nvm use 22.14.0 || true
 
           # Install dependencies
           npm install || true
