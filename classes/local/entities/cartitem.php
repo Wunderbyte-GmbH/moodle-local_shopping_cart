@@ -31,7 +31,6 @@ namespace local_shopping_cart\local\entities;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cartitem {
-
     /**
      * Item id
      *
@@ -165,22 +164,24 @@ class cartitem {
      * @param string|null $installment The identifier (unixtimestamp) of the installment.
      * @param string|null $linkeditem The identifier of linked items.
      */
-    public function __construct(int $itemid,
-            string $itemname,
-            float $price,
-            string $currency,
-            string $componentname,
-            string $area,
-            string $description = '',
-            string $imageurl = '',
-            ?int $canceluntil = null,
-            ?int $serviceperiodstart = null,
-            ?int $serviceperiodend = null,
-            ?string $taxcategory = null,
-            int $nodelete = 0,
-            ?string $costcenter = null,
-            ?string $installment = null,
-            ?string $linkeditem = null) {
+    public function __construct(
+        int $itemid,
+        string $itemname,
+        float $price,
+        string $currency,
+        string $componentname,
+        string $area,
+        ?string $description = '',
+        ?string $imageurl = '',
+        ?int $canceluntil = null,
+        ?int $serviceperiodstart = null,
+        ?int $serviceperiodend = null,
+        ?string $taxcategory = null,
+        ?int $nodelete = 0,
+        ?string $costcenter = null,
+        ?string $installment = null,
+        ?string $linkeditem = null
+    ) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
         $this->price = $price;
