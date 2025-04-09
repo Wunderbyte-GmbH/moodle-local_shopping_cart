@@ -798,7 +798,6 @@ function startTimer(duration, display) {
     }, 1000);
 }
 
-
 /**
  * Initialize Timer.
  *

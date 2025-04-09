@@ -216,7 +216,6 @@ function getChangedInputs() {
     .filter(item => item !== null);
 }
 
-
 /**
  * Handles button control for the checkout process.
  * @param {string} serviceName - The name of the web service.
