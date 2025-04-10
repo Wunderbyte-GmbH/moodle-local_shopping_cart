@@ -48,7 +48,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mark_for_rebooking extends external_api {
-
     /**
      * Describes the parameters for mark_for_rebooking.
      *
@@ -58,8 +57,7 @@ class mark_for_rebooking extends external_api {
         return new external_function_parameters([
             'historyid'  => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -91,8 +89,10 @@ class mark_for_rebooking extends external_api {
         }
 
         // Only a cashier can book for other users than herself.
-        if (!has_capability('local/shopping_cart:cashier', $context)
-            && $params['userid'] != $USER->id) {
+        if (
+            !has_capability('local/shopping_cart:cashier', $context)
+            && $params['userid'] != $USER->id
+        ) {
             throw new moodle_exception('norighttobookforotherusers', 'local_shopping_cart');
         }
 
@@ -107,7 +107,6 @@ class mark_for_rebooking extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'marked' => new external_value(PARAM_INT, '1 if marked, 0 if not.', VALUE_DEFAULT, 0),
-            ]
-        );
+            ]);
     }
 }

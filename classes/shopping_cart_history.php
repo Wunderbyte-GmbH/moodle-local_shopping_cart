@@ -678,7 +678,7 @@ class shopping_cart_history {
 
         global $DB;
 
-        if (!$records = self::return_data_via_identifier($identifier, $userid)) {
+        if (!$records = self::return_data_via_identifier($identifier)) {
             return false;
         }
 
