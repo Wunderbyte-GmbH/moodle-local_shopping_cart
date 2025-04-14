@@ -210,8 +210,9 @@ $params = [];
 // File name and sheet name.
 $fileandsheetname = "cash_report";
 
+$table = new cash_report_table('cash_report_table');
+
 if ($debug != 2) {
-    $table = new cash_report_table('cash_report_table');
     if ($debug == 3) {
         $encodedtable = json_encode($table);
         debugging("TABLE AFTER INIT:<br>$encodedtable", DEBUG_ALL);
