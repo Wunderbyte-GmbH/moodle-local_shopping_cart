@@ -49,7 +49,7 @@ require_once($CFG->libdir . '/externallib.php');
  * @author    Georg Maißer
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class verify_purchase extends external_api {
+class purchase_notification extends external_api {
     /**
      * Describes the parameters for add_item_to_cart.
      *
@@ -84,7 +84,7 @@ class verify_purchase extends external_api {
             'justcheck' => $justcheck,
         ]);
 
-        global $USER;
+        global $USER, $DB;
 
         require_login();
 
@@ -96,17 +96,24 @@ class verify_purchase extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
         $successurl = '';
-        $success = shopping_cart_history::has_successful_checkout($params['identifier']);
+        $success = self::return_checkout_status($params['identifier'], $params['paymentgateway']);
         if ($justcheck) {
-            if ($success == true) {
+            if ($success == 3) {
                 $successurl = helper::get_success_url('local_shopping_cart', '', $params['identifier'])->__toString();
+            } else if ($success == 2) {
+                $successurl = helper::get_success_url('local_shopping_cart', '', $params['identifier'])->__toString();
+                $successurl = str_replace('success=1', 'success=0', $successurl);
             }
-            return ['status' => $success ? 0 : 1, 'url' => $successurl];
+            return ['status' => $success, 'url' => $successurl];
         }
-        $success = 0;
-
-        if (!$success && !empty($params['paymentgateway'])) {
-            // afetch from if tid empty !!         
+        if (($success !== 3 || $success !== 2) && !empty($params['paymentgateway'])) {
+            if ((!empty($params['tid']) || $params['tid'] == '') && !empty($params['identifier'])) {
+                $dbrec = $DB->get_record('paygw_' . $params['paymentgateway'] . '_openorders',
+                ['itemid' => $params['identifier']]);
+                if ($dbrec) {
+                    $params['tid'] = $dbrec->customorderid;
+                }
+            }
             // If the payment is not successful yet, we can call transaction complete with the data we have here.
             $transactioncompletestring = 'paygw_' . $params['paymentgateway'] . '\external\transaction_complete';
             if (class_exists($transactioncompletestring)) {
@@ -137,9 +144,37 @@ class verify_purchase extends external_api {
         }
         // Translate success.
         // Success 1 means here not ok.
-        $success = $success ? 0 : 1;
+        $success = $success ? 3 : 0;
 
         return ['status' => $success, 'url' => $success ? '' : $successurl];
+    }
+
+    /**
+     * Returns the checkout status for a given item and payment provider.
+     *
+     * @param int $itemid The ID of the item to check
+     * @param string $provider The payment provider to check
+     * @return int Returns the payment status:
+     *             0 = Payment not successful/pending
+     *             2 = Payment status 2 (specific to provider)
+     *             3 = Payment status 3 (specific to provider)
+     */
+    public static function return_checkout_status($itemid, $provider) {
+        global $DB;
+        $success = 0;
+        $records = $DB->get_records('paygw_' . $provider . '_openorders', ['itemid' => $itemid]);
+        if ($records) {
+            foreach ($records as $record) {
+                if ($record->status == 3) {
+                    $success = 3;
+                } else if ($record->status == 2) {
+                    $success = 2;
+                } else {
+                    $success = 0;
+                }
+            }
+        }
+        return $success;
     }
 
     /**

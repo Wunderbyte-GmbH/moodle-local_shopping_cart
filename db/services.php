@@ -148,6 +148,14 @@ $functions = [
                 'description' => 'Verify a puchase',
                 'type' => 'read',
                 'capabilities' => '',
+                'ajax' => 1,
+        ],
+        'local_shopping_cart_purchase_notification' => [
+                'classname' => 'local_shopping_cart\external\purchase_notification',
+                'description' => 'Verify a puchase from payment gateway',
+                'type' => 'read',
+                'capabilities' => '',
+                'ajax' => 1,
         ],
         'local_shopping_cart_control_checkout_process' => [
             'classname'     => 'local_shopping_cart\external\control_checkout_process',
