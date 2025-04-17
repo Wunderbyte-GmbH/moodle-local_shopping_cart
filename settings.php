@@ -259,7 +259,7 @@ if ($hassiteconfig) {
             'local_shopping_cart/alwaysanswerwithsuccessinverifypurchase',
             get_string('alwaysanswerwithsuccessinverifypurchase', 'local_shopping_cart'),
             get_string('alwaysanswerwithsuccessinverifypurchase_desc', 'local_shopping_cart'),
-            1
+            0
         )
     );
 
