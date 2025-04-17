@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace local_shopping_cart\external;
 
 use context_system;
-use core_payment\helper;
 use external_api;
 use external_function_parameters;
 use external_value;
@@ -61,7 +60,6 @@ class verify_purchase extends external_api {
             'tid'  => new external_value(PARAM_TEXT, 'tid', VALUE_DEFAULT, ''),
             'paymentgateway'  => new external_value(PARAM_TEXT, 'paymentgateway', VALUE_DEFAULT, ''),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            'justcheck'  => new external_value(PARAM_BOOL, 'userid', VALUE_DEFAULT, false),
             ]);
     }
 
@@ -75,13 +73,12 @@ class verify_purchase extends external_api {
      *
      * @return array
      */
-    public static function execute(int $identifier, string $tid, string $paymentgateway, int $userid, bool $justcheck): array {
+    public static function execute(int $identifier, string $tid, string $paymentgateway, int $userid): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'identifier' => $identifier,
             'tid' => $tid,
             'paymentgateway' => $paymentgateway,
             'userid' => $userid,
-            'justcheck' => $justcheck,
         ]);
 
         global $USER;
@@ -95,51 +92,18 @@ class verify_purchase extends external_api {
         if (!has_capability('local/shopping_cart:canverifypayments', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
-        $successurl = '';
-        $success = shopping_cart_history::has_successful_checkout($params['identifier']);
-        if ($justcheck) {
-            if ($success == true) {
-                $successurl = helper::get_success_url('local_shopping_cart', '', $params['identifier'])->__toString();
-            }
-            return ['status' => $success ? 0 : 1, 'url' => $successurl];
-        }
-        $success = 0;
 
-        if (!$success && !empty($params['paymentgateway'])) {
-            // afetch from if tid empty !!         
-            // If the payment is not successful yet, we can call transaction complete with the data we have here.
-            $transactioncompletestring = 'paygw_' . $params['paymentgateway'] . '\external\transaction_complete';
-            if (class_exists($transactioncompletestring)) {
-                try {
-                    $transactioncomplete = new $transactioncompletestring();
-                    if ($transactioncomplete instanceof interface_transaction_complete) {
-                        $response = $transactioncomplete::execute(
-                            'local_shopping_cart',
-                            '',
-                            $params['identifier'],
-                            $params['tid'],
-                            '',
-                            '',
-                            true,
-                            '',
-                            $params['userid'],
-                        );
-                        $success = $response['success'] ?? false;
-                    } else {
-                        throw new moodle_exception(
-                            'ERROR: transaction_complete does not implement transaction_complete interface!'
-                        );
-                    }
-                } catch (\Throwable $e) {
-                    $success = false;
-                }
-            }
-        }
-        // Translate success.
-        // Success 1 means here not ok.
-        $success = $success ? 0 : 1;
+        if (get_config('local_shopping_cart', 'alwaysanswerwithsuccessinverifypurchase')) {
+            $success = 0;
+        } else {
+            $success = shopping_cart_history::has_successful_checkout($params['identifier']);
 
-        return ['status' => $success, 'url' => $success ? '' : $successurl];
+            // Translate success.
+            // Success 1 means here not ok.
+            $success = $success ? 0 : 1;
+        }
+
+        return ['status' => $success];
     }
 
     /**
@@ -150,7 +114,6 @@ class verify_purchase extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'status' => new external_value(PARAM_INT, 'Status', VALUE_DEFAULT, 0),
-            'url' => new external_value(PARAM_URL, 'Success URL', VALUE_OPTIONAL),
             ]);
     }
 }
