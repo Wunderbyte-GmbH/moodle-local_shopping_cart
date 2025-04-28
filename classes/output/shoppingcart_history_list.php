@@ -36,6 +36,7 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
+use Throwable;
 
 /**
  * viewtable class to display view.php
@@ -111,10 +112,21 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param bool $fromledger
      */
     public function __construct(int $userid, int $identifier = 0, $fromledger = false) {
-        global $DB;
+        global $DB, $PAGE;
 
         $this->userid = $userid;
         $this->fromledger = $fromledger;
+
+        // We need to have the context set for the format_string below.
+        try {
+            if (!$context = $page->context ?? null) {
+                if (empty($context)) {
+                    $PAGE->set_context(context_system::instance());
+                }
+            }
+        } catch (Throwable $e) {
+            $PAGE->set_context(context_system::instance($cmid));
+        }
 
         // Get currency from config.
         $this->currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
