@@ -129,6 +129,7 @@ if (isset($success) && isset($historylist)) {
 } else {
     $cartstore = cartstore::instance($userid);
     $data = $cartstore->get_localized_data();
+    shopping_cart::check_for_ongoing_payment($userid);
     $cartstore->get_expanded_checkout_data($data);
 }
 
