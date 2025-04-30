@@ -35,7 +35,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rebookings {
-
     /**
      * Checks all the conditions if we should allow rebooking.
      * @param stdClass $item
@@ -51,8 +50,10 @@ class rebookings {
         }
 
         // First check, if it is the wrong kind of item.
-        if ($item->componentname === 'local_shopping_cart'
-            && in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem'])) {
+        if (
+            $item->componentname === 'local_shopping_cart'
+            && in_array($item->area, ['bookingfee', 'rebookingcredit', 'rebookitem', 'rebookingfee'])
+        ) {
             return false;
         }
 
@@ -62,8 +63,10 @@ class rebookings {
         }
 
         // If the item is outside the service period.
-        if (!empty($item->serviceperiodend)
-            && $item->serviceperiodend < time()) {
+        if (
+            !empty($item->serviceperiodend)
+            && $item->serviceperiodend < time()
+        ) {
             return false;
         }
 
@@ -75,9 +78,10 @@ class rebookings {
 
         // If the rebooking period is not empty, we check the rest.
         // This is very expensive, we do it last.
-        if (!empty(get_config('local_shopping_cart', 'rebookingperiod')
-            && !empty(get_config('local_shopping_cart', 'rebookingmaxnumber')))) {
-
+        if (
+            !empty(get_config('local_shopping_cart', 'rebookingperiod')
+            && !empty(get_config('local_shopping_cart', 'rebookingmaxnumber')))
+        ) {
             $maxnumberofrebookings = get_config('local_shopping_cart', 'rebookingmaxnumber');
 
             $rebookingperiod = get_config('local_shopping_cart', 'rebookingperiod');
@@ -102,15 +106,15 @@ class rebookings {
             if ($maxnumberofrebookings <= $numberrebookings) {
                 return false;
             }
-
         }
 
         // Finally, we have a look if allowrebooking is turned off for this particular item.
-        if ($record = $DB->get_record('local_shopping_cart_iteminfo', [
+        if (
+            $record = $DB->get_record('local_shopping_cart_iteminfo', [
             'componentname' => $item->componentname,
             'area' => $item->area,
-            'itemid' => $item->itemid])) {
-
+            'itemid' => $item->itemid])
+        ) {
             $jsonobject = json_decode($record->json);
 
             if (empty($jsonobject) || empty($jsonobject->allowrebooking)) {
@@ -120,5 +124,4 @@ class rebookings {
 
         return true;
     }
-
 }

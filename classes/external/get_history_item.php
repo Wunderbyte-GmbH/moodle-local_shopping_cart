@@ -52,7 +52,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_history_item extends external_api {
-
     /**
      * Describes the parameters for cancel_purchase.
      *
@@ -64,8 +63,7 @@ class get_history_item extends external_api {
             'area'  => new external_value(PARAM_TEXT, 'area', VALUE_REQUIRED),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_REQUIRED),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -82,10 +80,11 @@ class get_history_item extends external_api {
      * @throws dml_exception
      */
     public static function execute(
-            string $componentname,
-            string $area,
-            int $itemid,
-            int $userid): array {
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $userid
+    ): array {
 
         global $USER;
 
@@ -161,7 +160,6 @@ class get_history_item extends external_api {
             'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quotaconsumed'),
             'round' => new external_value(PARAM_FLOAT, 'Round'),
             'cancelationfee' => new external_value(PARAM_FLOAT, 'Cancelationfee'),
-            ]
-        );
+            ]);
     }
 }
