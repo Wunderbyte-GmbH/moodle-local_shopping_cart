@@ -19,10 +19,10 @@ jobs:
 
       # If you need to install additional plugins as dependencies
       # extra_plugin_runners: 'moodle-plugin-ci add-plugin danmarsden/moodle-mod_attendance --branch MOODLE_404_STABLE'
-      extra_plugin_runners: 'moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table'
-      extra_plugin_runners: 'moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes'
-      extra_plugin_runners: 'moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime'
       extra_plugin_runners: |
+        moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
+        moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
+        moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
         # WORKAROUND 17/04/2025: The following code is a workaround for the "File is stale and needs to be rebuilt" error
         # Load NVM and use the version from .nvmrc
         export NVM_DIR="$HOME/.nvm"
