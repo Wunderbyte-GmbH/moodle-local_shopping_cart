@@ -83,6 +83,8 @@ class behat_local_shopping_cart extends behat_base {
     /**
      * Reset all VAT mock data after each scenario.
      *
+     * @param AfterScenarioScope $scope
+     *
      * @AfterScenario
      */
     public function reset_vat_mock_data(AfterScenarioScope $scope): void {
