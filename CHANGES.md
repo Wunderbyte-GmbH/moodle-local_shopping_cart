@@ -1,3 +1,8 @@
+## Version 1.0.3 (2025050500)
+* Bugfix: Make sure rebookingfee can never be rebooked.
+* Bugfix: Prevent missing context when using format_string in webservice.
+* Bugfix: Adding workaround for grunt stale issue.
+
 ## Version 1.0.2 (2025040400)
 * Bugfix: Fixed a bug where modal form did not open because description was null.
 
