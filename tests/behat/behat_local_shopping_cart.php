@@ -25,6 +25,8 @@
 use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
+use Behat\Gherkin\Node\TableNode;
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
 
 /**
  * Behat functions.
@@ -36,6 +38,61 @@ use local_shopping_cart\shopping_cart;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_local_shopping_cart extends behat_base {
+    /**
+     * Soap Mock instance.
+     *
+     * @var object
+     */
+    protected object $soapmock;
+
+    /**
+     * Sets up mocked VAT responses using JSON.
+     *
+     * @Given /^VAT mock data is configured as:$/
+     *
+     * Example usage:
+     *   Given VAT mock data is configured as:
+     *     | countrycode | vatnumber   | response                                                |
+     *     | AT          | U74259768   | {"valid": true, "name": "Mercedes Benz", "address": ""} |
+     *     | DE          | 123456789   | {"valid": false}                                        |
+     *
+     * @param TableNode $data
+     * @return void
+     */
+    public function vat_mock_data_configured_as(TableNode $data): void {
+        foreach ($data->getHash() as $row) {
+            $key = self::build_vat_mock_key($row['countrycode'], $row['vatnumber']);
+            $value = $row['response'];
+
+            // Store each mock as config value under plugin.
+            set_config($key, $value, 'local_shopping_cart');
+        }
+    }
+
+    /**
+     * Helper to generate the VAT mock config key.
+     *
+     * @param string $countrycode
+     * @param string $vatnumber
+     * @return string
+     */
+    private static function build_vat_mock_key(string $countrycode, string $vatnumber): string {
+        return 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnumber);
+    }
+
+    /**
+     * Reset all VAT mock data after each scenario.
+     *
+     * @AfterScenario
+     */
+    public function reset_vat_mock_data(AfterScenarioScope $scope): void {
+        $configs = get_config('local_shopping_cart');
+        foreach ($configs as $key => $value) {
+            if (strpos($key, 'mockvat_') === 0) {
+                unset_config($key, 'local_shopping_cart');
+            }
+        }
+    }
 
     /**
      * Clean shopping cart for given user.
