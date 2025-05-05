@@ -49,6 +49,9 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
       | owncountrycode | DE        | local_shopping_cart |
       | ownvatnrnumber | 812526315 | local_shopping_cart |
       ## Mercedes-Bentz :)
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                             |
+      | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
@@ -81,6 +84,9 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
       | itempriceisnet  | 1         | local_shopping_cart |
       | owncountrycode  | AT        | local_shopping_cart |
       | ownvatnrnumber  | U74259768 | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                           |
+      | PT          | PT500697256 | {"valid": true, "name": "Portugal", "address": ""} |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
@@ -113,6 +119,9 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
       | itempriceisnet  | 0         | local_shopping_cart |
       | owncountrycode  | AT        | local_shopping_cart |
       | ownvatnrnumber  | U74259768 | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                           |
+      | PT          | PT500697256 | {"valid": true, "name": "Portugal", "address": ""} |
     And I log in as "user2"
     And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"

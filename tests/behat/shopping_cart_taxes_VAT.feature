@@ -32,6 +32,10 @@ Feature: Configure tax categories and use VAT to reduce price.
     Given the following config values are set as admin:
       | config          | value | plugin              |
       | itempriceisnet  | 1     | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                             |
+      | AT          | U1100       | {"valid": false}                                     |
+      | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
@@ -62,6 +66,9 @@ Feature: Configure tax categories and use VAT to reduce price.
     Given the following config values are set as admin:
       | config         | value | plugin              |
       | itempriceisnet | 0     | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                             |
+      | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
@@ -87,6 +94,9 @@ Feature: Configure tax categories and use VAT to reduce price.
       | enableinstallments  | 1     | local_shopping_cart |
       | timebetweenpayments | 2     | local_shopping_cart |
       | reminderdaysbefore  | 1     | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                             |
+      | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
     And I log in as "admin"
     And Shopping cart has been cleaned for user "admin"
     And Testitem "5" has been put in shopping cart of user "admin"
