@@ -23,19 +23,6 @@ jobs:
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
         moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
-        # WORKAROUND 17/04/2025: The following code is a workaround for the "File is stale and needs to be rebuilt" error
-        # Load NVM and use the version from .nvmrc
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        cd moodle
-        nvm use
-        npm install
-        npm install -g grunt-cli
-        cd ../plugin
-        echo "=== Building AMD files before CI check ==="
-        grunt --gruntfile ../moodle/Gruntfile.js amd
-        echo "AMD files built successfully"
-        cd ..
 
       # If you need to disable specific tests
       disable_phpcpd: true
