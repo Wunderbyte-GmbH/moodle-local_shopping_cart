@@ -7,141 +7,59 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/USI' || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/MOODLE') || startsWith(github.ref, 'refs/tags/')
+  ci:
+    uses: Wunderbyte-GmbH/catalyst-moodle-workflows/.github/workflows/ci.yml@main
+    # Required if you plan to publish to the Moodle plugins directory
+    # secrets:
+    #   moodle_org_token: ${{ secrets.MOODLE_ORG_TOKEN }}
+    with:
+      min_php: '7.4'
+      # Custom configuration options
+      # The following are example settings you might want to adjust based on your plugin's needs
 
-    runs-on: ubuntu-22.04
+      # If you need to install additional plugins as dependencies
+      # extra_plugin_runners: 'moodle-plugin-ci add-plugin danmarsden/moodle-mod_attendance --branch MOODLE_404_STABLE'
+      extra_plugin_runners: |
+        moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
+        moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
+        moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
+        # WORKAROUND 17/04/2025: The following code is a workaround for the "File is stale and needs to be rebuilt" error
+        # Load NVM and use the version from .nvmrc
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        cd moodle
+        nvm use
+        npm install
+        npm install -g grunt-cli
+        cd ../plugin
+        echo "=== Building AMD files before CI check ==="
+        grunt --gruntfile ../moodle/Gruntfile.js amd
+        echo "AMD files built successfully"
+        cd ..
 
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: 'postgres'
-          POSTGRES_HOST_AUTH_METHOD: 'trust'
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
-      mariadb:
-        image: mariadb:10.8
-        env:
-          MYSQL_USER: 'root'
-          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 3
+      # If you need to disable specific tests
+      disable_phpcpd: true
+      # disable_phpunit: false
+      # disable_grunt: false
+      # disable_mustache: false
+      # disable_phpdoc: false
+      # disable_phpcs: false
+      # disable_phplint: false
+      # disable_phpcpd: false
+      # disable_ci_validate: false
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - php: 8.3
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.3
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_405_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_405_STABLE
-            database: mariadb
-          - php: 8.3
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.3
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_404_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_404_STABLE
-            database: mariadb
-          - php: 8.2
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.2
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_403_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_403_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_402_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_402_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_402_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_402_STABLE
-            database: mariadb
-          - php: 8.1
-            moodle-branch: MOODLE_401_STABLE
-            database: pgsql
-          - php: 8.1
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
-          - php: 8.0
-            moodle-branch: MOODLE_401_STABLE
-            database: pgsql
-          - php: 8.0
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
-          - php: 7.4
-            moodle-branch: MOODLE_401_STABLE
-            database: pgsql
-          - php: 7.4
-            moodle-branch: MOODLE_401_STABLE
-            database: mariadb
+      # For strict code quality checks
+      # codechecker_max_warnings: 0
 
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-        with:
-          path: plugin
+      # If you need to enable PHPMD
+      # enable_phpmd: true
 
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ matrix.extensions }}
-          ini-values: max_input_vars=5000
-          # If you are not using code coverage, keep "none". Otherwise, use "pcov" (Moodle 3.10 and up) or "xdebug".
-          # If you try to use code coverage with "none", it will fallback to phpdbg (which has known problems).
-          coverage: none
+      # If you need to ignore specific paths (third-party libraries are ignored by default)
+      # ignore_paths: 'some/path,another/path'
 
-      - name: Initialise moodle-plugin-ci
-        run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
-          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
-          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
-          sudo locale-gen en_AU.UTF-8
-          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+      # Override to exclude stale AMD file check (similar to your current workaround)
+      # This might not be needed with the reusable workflow as it might handle this already
+      # disable_grunt: true  # Only use this if you're having issues with grunt
 
       # If you need to specify a custom minimum PHP version
       # min_php: '7.4'
