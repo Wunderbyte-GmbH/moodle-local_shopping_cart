@@ -57,7 +57,8 @@ jobs:
 
       # If you need to disable specific tests
       disable_phpcpd: true
-      disable_mustache: true
+      disable_release: true
+      # disable_mustache: false
       # disable_phpunit: false
       # disable_grunt: false
       # disable_phpdoc: false

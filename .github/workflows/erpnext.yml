@@ -7,6 +7,6 @@ on:
 
 jobs:
   call-labeled-issue-workflow:
-    uses: Wunderbyte-GmbH/catalyst-moodle-workflows/.github/workflows/labeled_issue.yml@main
+    uses: Wunderbyte-GmbH/catalyst-moodle-workflows/.github/workflows/labeled-issue.yml@main
     secrets:
       webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
