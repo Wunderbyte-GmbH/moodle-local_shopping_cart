@@ -659,6 +659,8 @@ $string['startinvoicingdate'] = 'Enter a date from which you want to start gener
 $string['startinvoicingdatedesc'] = 'In order to prevent invoice creation from invoices in the past
  enter a UNIX timestamp for starting date to issue invoices. Get it from there: https://www.unixtimestamp.com/';
 $string['success'] = 'Success';
+$string['task:createinvoice'] = 'Create invoice Task';
+$string['task:deleteitem'] = 'Delete item from cart Task';
 $string['taxcategories'] = 'Tax categories and their tax percentage';
 $string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';
 $string['taxcategories_examples_button'] = '(Examples)';

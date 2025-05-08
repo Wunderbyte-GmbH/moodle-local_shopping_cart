@@ -45,7 +45,7 @@ class create_invoice_task extends \core\task\adhoc_task {
      * @throws \coding_exception
      */
     public function get_name() {
-        return get_string('modulename', 'local_shopping_cart');
+        return get_string('task:createinvoice', 'local_shopping_cart');
     }
 
     /**

@@ -48,7 +48,7 @@ class delete_item_task extends \core\task\adhoc_task {
      * @throws \coding_exception
      */
     public function get_name() {
-        return get_string('modulename', 'local_shopping_cart');
+        return get_string('task:deleteitem', 'local_shopping_cart');
     }
 
     /**

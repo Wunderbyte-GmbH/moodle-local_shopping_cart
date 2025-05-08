@@ -590,6 +590,8 @@ $string['startinvoicingdate'] = 'Mit dem folgenden Datum beginnen Sie mit der Re
 $string['startinvoicingdatedesc'] = 'Geben Sie einen Unix Timestamp für den Zeitpunkt ein, ab dem Sie Rechnungen generieren wollen.
  Kopieren Sie ihn von dort: https://www.unixtimestamp.com/';
 $string['success'] = 'Erfolgreich.';
+$string['task:createinvoice'] = 'Erstelle Rechnung Task';
+$string['task:deleteitem'] = 'Lösche Artikel aus Einkaufswagen Task';
 $string['taxcategories'] = 'Steuerkategorien und anwendbare Steuersätze';
 $string['taxcategories_desc'] = 'Steuerkategorien und anwendbare Steuersätze (in %) pro User-Land.';
 $string['taxcategories_examples_button'] = '(Beispiele)';
