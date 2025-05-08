@@ -432,7 +432,7 @@ class erpnext_invoice implements invoice {
             $itemdata['qty'] = 1;
 
             $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
-            $this->invoicedata['uid'] = $item->vatnumber;
+            $this->invoicedata['uid'] = $item->taxcountrycode . $item->vatnumber;
             if (!isset($this->invoicedata['taxes_and_charges'])) {
                 $this->invoicedata['taxes_and_charges'] = self::get_taxes_charges_template();
                 if (!$this->invoicedata['taxes_and_charges']) {
