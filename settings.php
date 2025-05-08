@@ -25,7 +25,7 @@
 
 use core_payment\helper;
 use local_shopping_cart\admin_setting_taxcategories;
-use local_shopping_cart\local\vatnrchecker;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,8 +33,10 @@ defined('MOODLE_INTERNAL') || die();
 // Default for users that have site config.
 if ($hassiteconfig) {
     // Add the category to the local plugin branch.
-    $settings = new admin_settingpage('local_shopping_cart_settings', '');
-    $ADMIN->add('localplugins', new admin_category('local_shopping_cart', new lang_string('pluginname', 'local_shopping_cart')));
+    $settings = new admin_settingpage('local_shopping_cart_settings',
+            get_string('generalsettingspagetitle', 'local_shopping_cart'));
+    $ADMIN->add('localplugins', new admin_category('local_shopping_cart',
+            new lang_string('pluginname', 'local_shopping_cart')));
     $ADMIN->add('local_shopping_cart', $settings);
 
     $paymentaccountrecords = helper::get_payment_accounts_to_manage(context_system::instance(), false);
@@ -844,7 +846,7 @@ if ($hassiteconfig) {
             get_string('owncountrycode', 'local_shopping_cart'),
             get_string('owncountrycode_desc', 'local_shopping_cart'),
             null,
-            vatnrchecker::return_countrycodes_array()
+            vatnumberhelper::get_countrycodes_array()
         )
     );
 

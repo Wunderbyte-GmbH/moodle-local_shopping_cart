@@ -374,6 +374,7 @@ $string['fr'] = "France";
 $string['furtherpayments'] = 'Further payments';
 $string['gateway'] = 'Gateway';
 $string['gb'] = "United Kingdom";
+$string['generalsettingspagetitle'] = 'General Shopping Cart Settings';
 $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['globalcurrency'] = 'Currency';
 $string['globalcurrencydesc'] = 'Choose the currency for prices.';

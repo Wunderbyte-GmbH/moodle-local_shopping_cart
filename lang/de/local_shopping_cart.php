@@ -369,6 +369,7 @@ $string['fr'] = "Frankreich";
 $string['furtherpayments'] = 'Weitere Zahlungen';
 $string['gateway'] = 'Gateway';
 $string['gb'] = "Vereinigtes Königreich";
+$string['generalsettingspagetitle'] = 'Allgemeine Shopping Cart Einstellungen';
 $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';
 $string['globalcurrency'] = 'Währung';
 $string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';

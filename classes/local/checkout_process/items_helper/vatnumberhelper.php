@@ -59,9 +59,9 @@ class vatnumberhelper {
      *
      * @return array
      */
-    public static function get_countrycodes_array() {
+    public static function get_countrycodes_array(): array {
         $stringman = get_string_manager();
-        $countries = [
+        return [
             'novatnr' => $stringman->get_string('novatnr', 'local_shopping_cart', null, 'en'),
             'AT' => $stringman->get_string('at', 'local_shopping_cart', null, 'en'),
             'BE' => $stringman->get_string('be', 'local_shopping_cart', null, 'en'),
@@ -94,7 +94,6 @@ class vatnumberhelper {
             'XI' => $stringman->get_string('xi', 'local_shopping_cart', null, 'en'),
             'EU' => $stringman->get_string('eu', 'local_shopping_cart', null, 'en'),
         ];
-        return $countries;
     }
 
     /**

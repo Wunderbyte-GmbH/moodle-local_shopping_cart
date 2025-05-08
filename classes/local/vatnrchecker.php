@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local;
 
 use SoapClient;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 
 /**
  * Class templaterule
@@ -231,54 +232,11 @@ class vatnrchecker {
 
     /**
      * Function to return an array of localized country codes.
-     *
-     * @return array
-     */
-    public static function return_countrycodes_array() {
-        $stringman = get_string_manager();
-        $countries = [
-            'novatnr' => $stringman->get_string('novatnr', 'local_shopping_cart', null, 'en'),
-            'AT' => $stringman->get_string('at', 'local_shopping_cart', null, 'en'),
-            'BE' => $stringman->get_string('be', 'local_shopping_cart', null, 'en'),
-            'BG' => $stringman->get_string('bg', 'local_shopping_cart', null, 'en'),
-            'CY' => $stringman->get_string('cy', 'local_shopping_cart', null, 'en'),
-            'CZ' => $stringman->get_string('cz', 'local_shopping_cart', null, 'en'),
-            'DE' => $stringman->get_string('de', 'local_shopping_cart', null, 'en'),
-            'DK' => $stringman->get_string('dk', 'local_shopping_cart', null, 'en'),
-            'EE' => $stringman->get_string('ee', 'local_shopping_cart', null, 'en'),
-            'EL' => $stringman->get_string('el', 'local_shopping_cart', null, 'en'),
-            'ES' => $stringman->get_string('es', 'local_shopping_cart', null, 'en'),
-            'FI' => $stringman->get_string('fi', 'local_shopping_cart', null, 'en'),
-            'FR' => $stringman->get_string('fr', 'local_shopping_cart', null, 'en'),
-            'HR' => $stringman->get_string('hr', 'local_shopping_cart', null, 'en'),
-            'HU' => $stringman->get_string('hu', 'local_shopping_cart', null, 'en'),
-            'IE' => $stringman->get_string('ie', 'local_shopping_cart', null, 'en'),
-            'IT' => $stringman->get_string('it', 'local_shopping_cart', null, 'en'),
-            'LU' => $stringman->get_string('lu', 'local_shopping_cart', null, 'en'),
-            'LV' => $stringman->get_string('lv', 'local_shopping_cart', null, 'en'),
-            'LT' => $stringman->get_string('lt', 'local_shopping_cart', null, 'en'),
-            'MT' => $stringman->get_string('mt', 'local_shopping_cart', null, 'en'),
-            'NL' => $stringman->get_string('nl', 'local_shopping_cart', null, 'en'),
-            'PL' => $stringman->get_string('pl', 'local_shopping_cart', null, 'en'),
-            'PT' => $stringman->get_string('pt', 'local_shopping_cart', null, 'en'),
-            'RO' => $stringman->get_string('ro', 'local_shopping_cart', null, 'en'),
-            'SE' => $stringman->get_string('se', 'local_shopping_cart', null, 'en'),
-            'SI' => $stringman->get_string('si', 'local_shopping_cart', null, 'en'),
-            'SK' => $stringman->get_string('sk', 'local_shopping_cart', null, 'en'),
-            'GB' => $stringman->get_string('gb', 'local_shopping_cart', null, 'en'),
-            'XI' => $stringman->get_string('xi', 'local_shopping_cart', null, 'en'),
-            'EU' => $stringman->get_string('eu', 'local_shopping_cart', null, 'en'),
-        ];
-        return $countries;
-    }
-
-    /**
-     * Function to return an array of localized country codes.
      * @param string $countrykey
      * @return bool
      */
     public static function is_european($countrykey) {
-        $countries = self::return_countrycodes_array();
+        $countries = vatnumberhelper::get_countrycodes_array();
         if (isset($countries[$countrykey])) {
             return true;
         }
@@ -300,6 +258,7 @@ class vatnrchecker {
 
     /**
      * Function to return a VAT template string.
+     *
      * @param bool $iseuropean
      * @param bool $isowncountry
      * @param string $uid
@@ -307,10 +266,10 @@ class vatnrchecker {
      * @return string
      */
     public static function get_template(
-        $iseuropean,
-        $isowncountry,
-        $uid
-    ) {
+        bool $iseuropean,
+        bool $isowncountry,
+        string $uid
+    ): string {
         if ($isowncountry) {
             return 'EU Reverse Charge';
         }
@@ -318,7 +277,7 @@ class vatnrchecker {
             return 'Export VAT';
         }
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
-        $countries = self::return_countrycodes_array();
+        $countries = vatnumberhelper::get_countrycodes_array();
         if (
             $isowncountry ||
             (

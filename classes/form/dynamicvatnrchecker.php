@@ -26,6 +26,7 @@ use context_system;
 use core_form\dynamic_form;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\vatnrchecker;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use moodle_url;
 use stdClass;
 
@@ -47,7 +48,7 @@ class dynamicvatnrchecker extends dynamic_form {
         global $USER;
 
         $mform = $this->_form;
-        $options = vatnrchecker::return_countrycodes_array();
+        $options = vatnumberhelper::get_countrycodes_array();
         $mform->addElement('select', 'checkvatnrcountrycode', get_string('checkvatnrcountrycode', 'local_shopping_cart'), $options);
         $mform->addElement('text', 'checkvatnrnumber', get_string('checkvatnrnumber', 'local_shopping_cart'), '');
         $mform->setType('checkvatnrnumber', PARAM_ALPHANUM);
