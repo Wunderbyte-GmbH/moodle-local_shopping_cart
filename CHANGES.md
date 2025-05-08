@@ -1,3 +1,6 @@
+## Version 1.0.4 (2025050800)
+* Bugfix: Fix Erp Transmission
+
 ## Version 1.0.3 (2025050500)
 * Bugfix: Make sure rebookingfee can never be rebooked.
 * Bugfix: Prevent missing context when using format_string in webservice.
