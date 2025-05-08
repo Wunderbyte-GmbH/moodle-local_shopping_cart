@@ -84,6 +84,10 @@ class erpnext_invoice implements invoice {
      * @var array Data structure of the invoice as array that can be json encoded.
      */
     private array $invoicedata = [];
+    /**
+     * @var string Billing address.
+     */
+    private string $billingaddress = '';
 
     /**
      * Set up curl to be able to connect to ERPNext using config settings.
@@ -470,6 +474,8 @@ class erpnext_invoice implements invoice {
         if (!$billingaddress) {
             return false;
         }
+        $this->billingaddress = $billingaddress;
+        $this->invoicedata['address_billing'] = $billingaddress;
         $this->invoicedata['customer'] = $this->customer;
         $date = date('Y-m-d', $this->invoicedata['timecreated']);
         // Convert the Unix timestamp to ISO 8601 date format.
@@ -568,6 +574,20 @@ class erpnext_invoice implements invoice {
         if (!$response) {
             return false;
         }
+
+        // Now it's necessary to make sure that the connection to the address is correct.
+        $data = [
+            "links" => [
+                [
+                    "link_doctype" => "Customer",
+                    "link_name" => $this->customer,
+                ],
+            ],
+        ];
+
+        $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
+        $response = $this->client->put($url, json_encode($data));
+
         return $this->validate_response($response, $url);
     }
 
