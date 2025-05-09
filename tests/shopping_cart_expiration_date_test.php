@@ -86,6 +86,15 @@ final class shopping_cart_expiration_date_test extends \advanced_testcase {
         time_mock::init();
     }
 
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
+        \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
+    }
 
     /**
      * Test transaction complete process

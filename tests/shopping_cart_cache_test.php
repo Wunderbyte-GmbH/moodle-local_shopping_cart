@@ -53,6 +53,7 @@ final class shopping_cart_cache_test extends advanced_testcase {
         parent::tearDown();
         // Mandatory clean-up.
         cartstore::reset();
+        \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
     }
 
     /**

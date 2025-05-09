@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\local\cartstore;
 use OnlinePayments\Sdk\Domain\AmountOfMoney;
 use OnlinePayments\Sdk\Domain\CardInfo;
 use OnlinePayments\Sdk\Domain\CreatedPaymentOutput;
@@ -137,6 +138,15 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
         };
     }
 
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        cartstore::reset();
+        \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
+    }
     /**
      * Generate fake addresses for a given user.
      *
