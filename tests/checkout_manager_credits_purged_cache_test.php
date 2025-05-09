@@ -45,6 +45,7 @@ require_once($CFG->dirroot . '/local/shopping_cart/tests/checkout_process_test_s
  * @category   test
  * @copyright  2024 Wunderbyte Gmbh <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runInSeparateProcess
  * @runTestsInSeparateProcesses
  */
 final class checkout_manager_credits_purged_cache_test extends checkout_process_test_setup {
