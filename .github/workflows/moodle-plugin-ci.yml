@@ -14,9 +14,8 @@ jobs:
       enable_phpmd: true
       codechecker_max_warnings: 0
 
-      ignore_paths: 'cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache,shopping_cart_popover.mustache'
-
       extra_plugin_runners: |
+        echo "MUSTACHE_IGNORE_NAMES='cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache,shopping_cart_popover.mustache'" >> $GITHUB_ENV
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
         moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
