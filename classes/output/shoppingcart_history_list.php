@@ -125,7 +125,7 @@ class shoppingcart_history_list implements renderable, templatable {
                 }
             }
         } catch (Throwable $e) {
-            $PAGE->set_context(context_system::instance($cmid));
+            $PAGE->set_context(context_system::instance());
         }
 
         // Get currency from config.
@@ -142,6 +142,12 @@ class shoppingcart_history_list implements renderable, templatable {
                 $items = shopping_cart_history::return_data_via_identifier($identifier);
             } else {
                 $items = shopping_cart_history::return_data_from_ledger_via_identifier($identifier);
+            }
+
+            // Now we verify that the user is really the correct one.
+            $item = reset($items);
+            if (!has_capability('local/shopping_cart:cashier', context_system::instance())) {
+                $this->userid = $item->userid ?? 0;
             }
         } else {
             $items = shopping_cart_history::get_history_list_for_user($userid);
