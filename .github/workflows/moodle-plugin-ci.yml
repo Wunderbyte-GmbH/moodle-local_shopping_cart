@@ -53,6 +53,24 @@ jobs:
 
         # END OF WORKAROUND
 
+      custom_steps: |
+        # Debug PHPMD configuration
+        echo "PHPMD Debug Information:"
+        echo "enable_phpmd value: ${{ inputs.enable_phpmd }}"
+        echo "Type of enable_phpmd: $(typeof ${{ inputs.enable_phpmd }})"
+        
+        # Check if phpmd executable exists
+        which phpmd || echo "phpmd not found"
+        
+        # Check moodle-plugin-ci commands
+        ls -la $(which moodle-plugin-ci)
+        moodle-plugin-ci --help | grep phpmd || echo "phpmd command not found in moodle-plugin-ci"
+        
+        # Try running phpmd directly
+        cd plugin
+        echo "Attempting to run phpmd directly..."
+        moodle-plugin-ci phpmd
+
     secrets:
       # Only needed if NOT using disable_release: true
       moodle_org_token: ${{ secrets.MOODLE_ORG_TOKEN }}
