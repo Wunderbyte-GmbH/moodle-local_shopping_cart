@@ -130,6 +130,8 @@ if (isset($success) && isset($historylist)) {
     $cartstore = cartstore::instance($userid);
     $data = $cartstore->get_localized_data();
     $cartstore->get_expanded_checkout_data($data);
+
+    shopping_cart::check_for_ongoing_payment($userid);
 }
 
 // Address handling.
