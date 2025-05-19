@@ -140,7 +140,11 @@ class erpnext_invoice implements invoice {
                 break;
             }
         }
-        $this->customer = fullname($this->user) . ' - ' . $this->user->id;
+        if (!empty($this->get_billing_address()->company)) {
+            $this->customer = $this->get_billing_address()->company;
+        } else {
+            $this->customer = fullname($this->user) . ' - ' . $this->user->id;
+        }
         $prepareinvoice = $this->prepare_json_invoice_data();
         if (!$prepareinvoice) {
             return false;
@@ -387,14 +391,13 @@ class erpnext_invoice implements invoice {
 
     /**
      * Get billing address of customer.
-     * @return string
+     * @return string Address of the customer or empty string
      */
     public function get_billing_address(): string {
-        $address = '';
         $addressrecord = address_operations::get_specific_user_address($this->invoicedata['address_billing'] ?? 0);
 
         if ($addressrecord) {
-            // Check if address exists in erp.
+            // Check if address exists in ERPNext.
             $addresstitle =
                 $addressrecord->name . ' - ' .
                 $addressrecord->city . ' - ' .
@@ -404,25 +407,26 @@ class erpnext_invoice implements invoice {
             $url = str_replace(' ', '%20', $uncleanedurl);
             $response = $this->client->get($url);
             if (!$this->validate_response($response, $url)) {
-                // Create new address.
+                // Create the new address.
                 $response = self::create_address($addressrecord, $addresstitle);
                 if (!$this->validate_response($response, $url)) {
-                    return false;
+                    return '';
                 }
             }
             $response = json_decode($response);
             return $response->data->name;
         }
-        return $address;
+        return '';
     }
 
     /**
      * Create a address on ERPNext. That is needed for invoicing.
+     *
      * @param object $addressrecord
      * @param string $addresstitle
      * @return string
      */
-    public function create_address($addressrecord, $addresstitle): string {
+    public function create_address(object $addressrecord, string $addresstitle): string {
 
         $url = $this->baseurl . '/api/resource/Address';
         $address = [];
@@ -437,13 +441,13 @@ class erpnext_invoice implements invoice {
 
         $response = $this->client->post($url, json_encode($address));
         if (!$this->validate_response($response, $url)) {
-            return false;
+            return '';
         }
         return $response;
     }
 
     /**
-     * Prepre the json for the REST API.
+     * Prepare the json for the REST API.
      * @return bool
      */
     public function prepare_json_invoice_data(): bool {
@@ -500,7 +504,7 @@ class erpnext_invoice implements invoice {
             $this->invoicedata['address_billing'] = $item->address_billing;
         }
         $billingaddress = $this->get_billing_address();
-        if (!$billingaddress) {
+        if (empty($billingaddress)) {
             return false;
         }
         $this->billingaddress = $billingaddress;
@@ -584,6 +588,7 @@ class erpnext_invoice implements invoice {
         $url = $this->baseurl . '/api/resource/Customer';
         $customer = [];
         $customer['customer_name'] = $this->customer;
+        // Todo: Hardcoded ERP values. Replace with variabls.
         $customer['customer_type'] = 'Individual';
         $customer['customer_group'] = 'All Customer Groups';
         // TODO: Implement Customer Address.
@@ -621,6 +626,8 @@ class erpnext_invoice implements invoice {
     }
 
     /**
+     * Do not use. This is dangerous and should not be done in Moodle.
+     *
      * Create a tax charge on ERPNext. That is needed for invoicing.
      *
      * @return bool
@@ -630,7 +637,7 @@ class erpnext_invoice implements invoice {
         $taxpercentage = reset($this->invoiceitems);
         $taxpercentage = $taxpercentage->taxpercentage ?? '0.0';
         $title = "Test";
-        $company = "Wunderbyte GmbH";
+        $company = $this->get_default_company();
         $taxes = [
             [
                 "charge_type" => "On Net Total",
@@ -697,18 +704,20 @@ class erpnext_invoice implements invoice {
      * Get all territories from ERP so we can check if they match the value used in Moodle.
      * Empty array is returned if request had a problem.
      *
-     * @return array of countries and territories (like EU)
+     * @return string[] Array of territory names (countries and regions like EU)
      */
     private function get_all_territories(): array {
         $url = $this->baseurl . '/api/resource/Territory/';
         $response = $this->client->get($url);
         if (!$response) {
-            return false;
+            return [];
         }
         $success = $this->validate_response($response, $url);
         if ($success) {
             $territoryarray = json_decode($response, true);
-            return array_column($territoryarray['data'], 'name');
+            if (isset($territoryarray['data'])) {
+                return array_column($territoryarray['data'], 'name');
+            }
         }
         return [];
     }
@@ -726,5 +735,35 @@ class erpnext_invoice implements invoice {
             return false;
         }
         return $this->validate_response($response, $url);
+    }
+
+    /**
+     * Get the default company name from ERPNext.
+     *
+     * @return string|null Returns the default company name or empty string if not found.
+     */
+    public function get_default_company(): string {
+        // API endpoint to get the default company.
+        $url = $this->baseurl . '/api/resource/Company';
+
+        // Make GET request to ERPNext API.
+        $response = $this->client->get($url);
+
+        $success = $this->validate_response($response, $url);
+        // If the response is not valid, return null.
+        if (!$success) {
+            return '';
+        }
+
+        // Decode the response body.
+        $data = json_decode($response, true);
+
+        // Validate the response structure and ensure data exists.
+        if (!isset($data['data'][0]['name'])) {
+            return '';
+        }
+
+        // Return the default company name.
+        return $data['data'][0]['name'];
     }
 }

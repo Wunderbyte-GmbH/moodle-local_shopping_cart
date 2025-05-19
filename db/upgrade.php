@@ -738,7 +738,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     if ($oldversion < 2025051900) {
         $table = new xmldb_table('local_shopping_cart_address');
         // Add company name to address table.
-        $field = new xmldb_field('company', XMLDB_TYPE_CHAR, '255', null, null, null, '', 'phone');
+        $field = new xmldb_field('company', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'phone');
         // Conditionally launch add field identifier.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
