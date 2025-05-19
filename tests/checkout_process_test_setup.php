@@ -258,6 +258,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
 
     /**
      * Assertion: The transaction should be valid.
+     * @param object $managercache
+     * @param object $historyrecords
      */
     public function assertinvalidcheckout($managercache, $historyrecords): void {
         $this->assertFalse($managercache['checkout_validation'], 'assertinvalidcheckout');
