@@ -27,6 +27,7 @@ namespace local_shopping_cart;
 
 use advanced_testcase;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\local\vatnrchecker;
 use PHPUnit\Framework\TestCase;
 use SoapClient;
@@ -74,7 +75,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
         $this->soapmock->method('checkVat')->willReturn(['valid' => false]);
 
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber, $this->soapmock);
+        $checkvatnr = vatnumberhelper::is_vatnr_valid($countrycode, $vatnrnumber, $this->soapmock);
 
         $this->assertFalse($checkvatnr);
     }
@@ -90,7 +91,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
         $this->soapmock->method('checkVat')->willReturn(['valid' => true]);
 
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber, $this->soapmock);
+        $checkvatnr = vatnumberhelper::is_vatnr_valid($countrycode, $vatnrnumber, $this->soapmock);
 
         $this->assertTrue($checkvatnr);
     }
@@ -104,7 +105,7 @@ final class vatnrchecker_test extends advanced_testcase {
         $countrycode = 'GB';
         $vatnrnumber = '123456789';
 
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber);
+        $checkvatnr = vatnumberhelper::is_vatnr_valid($countrycode, $vatnrnumber);
 
         $this->assertFalse($checkvatnr);
     }
@@ -117,7 +118,7 @@ final class vatnrchecker_test extends advanced_testcase {
     public function test_valid_gb_vat_number(): void {
         $countrycode = 'GB';
         $vatnrnumber = '100079899';
-        $checkvatnr = vatnrchecker::check_vatnr_number($countrycode, $vatnrnumber);
+        $checkvatnr = vatnumberhelper::is_vatnr_valid($countrycode, $vatnrnumber);
         $this->assertTrue($checkvatnr);
     }
 }

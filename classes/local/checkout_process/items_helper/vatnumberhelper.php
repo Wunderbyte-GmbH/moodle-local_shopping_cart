@@ -101,20 +101,27 @@ class vatnumberhelper {
      * @param string $countrycode
      * @param string $vatnrnumber
      * @param ?object $client
-     * @return string
+     * @return bool
      */
-    public static function check_vatnr_number(string $countrycode, string $vatnrnumber, ?object $client = null) {
-        $response = [];
+    public static function is_vatnr_valid(string $countrycode, string $vatnrnumber, ?object $client = null): bool {
+        // Special treatment for the Behat tests.
+        if (defined('BEHAT_SITE_RUNNING')) {
+            $key = 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnrnumber);
+            $mockresponse = get_config('local_shopping_cart', $key);
+            if (!empty($mockresponse)) {
+                $decoded = json_decode($mockresponse, true);
+                return isset($decoded['valid']) && $decoded['valid'];
+            }
+        }
 
         if (
             empty($countrycode) ||
             empty($vatnrnumber)
         ) {
-            return '';
+            return false;
         }
         $vatregion = self::get_vat_region($countrycode);
         $vatnrnumber = str_replace($countrycode, '', $vatnrnumber);
-        $response = false;
         switch ($vatregion) {
             case 'gb':
                 $response = self::validate_with_hmrc($vatnrnumber);

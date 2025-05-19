@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\invoice;
 
+use core\event\base;
+
 /**
  * Class invoice. To handle task linked to managing the invoice numbers.
  *
@@ -37,12 +39,10 @@ class invoicenumber {
     /**
      * Save invoice number to db.
      *
-     * @param \core\event\base $event
-     *
-     * @return [type]
-     *
+     * @param base $event
+     * @return void
      */
-    public static function save_invoice_number(\core\event\base $event) {
+    public static function save_invoice_number(base $event): void {
 
         global $DB;
 
@@ -81,14 +81,12 @@ class invoicenumber {
             'invoiceid' => 0,
             'timecreated' => time(),
         ];
-        $recordid = $DB->insert_record('local_shopping_cart_invoices', $data);
+        $recordid = $DB->insert_record('local_shopping_cart_invoices', (object) $data);
         $data = [
             'id' => $recordid,
             'invoiceid' => $prefix . $highestnumber,
         ];
-        $DB->update_record('local_shopping_cart_invoices', $data);
-
-        return;
+        $DB->update_record('local_shopping_cart_invoices', (object) $data);
     }
 
     /**
@@ -99,7 +97,7 @@ class invoicenumber {
      * @return array
      *
      */
-    private static function return_prefix_and_number($invoicenumber) {
+    private static function return_prefix_and_number($invoicenumber): array {
         $pattern = '/^(.*\D)?(\d+)$/';
         preg_match($pattern, $invoicenumber, $matches);
 
@@ -120,7 +118,7 @@ class invoicenumber {
      * @return string
      *
      */
-    public static function get_invoicenumber_by_identifier(int $identifier) {
+    public static function get_invoicenumber_by_identifier(int $identifier): string {
         global $DB;
 
         $invoicenumber = $DB->get_field('local_shopping_cart_invoices', 'invoiceid', ['identifier' => $identifier]);

@@ -107,6 +107,7 @@ abstract class taxes extends modifier_base {
                             $hasvarnr &&
                             !$isowncountry
                         ) {
+                            // EU reverse charge applies. No taxes added to net.
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else if ($item['area'] == "rebookitem") {

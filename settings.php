@@ -702,8 +702,6 @@ if ($hassiteconfig) {
     }
     $ADMIN->add('local_shopping_cart', $installmentsettings);
 
-    defined('MOODLE_INTERNAL') || die;
-
     // Add a heading for the section.
     $settings->add(new admin_setting_heading(
         'local_shopping_cart/invoicingplatformheading',

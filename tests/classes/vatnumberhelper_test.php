@@ -72,7 +72,7 @@ final class vatnumberhelper_test extends advanced_testcase {
      */
     public function test_invalid_check_vatnr_number(): void {
         $this->soapmock->method('checkVat')->willReturn(['valid' => false]);
-        $result = vatnumberhelper::check_vatnr_number('DE', '123456789', $this->soapmock);
+        $result = vatnumberhelper::is_vatnr_valid('DE', '123456789', $this->soapmock);
         $this->assertFalse($result, 'Expected check_vatnr_number to return true for a valid VAT number.');
     }
 
@@ -81,7 +81,7 @@ final class vatnumberhelper_test extends advanced_testcase {
      */
     public function test_valid_check_vatnr_number(): void {
         $this->soapmock->method('checkVat')->willReturn(['valid' => true]);
-        $result = vatnumberhelper::check_vatnr_number('AT', 'ATU74259768', $this->soapmock);
+        $result = vatnumberhelper::is_vatnr_valid('AT', 'ATU74259768', $this->soapmock);
         $this->assertTrue($result, 'Expected check_vatnr_number to return true for a valid VAT number.');
     }
 

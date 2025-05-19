@@ -209,7 +209,6 @@ class dynamicvatnrchecker extends dynamic_form {
      * @return array
      */
     public function validation($data, $files) {
-
         $errors = [];
 
         // If there actually is a VATNR number... we check online.
@@ -226,29 +225,25 @@ class dynamicvatnrchecker extends dynamic_form {
                     'countryCode' => false,
                 ];
             } else {
-
-                $count = 1;
                 // If we enter the country as well, we strip the uid number.
                 if (strpos($data['checkvatnrnumber'], $data['checkvatnrcountrycode']) === 0) {
-                    $data['checkvatnrnumber'] = str_replace($data['checkvatnrcountrycode'], '', $data['checkvatnrnumber'], $count);
+                    $data['checkvatnrnumber'] = str_replace($data['checkvatnrcountrycode'], '', $data['checkvatnrnumber']);
                 }
 
-                $response = vatnrchecker::check_vatnr_number(
+                $validvat = vatnumberhelper::is_vatnr_valid(
                     $data['checkvatnrcountrycode'],
                     $data['checkvatnrnumber'],
                 );
 
-                $result = json_decode($response);
-
-                if (!isset($result->valid) || !$result->valid) {
+                if (!$validvat) {
                     $a = $data['checkvatnrcountrycode'] . $data['checkvatnrnumber'];
                     $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
                 } else {
-                    // phpcs:ignore
-                    // $errors['checkvatnrnumber'] = $response;
-                    vatnrchecker::$vatnrdataset = $result;
+                    vatnrchecker::$vatnrdataset = (object)[
+                            'vatNumber' => $data['checkvatnrcountrycode'] ,
+                            'countryCode' => $data['checkvatnrnumber'],
+                    ];
                 }
-
             }
         } else {
             vatnrchecker::$vatnrdataset = (object)[

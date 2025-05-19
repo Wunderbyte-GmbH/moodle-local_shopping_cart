@@ -157,7 +157,7 @@ class vatnrchecker extends checkout_base_item {
         try {
             $changedinput = self::get_input_data($changedinput);
             if (isset($changedinput['country']) && isset($changedinput['vatnumber'])) {
-                $vatnumbercheck = vatnumberhelper::check_vatnr_number(
+                $vatnumbercheck = vatnumberhelper::is_vatnr_valid(
                     $changedinput['country'],
                     $changedinput['vatnumber']
                 );

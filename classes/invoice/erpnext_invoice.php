@@ -94,7 +94,6 @@ class erpnext_invoice implements invoice {
      */
     public function __construct() {
         global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
         $this->baseurl = get_config('local_shopping_cart', 'baseurl');
         $this->token = get_config('local_shopping_cart', 'token');
         $this->headers = [
@@ -111,7 +110,7 @@ class erpnext_invoice implements invoice {
      * @param base $event
      * @return void
      */
-    public static function create_invoice_task(base $event) {
+    public static function create_invoice_task(base $event): void {
         $customdata = [];
         $customdata['classname'] = __CLASS__;
         $customdata['identifier'] = $event->other['identifier'];
@@ -342,18 +341,48 @@ class erpnext_invoice implements invoice {
     }
 
     /**
-     * Get tax tamplete.
+     * Get tax templates available in the ERP system.
+     *
+     * @return array available tax tampletes, empty if no template found.
+     */
+    public function get_erp_taxes_charges_templates(): array {
+        // Fetch 50 templates from ERP. It should be rare to have more than 50 templates configured.
+        $url = $this->baseurl . '/api/resource/Sales Taxes and Charges Template?limit_page_length=50';
+        $response = $this->client->get($url);
+        $success = $this->validate_response($response, $url);
+        $templates = [];
+        if ($success) {
+            $responsearray = json_decode($response, true);
+            $templates = array_column($responsearray['data'], 'name');
+        }
+        return $templates;
+    }
+
+    /**
+     * Set tax tamplete to use for the invoice.
      *
      * @return string tax tamplete
      */
-    public function get_taxes_charges_template(): string {
+    public function set_taxes_charges_template(): string {
+        // Fetch 20 templates from ERP,
+        $taxtemplates = $this->get_erp_taxes_charges_templates();
+
+        // ToDo: This is hardcoded, for internal use only, to make tax templates generic, we have to implement additional settings.
+
+        // Pre-Checks for finding out which template to use.
         $iseuropean = vatnrchecker::is_european($this->invoicedata['taxcountrycode'] ?? null);
         $isowncountry = vatnrchecker::is_own_country($this->invoicedata['taxcountrycode'] ?? null);
-        return vatnrchecker::get_template(
-            $iseuropean,
-            $isowncountry,
-            $this->invoicedata['uid']
-        );
+        // Condtion for EU reverse charge template.
+        if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates)) {
+            $taxtemplate = 'EU Reverse Charge';
+        } else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
+            $taxtemplate = 'Export VAT';
+        } else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
+            $taxtemplate = 'Austria Tax';
+        } else {
+            $taxtemplate = 'Austria Tax';
+        }
+        return $taxtemplate;
     }
 
     /**
@@ -434,7 +463,7 @@ class erpnext_invoice implements invoice {
             $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
             $this->invoicedata['uid'] = $item->taxcountrycode . $item->vatnumber;
             if (!isset($this->invoicedata['taxes_and_charges'])) {
-                $this->invoicedata['taxes_and_charges'] = self::get_taxes_charges_template();
+                $this->invoicedata['taxes_and_charges'] = self::set_taxes_charges_template();
                 if (!$this->invoicedata['taxes_and_charges']) {
                     return false;
                 } else {

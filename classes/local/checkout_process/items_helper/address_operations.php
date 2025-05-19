@@ -25,6 +25,8 @@
 
 namespace local_shopping_cart\local\checkout_process\items_helper;
 
+use moodle_exception;
+
 /**
  * Class checkout
  *
@@ -48,11 +50,38 @@ class address_operations {
     }
 
     /**
+     * Updates an existing address in the database for the current $USER.
+     *
+     * @param int $addressid Id of the address in table
+     * @param object $address The already validated address data from the form
+     * @return bool Whether the update was successful
+     */
+    public static function update_address_for_user(int $addressid, object $address): bool {
+        global $DB, $USER;
+
+        // Check if the record exists for the given address ID and is owned by the current user.
+        if (!$DB->record_exists('local_shopping_cart_address', ['id' => $addressid, 'userid' => $USER->id])) {
+            throw new moodle_exception('Address does not exist or you do not have permission to update it.');
+        }
+
+        // Ensure the user ID is assigned to the address for ownership.
+        $address->id = $addressid; // Make sure the ID is set for updating.
+        $address->userid = $USER->id;
+
+        // Handle optional fields with default values if not provided.
+        $address->address2 = $address->address2 ?? '';
+        $address->phone = $address->phone ?? '';
+
+        // Update the record in the database.
+        return $DB->update_record('local_shopping_cart_address', $address);
+    }
+
+    /**
      * Function to return an array of localized country codes.
      * @param int $addressid
      * @return bool
      */
-    public static function delete_user_address(int $addressid) {
+    public static function delete_user_address(int $addressid): bool {
         global $DB;
         return $DB->delete_records('local_shopping_cart_address', ['id' => $addressid]);
     }

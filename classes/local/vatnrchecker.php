@@ -57,54 +57,6 @@ class vatnrchecker {
     public static $vatnrdataset = null;
 
     /**
-     * Function to verify VATNR of business partner online.
-     * @param string $countrycode
-     * @param string $vatnrnumber
-     * @param ?object $client
-     *
-     * @return string
-     */
-    public static function check_vatnr_number(string $countrycode, string $vatnrnumber, ?object $client = null) {
-        $response = [];
-
-        // Special treatment for the Behat tests.
-        if (defined('BEHAT_SITE_RUNNING')) {
-            $key = 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnrnumber);
-            $mockresponse = get_config('local_shopping_cart', $key);
-            if (!empty($mockresponse)) {
-                $decoded = json_decode($mockresponse, true);
-                return isset($decoded['valid']) && $decoded['valid'];
-            }
-        }
-
-        if (
-            empty($countrycode) ||
-            empty($vatnrnumber)
-        ) {
-            return '';
-        }
-
-        $vatregion = self::get_vat_region($countrycode);
-        $vatnrnumber = str_replace($countrycode, '', $vatnrnumber);
-        $response = false;
-        switch ($vatregion) {
-            case 'gb':
-                $response = self::validate_with_hmrc($vatnrnumber);
-                break;
-            case 'eu':
-                $response = self::validate_with_vies($countrycode, $vatnrnumber, $client);
-                break;
-            default:
-                $response = self::validate_with_vatcomply($vatnrnumber);
-                break;
-        }
-        if (isset($response['valid']) && $response['valid']) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Function to return an array of localized country codes.
      * @param string $countrycode
      * @param string $vatnumber
@@ -112,7 +64,7 @@ class vatnrchecker {
      *
      * @return array
      */
-    public static function validate_with_vies($countrycode, $vatnumber, ?object $client = null) {
+    public static function validate_with_vies($countrycode, $vatnumber, ?object $client = null): array {
         $wsdl = "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
         try {
             $client = $client ?? new SoapClient($wsdl);
@@ -254,41 +206,5 @@ class vatnrchecker {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Function to return a VAT template string.
-     *
-     * @param bool $iseuropean
-     * @param bool $isowncountry
-     * @param string $uid
-     *
-     * @return string
-     */
-    public static function get_template(
-        bool $iseuropean,
-        bool $isowncountry,
-        string $uid
-    ): string {
-        if ($isowncountry) {
-            return 'EU Reverse Charge';
-        }
-        if (!is_null($uid)) {
-            return 'Export VAT';
-        }
-        $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
-        $countries = vatnumberhelper::get_countrycodes_array();
-        if (
-            $isowncountry ||
-            (
-                $iseuropean &&
-                get_config('local_shopping_cart', 'owncountrytax')
-            )
-        ) {
-            return $countries[$hostvatnr] . ' Tax';
-        } else if ($iseuropean) {
-            return 'EU Reverse Charge';
-        }
-        return 'Export VAT';
     }
 }

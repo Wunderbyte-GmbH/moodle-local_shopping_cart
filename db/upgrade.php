@@ -735,6 +735,17 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2025050802, 'local', 'shopping_cart');
     }
+    if ($oldversion < 2025051900) {
+        $table = new xmldb_table('local_shopping_cart_address');
+        // Add company name to address table.
+        $field = new xmldb_field('company', XMLDB_TYPE_CHAR, '255', null, null, null, '', 'phone');
+        // Conditionally launch add field identifier.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025051900, 'local', 'shopping_cart');
+    }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //

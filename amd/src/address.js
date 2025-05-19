@@ -28,9 +28,9 @@ import Templates from 'core/templates';
 const SELECTORS = {
     ADDRESSRENDERCONTAINER: '#addressestemplatespace',
     NEWADDRESSBUTTON: '.shopping-cart-new-address',
+    EDITADDRESSBUTTON: '.shopping-cart-edit-selected-address',
+    DELETESELECTEDADDRESS: '.shopping-cart-delete-selected-address',
 };
-
-const DELETESELECTEDADDRESS = '.shopping-cart-delete-selected-address';
 
 export const init = () => {
     const buttons = document.querySelectorAll(SELECTORS.NEWADDRESSBUTTON);
@@ -43,17 +43,37 @@ export const init = () => {
         });
     }
     setDeletionEventListeners();
+    setEditEventListeners();
 };
 
 /**
  * Show Modal.
  */
 export function setDeletionEventListeners() {
-    const deleteAddressButtons = document.querySelectorAll(DELETESELECTEDADDRESS);
+    const deleteAddressButtons = document.querySelectorAll(SELECTORS.DELETESELECTEDADDRESS);
     if (deleteAddressButtons) {
         deleteAddressButtons.forEach(deleteAddressButton => {
             deleteAddressButton.addEventListener('click', e => {
                 handleAddressDeletion(e, deleteAddressButton);
+            });
+        });
+    }
+}
+
+/**
+ * Show Modal.
+ */
+export function setEditEventListeners() {
+    const editAddressButtons = document.querySelectorAll(SELECTORS.EDITADDRESSBUTTON);
+    if (editAddressButtons) {
+        editAddressButtons.forEach(editAddressButton => {
+            editAddressButton.addEventListener('click', e => {
+                let selectedRadio = document.querySelector(
+                    `input[name^="selectedaddress_"]:checked`
+                );
+                e.preventDefault();
+                editAddressButton.setAttribute('data-address-id', selectedRadio.value);
+                newAddressModal(editAddressButton);
             });
         });
     }
@@ -66,11 +86,9 @@ export function setDeletionEventListeners() {
  */
 export function handleAddressDeletion(event, deleteAddressButton) {
     event.preventDefault();
-    const addressKey = deleteAddressButton.dataset.addresskey;
     const selectedradio = document.querySelector(
-        `input[name="selectedaddress_${addressKey}"]:checked`
+        `input[name^="selectedaddress_"]:checked`
     );
-
     if (selectedradio) {
         const addressId = selectedradio.value;
         confirmAndDeleteAddress(addressId, deleteAddressButton);
@@ -155,34 +173,53 @@ function deleteAddress(response) {
  * @param {htmlElement} button
  */
 export function newAddressModal(button) {
-    const modalForm = new ModalForm({
+    // Detect if we are editing an existing address via the button's dataset or other relevant data.
+    const id = button.dataset.addressId ?? 0;
 
-        // Name of the class where form is defined (must extend \core_form\dynamic_form):
+    // Set the save button text based on whether the address is being edited or added.
+    const saveButtonText = id > 0
+        ? getString('addresses:saveaddress:submit', 'local_shopping_cart') // Change "Add Address" to "Save Address" for edits.
+        : getString('addresses:newaddress:submit', 'local_shopping_cart'); // Default text for adding.
+
+    const modalForm = new ModalForm({
+        // Name of the class where the form is defined (must extend \core_form\dynamic_form):
         formClass: "local_shopping_cart\\form\\modal_new_address",
-        // Add as many arguments as you need, they will be passed to the form:
-        args: {},
-        // Pass any configuration settings to the modal dialogue, for example, the title:
+        // Pass arguments to indicate the state of the modal (new or edit):
+        args: {id},
+        // Configure the modal dialog with the updated save button text:
         modalConfig: {title: getString('addresses:newaddress', 'local_shopping_cart')},
-        // DOM element that should get the focus after the modal dialogue is closed:
+        // DOM element that should get focus after the modal dialog is closed:
         returnFocus: button,
-        saveButtonText: getString('addresses:newaddress:submit', 'local_shopping_cart')
+        saveButtonText: saveButtonText
     });
-    // Listen to events if you want to execute something on form submit.
-    // Event detail will contain everything the process() function returned:
+
+    // Listen to form submission events.
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
-        getString('addresses:newaddress:saved', 'local_shopping_cart').then(str => {
-            showNotification(str, 'info');
-            return null;
-        }).catch((e) => {
-            // eslint-disable-next-line no-console
-            console.log(e);
-        });
+
+        // Determine the key to use based on whether the response is for a new or updated address.
+        const stringKey = response.isnew
+            ? 'addresses:newaddress:saved' // String for new address saved.
+            : 'addresses:newaddress:updated'; // String for updated address.
+
+        // Get the appropriate string and show the notification.
+        getString(stringKey, 'local_shopping_cart')
+            .then(str => {
+                showNotification(str, 'info');
+                return null;
+            })
+            .catch((error) => {
+                console.log(error); // eslint-disable-line no-console
+            });
+
+        // Redraw the rendered addresses list based on the server response.
         redrawRenderedAddresses(response.templatedata);
     });
 
+
     modalForm.show();
 }
+
 
 /**
  * Re-Renders the address list with the newly returned data (most possible containing new saved addresses)

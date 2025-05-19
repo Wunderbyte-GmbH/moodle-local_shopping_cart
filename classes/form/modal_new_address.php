@@ -32,11 +32,7 @@ use moodle_url;
 use stdClass;
 
 /**
- * Dynamic new address form
- *
- * @copyright Wunderbyte GmbH <info@wunderbyte.at>
- * @package local_shopping_cart
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Dynamic new address form with edit functionality
  */
 class modal_new_address extends dynamic_form {
 
@@ -47,80 +43,138 @@ class modal_new_address extends dynamic_form {
     public function definition() {
         $mform = $this->_form;
 
+        // Hidden ID field for editing.
+        $mform->addElement('hidden', 'id', 0);
+        $mform->setType('id', PARAM_INT);
+
         // Name.
         $attributes = ["placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart')];
         $mform->addElement(
+            'text',
+            'name',
+            get_string('addresses:newaddress:name:label', 'local_shopping_cart'),
+            $attributes,
+            $this->_ajaxformdata["name"] ?? ''
+        );
+
+        // Company Name.
+        $attributes = ["placeholder" => get_string('addresses:newaddress:company:label', 'local_shopping_cart')];
+        $mform->addElement(
                 'text',
-                'name',
-                get_string('addresses:newaddress:name:label', 'local_shopping_cart'),
+                'company',
+                get_string('addresses:newaddress:company:label', 'local_shopping_cart'),
                 $attributes,
-                $this->_ajaxformdata["name"] ?? ''
+                $this->_ajaxformdata["company"] ?? ''
         );
 
         // Country.
         $choices = ["" => ""] + get_string_manager()->get_list_of_countries();
         $options = [
-                'multiple' => false,
-                'placeholder' => get_string('addresses:newaddress:state:placeholder', 'local_shopping_cart'),
-                'noselectionstring' => get_string('addresses:newaddress:state:choose', 'local_shopping_cart'),
+            'multiple' => false,
+            'placeholder' => get_string('addresses:newaddress:state:placeholder', 'local_shopping_cart'),
+            'noselectionstring' => get_string('addresses:newaddress:state:choose', 'local_shopping_cart'),
         ];
         $mform->addElement(
-                'autocomplete',
-                'state',
-                get_string('addresses:newaddress:state:label', 'local_shopping_cart'),
-                $choices,
-                $options
+            'autocomplete',
+            'state',
+            get_string('addresses:newaddress:state:label', 'local_shopping_cart'),
+            $choices,
+            $options
         );
         $mform->setAdvanced('state', true);
 
         // Address line 1.
         $options = [
-                'placeholder' => get_string('addresses:newaddress:address:placeholder', 'local_shopping_cart'),
+            'placeholder' => get_string('addresses:newaddress:address:placeholder', 'local_shopping_cart'),
         ];
         $mform->addElement(
-                'text',
-                'address',
-                get_string('addresses:newaddress:address:label', 'local_shopping_cart'),
-                $options,
-                $this->_ajaxformdata["address"] ?? ''
+            'text',
+            'address',
+            get_string('addresses:newaddress:address:label', 'local_shopping_cart'),
+            $options,
+            $this->_ajaxformdata["address"] ?? ''
         );
 
         // Address line 2.
         $options = [
-                'placeholder' => get_string('addresses:newaddress:address2:placeholder', 'local_shopping_cart'),
+            'placeholder' => get_string('addresses:newaddress:address2:placeholder', 'local_shopping_cart'),
         ];
         $mform->addElement(
-                'text',
-                'address2',
-                get_string('addresses:newaddress:address2:label', 'local_shopping_cart'),
-                $options,
-                $this->_ajaxformdata["address2"] ?? ''
+            'text',
+            'address2',
+            get_string('addresses:newaddress:address2:label', 'local_shopping_cart'),
+            $options,
+            $this->_ajaxformdata["address2"] ?? ''
         );
 
         // City.
         $options = [
-                'placeholder' => get_string('addresses:newaddress:city:placeholder', 'local_shopping_cart'),
+            'placeholder' => get_string('addresses:newaddress:city:placeholder', 'local_shopping_cart'),
         ];
         $mform->addElement(
-                'text',
-                'city',
-                get_string('addresses:newaddress:city:label', 'local_shopping_cart'),
-                $options,
-                $this->_ajaxformdata["city"] ?? ''
+            'text',
+            'city',
+            get_string('addresses:newaddress:city:label', 'local_shopping_cart'),
+            $options,
+            $this->_ajaxformdata["city"] ?? ''
         );
 
         // Zip.
         $options = [
-                'placeholder' => get_string('addresses:newaddress:zip:placeholder', 'local_shopping_cart'),
+            'placeholder' => get_string('addresses:newaddress:zip:placeholder', 'local_shopping_cart'),
         ];
         $mform->addElement(
-                'text',
-                'zip',
-                get_string('addresses:newaddress:zip:label', 'local_shopping_cart'),
-                $options,
-                $this->_ajaxformdata["zip"] ?? ''
+            'text',
+            'zip',
+            get_string('addresses:newaddress:zip:label', 'local_shopping_cart'),
+            $options,
+            $this->_ajaxformdata["zip"] ?? ''
         );
+    }
 
+    /**
+     * Process the form submission, used if form was submitted via AJAX
+     *
+     * @return mixed
+     */
+    public function process_dynamic_submission() {
+        $data = $this->get_data();
+        $result = new stdClass();
+        if (!empty($data->id)) {
+            // Update existing address.
+            address_operations::update_address_for_user($data->id, $data);
+            $result->isnew = false;
+        } else {
+            // Add new address.
+            $result->isnew = true;
+            $newaddressid = address_operations::add_address_for_user($data);
+        }
+        $result->templatedata = addresses::get_template_render_data();
+        $result->newaddressid = $data->id ?? $newaddressid;
+        return $result;
+    }
+
+    /**
+     * Load in existing data as form defaults
+     */
+    public function set_data_for_dynamic_submission(): void {
+        if (!empty($this->_ajaxformdata['id'])) {
+            // Edit mode: Load existing address data.
+            $address = address_operations::get_specific_user_address($this->_ajaxformdata['id']);
+            $this->set_data($address);
+        } else {
+            // New address mode: Use defaults.
+            $data = new stdClass();
+            global $USER;
+            $data->name = fullname($USER);
+            $data->state = $USER->country ?? '';
+            $data->address = $USER->address ?? '';
+            $data->address2 = $USER->address2 ?? '';
+            $data->city = $USER->city ?? '';
+            $data->zip = "";
+            $data->phone = $USER->phone1 ?? '';
+            $this->set_data($data);
+        }
     }
 
     /**
@@ -129,50 +183,6 @@ class modal_new_address extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-    }
-
-    /**
-     * Process the form submission, used if form was submitted via AJAX
-     *
-     * This method can return scalar values or arrays that can be json-encoded, they will be passed to the caller JS.
-     *
-     * Submission data can be accessed as: $this->get_data()
-     *
-     * @return mixed
-     */
-    public function process_dynamic_submission() {
-
-        $data = $this->get_data();
-
-        $newaddressid = address_operations::add_address_for_user($data);
-
-        $result = new stdClass();
-        $result->templatedata = addresses::get_template_render_data();
-        $result->newaddressid = $newaddressid;
-        return $result;
-    }
-
-
-    /**
-     * Load in existing data as form defaults
-     *
-     * Can be overridden to retrieve existing values from db by entity id and also
-     * to preprocess editor and filemanager elements
-     *
-     * Example:
-     *     $this->set_data(get_entity($this->_ajaxformdata['cmid']));
-     */
-    public function set_data_for_dynamic_submission(): void {
-        $data = new stdClass();
-        global $USER;
-        $data->name = fullname($USER);
-        $data->state = $USER->country ?? '';
-        $data->address = $USER->address ?? '';
-        $data->address2 = $USER->address2 ?? '';
-        $data->city = $USER->city ?? '';
-        $data->zip = "";
-        $data->phone = $USER->phone1 ?? '';
-        $this->set_data($data);
     }
 
     /**
@@ -203,7 +213,7 @@ class modal_new_address extends dynamic_form {
     }
 
     /**
-     * Validate dates.
+     * Validate submitted data.
      *
      * @param array $data
      * @param array $files
