@@ -735,25 +735,22 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2025050802, 'local', 'shopping_cart');
     }
-    if ($oldversion < 2025051900) {
-        $table = new xmldb_table('local_shopping_cart_address');
-        // Add company name to address table.
-        $field = new xmldb_field('company', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'phone');
-        // Conditionally launch add field identifier.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2025051900, 'local', 'shopping_cart');
-    }
 
     if ($oldversion < 2025052000) {
+        $table1 = new xmldb_table('local_shopping_cart_address');
+        // Add company name to address table.
+        $field1 = new xmldb_field('company', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'phone');
+        // Conditionally launch add field identifier.
+        if (!$dbman->field_exists($table1, $field1)) {
+            $dbman->add_field($table1, $field1);
+        }
+
         // Changing precision of field vatnumber on table local_shopping_cart_history to (24).
-        $table = new xmldb_table('local_shopping_cart_history');
-        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, 'address_shipping');
+        $table2 = new xmldb_table('local_shopping_cart_history');
+        $field2 = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, 'address_shipping');
 
         // Launch change of precision for field vatnumber.
-        $dbman->change_field_precision($table, $field);
+        $dbman->change_field_precision($table2, $field2);
 
         // Shopping_cart savepoint reached.
         upgrade_plugin_savepoint(true, 2025052000, 'local', 'shopping_cart');
