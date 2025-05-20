@@ -108,7 +108,7 @@
                 <FIELD NAME="schistoryid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The id of the corresponding shopping cart history entry."/>
                 <FIELD NAME="address_billing" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="address_shipping" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="vatnumber" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="vatnumber" TYPE="char" LENGTH="24" NOTNULL="false" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
