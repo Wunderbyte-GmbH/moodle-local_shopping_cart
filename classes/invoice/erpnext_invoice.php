@@ -47,11 +47,11 @@ class erpnext_invoice implements invoice {
     /**
      * @var string
      */
-    private $baseurl;
+    private string $baseurl;
     /**
      * @var string
      */
-    private $token;
+    private string $token;
     /**
      * @var array|string[]
      */
@@ -93,7 +93,6 @@ class erpnext_invoice implements invoice {
      * Set up curl to be able to connect to ERPNext using config settings.
      */
     public function __construct() {
-        global $CFG;
         $this->baseurl = get_config('local_shopping_cart', 'baseurl');
         $this->token = get_config('local_shopping_cart', 'token');
         $this->headers = [
@@ -194,7 +193,7 @@ class erpnext_invoice implements invoice {
      * @param string $customeremail
      * @return bool true if invoice was send, false if not
      */
-    public function send_invoice($invoicename, $customeremail): bool {
+    public function send_invoice(string $invoicename, string $customeremail): bool {
 
         global $SESSION;
         // Prepare the email parameters.
@@ -240,7 +239,7 @@ class erpnext_invoice implements invoice {
      * @param string $invoiceid
      * @return string true if invoice was submitted, false if not
      */
-    public function submit_invoice($invoiceid): string {
+    public function submit_invoice(string $invoiceid): string {
         $submiturl = $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid;
         $submitdata = json_encode([
             'status' => 'Submitted',
@@ -259,7 +258,7 @@ class erpnext_invoice implements invoice {
      * @param string $paymentresponse
      * @return string true if invoice was submitted, false if not
      */
-    public function submit_payment_entry($paymentresponse): string {
+    public function submit_payment_entry(string $paymentresponse): string {
         $paymentresponsedata = json_decode($paymentresponse, true);
         $paymententryid = $paymentresponsedata['data']['name'];
         $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
@@ -321,7 +320,7 @@ class erpnext_invoice implements invoice {
      * @param string $invoicename
      * @return string invoice as pdf
      */
-    private function get_invoice_pdf($invoicename) {
+    private function get_invoice_pdf(string $invoicename) {
         $url = $this->baseurl . "/api/method/frappe.utils.print_format.download_pdf";
         $params = [
             "doctype" => get_string('erpnext_reference_doctype', 'local_shopping_cart'),
@@ -368,7 +367,7 @@ class erpnext_invoice implements invoice {
      * @return string tax tamplete
      */
     public function set_taxes_charges_template(): string {
-        // Fetch 20 templates from ERP,
+        // Fetch 20 templates from ERP.
         $taxtemplates = $this->get_erp_taxes_charges_templates();
 
         // ToDo: This is hardcoded, for internal use only, to make tax templates generic, we have to implement additional settings.
@@ -740,7 +739,7 @@ class erpnext_invoice implements invoice {
     /**
      * Get the default company name from ERPNext.
      *
-     * @return string|null Returns the default company name or empty string if not found.
+     * @return string Returns the default company name or empty string if not found.
      */
     public function get_default_company(): string {
         // API endpoint to get the default company.

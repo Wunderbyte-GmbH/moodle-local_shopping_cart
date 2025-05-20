@@ -32,6 +32,12 @@ use moodle_url;
 use stdClass;
 
 /**
+ *
+ * @package local_shopping_cart
+ * @author Maurice Wohlkänig
+ * @copyright 2024 onwards Wunderbyte GmbH
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  * Dynamic new address form with edit functionality
  */
 class modal_new_address extends dynamic_form {
