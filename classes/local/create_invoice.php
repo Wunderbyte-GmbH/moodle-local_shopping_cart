@@ -414,6 +414,9 @@ class create_invoice {
                         $profilefieldvalue = date($dateformat, $profilefieldvalue);
                     }
                 }
+                if (is_array($profilefieldvalue)) {
+                    $profilefieldvalue = $profilefieldvalue['text'] ?? json_encode($profilefieldvalue);
+                }
                 $cfghtml = str_replace("[[" . $profilefieldkey . "]]", "$profilefieldvalue", $cfghtml);
             }
         }
