@@ -756,6 +756,24 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025052000, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2025052100) {
+        // Define field id to be added to local_shopping_cart_history.
+        $tablehistory = new xmldb_table('local_shopping_cart_history');
+        $tableledger = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($tablehistory, $field)) {
+            $dbman->add_field($tablehistory, $field);
+        }
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($tableledger, $field)) {
+            $dbman->add_field($tableledger, $field);
+        }
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025052100, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
