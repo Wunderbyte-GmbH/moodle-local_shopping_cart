@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 use SoapClient;
 /**
  * Test for taxcategories
- * @covers \taxcategories
+ * @covers \local_shopping_cart\taxcategories
  */
 final class vatnrchecker_test extends advanced_testcase {
     /**
@@ -66,7 +66,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
     /**
      * Test vatnrchecker - invalid eu
-     * @covers \vatnrchecker::check_vatnr_number
+     * @covers \local_shopping_cart\local\vatnrchecker
      * @return void
      */
     public function test_invalid_at_vat_number(): void {
@@ -82,7 +82,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
     /**
      * Test vatnrchecker - valid eu
-     * @covers \vatnrchecker::check_vatnr_number
+     * @covers \local_shopping_cart\local\vatnrchecker
      * @return void
      */
     public function test_valid_at_vat_number(): void {
@@ -98,7 +98,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
     /**
      * Test vatnrchecker - invalid eu
-     * @covers \vatnrchecker::check_vatnr_number
+     * @covers \local_shopping_cart\local\vatnrchecker
      * @return void
      */
     public function test_invalid_gb_vat_number(): void {
@@ -112,7 +112,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
     /**
      * Test vatnrchecker - valid eu
-     * @covers \vatnrchecker::check_vatnr_number
+     * @covers \local_shopping_cart\local\vatnrchecker
      * @return void
      */
     public function test_valid_gb_vat_number(): void {

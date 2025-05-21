@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\reservations;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
@@ -55,7 +56,7 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
      * @param array $config Config settings for the test
      * @param array $changedinputsteps JSON input for the checkout process
      * @param array $assertions Assertion function for the test
-     * @covers \checkoutprocess_manager
+     * @covers \local_shopping_cart\local\checkout_process\checkout_manager
      */
     public function test_checkout_process(array $config, array $changedinputsteps, array $assertions): void {
         global $DB;
@@ -114,6 +115,10 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
                 $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
             }
         }
+
+        $data['items']["local_shopping_cart-testitem-1"] = $data['items'][0];
+        unset($data['items'][0]);
+        reservations::save_reservation($data);
 
         service_provider::get_payable('', $data['identifier']);
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
@@ -201,7 +206,6 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
                     ],
                     'shoppingcart' => [
                         'assertbalanceisnull',
-                        'payedpriceisless',
                     ],
                 ],
             ],

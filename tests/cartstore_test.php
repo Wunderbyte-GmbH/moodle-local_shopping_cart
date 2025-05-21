@@ -32,7 +32,7 @@ use phpunit_util;
 
 /**
  * Test for cartitem
- * @covers \cartitem
+ * @covers \local_shopping_cart\local\entities\cartitem
  */
 final class cartstore_test extends advanced_testcase {
     /**
@@ -54,7 +54,7 @@ final class cartstore_test extends advanced_testcase {
 
     /**
      * Test taxcategory not set
-     * @covers \cartstore
+     * @covers \local_shopping_cart\local\cartstore
      * @param string $property
      *
      * @dataProvider cartstore_get_data_provider
@@ -71,7 +71,7 @@ final class cartstore_test extends advanced_testcase {
 
     /**
      * Test test_cartstore_add_items
-     * @covers \cartstore
+     * @covers \local_shopping_cart\local\cartstore
      */
     public function test_cartstore_add_items(): void {
 
@@ -159,7 +159,7 @@ final class cartstore_test extends advanced_testcase {
 
     /**
      * Test test_cartstore_get_costcenter
-     * @covers \cartstore
+     * @covers \local_shopping_cart\local\cartstore
      */
     public function test_cartstore_get_costcenter(): void {
 

@@ -25,7 +25,6 @@
 
 namespace local_shopping_cart;
 
-use local_shopping_cart\shopping_cart;
 use OnlinePayments\Sdk\Domain\AmountOfMoney;
 use OnlinePayments\Sdk\Domain\CardInfo;
 use OnlinePayments\Sdk\Domain\CreatedPaymentOutput;
