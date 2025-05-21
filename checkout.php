@@ -129,9 +129,12 @@ if (isset($success) && isset($historylist)) {
 } else {
     $cartstore = cartstore::instance($userid);
     $data = $cartstore->get_localized_data();
-    $cartstore->get_expanded_checkout_data($data);
 
+    // This will reset our cached code.
+    // Therefore, we need to call it before the get expanded checkout data.
     shopping_cart::check_for_ongoing_payment($userid);
+
+    $cartstore->get_expanded_checkout_data($data);
 }
 
 // Address handling.
