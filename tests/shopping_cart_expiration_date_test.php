@@ -99,8 +99,7 @@ final class shopping_cart_expiration_date_test extends \advanced_testcase {
     /**
      * Test transaction complete process
      *
-     * @covers \local_shopping_cart\gateway
-     * @covers \local_shopping_cart\payment\service_provider::get_payable()
+     * @covers \local_shopping_cart\payment\service_provider
      * @throws \coding_exception
      *
      */

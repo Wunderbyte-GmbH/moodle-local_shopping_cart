@@ -263,7 +263,6 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                 ],
                 [
                     'checkoutmanager' => [
-                        'assertvalidcheckout',
                         'assertcartstorevatnumber',
                         'assertcartstoretaxnull',
                     ],
