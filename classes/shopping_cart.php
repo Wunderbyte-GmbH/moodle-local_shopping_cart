@@ -817,6 +817,7 @@ class shopping_cart {
             $ledgerrecord->annotation = get_string('creditsusedannotation', 'local_shopping_cart');
             $ledgerrecord->address_billing = $data['address_billing'] ?? 0;
             $ledgerrecord->address_shipping = $data['address_shipping'] ?? 0;
+            $ledgerrecord->vatnumber = $data['vatnrnumber'] ?? 0;
             self::add_record_to_ledger_table($ledgerrecord);
         }
 
@@ -824,6 +825,11 @@ class shopping_cart {
         foreach ($data['items'] as $item) {
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
             $item = (array) $item;
+
+            // We make sure that all our items have the address and billing information.
+            $item['address_billing'] = $data['address_billing'] ?? '';
+            $item['address_shipping'] = $data['address_shipping'] ?? '';
+            $item['vatnumber'] = $data['vatnrnumber'] ?? '';
 
             $totalprice += $item['price'];
 

@@ -60,5 +60,31 @@ function fix_ledger_bug() {
 
         $DB->update_record('local_shopping_cart_ledger', $record);
     }
+}
 
+/**
+ * Fixes missing address informations in ledger tables.
+ *
+ * @return void
+ *
+ */
+function fix_missing_addresses() {
+    global $DB;
+
+    $sql = "SELECT DISTINCT schl.id, sch.address_billing, sch.address_shipping
+            FROM {local_shopping_cart_ledger} schl
+            LEFT JOIN {local_shopping_cart_history} sch ON schl.identifier = sch.identifier
+            WHERE (schl.address_billing IS NULL AND sch.address_billing IS NOT NULL)
+            OR (schl.address_shipping IS NULL AND sch.address_shipping IS NOT NULL)";
+
+    $records = $DB->get_records_sql($sql);
+
+    foreach ($records as $record) {
+        $data = (object)[
+            'id' => $record->id,
+            'address_billing' => $record->address_billing,
+            'address_shipping' => $record->address_shipping,
+        ];
+        $DB->update_record('local_shopping_cart_ledger', $data);
+    }
 }
