@@ -28,12 +28,11 @@ namespace local_shopping_cart;
 use advanced_testcase;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
  * Test for cartitem
- * @covers \cartitem
+ * @covers \local_shopping_cart\local\entities\cartitem
  */
 final class cartitem_test extends advanced_testcase {
     /**
@@ -56,7 +55,7 @@ final class cartitem_test extends advanced_testcase {
 
     /**
      * Test taxcategory not set
-     * @covers \cartitem->tax_category
+     * @covers \local_shopping_cart\local\entities\cartitem
      *
      * @return [type]
      */
@@ -77,7 +76,7 @@ final class cartitem_test extends advanced_testcase {
 
     /**
      * Test taxcategory set
-     * @covers \cartitem->tax_category
+     * @covers \local_shopping_cart\local\entities\cartitem
      *
      * @return [type]
      */
@@ -103,7 +102,7 @@ final class cartitem_test extends advanced_testcase {
 
     /**
      * Test array contains all fields
-     * @covers \cartitem->as_array
+     * @covers \local_shopping_cart\local\entities\cartitem
      *
      * @return [type]
      */
@@ -131,7 +130,7 @@ final class cartitem_test extends advanced_testcase {
 
     /**
      * Test costcenter not set
-     * @covers \cartitem->costcenter
+     * @covers \local_shopping_cart\local\entities\cartitem
      *
      * @return void
      */

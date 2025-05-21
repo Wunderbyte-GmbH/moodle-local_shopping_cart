@@ -55,7 +55,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
      * @param array $config Config settings for the test
      * @param array $changedinputsteps JSON input for the checkout process
      * @param array $assertions Assertion function for the test
-     * @covers \checkoutprocess_manager
+     * @covers \local_shopping_cart\local\checkout_process\checkout_manager
      */
     public function test_checkout_process(array $config, array $changedinputsteps, array $assertions): void {
         global $DB;

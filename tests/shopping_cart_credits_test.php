@@ -31,7 +31,7 @@ use local_shopping_cart\local\cartstore;
 
 /**
  * Test for shopping_cart_credits
- * @covers \shopping_cart_credits
+ * @covers \local_shopping_cart\shopping_cart_credits
  */
 final class shopping_cart_credits_test extends advanced_testcase {
     /**
@@ -55,9 +55,9 @@ final class shopping_cart_credits_test extends advanced_testcase {
     /**
      * Test shopping_cart_credits - single
      *
-     * @covers \shopping_cart_credits::add_credit
-     * @covers \shopping_cart_credits::get_balance
-     * @covers \shopping_cart_credits::get_balance_for_all_costcenters
+     * @covers \local_shopping_cart\shopping_cart_credits::add_credit
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance_for_all_costcenters
      *
      * @return void
      *
@@ -105,9 +105,9 @@ final class shopping_cart_credits_test extends advanced_testcase {
     /**
      * Test shopping_cart_credits - per costcenters
      *
-     * @covers \shopping_cart_credits::add_credit
-     * @covers \shopping_cart_credits::get_balance
-     * @covers \shopping_cart_credits::get_balance_for_all_costcenters
+     * @covers \local_shopping_cart\shopping_cart_credits::add_credit
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance_for_all_costcenters
      *
      * @return void
      *
@@ -177,9 +177,9 @@ final class shopping_cart_credits_test extends advanced_testcase {
     /**
      * Test shopping_cart_credits refund by cache
      *
-     * @covers \shopping_cart_credits::add_credit
-     * @covers \shopping_cart_credits::get_balance
-     * @covers \shopping_cart_credits::credit_paid_back
+     * @covers \local_shopping_cart\shopping_cart_credits::add_credit
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance
+     * @covers \local_shopping_cart\shopping_cart_credits::credit_paid_back
      *
      * @return void
      *
@@ -273,7 +273,7 @@ final class shopping_cart_credits_test extends advanced_testcase {
      * User selects two items with costcenters and enough credits in nocostcenter plus matching costcenter
      * when default costcenter is being set and than make checkout
      *
-     * @covers \cartstore
+     * @covers \local_shopping_cart\local\cartstore
      */
     public function test_cartstore_two_costcenters_enough_credits_nocostcenter_matchingcc_with_defaultcc(): void {
 
@@ -350,7 +350,7 @@ final class shopping_cart_credits_test extends advanced_testcase {
      * User selects two items with costcenters and no no enough credits in both nocostcenter
      * and dedicated costcenters and no default costcenter than proceed to checkout
      *
-     * @covers \cartstore
+     * @covers \local_shopping_cart\local\cartstore
      */
     public function test_cartstore_two_costcenters_not_enough_credits(): void {
 
