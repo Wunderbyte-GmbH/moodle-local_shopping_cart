@@ -607,7 +607,7 @@ class cartstore {
 
         // The modifier "checkout" prepares our data for the checkout page.
         // During this process,the new identifier is created, if necessary.
-        checkout::prepare_checkout($data);
+        $data = checkout::prepare_checkout($data);
 
         // We add the vatnrcheckerform here, if necessary.
         if (
