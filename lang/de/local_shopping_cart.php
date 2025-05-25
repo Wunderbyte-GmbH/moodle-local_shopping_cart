@@ -432,6 +432,7 @@ $string['mt'] = "Malta";
 $string['mycart'] = 'Mein Warenkorb';
 $string['nextbutton'] = "Nächster Schritt";
 $string['nl'] = "Niederlande";
+$string['nobillingaddress'] = 'Rechnungsaddresse für Benutzer/in nicht vorhanden';
 $string['nocostcenter'] = 'Keine Kostenstelle';
 $string['nofixedpercentage'] = 'Kein fixer Prozentsatz';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";

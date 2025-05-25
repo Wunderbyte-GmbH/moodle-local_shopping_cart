@@ -88,18 +88,13 @@ class address_operations {
 
     /**
      * Generates complete required-address data as specified by the plugin config.
+     *
      * @param int $addressid
      * @return mixed
      */
-    public static function get_specific_user_address(int $addressid): object {
+    public static function get_specific_user_address(int $addressid) {
         global $DB;
-        $sql = "SELECT *
-                FROM {local_shopping_cart_address}
-                WHERE id = :addressid
-                ORDER BY id DESC";
-
-        $params = ['addressid' => $addressid];
-        return $DB->get_record_sql($sql, $params);
+        return $DB->get_record('local_shopping_cart_address', ['id' => $addressid]);
     }
 
     /**
@@ -109,12 +104,6 @@ class address_operations {
      */
     public static function get_all_user_addresses(int $userid): array {
         global $DB;
-        $sql = "SELECT *
-                FROM {local_shopping_cart_address}
-                WHERE userid = :userid
-                ORDER BY id DESC";
-
-        $params = ['userid' => $userid];
-        return $DB->get_records_sql($sql, $params);
+        return $DB->get_records('local_shopping_cart_address', ['userid' => $userid]);
     }
 }

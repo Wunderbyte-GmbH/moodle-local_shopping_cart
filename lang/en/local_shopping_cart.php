@@ -437,6 +437,7 @@ $string['mt'] = "Malta";
 $string['mycart'] = 'My Cart';
 $string['nextbutton'] = "Next Step";
 $string['nl'] = "Netherlands";
+$string['nobillingaddress'] = 'No billing address exists for the user.';
 $string['nocostcenter'] = 'No costcenter';
 $string['nofixedpercentage'] = 'No fixed percentage';
 $string['noinstallments'] = "Currently there are no open installment payments";

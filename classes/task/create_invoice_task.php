@@ -62,7 +62,7 @@ class create_invoice_task extends \core\task\adhoc_task {
         $userid = $this->get_userid();
         $classname = $taskdata->classname;
         $success = false;
-        mtrace('Try to created invoice for user ' . $userid . ' with identifier ' . $taskdata->identifier);
+        mtrace('Try to create invoice for user ' . $userid . ' with identifier ' . $taskdata->identifier);
         try {
             $invoiceprovider = new $classname();
             $success = $invoiceprovider->create_invoice($taskdata->identifier);
