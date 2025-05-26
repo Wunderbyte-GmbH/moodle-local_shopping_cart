@@ -1,5 +1,5 @@
 ## Version 1.0.5 (2025052000)
-* Improvement: Add Tax countrycode to uid number
+* Improvement: Add Tax countrycode to vatid number
 * Improvement: Add company to address, make adress editable
 * Improvement: Change vat number to precision 24
 * Bugfix: Fix task names

@@ -77,6 +77,10 @@ class erpnext_invoice implements invoice {
      */
     private string $customername;
     /**
+     * @var int address id from shopping_cart_address
+     */
+    private int $addressid = 0;
+    /**
      * @var string customer company name
      */
     private string $customercompany = '';
@@ -137,13 +141,12 @@ class erpnext_invoice implements invoice {
     public function create_invoice(int $identifier): bool {
         global $DB;
         $url = $this->baseurl . '/api/resource/Sales Invoice';
-        $addressid = 0;
         // Set up invoice creation.
         $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
 
         // Set user.
         foreach ($this->invoiceitems as $item) {
-            $addressid = $item->address_billing;
+            $this->addressid = (int) $item->address_billing;
             if (empty($this->user)) {
                 $this->user = core_user::get_user($item->userid);
                 break;
@@ -151,12 +154,22 @@ class erpnext_invoice implements invoice {
             break;
         }
         // Get addressid.
-        if ($addressid > 0) {
-            $this->customername = address_operations::get_specific_user_address($addressid)->company;
+        if (!$this->addressid) {
+            $addressrecords = address_operations::get_all_user_addresses($this->user->id);
+            if (!empty($addressrecords)) {
+                $this->addressid = array_key_first($addressrecords);
+            } else {
+                throw new \moodle_exception('nobillingaddress', 'local_shopping_cart', '', null,
+                        'No billing address available for the user.');
+            }
+        }
+        if ($this->addressid > 0 && !empty(address_operations::get_specific_user_address($this->addressid)->company)) {
+            $this->customername = address_operations::get_specific_user_address($this->addressid)->company;
             $this->customercompany = $this->customername;
         } else {
             $this->customername = fullname($this->user) . ' - ' . $this->user->id;
         }
+
         $prepareinvoice = $this->prepare_json_invoice_data();
         if (!$prepareinvoice) {
             return false;
@@ -364,13 +377,17 @@ class erpnext_invoice implements invoice {
      */
     public function get_erp_taxes_charges_templates(): array {
         // Fetch 50 templates from ERP. It should be rare to have more than 50 templates configured.
-        $url = $this->baseurl . '/api/resource/Sales Taxes and Charges Template?limit_page_length=50';
+        $uncleanedurl = $this->baseurl . '/api/resource/Sales Taxes and Charges Template?limit_page_length=50';
+        $url = str_replace(' ', '%20', $uncleanedurl);
         $response = $this->client->get($url);
         $success = $this->validate_response($response, $url);
         $templates = [];
         if ($success) {
             $responsearray = json_decode($response, true);
             $templates = array_column($responsearray['data'], 'name');
+        } else {
+            throw new \moodle_exception('error', 'local_shopping_cart', '', null,
+                    'There was a problem fetching tax templates from ERPNext: ' . $response);
         }
         return $templates;
     }
@@ -407,18 +424,7 @@ class erpnext_invoice implements invoice {
      * @return string Address of the customer or empty string
      */
     public function get_billing_address(): string {
-        $addressid = $this->invoicedata['address_billing'] ?? 0;
-        if (!$addressid) {
-            $addressrecords = address_operations::get_all_user_addresses($this->user->id);
-            if (!empty($addressrecords)) {
-                $addressid = array_key_first($addressrecords);
-            } else {
-                throw new \moodle_exception('nobillingaddress', 'local_shopping_cart', '', null,
-                        'No billing address available for the user.');
-            }
-        }
-        $addressrecord = address_operations::get_specific_user_address($addressid);
-
+        $addressrecord = address_operations::get_specific_user_address($this->addressid);
         if ($addressrecord) {
             // Check if the address exists in ERPNext.
             if (!empty($this->customercompany)) {
@@ -466,15 +472,29 @@ class erpnext_invoice implements invoice {
         $address['city'] = $addressrecord->city;
         $address['state'] = $addressrecord->state;
         $address['pincode'] = $addressrecord->zip;
-        $address['country'] = get_string($addressrecord->state, 'core_countries');
+        $address['country'] = $this->get_country_name_by_code($addressrecord->state);
         $address['customer'] = $addressrecord->name;
 
-        $response = $this->client->post($url, json_encode($address));
-        if (!$this->validate_response($response, $url)) {
-            return '';
-        }
-        return $response;
+        return $this->client->post($url, json_encode($address));
     }
+
+    /**
+     * Get ERPNext country name from country code.
+     *
+     * @param string $code The ISO country code (e.g. 'AT', 'DE').
+     * @return string|null The country name (e.g. 'Austria'), or null if not found.
+     */
+    protected function get_country_name_by_code(string $code): ?string {
+        $url = $this->baseurl . '/api/resource/Country?filters=[["code","=","'.$code.'"]]';
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            throw new \moodle_exception('error', 'local_shopping_cart', '', null,
+                    'There was a problem with retrieving the country from ERPNext: ' . $response);
+        }
+        $data =  json_decode($response);
+        return $data->data->name;
+    }
+
 
     /**
      * Prepare the json for the REST API.
@@ -495,7 +515,7 @@ class erpnext_invoice implements invoice {
             $itemdata['qty'] = 1;
 
             $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
-            $this->invoicedata['uid'] = $item->taxcountrycode . $item->vatnumber;
+            $this->invoicedata['vatid'] = $item->vatnumber;
             if (!isset($this->invoicedata['taxes_and_charges'])) {
                 $this->invoicedata['taxes_and_charges'] = self::set_taxes_charges_template();
                 if (!$this->invoicedata['taxes_and_charges']) {
@@ -561,9 +581,9 @@ class erpnext_invoice implements invoice {
             $responsetaxid = json_decode($response);
             if (
                 $responsetaxid->data->tax_id == '' &&
-                isset($this->invoicedata['uid'])
+                isset($this->invoicedata['vatid'])
             ) {
-                $responsetaxid->data->tax_id = $this->invoicedata['uid'];
+                $responsetaxid->data->tax_id = $this->invoicedata['vatid'];
                 $response = $this->client->put($url, json_encode($responsetaxid->data));
             }
         }
@@ -627,8 +647,8 @@ class erpnext_invoice implements invoice {
         }
         $customer['email_id'] = $this->user->email;
         $customer['customer_details'] = "Moodle user id: " . $this->user->id;
-        if (isset($this->invoicedata['uid'])) {
-            $customer['tax_id'] = $this->invoicedata['uid'];
+        if (isset($this->invoicedata['vatid'])) {
+            $customer['tax_id'] = $this->invoicedata['vatid'];
         }
         $response = $this->client->post($url, json_encode($customer));
         if (!$response) {

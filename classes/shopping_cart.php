@@ -817,7 +817,7 @@ class shopping_cart {
             $ledgerrecord->annotation = get_string('creditsusedannotation', 'local_shopping_cart');
             $ledgerrecord->address_billing = $data['address_billing'] ?? 0;
             $ledgerrecord->address_shipping = $data['address_shipping'] ?? 0;
-            $ledgerrecord->vatnumber = $data['vatnrnumber'] ?? 0;
+            $ledgerrecord->vatnumber = $data['vatnrnumber'] ?? null;
             self::add_record_to_ledger_table($ledgerrecord);
         }
 

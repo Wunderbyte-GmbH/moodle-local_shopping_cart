@@ -225,7 +225,7 @@ class dynamicvatnrchecker extends dynamic_form {
                     'countryCode' => false,
                 ];
             } else {
-                // If we enter the country as well, we strip the uid number.
+                // If we enter the country as well, we strip the vatid number.
                 if (strpos($data['checkvatnrnumber'], $data['checkvatnrcountrycode']) === 0) {
                     $data['checkvatnrnumber'] = str_replace($data['checkvatnrcountrycode'], '', $data['checkvatnrnumber']);
                 }
