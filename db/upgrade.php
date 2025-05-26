@@ -592,7 +592,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Define field id to be added to local_shopping_cart_history.
         $tablehistory = new xmldb_table('local_shopping_cart_history');
         $tableledger = new xmldb_table('local_shopping_cart_ledger');
-        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '20', null, null, null, null, null);
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '20', null, null, null, null, 'schistoryid');
 
         // Conditionally launch add field id.
         if (!$dbman->field_exists($tablehistory, $field)) {
@@ -736,20 +736,30 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Define field id to be added to local_shopping_cart_history.
         $tablehistory = new xmldb_table('local_shopping_cart_history');
         $tableledger = new xmldb_table('local_shopping_cart_ledger');
-        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, null);
+
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, 'address_shipping');
 
         // Conditionally launch add field id.
         if (!$dbman->field_exists($tablehistory, $field)) {
             $dbman->add_field($tablehistory, $field);
         }
+
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, 'schistoryid');
         // Conditionally launch add field id.
         if (!$dbman->field_exists($tableledger, $field)) {
             $dbman->add_field($tableledger, $field);
         }
 
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, null);
         // Conditionally launch change field precision.
         if (!$dbman->field_exists($tablehistory, $field)) {
             $dbman->change_field_precision($tablehistory, $field);
+        }
+
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, null);
+        // Conditionally launch change field precision.
+        if (!$dbman->field_exists($tableledger, $field)) {
+            $dbman->change_field_precision($tableledger, $field);
         }
 
         // Shopping_cart savepoint reached.

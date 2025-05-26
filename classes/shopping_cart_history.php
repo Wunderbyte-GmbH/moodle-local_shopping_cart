@@ -885,7 +885,7 @@ class shopping_cart_history {
 
         global $DB;
 
-        $vatnr = $DB->insert_record('local_shopping_cart_id', [
+        $uniqueidentifier = $DB->insert_record('local_shopping_cart_id', [
             'userid' => $userid,
             'timecreated' => time(),
         ]);
@@ -893,14 +893,14 @@ class shopping_cart_history {
         $basevalue = (int)get_config('local_shopping_cart', 'uniqueidentifier') ?? 0;
 
         // The base value defines the number of digits.
-        $vatnr = $basevalue + $vatnr;
+        $uniqueidentifier = $basevalue + $uniqueidentifier;
 
         // We need to keep it below 7 digits.
-        if ((!empty($basevalue) && (($vatnr / $basevalue) > 10))) {
-            throw new moodle_exception('vatnristoobig', 'local_shopping_cart');
+        if ((!empty($basevalue) && (($uniqueidentifier / $basevalue) > 10))) {
+            throw new moodle_exception('uniqueidentifieristoobig', 'local_shopping_cart');
         }
 
-        return $vatnr;
+        return $uniqueidentifier;
     }
 
     /**
