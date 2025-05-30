@@ -470,7 +470,6 @@ class erpnext_invoice implements invoice {
         $address['address_type'] = 'Billing';
         $address['address_line1'] = $addressrecord->address;
         $address['city'] = $addressrecord->city;
-        $address['state'] = $addressrecord->state;
         $address['pincode'] = $addressrecord->zip;
         $address['country'] = $this->get_country_name_by_code($addressrecord->state);
         $address['customer'] = $addressrecord->name;
@@ -492,7 +491,7 @@ class erpnext_invoice implements invoice {
                     'There was a problem with retrieving the country from ERPNext: ' . $response);
         }
         $data =  json_decode($response);
-        return $data->data->name;
+        return $data->data[0]->name;
     }
 
 

@@ -52,6 +52,8 @@ class dynamicvatnrchecker extends dynamic_form {
         $mform->addElement('select', 'checkvatnrcountrycode', get_string('checkvatnrcountrycode', 'local_shopping_cart'), $options);
         $mform->addElement('text', 'checkvatnrnumber', get_string('checkvatnrnumber', 'local_shopping_cart'), '');
         $mform->setType('checkvatnrnumber', PARAM_ALPHANUM);
+        // Disable VAT number input when "novatnr" is selected.
+        $mform->disabledIf('checkvatnrnumber', 'checkvatnrcountrycode', 'eq', 'novatnr');
         $mform->addElement(
             'submit',
             'submitbutton',
