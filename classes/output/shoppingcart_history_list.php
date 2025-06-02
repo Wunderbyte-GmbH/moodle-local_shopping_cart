@@ -26,6 +26,7 @@
 namespace local_shopping_cart\output;
 
 use context_system;
+use local_shopping_cart\context_helper;
 use local_shopping_cart\local\rebookings;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
@@ -118,15 +119,7 @@ class shoppingcart_history_list implements renderable, templatable {
         $this->fromledger = $fromledger;
 
         // We need to have the context set for the format_string below.
-        try {
-            if (!$context = $page->context ?? null) {
-                if (empty($context)) {
-                    $PAGE->set_context(context_system::instance());
-                }
-            }
-        } catch (Throwable $e) {
-            $PAGE->set_context(context_system::instance());
-        }
+        context_helper::fix_page_context($PAGE);
 
         // Get currency from config.
         $this->currency = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
