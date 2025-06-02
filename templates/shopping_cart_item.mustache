@@ -42,7 +42,6 @@
         "iscashier": false,
         "nodelete": false
     }
-
 }}
 
 <div id="item-{{componentname}}-{{area}}-{{itemid}}"
@@ -58,10 +57,14 @@
 
     <span class="item-name">
         {{#imageurl}}
-            <img alt="Image of cart item: {{itemname}}" class="sc-cart-item-image" src="{{.}}">
+            {{! Accessibility notice: This is a decorative image and should not show up in screen readers.
+            So keep alt attribute empty. }}
+            <img alt="" class="sc-cart-item-image" src="{{.}}">
         {{/imageurl}}
         {{^imageurl}}
-            <img alt="Image of cart item: {{itemname}}" class="sc-cart-item-image" src="{{wwwroot}}/local/shopping_cart/pix/cart.png">
+            {{! Accessibility notice: This is a decorative image and should not show up in screen readers.
+            So keep alt attribute empty. }}
+            <img alt="" class="sc-cart-item-image" src="{{wwwroot}}/local/shopping_cart/pix/cart.png">
         {{/imageurl}}
     </span>
     <span class="itemname">
