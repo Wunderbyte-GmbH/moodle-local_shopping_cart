@@ -159,8 +159,13 @@ class erpnext_invoice implements invoice {
             if (!empty($addressrecords)) {
                 $this->addressid = array_key_first($addressrecords);
             } else {
-                throw new \moodle_exception('nobillingaddress', 'local_shopping_cart', '', null,
-                        'No billing address available for the user.');
+                throw new \moodle_exception(
+                    'nobillingaddress',
+                    'local_shopping_cart',
+                    '',
+                    null,
+                    'No billing address available for the user.'
+                );
             }
         }
         if ($this->addressid > 0 && !empty(address_operations::get_specific_user_address($this->addressid)->company)) {
@@ -272,7 +277,10 @@ class erpnext_invoice implements invoice {
             'status' => 'Submitted',
             'docstatus' => '1',
         ]);
-        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        if (!$submitdata) {
+            return false;
+        }
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
         if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
         }
@@ -293,7 +301,10 @@ class erpnext_invoice implements invoice {
             'status' => 'Submitted',
             'docstatus' => '1',
         ]);
-        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        if (!$submitdata) {
+            return false;
+        }
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
         if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
         }
@@ -386,8 +397,13 @@ class erpnext_invoice implements invoice {
             $responsearray = json_decode($response, true);
             $templates = array_column($responsearray['data'], 'name');
         } else {
-            throw new \moodle_exception('error', 'local_shopping_cart', '', null,
-                    'There was a problem fetching tax templates from ERPNext: ' . $response);
+            throw new \moodle_exception(
+                'error',
+                'local_shopping_cart',
+                '',
+                null,
+                'There was a problem fetching tax templates from ERPNext: ' . $response
+            );
         }
         return $templates;
     }
@@ -443,15 +459,25 @@ class erpnext_invoice implements invoice {
                 // Create the new address.
                 $response = self::create_address($addressrecord, $addresstitle);
                 if (!$this->validate_response($response, $url)) {
-                    throw new \moodle_exception('error', 'local_shopping_cart', '', null,
-                    'There was a problem with adding the address in ERPNext: ' . $response);
+                    throw new \moodle_exception(
+                        'error',
+                        'local_shopping_cart',
+                        '',
+                        null,
+                        'There was a problem with adding the address in ERPNext: ' . $response
+                    );
                 }
             }
             $response = json_decode($response);
             return $response->data->name;
         } else {
-            throw new \moodle_exception('nobillingaddress', 'local_shopping_cart', '', null,
-                    'No billing address available for the user.');
+            throw new \moodle_exception(
+                'nobillingaddress',
+                'local_shopping_cart',
+                '',
+                null,
+                'No billing address available for the user.'
+            );
         }
     }
 
@@ -484,13 +510,18 @@ class erpnext_invoice implements invoice {
      * @return string|null The country name (e.g. 'Austria'), or null if not found.
      */
     protected function get_country_name_by_code(string $code): ?string {
-        $url = $this->baseurl . '/api/resource/Country?filters=[["code","=","'.$code.'"]]';
+        $url = $this->baseurl . '/api/resource/Country?filters=[["code","=","' . $code . '"]]';
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
-            throw new \moodle_exception('error', 'local_shopping_cart', '', null,
-                    'There was a problem with retrieving the country from ERPNext: ' . $response);
+            throw new \moodle_exception(
+                'error',
+                'local_shopping_cart',
+                '',
+                null,
+                'There was a problem with retrieving the country from ERPNext: ' . $response
+            );
         }
-        $data =  json_decode($response);
+        $data = json_decode($response);
         return $data->data[0]->name;
     }
 
@@ -583,7 +614,7 @@ class erpnext_invoice implements invoice {
                 isset($this->invoicedata['vatid'])
             ) {
                 $responsetaxid->data->tax_id = $this->invoicedata['vatid'];
-                $response = $this->client->put($url, json_encode($responsetaxid->data));
+                $response = $this->client->put($url, [json_encode($responsetaxid->data)]);
             }
         }
         return $this->validate_response($response, $url);
@@ -636,7 +667,7 @@ class erpnext_invoice implements invoice {
             $customer['customer_type'] = 'Individual';
         }
         $customer['customer_group'] = 'All Customer Groups';
-        // TODO: Implement Customer Address.
+        // Todo: Implement Customer Address.
         $countrycode = get_config('local_shopping_cart', 'defaultcountry');
         if (in_array($countrycode, $this->get_all_territories())) {
             $customer['territory'] = $countrycode;
@@ -665,7 +696,7 @@ class erpnext_invoice implements invoice {
         ];
 
         $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
-        $response = $this->client->put($url, json_encode($data));
+        $response = $this->client->put($url, [json_encode($data)]);
 
         return $this->validate_response($response, $url);
     }
@@ -780,7 +811,10 @@ class erpnext_invoice implements invoice {
         } else {
             $json = json_encode(['customer_name' => fullname($this->user)]);
         }
-        $response = $this->client->put(str_replace(' ', '%20', $url), $json);
+        if (!$json) {
+            return false;
+        }
+        $response = $this->client->put(str_replace(' ', '%20', $url), [$json]);
         if (!$response) {
             return false;
         }
