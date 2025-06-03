@@ -249,10 +249,10 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param object $managercache
      * @param object $historyrecords
      */
-    public function assertcartstorevatnumbernull($managercache, $historyrecords): void {
+    public function assertcartstorevatnumberempty($managercache, $historyrecords): void {
         foreach ($historyrecords as $historyrecord) {
-            $this->assertNull($historyrecord->taxcountrycode, 'assertcartstorevatnumbernull_taxcountrycode');
-            $this->assertNull($historyrecord->vatnumber, 'assertcartstorevatnumbernull_vatnumber');
+            $this->assertEmpty($historyrecord->taxcountrycode, 'assertcartstorevatnumberempty_taxcountrycode');
+            $this->assertEmpty($historyrecord->vatnumber, 'assertcartstorevatnumberempty_vatnumber');
         }
     }
 

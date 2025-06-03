@@ -827,9 +827,9 @@ class shopping_cart {
             $item = (array) $item;
 
             // We make sure that all our items have the address and billing information.
-            $item['address_billing'] = $data['address_billing'] ?? null;
-            $item['address_shipping'] = $data['address_shipping'] ?? null;
-            $item['vatnumber'] = $data['vatnrnumber'] ?? null;
+            $item['address_billing'] = $data['address_billing'] ?? '';
+            $item['address_shipping'] = $data['address_shipping'] ?? '';
+            $item['vatnumber'] = $data['vatnrnumber'] ?? '';
 
             $totalprice += $item['price'];
 

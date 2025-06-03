@@ -173,7 +173,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertinvalidcheckout',
-                    'assertcartstorevatnumbernull',
+                    'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
             ],
@@ -196,7 +196,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertvalidcheckout',
-                    'assertcartstorevatnumbernull',
+                    'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
             ],
@@ -219,7 +219,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertvalidcheckout',
-                    'assertcartstorevatnumbernull',
+                    'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
             ],
@@ -244,7 +244,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertvalidcheckout',
-                    'assertcartstorevatnumbernull',
+                    'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
             ],
