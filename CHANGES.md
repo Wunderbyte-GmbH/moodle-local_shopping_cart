@@ -1,3 +1,24 @@
+## Version 1.0.9 (2025060400)
+* Improvement: Accessibility - Remove alt texts for decorative images in shopping cart - as they should not appear in screen readers.
+* Improvement: Fix ERPNext invoice creation.
+* Bugfix: Address ids & vat number were stored in history but not ledger table.
+* Bugfix: Fix unique identifier check and vatnr field precision.
+* Bugfix: Fix country name transfer to ERPNext.
+* Bugfix: Add context_helper class with fix_page_context function to fix page context for shortcodes.
+* Bugfix: Check for empty vatnumber instead of null to fix test.
+
+## Version 1.0.8 (2025052102)
+* Bugfix: Fix faulty upgrade logic.
+
+## Version 1.0.7 (2025052101)
+* Improvement: Switch to reusable moodle-plugin-ci.yml workflow.
+* Bugfix: Deal with textarea profile fields in receipt.
+* Bugfix: When payments are ongoing, we avoid mixing up our payables via the check_for_onfoign_payments.
+
+## Version 1.0.6 (2025052100)
+* Bugfix: Fix bug when required no identifier being issued properly.
+* Tests: Fix broken tests.
+
 ## Version 1.0.5 (2025052000)
 * Improvement: Add Tax countrycode to vatid number
 * Improvement: Add company to address, make adress editable
