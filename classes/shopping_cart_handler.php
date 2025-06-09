@@ -237,6 +237,7 @@ class shopping_cart_handler {
                 $paymentaccountid = get_config('local_shopping_cart', 'accountid');
                 $this->add_key_to_jsonobject('paymentaccountid', $paymentaccountid);
             }
+            $this->add_key_to_jsonobject('paymentaccountid', $paymentaccountid);
         }
 
         if (isset($formdata->sch_allowinstallment)) {
