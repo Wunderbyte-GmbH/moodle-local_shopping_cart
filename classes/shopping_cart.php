@@ -339,6 +339,7 @@ class shopping_cart {
         global $USER;
 
         $itemdata = [];
+        $itemdata['itemname'] = ""; // Require to avoid php warning for unprivileged roles.
         $itemdata['success'] = $success;
         $itemdata['buyforuser'] = $USER->id == $userid ? 0 : $userid;
         $itemdata['expirationtime'] = self::get_expirationtime();
