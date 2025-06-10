@@ -142,7 +142,7 @@ class shopping_cart {
                 $paymentaccountid = $jsonobject->paymentaccountid ?? get_config('local_shopping_cart', 'accountid') ?: 1;
                 if (!$cartstore->set_paymentaccountid($paymentaccountid)) {
                     return [
-                        'success' => LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER,
+                        'success' => LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT,
                         'itemname' => $cartitem['itemname'] ?? '',
                     ];
                 }
@@ -293,6 +293,9 @@ class shopping_cart {
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED:
                 $itemdata = self::get_dummy_item(LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED, $userid);
+                break;
+            case LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT:
+                $itemdata = self::get_dummy_item(LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT, $userid);
                 break;
             case LOCAL_SHOPPING_CART_CARTPARAM_ERROR:
             default:

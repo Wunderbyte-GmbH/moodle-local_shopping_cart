@@ -351,6 +351,9 @@ $string['error:negativevaluenotallowed'] = 'Please enter a positive value.';
 $string['error:nofieldchosen'] = 'You have to choose a field.';
 $string['error:noreason'] = 'Please enter a reason.';
 $string['error:notpositive'] = 'Please enter a positive number.';
+$string['error:paymentaccountsdonotmatch'] = 'You already have an item with a different payment account in your cart.
+You have to buy this item separately!';
+$string['error:paymentaccounttitle'] = 'Different payment account';
 $string['error:useonlyonefield'] = 'Can you use only one of these fields at the time';
 $string['errorinvalidvatdatadescription'] = 'Both fields must have input values to be valid';
 $string['errorinvalidvatdatatitle'] = 'Invalid data';

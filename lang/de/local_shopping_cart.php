@@ -346,6 +346,9 @@ $string['error:negativevaluenotallowed'] = 'Bitte einen positiven Wert eingeben.
 $string['error:nofieldchosen'] = 'Sie müssen ein Feld auswählen.';
 $string['error:noreason'] = 'Bitte geben Sie einen Grund an.';
 $string['error:notpositive'] = 'Bitte geben Sie eine positive Zahl ein.';
+$string['error:paymentaccountsdonotmatch'] = 'You already have an item with a different payment account in your cart.
+You have to buy this item separately!';
+$string['error:paymentaccounttitle'] = 'Different payment account';
 $string['error:useonlyonefield'] = 'Sie können jeweils nur eines dieser Felder nutzen';
 $string['errorinvalidvatdatadescription'] = 'Beide Felder müssen ausgefüllt werden';
 $string['errorinvalidvatdatatitle'] = 'Ungültige Eingabewerte';

@@ -60,6 +60,7 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_CARTISFULL', 2); // Item could not be adde
 define('LOCAL_SHOPPING_CART_CARTPARAM_COSTCENTER', 3); // Item could not be added because of different cost center.
 define('LOCAL_SHOPPING_CART_CARTPARAM_FULLYBOOKED', 4); // Item could not be added because it's already fully booked.
 define('LOCAL_SHOPPING_CART_CARTPARAM_ALREADYBOOKED', 5); // Item could not be added because it was already booked before.
+define('LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT', 6); // Item could not be added because of different payment accounts.
 
 // Price modifiers.
 define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 10); // Apply Installments.
