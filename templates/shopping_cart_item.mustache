@@ -77,16 +77,17 @@
     </span>
     {{#iscashier}}
         <span class="item-button pull-right">
-            <i class="shoppingcart-discount-icon fa fa-fw fa-percent pl-2" aria-hidden="true"
+            <i class="shoppingcart-discount-icon fa fa-fw fa-percent pl-2"
             data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
             data-itemid="{{itemid}}" data-action="discount" data-userid="{{userid}}"></i>
         </span>
     {{/iscashier}}
     {{^nodelete}}
     <span class="item-button pull-right">
-        <i class="fa fa-fw fa-trash-o pl-2" aria-hidden="true"
+          <button class="delete-button fa fa-fw fa-trash-o"
         data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
-        data-area="{{area}}" data-action="delete" data-userid="{{userid}}"></i>
+        data-area="{{area}}" data-action="delete" data-userid="{{userid}}"></button>
+        <span tabindex="0"></span>
     </span>
     {{/nodelete}}
     {{#nodelete}}

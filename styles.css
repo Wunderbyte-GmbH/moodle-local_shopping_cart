@@ -407,6 +407,17 @@ div.shopping-cart-items-container div.item-description {
     color: rgb(29, 33, 37);
 }
 
+.shopping-cart-items .delete-button {
+    border: none;
+    background: transparent;
+    color: #abb0be;
+}
+
+.shopping-cart-items .delete-button:hover {
+    color: rgb(29, 33, 37);
+}
+
+
 .shopping-cart-item[data-area="rebookingcredit"] img,
 .shopping-cart-item[data-area="rebookitem"] img,
 .shopping-cart-item[data-area="bookingfee"] img,
