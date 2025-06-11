@@ -36,6 +36,7 @@ use OnlinePayments\Sdk\Domain\PaymentResponse;
 use OnlinePayments\Sdk\Domain\PaymentStatusOutput;
 use OnlinePayments\Sdk\Domain\RedirectPaymentMethodSpecificOutput;
 use paygw_payone\payone_sdk;
+use tool_mocktesttime\time_mock;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -62,6 +63,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
+        time_mock::init();
+        time_mock::set_mock_time(strtotime('now'));
         set_config('country', 'AT');
         $generator = $this->getDataGenerator()->get_plugin_generator('core_payment');
         $this->account = $generator->create_payment_account(['name' => 'PayOne1']);
@@ -145,6 +148,7 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
         // Mandatory clean-up.
         cartstore::reset();
         \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
+        time_mock::reset_mock_time();
     }
     /**
      * Generate fake addresses for a given user.

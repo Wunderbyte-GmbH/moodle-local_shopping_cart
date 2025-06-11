@@ -27,7 +27,7 @@ namespace local_shopping_cart;
 
 use advanced_testcase;
 use local_shopping_cart\local\cartstore;
-use PHPUnit\Framework\TestCase;
+use tool_mocktesttime\time_mock;
 use phpunit_util;
 
 /**
@@ -41,6 +41,8 @@ final class cartstore_test extends advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
+        time_mock::init();
+        time_mock::set_mock_time(strtotime('now'));
     }
 
     /**
@@ -51,6 +53,7 @@ final class cartstore_test extends advanced_testcase {
         // Mandatory clean-up.
         cartstore::reset();
         \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
+        time_mock::reset_mock_time();
     }
 
     /**
