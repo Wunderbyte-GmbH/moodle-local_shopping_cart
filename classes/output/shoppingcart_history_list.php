@@ -190,8 +190,14 @@ class shoppingcart_history_list implements renderable, templatable {
                 // We want to show the credits at the place of the price.
                 $item->price = $item->credits;
                 $item->taxesenabled = false;
-                $item->timecreated = date('Y-m-d H:i', $item->timecreated);
-                $item->timemodified = date('Y-m-d H:i', $item->timemodified);
+                $item->timecreated = $item->timecreated ?
+                    userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
+                $item->timemodified = $item->timemodified ?
+                    userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+                $item->serviceperiodstart = $item->serviceperiodstart ?
+                    userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
+                $item->serviceperiodend = $item->serviceperiodend ?
+                    userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->buttonclass = ' hidden ';
                 $this->historyitems[] = (array)$item;
                 continue;
@@ -290,8 +296,15 @@ class shoppingcart_history_list implements renderable, templatable {
                 self::add_tax_info($item);
             }
 
-            $item->timecreated = date('Y-m-d H:i', $item->timecreated);
-            $item->timemodified = date('Y-m-d H:i', $item->timemodified);
+            $item->timecreated = $item->timecreated ?
+                userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->timemodified = $item->timemodified ?
+                userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->serviceperiodstart = $item->serviceperiodstart ?
+                userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->serviceperiodend = $item->serviceperiodend ?
+                userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
+
             $item->canceled = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ? true : false;
 
             // Depending on how is calling this and which status the person has, we display different cancel options.

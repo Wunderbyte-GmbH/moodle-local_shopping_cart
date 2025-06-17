@@ -115,6 +115,7 @@ $string['baseurl'] = 'Basis-URL';
 $string['baseurldesc'] = 'Geben Sie die Basis-URL für Ihre Rechnungsplattform ein.';
 $string['be'] = "Belgien";
 $string['bg'] = "Bulgarien";
+$string['booked'] = 'Gebucht';
 $string['bookingfee'] = 'Buchungsgebühr';
 $string['bookingfee_desc'] = 'Für jede Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
 $string['bookingfeeonlyonce'] = 'Buchungsgebühr nur einmal einheben';
@@ -567,6 +568,19 @@ $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
 $string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
+$string['schistorysections'] = 'Buchungshistorie (Shopping Cart History) in Bereiche gliedern';
+$string['schistorysections_desc'] = 'Mit dieser Einstellung können Sie die Buchungshistorie
+(Shortcode [shoppingcarthistory]) aufräumen und in aufklappbare Bereiche trennen.
+Wählen Sie hierzu einen Startmonat und ein Intervall aus. Beispiel:
+Startmonat: März, Intervall: Halbjährlich => ... 03/2025-08/2025, 09/2025-02/2026 ...<br>
+<span class="text-danger">Hinweis: Nach Aktivierung müssen Sie diese Seite <b>speichern und neu laden</b>,
+um den Startmonat und das Intervall auswählen zu können.</span>';
+$string['schistorysectionsinterval'] = 'Intervall';
+$string['schistorysectionsintervalannually'] = 'Jährlich';
+$string['schistorysectionsintervalmonthly'] = 'Monatlich';
+$string['schistorysectionsintervalquarterly'] = 'Vierteljährlich';
+$string['schistorysectionsintervalsemiannually'] = 'Halbjährlich';
+$string['schistorysectionsstartingmonth'] = 'Startmonat';
 $string['se'] = "Schweden";
 $string['searchforitem'] = 'Suche...';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
@@ -584,6 +598,7 @@ $string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine a
 $string['shopping_cart:changepaymentaccount'] = 'Kann den paymentaccount von Artikeln ändern';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
+$string['shortcodeschistorysettings'] = 'Buchungshistorie (Shortcode) anpassen';
 $string['showdailysums'] = '&sum; Tageseinnahmen anzeigen';
 $string['showdailysumscurrentcashier'] = '&sum; Tageseinnahmen der aktuell eingeloggten Kassier:in anzeigen';
 $string['showdescription'] = 'Zeige Beschreibung';

@@ -33,10 +33,14 @@ defined('MOODLE_INTERNAL') || die();
 // Default for users that have site config.
 if ($hassiteconfig) {
     // Add the category to the local plugin branch.
-    $settings = new admin_settingpage('local_shopping_cart_settings',
-            get_string('generalsettingspagetitle', 'local_shopping_cart'));
-    $ADMIN->add('localplugins', new admin_category('local_shopping_cart',
-            new lang_string('pluginname', 'local_shopping_cart')));
+    $settings = new admin_settingpage(
+        'local_shopping_cart_settings',
+        get_string('generalsettingspagetitle', 'local_shopping_cart')
+    );
+    $ADMIN->add('localplugins', new admin_category(
+        'local_shopping_cart',
+        new lang_string('pluginname', 'local_shopping_cart')
+    ));
     $ADMIN->add('local_shopping_cart', $settings);
 
     $paymentaccountrecords = helper::get_payment_accounts_to_manage(context_system::instance(), false);
@@ -300,18 +304,22 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
-        new admin_setting_configcheckbox('local_shopping_cart/acceptadditionalconditions',
-                get_string('acceptadditionalconditions', 'local_shopping_cart'),
-                get_string('acceptadditionalconditions:description', 'local_shopping_cart'), 0));
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/acceptadditionalconditions',
+            get_string('acceptadditionalconditions', 'local_shopping_cart'),
+            get_string('acceptadditionalconditions:description', 'local_shopping_cart'),
+            0
+        )
+    );
 
     $settings->add(
-            new admin_setting_configtextarea(
-                    'local_shopping_cart/additionalconditions',
-                    get_string('additionalconditions', 'local_shopping_cart'),
-                    get_string('additionalconditions:description', 'local_shopping_cart'),
-                    null,
-                    PARAM_RAW
-            )
+        new admin_setting_configtextarea(
+            'local_shopping_cart/additionalconditions',
+            get_string('additionalconditions', 'local_shopping_cart'),
+            get_string('additionalconditions:description', 'local_shopping_cart'),
+            null,
+            PARAM_RAW
+        )
     );
 
     // If this setting is turned on, all customers have to pay the sellers tax template.
@@ -602,6 +610,57 @@ if ($hassiteconfig) {
         $limitopts
     ));
     $ADMIN->add('local_shopping_cart', $cashreportsettings);
+
+    // Shopping cart history settings.
+    $shortcodeschistorysettings = new admin_settingpage(
+        'local_shopping_cart_shortcodeschistorysettings',
+        get_string('shortcodeschistorysettings', 'local_shopping_cart')
+    );
+    $shortcodeschistorysettings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/schistorysections',
+            get_string('schistorysections', 'local_shopping_cart'),
+            get_string('schistorysections_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+    if (get_config('local_shopping_cart', 'schistorysections')) {
+        $months = [
+            1 => get_string('january', 'local_wunderbyte_table'),
+            2 => get_string('february', 'local_wunderbyte_table'),
+            3 => get_string('march', 'local_wunderbyte_table'),
+            4 => get_string('april', 'local_wunderbyte_table'),
+            5 => get_string('may', 'local_wunderbyte_table'),
+            6 => get_string('june', 'local_wunderbyte_table'),
+            7 => get_string('july', 'local_wunderbyte_table'),
+            8 => get_string('august', 'local_wunderbyte_table'),
+            9 => get_string('september', 'local_wunderbyte_table'),
+            10 => get_string('october', 'local_wunderbyte_table'),
+            11 => get_string('november', 'local_wunderbyte_table'),
+            12 => get_string('december', 'local_wunderbyte_table'),
+        ];
+        $shortcodeschistorysettings->add(new admin_setting_configselect(
+            'local_shopping_cart/schistorysectionsstartingmonth',
+            get_string('schistorysectionsstartingmonth', 'local_shopping_cart'),
+            '',
+            1, // Default value: January.
+            $months
+        ));
+        $possibleintervals = [
+            1 => get_string('schistorysectionsintervalannually', 'local_shopping_cart'),
+            2 => get_string('schistorysectionsintervalsemiannually', 'local_shopping_cart'),
+            4 => get_string('schistorysectionsintervalquarterly', 'local_shopping_cart'),
+            12 => get_string('schistorysectionsintervalmonthly', 'local_shopping_cart'),
+        ];
+        $shortcodeschistorysettings->add(new admin_setting_configselect(
+            'local_shopping_cart/schistorysectionsinterval',
+            get_string('schistorysectionsinterval', 'local_shopping_cart'),
+            '',
+            1, // Default value: Annually (yearly).
+            $possibleintervals
+        ));
+    }
+    $ADMIN->add('local_shopping_cart', $shortcodeschistorysettings);
 
     // Setting to enable taxes processing.
     $taxsettings = new admin_settingpage('local_shopping_cart_tax_settings', new lang_string('taxsettings', 'local_shopping_cart'));

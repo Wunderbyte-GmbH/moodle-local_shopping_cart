@@ -66,8 +66,18 @@
     </div>
     <div class="d-flex w-100 justify-content-between {{#canceled}}text-danger{{/canceled}}">
         <p><span><small>
-            {{#str}} timecreated, local_shopping_cart {{/str}}:&nbsp;{{timecreated}} |
-            {{#str}} timemodified, local_shopping_cart {{/str}}:&nbsp;{{timemodified}}
+            {{#str}} booked, local_shopping_cart {{/str}}:&nbsp;{{timecreated}}
+            {{#canceled}}
+                | {{#str}} canceled, local_shopping_cart {{/str}}:&nbsp;{{timemodified}}
+            {{/canceled}}
+            {{#canpayback}}
+                {{#serviceperiodstart}}
+                    <br>{{#str}} serviceperiodstart, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodstart}}
+                    {{#serviceperiodend}}
+                        | {{#str}} serviceperiodend, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodend}}
+                    {{/serviceperiodend}}
+                {{/serviceperiodstart}}
+            {{/canpayback}}
         </small></span></p>
         <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small></span></p>
     </div>
