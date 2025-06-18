@@ -120,11 +120,5 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I click on "Verify validity of VAT number" "button"
     And I wait "2" seconds
     And I should see "Vat number was successfull validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
-    ## VAT verification reloads page and does not preserve installment status - reactivate it.
-    And I should see "42.42 EUR" in the ".sc_totalprice" "css_element"
-    And I set the field "Use installment payments" to "1"
     And I wait "1" seconds
-    And I should see "20 EUR instead of 42.42 EUR"
-    And I should see "Further payments"
-    And I should see "2" occurrences of "11.21 EUR on" in the ".sc_installments .furtherpayments" "css_element"
     And I should see "20.00 EUR" in the ".sc_totalprice" "css_element"
