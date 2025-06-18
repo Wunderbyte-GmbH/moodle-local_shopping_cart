@@ -45,7 +45,7 @@ Feature: User cancellation after cash payment on the checkout page.
     And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "Test item 2" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2" "css_element"
     And I should see "20.30 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2 .item-price" "css_element"
-    And I click on ".checkoutgrid [data-itemid=\"2\"] i.fa.fa-trash-o" "css_element"
+    And I click on ".checkoutgrid [data-itemid=\"2\"] button.delete-button.fa-trash-o" "css_element"
     And I wait "1" seconds
     And I should not see "Test item 2" in the "div.shopping-cart-items" "css_element"
     ## Price

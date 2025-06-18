@@ -57,8 +57,7 @@ Feature: Test purchase process in shopping cart.
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
     Then I should see "Test item 1" in the "div.shopping-cart-items" "css_element"
-    ## And I click on "[data-item=\"shopping_cart_item\"] i.fa.fa-trash-o" "css_element"
-    And I click on "[data-itemid=\"1\"] i.fa.fa-trash-o" "css_element"
+    And I click on "[data-name=\"Test item 1\"] button.delete-button.fa-trash-o" "css_element"
     And I wait "1" seconds
     Then I should not see "Test item 1" in the "div.shopping-cart-items" "css_element"
     And I reload the page
