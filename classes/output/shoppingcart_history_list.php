@@ -523,7 +523,140 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['userid'] = $this->userid;
         }
 
+        // Organize return array into collapsible sections (if setting is active).
+        if (get_config('local_shopping_cart', 'schistorysections')) {
+            $this->organize_returnarray_into_collapsible_sections($returnarray);
+        }
+
         return $returnarray;
+    }
+
+    /**
+     * Helper function to organize history items into collapsible sections.
+     * Depending on the according settings.
+     *
+     * @param $returnarray reference to the returnarray
+     * @return void
+     */
+    private function organize_returnarray_into_collapsible_sections(&$returnarray): void {
+        global $DB;
+        /* First, we want to add sorting dates to each item.
+        If the item is somehow connected to a Booking option of the mod_booking plugin,
+        then we want to use the start of this booking option as sorting date.
+        In all other cases, we just use timemodified (or timecreated if timemodified is not set). */
+        foreach ($returnarray['historyitems'] as $key => $value) {
+            // Default behavior.
+            $returnarray['historyitems'][$key]['sortingdate'] = empty($returnarray['historyitems'][$key]['timemodified']) ?
+                    strtotime($returnarray['historyitems'][$key]['timecreated']) :
+                    strtotime($returnarray['historyitems'][$key]['timemodified']);
+
+            // Check if the Booking plugin is installed.
+            if (class_exists('mod_booking\booking')) {
+                // Check if the history item corresponds to a booking option.
+                if (
+                    $returnarray['historyitems'][$key]['componentname'] == 'mod_booking'
+                    && $returnarray['historyitems'][$key]['area'] == 'option'
+                ) {
+                    $settings = \mod_booking\singleton_service::get_instance_of_booking_option_settings(
+                        $returnarray['historyitems'][$key]['itemid']
+                    );
+                    if (!empty($settings->coursestarttime)) {
+                        $returnarray['historyitems'][$key]['sortingdate'] = (int) $settings->coursestarttime;
+                    }
+                } else {
+                    // Else we still can check if the item was bought together with a booking option.
+                    $itemid = $DB->get_field_sql(
+                        "SELECT itemid
+                           FROM {local_shopping_cart_history}
+                          WHERE identifier = :identifier
+                            AND componentname = 'mod_booking' AND area = 'option'
+                          LIMIT 1",
+                        ['identifier' => $returnarray['historyitems'][$key]['identifier']]
+                    );
+                    if (!empty($itemid)) {
+                        $settings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($itemid);
+                        if (!empty($settings->coursestarttime)) {
+                            $returnarray['historyitems'][$key]['sortingdate'] = (int) $settings->coursestarttime;
+                        }
+                    }
+                }
+            }
+        }
+        // Start one year earlier and end one year later, just to make sure, we don't lose anything.
+        $lowestyear = (int) date('Y', min(array_column($returnarray['historyitems'], 'sortingdate'))) - 1;
+        $highestyear = (int) date('Y', max(array_column($returnarray['historyitems'], 'sortingdate'))) + 1;
+
+        $startingmonth = (int) get_config('local_shopping_cart', 'schistorysectionsstartingmonth') ?? 1;
+        $interval = (int) get_config('local_shopping_cart', 'schistorysectionsinterval') ?? 1;
+
+        $this->structure_historyitems_into_date_intervals($returnarray, $lowestyear, $highestyear, $startingmonth, $interval);
+    }
+
+    /**
+     * Helper function to generate an array of interval strings.
+     * @param array $returnarray reference to the returnarray
+     * @param int $lowestyear
+     * @param int $highestyear
+     * @param int $startingmonth
+     * @param int $interval
+     */
+    private function structure_historyitems_into_date_intervals(
+        array &$returnarray,
+        int $lowestyear,
+        int $highestyear,
+        int $startingmonth,
+        int $interval
+    ): void {
+        $historyitems = $returnarray['historyitems'];
+
+        $monthsperinterval = 12 / $interval;
+
+        for ($year = $lowestyear; $year <= $highestyear; $year++) {
+            $currentyear = $year;
+            $currentmonth = $startingmonth;
+
+            for ($i = 0; $i < $interval; $i++) {
+                $endmonth = $currentmonth + $monthsperinterval - 1;
+                $endyear = $currentyear;
+
+                if ($endmonth > 12) {
+                    $endmonth -= 12;
+                    $endyear += 1;
+                }
+
+                if ($interval == 12) {
+                    $pattern = "%02d/%d"; // When using months, we do not want them twice.
+                } else {
+                    $pattern = "%02d/%d - %02d/%d";
+                }
+                $dateintervalsection = sprintf($pattern, $currentmonth, $currentyear, $endmonth, $endyear);
+
+                $intervalstarttime = strtotime("{$currentyear}-{$currentmonth}-01 00:00:00");
+                $monthafterendmonth = $endmonth + 1;
+                $intervalendtime = strtotime("{$endyear}-{$monthafterendmonth}-01 00:00:00");
+                $intervalendtime -= 1; // So we'll get the last second (23:59:59) of the month before.
+
+                // Now we add all matching items to the section.
+                $returnarray['structuredhistoryitems'][$dateintervalsection] = array_filter(
+                    $historyitems,
+                    fn($item) =>
+                        $item['sortingdate'] >= $intervalstarttime
+                        && $item['sortingdate'] <= $intervalendtime
+                );
+
+                $currentmonth += $monthsperinterval;
+                if ($currentmonth > 12) {
+                    $currentmonth -= 12;
+                    $currentyear += 1;
+                }
+            }
+        }
+        // Remove all empty sections.
+        foreach ($returnarray['structuredhistoryitems'] as $key => $value) {
+            if (empty($value)) {
+                unset($returnarray['structuredhistoryitems'][$key]);
+            }
+        }
     }
 
     /**
@@ -542,9 +675,9 @@ class shoppingcart_history_list implements renderable, templatable {
      *
      * @param stdClass $item
      *
-     * @return [type]
+     * @return void
      */
-    public static function add_round_config(stdClass &$item) {
+    public static function add_round_config(stdClass &$item): void {
 
         if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
             $item->round = $round == 1 ? true : false;
