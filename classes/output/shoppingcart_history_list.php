@@ -296,13 +296,13 @@ class shoppingcart_history_list implements renderable, templatable {
                 self::add_tax_info($item);
             }
 
-            $item->timecreated = $item->timecreated ?
+            $item->timecreated = !empty($item->timecreated) ?
                 userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->timemodified = $item->timemodified ?
+            $item->timemodified = !empty($item->timemodified) ?
                 userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodstart = $item->serviceperiodstart ?
+            $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
                 userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodend = $item->serviceperiodend ?
+            $item->serviceperiodend = !empty($item->serviceperiodend) ?
                 userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
 
             $item->canceled = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ? true : false;
