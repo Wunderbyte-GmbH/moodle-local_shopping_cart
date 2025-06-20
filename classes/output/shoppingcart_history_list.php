@@ -530,10 +530,10 @@ class shoppingcart_history_list implements renderable, templatable {
      * Helper function to organize history items into collapsible sections.
      * Depending on the according settings.
      *
-     * @param $returnarray reference to the returnarray
+     * @param array $returnarray reference to the returnarray
      * @return void
      */
-    public static function organize_returnarray_into_collapsible_sections(&$returnarray): void {
+    public static function organize_returnarray_into_collapsible_sections(array &$returnarray): void {
         global $DB;
         // If no history items exist, we have nothing to do here.
         if (empty($returnarray['historyitems'])) {
