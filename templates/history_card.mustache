@@ -49,14 +49,12 @@
         <div class="history">
             <ul class="list-group cashier-history-items">
             {{#costcentercredits.0}}
-            {{> local_shopping_cart/costcentercredit_item }}
+                {{> local_shopping_cart/costcentercredit_item }}
             {{/costcentercredits.0}}
             {{^costcentercredits.0}}
-            {{> local_shopping_cart/credit_item }}
+                {{> local_shopping_cart/credit_item }}
             {{/costcentercredits.0}}
-            {{#historyitems}}
-            {{> local_shopping_cart/history_item }}
-            {{/historyitems}}
+            {{> local_shopping_cart/history_items }}
             </ul>
         </div>
     </div>

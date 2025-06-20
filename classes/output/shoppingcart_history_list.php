@@ -523,11 +523,6 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['userid'] = $this->userid;
         }
 
-        // Organize return array into collapsible sections (if setting is active).
-        if (get_config('local_shopping_cart', 'schistorysections')) {
-            $this->organize_returnarray_into_collapsible_sections($returnarray);
-        }
-
         return $returnarray;
     }
 
@@ -538,8 +533,12 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param $returnarray reference to the returnarray
      * @return void
      */
-    private function organize_returnarray_into_collapsible_sections(&$returnarray): void {
+    public static function organize_returnarray_into_collapsible_sections(&$returnarray): void {
         global $DB;
+        // If no history items exist, we have nothing to do here.
+        if (empty($returnarray['historyitems'])) {
+            return;
+        }
         /* First, we want to add sorting dates to each item.
         If the item is somehow connected to a Booking option of the mod_booking plugin,
         then we want to use the start of this booking option as sorting date.
@@ -551,7 +550,10 @@ class shoppingcart_history_list implements renderable, templatable {
                     strtotime($returnarray['historyitems'][$key]['timemodified']);
 
             // Check if the Booking plugin is installed.
-            if (class_exists('mod_booking\booking')) {
+            if (
+                class_exists('mod_booking\booking')
+                && get_config('local_shopping_cart', 'schistorysectionssortbybookingcoursestarttime')
+            ) {
                 // Check if the history item corresponds to a booking option.
                 if (
                     $returnarray['historyitems'][$key]['componentname'] == 'mod_booking'
@@ -561,23 +563,9 @@ class shoppingcart_history_list implements renderable, templatable {
                         $returnarray['historyitems'][$key]['itemid']
                     );
                     if (!empty($settings->coursestarttime)) {
-                        $returnarray['historyitems'][$key]['sortingdate'] = (int) $settings->coursestarttime;
-                    }
-                } else {
-                    // Else we still can check if the item was bought together with a booking option.
-                    $itemid = $DB->get_field_sql(
-                        "SELECT itemid
-                           FROM {local_shopping_cart_history}
-                          WHERE identifier = :identifier
-                            AND componentname = 'mod_booking' AND area = 'option'
-                          LIMIT 1",
-                        ['identifier' => $returnarray['historyitems'][$key]['identifier']]
-                    );
-                    if (!empty($itemid)) {
-                        $settings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($itemid);
-                        if (!empty($settings->coursestarttime)) {
-                            $returnarray['historyitems'][$key]['sortingdate'] = (int) $settings->coursestarttime;
-                        }
+                        $returnarray['historyitems'][$key]['sortingdate'] = (int)$settings->coursestarttime;
+                        $returnarray['historyitems'][$key]['bocoursestarttime'] =
+                            userdate((int)$settings->coursestarttime, get_string('strftimedatetime', 'langconfig'));
                     }
                 }
             }
@@ -589,7 +577,7 @@ class shoppingcart_history_list implements renderable, templatable {
         $startingmonth = (int) get_config('local_shopping_cart', 'schistorysectionsstartingmonth') ?? 1;
         $interval = (int) get_config('local_shopping_cart', 'schistorysectionsinterval') ?? 1;
 
-        $this->structure_historyitems_into_date_intervals($returnarray, $lowestyear, $highestyear, $startingmonth, $interval);
+        self::structure_historyitems_into_date_intervals($returnarray, $lowestyear, $highestyear, $startingmonth, $interval);
     }
 
     /**
@@ -600,14 +588,16 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param int $startingmonth
      * @param int $interval
      */
-    private function structure_historyitems_into_date_intervals(
+    public static function structure_historyitems_into_date_intervals(
         array &$returnarray,
         int $lowestyear,
         int $highestyear,
         int $startingmonth,
         int $interval
     ): void {
+        unset($returnarray['structuredhistoryitems']);
         $historyitems = $returnarray['historyitems'];
+        $returnarray['structuredhistoryitems'] = [];
 
         $monthsperinterval = 12 / $interval;
 
@@ -636,13 +626,25 @@ class shoppingcart_history_list implements renderable, templatable {
                 $intervalendtime = strtotime("{$endyear}-{$monthafterendmonth}-01 00:00:00");
                 $intervalendtime -= 1; // So we'll get the last second (23:59:59) of the month before.
 
-                // Now we add all matching items to the section.
-                $returnarray['structuredhistoryitems'][$dateintervalsection] = array_filter(
+                $sectionhistoryitems = array_values(array_filter(
                     $historyitems,
                     fn($item) =>
                         $item['sortingdate'] >= $intervalstarttime
                         && $item['sortingdate'] <= $intervalendtime
-                );
+                ));
+                usort($sectionhistoryitems, function ($a, $b) {
+                    // Unfortunately, at this point, timecreated has already been transformed into a string.
+                    // So we need to use strtotime to get timestamps for sorting.
+                    return strtotime($b['timecreated']) <=> strtotime($a['timecreated']);
+                });
+
+                // Now we add all matching items to the section.
+                $returnarray['structuredhistoryitems'][] = [
+                    // The dateintervalkey will be used in the mustache template for the accordion to work.
+                    'dateintervalkey' => preg_replace('/\_+/', '_', preg_replace('/\/|-|\s/', '_', $dateintervalsection)),
+                    'dateinterval' => $dateintervalsection,
+                    'sectionhistoryitems' => $sectionhistoryitems,
+                ];
 
                 $currentmonth += $monthsperinterval;
                 if ($currentmonth > 12) {
@@ -651,12 +653,21 @@ class shoppingcart_history_list implements renderable, templatable {
                 }
             }
         }
-        // Remove all empty sections.
+        // Clean up: Remove all empty sections.
         foreach ($returnarray['structuredhistoryitems'] as $key => $value) {
-            if (empty($value)) {
+            if (empty($returnarray['structuredhistoryitems'][$key]['sectionhistoryitems'])) {
                 unset($returnarray['structuredhistoryitems'][$key]);
             }
         }
+        // Removing the keys is necessary, so mustache will work!
+        if (!empty($returnarray['structuredhistoryitems'])) {
+            $returnarray['structuredhistoryitems'] = array_values($returnarray['structuredhistoryitems']);
+        }
+        // Reverse the order, so newest sections come first.
+        $returnarray['structuredhistoryitems'] = array_reverse($returnarray['structuredhistoryitems']);
+
+        // Now, let's mark the first one, so we can always expand it.
+        $returnarray['structuredhistoryitems'][0]['firstsection'] = true;
     }
 
     /**

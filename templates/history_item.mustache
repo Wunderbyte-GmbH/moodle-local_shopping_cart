@@ -50,7 +50,6 @@
       "serviceperiodstart":"0",
       "serviceperiodend":"0",
       "gateway":null,
-      "date":"2022-11-09",
       "canceled":false,
       "canceluntilstring":"2022-11-23",
       "canceluntilalert":"Stornieren ist nicht m\u00f6glich.",
@@ -66,6 +65,7 @@
     </div>
     <div class="d-flex w-100 justify-content-between {{#canceled}}text-danger{{/canceled}}">
         <p><span><small>
+            {{#bocoursestarttime}}{{#str}} bocoursestarttime, local_shopping_cart {{/str}}:&nbsp;{{bocoursestarttime}}<br>{{/bocoursestarttime}}
             {{#str}} booked, local_shopping_cart {{/str}}:&nbsp;{{timecreated}}
             {{#canceled}}
                 | {{#str}} canceled, local_shopping_cart {{/str}}:&nbsp;{{timemodified}}

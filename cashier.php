@@ -25,6 +25,7 @@
 
 use local_shopping_cart\form\dynamic_select_users;
 use local_shopping_cart\output\cashier;
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -99,6 +100,12 @@ if (!empty($data['historyitems'])) {
     usort($data['historyitems'], function ($a, $b) {
         return $b['timemodified'] <=> $a['timemodified'];
     });
+}
+
+// Just one step before output, we organize the structure.
+// Organize return array into collapsible sections (if setting is active).
+if (get_config('local_shopping_cart', 'schistorysections')) {
+    shoppingcart_history_list::organize_returnarray_into_collapsible_sections($data);
 }
 
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);

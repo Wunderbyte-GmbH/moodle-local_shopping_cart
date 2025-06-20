@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\addresses;
+use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use core_user_external;
 use local_shopping_cart\local\cartstore;
@@ -70,6 +71,11 @@ $test = get_users(true, '', true, [], '', '', '', '', $recordsperpage = 21);
 
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
+
+// Organize return array into collapsible sections (if setting is active).
+if (get_config('local_shopping_cart', 'schistorysections')) {
+    shoppingcart_history_list::organize_returnarray_into_collapsible_sections($data);
+}
 
 echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
 // Now output the footer.

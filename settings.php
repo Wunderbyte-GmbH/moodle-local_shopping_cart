@@ -659,6 +659,16 @@ if ($hassiteconfig) {
             1, // Default value: Annually (yearly).
             $possibleintervals
         ));
+        if (class_exists('mod_booking\booking')) {
+            $shortcodeschistorysettings->add(
+                new admin_setting_configcheckbox(
+                    'local_shopping_cart/schistorysectionssortbybookingcoursestarttime',
+                    get_string('schistorysectionssortbybookingcoursestarttime', 'local_shopping_cart'),
+                    get_string('schistorysectionssortbybookingcoursestarttime_desc', 'local_shopping_cart'),
+                    0
+                )
+            );
+        }
     }
     $ADMIN->add('local_shopping_cart', $shortcodeschistorysettings);
 

@@ -51,6 +51,10 @@ class renderer extends plugin_renderer_base {
      */
     public function render_history_card(templatable $data) {
         $data = $data->export_for_template($this);
+        // Organize return array into collapsible sections (if setting is active).
+        if (get_config('local_shopping_cart', 'schistorysections')) {
+            shoppingcart_history_list::organize_returnarray_into_collapsible_sections($data);
+        }
         return $this->render_from_template('local_shopping_cart/history_card', $data);
     }
 

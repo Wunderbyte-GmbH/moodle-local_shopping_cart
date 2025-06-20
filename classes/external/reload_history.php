@@ -97,6 +97,11 @@ class reload_history extends external_api {
 
         $list = $historylist->return_list();
 
+        // Organize return array into collapsible sections (if setting is active).
+        if (get_config('local_shopping_cart', 'schistorysections')) {
+            shoppingcart_history_list::organize_returnarray_into_collapsible_sections($list);
+        }
+
         return $list;
     }
 
@@ -108,6 +113,16 @@ class reload_history extends external_api {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'historyitems' => get_history_items::execute_returns(),
+            'structuredhistoryitems' => new external_multiple_structure(
+                new external_single_structure([
+                    'dateinterval' => new external_value(PARAM_TEXT, 'date interval', VALUE_DEFAULT, ""),
+                    'sectionhistoryitems' => get_history_items::execute_returns(),
+                ]),
+                'Structured history items',
+                VALUE_OPTIONAL,
+                null,
+                NULL_ALLOWED
+            ),
             'has_historyitems' => new external_value(PARAM_BOOL, 'Has history items marker', VALUE_DEFAULT, false),
             'canpayback' => new external_value(PARAM_BOOL, 'Can pay back', VALUE_DEFAULT, false),
             'taxesenabled' => new external_value(PARAM_BOOL, 'Taxes enabled', VALUE_DEFAULT, false),

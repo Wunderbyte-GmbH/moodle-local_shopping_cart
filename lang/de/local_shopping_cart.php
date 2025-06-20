@@ -115,6 +115,7 @@ $string['baseurl'] = 'Basis-URL';
 $string['baseurldesc'] = 'Geben Sie die Basis-URL für Ihre Rechnungsplattform ein.';
 $string['be'] = "Belgien";
 $string['bg'] = "Bulgarien";
+$string['bocoursestarttime'] = "Kursbeginn";
 $string['booked'] = 'Gebucht';
 $string['bookingfee'] = 'Buchungsgebühr';
 $string['bookingfee_desc'] = 'Für jede Buchung wird eine Gebühr eingehoben, unabhängig davon, wieviele Artikel gekauft werden und wieiviel sie kosten.';
@@ -580,6 +581,10 @@ $string['schistorysectionsintervalannually'] = 'Jährlich';
 $string['schistorysectionsintervalmonthly'] = 'Monatlich';
 $string['schistorysectionsintervalquarterly'] = 'Vierteljährlich';
 $string['schistorysectionsintervalsemiannually'] = 'Halbjährlich';
+$string['schistorysectionssortbybookingcoursestarttime'] = 'Sortierung abhängig vom Start der Buchungsoption';
+$string['schistorysectionssortbybookingcoursestarttime_desc'] = 'Sie haben das Buchungsmodul (Booking) installiert.
+Daher können Sie für die Sortierung anstatt dem Datum des Kaufs auch den Beginn der tatsächlichen Buchungsoption verwenden.
+Das macht zum Beispiel dann Sinn, wenn Sie Ihre Kurse in Semestern organisiert haben.';
 $string['schistorysectionsstartingmonth'] = 'Startmonat';
 $string['se'] = "Schweden";
 $string['searchforitem'] = 'Suche...';

@@ -115,6 +115,7 @@ $string['baseurl'] = 'Base URL';
 $string['baseurldesc'] = 'Enter the base URL for your invoicing platform.';
 $string['be'] = "Belgium";
 $string['bg'] = "Bulgaria";
+$string['bocoursestarttime'] = "Course start";
 $string['booked'] = 'Booked';
 $string['bookingfee'] = 'Booking fee';
 $string['bookingfee_desc'] = 'Booking fee for every checkout.';
@@ -648,6 +649,10 @@ $string['schistorysectionsintervalannually'] = 'Annually';
 $string['schistorysectionsintervalmonthly'] = 'Monthly';
 $string['schistorysectionsintervalquarterly'] = 'Quarterly';
 $string['schistorysectionsintervalsemiannually'] = 'Semi-annually';
+$string['schistorysectionssortbybookingcoursestarttime'] = 'Sorting dependent on actual start time of booking options';
+$string['schistorysectionssortbybookingcoursestarttime_desc'] = 'As you have installed the Booking plugin,
+you can make the sorting dependent on the actual start of booking options instead of the time when the item was booked.
+This makes sense - for example - if you have structured your courses into semesters.';
 $string['schistorysectionsstartingmonth'] = 'Starting month';
 $string['se'] = "Sweden";
 $string['searchforitem'] = 'Search for item...';
