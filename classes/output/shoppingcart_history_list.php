@@ -546,8 +546,8 @@ class shoppingcart_history_list implements renderable, templatable {
         foreach ($returnarray['historyitems'] as $key => $value) {
             // Default behavior.
             $returnarray['historyitems'][$key]['sortingdate'] = empty($returnarray['historyitems'][$key]['timemodified']) ?
-                    strtotime($returnarray['historyitems'][$key]['timecreated']) :
-                    strtotime($returnarray['historyitems'][$key]['timemodified']);
+                    strtotime($returnarray['historyitems'][$key]['timecreated'], time()) :
+                    strtotime($returnarray['historyitems'][$key]['timemodified'], time());
 
             // Check if the Booking plugin is installed.
             if (
@@ -595,7 +595,6 @@ class shoppingcart_history_list implements renderable, templatable {
         int $startingmonth,
         int $interval
     ): void {
-        unset($returnarray['structuredhistoryitems']);
         $historyitems = $returnarray['historyitems'];
         $returnarray['structuredhistoryitems'] = [];
 
