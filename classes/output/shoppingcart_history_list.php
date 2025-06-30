@@ -190,13 +190,13 @@ class shoppingcart_history_list implements renderable, templatable {
                 // We want to show the credits at the place of the price.
                 $item->price = $item->credits;
                 $item->taxesenabled = false;
-                $item->timecreated = $item->timecreated ?
+                $item->timecreated = !empty($item->timecreated) ?
                     userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->timemodified = $item->timemodified ?
+                $item->timemodified = !empty($item->timemodified) ?
                     userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->serviceperiodstart = $item->serviceperiodstart ?
+                $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
                     userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->serviceperiodend = $item->serviceperiodend ?
+                $item->serviceperiodend = !empty($item->serviceperiodend) ?
                     userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->buttonclass = ' hidden ';
                 $this->historyitems[] = (array)$item;
