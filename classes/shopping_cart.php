@@ -1575,7 +1575,7 @@ class shopping_cart {
      */
     public static function check_for_ongoing_payment(int $userid) {
 
-        global $DB;
+        global $DB, $CFG;
 
         $now = time();
 
@@ -1653,7 +1653,9 @@ class shopping_cart {
                                 );
                             }
                         } catch (\Throwable $e) {
-                            echo "ERROR: " . $e;
+                            if ($CFG->debug > 0) {
+                                echo "ERROR: " . $e;
+                            }
                         }
 
                         // Whenever we find a pending payment and we could complete it, we redirect to the success url.
