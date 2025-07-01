@@ -825,7 +825,7 @@ class shopping_cart_history {
      */
     public static function fetch_data_from_schistory_cache(string $identifier) {
 
-        global $USER;
+        global $USER, $CFG;
 
         $cache = \cache::make('local_shopping_cart', 'schistory');
         $shoppingcart = $cache->get('schistorycache');
@@ -866,7 +866,9 @@ class shopping_cart_history {
             $shoppingcart['storedinhistory'] = true;
             self::store_in_schistory_cache($shoppingcart);
         } else if (!isset($shoppingcart['identifier'])) {
-            throw new moodle_exception('noidentifierfound', 'local_shopping_cart');
+            if ($CFG->debug > 0) {
+                throw new moodle_exception('noidentifierfound', 'local_shopping_cart');
+            }
         }
 
         return $shoppingcart;
