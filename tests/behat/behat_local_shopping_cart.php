@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
+
 use Behat\Behat\Context\Step\Given;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
