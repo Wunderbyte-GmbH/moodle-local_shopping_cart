@@ -47,3 +47,15 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     ## Access by "name" attribute because "id" does not work for some strange reasons
     When I set the field "accepttermsandconditions" to "checked"
     Then the "Checkout" "button" should be enabled
+
+  @javascript
+  Scenario: Shopping Cart settings: control presence of strings on all settings pages
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I wait "1" seconds
+    And I visit "/admin/tool/behat/index.php"
+    And I set the field "component" to "behat_local_shopping_cart"
+    And I press "Filter"
+    And I should see "Sets up mocked VAT responses using JSON.Example usage" in the ".steps-definitions .step" "css_element"
+    ## Recommended admin pages
+    And I log out
