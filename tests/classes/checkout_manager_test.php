@@ -30,7 +30,7 @@ use local_shopping_cart\local\checkout_process\checkout_manager;
 
 /**
  * Test for checkout_manager
- * @covers \local\checkout_process\checkout_manager
+ * @covers \local_shopping_cart\local\checkout_process\checkout_manager
  */
 final class checkout_manager_test extends advanced_testcase {
     /**

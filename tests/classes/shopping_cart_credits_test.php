@@ -31,7 +31,7 @@ use local_shopping_cart\local\checkout_process\items\shopping_cart_credits;
 /**
  * Test for shopping_cart_credits
  *
- * @covers \local\checkout_process\items\shopping_cart_credits
+ * @covers \local_shopping_cart\local\checkout_process\items\shopping_cart_credits
  */
 final class shopping_cart_credits_test extends advanced_testcase {
     /**

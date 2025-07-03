@@ -31,7 +31,7 @@ use local_shopping_cart\local\checkout_process\items\addresses;
 /**
  * Test for addresses
  *
- * @covers \local\checkout_process\items\addresses
+ * @covers \local_shopping_cart\local\checkout_process\items\addresses
  */
 final class addresses_test extends advanced_testcase {
     /**

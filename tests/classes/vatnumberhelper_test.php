@@ -32,7 +32,7 @@ use SoapClient;
 /**
  * Test for vatnumberhelper
  *
- * @covers \local\checkout_process\items_helper\vatnumberhelper
+ * @covers \local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper
  */
 final class vatnumberhelper_test extends advanced_testcase {
     /**

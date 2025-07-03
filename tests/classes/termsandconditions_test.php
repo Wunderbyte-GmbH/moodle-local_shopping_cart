@@ -31,7 +31,7 @@ use local_shopping_cart\local\checkout_process\items\termsandconditions;
 /**
  * Test for termsandconditions
  *
- * @covers \local\checkout_process\items\termsandconditions
+ * @covers \local_shopping_cart\local\checkout_process\items\termsandconditions
  */
 final class termsandconditions_test extends advanced_testcase {
     /**

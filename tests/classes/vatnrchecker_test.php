@@ -31,7 +31,7 @@ use local_shopping_cart\local\checkout_process\items\vatnrchecker;
 /**
  * Test for vatnrchecker
  *
- * @covers \local\checkout_process\items\vatnrchecker
+ * @covers \local_shopping_cart\local\checkout_process\items\vatnrchecker
  */
 final class vatnrchecker_test extends advanced_testcase {
     /**
