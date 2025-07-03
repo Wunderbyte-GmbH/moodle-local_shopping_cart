@@ -19,7 +19,7 @@ jobs:
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-paygw_payone
 
-      mustache_ignore_names: 'cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache,shopping_cart_popover.mustache'
+      mustache_ignore_names: 'history_items.mustache,cashier.mustache,shopping_cart_item.mustache,history_item.mustache,form-user-selector-suggestion.mustache,shopping_cart_popover.mustache'
 
       workarounds: |
         # WORKAROUND 17/04/2025: The following code is a workaround for the "File is stale and needs to be rebuilt" error
