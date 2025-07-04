@@ -253,7 +253,7 @@ class create_invoice {
         }
 
         // Fallback, if no HTML is set.
-        if (empty(trim(strip_tags($cfghtml)))) {
+        if (empty(trim(strip_tags($cfghtml, '<table>')))) {
             $cfghtml =
                 '<table cellpadding="5" cellspacing="0" style="width: 100%; ">
                     <tr>
