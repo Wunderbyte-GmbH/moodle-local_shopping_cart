@@ -53,6 +53,8 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I wait "1" seconds
+    And I visit "/admin/webservice/testclient.php"
+    And I wait "1" seconds
     And I visit "/cache/admin.php"
     And I wait "1" seconds
     And I visit "/admin/tool/behat/index.php"
