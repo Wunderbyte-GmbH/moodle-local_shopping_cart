@@ -106,7 +106,8 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "add no costcenter credits" in the "#cash_report_table_r4" "css_element"
     And I should see "16.35" in the "#cash_report_table_r5" "css_element"
     And I should see "add credits CostCenter1" in the "#cash_report_table_r5" "css_element"
-    And "//*[@id='cash_report_table_r6']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r7" "css_element"
+    And "//*[@id='cash_report_table_r8']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart costcenter credits: cashier correct (reduce) credits for user and refund some
@@ -188,7 +189,8 @@ Feature: Cashier manage credits with costcenters enabled in shopping cart
     And I should see "cc1 reduce credits" in the "#cash_report_table_r4" "css_element"
     And I should see "-8.00" in the "#cash_report_table_r5" "css_element"
     And I should see "reduce no costcenter credits" in the "#cash_report_table_r5" "css_element"
-    And "//*[@id='cash_report_table_r6']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r8" "css_element"
+    And "//*[@id='cash_report_table_r9']" "xpath_element" should not exist
 
   @javascript
   Scenario: User select one item with costcenter and no default costcenter than make checkout

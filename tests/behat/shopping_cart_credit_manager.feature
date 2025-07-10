@@ -78,7 +78,8 @@ Feature: Cashier manage credits in shopping cart
     And I wait until the page is ready
     And I should see "-10.00" in the "#cash_report_table_r1" "css_element"
     And I should see "reduce credits" in the "#cash_report_table_r1" "css_element"
-    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r2" "css_element"
+    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart credits: cashier payback (cache) part of credits to user
@@ -108,7 +109,8 @@ Feature: Cashier manage credits in shopping cart
     And I should see "-25.00" in the "#cash_report_table_r1" "css_element"
     And I should see "Credits paid back by cash" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
-    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r2" "css_element"
+    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart credits: cashier payback (transfer) part of credits to user
@@ -138,7 +140,8 @@ Feature: Cashier manage credits in shopping cart
     And I should see "-25.00" in the "#cash_report_table_r1" "css_element"
     And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
-    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r2" "css_element"
+    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart credits: cashier payback (transfer) all of credits to user
@@ -164,7 +167,8 @@ Feature: Cashier manage credits in shopping cart
     And I should see "-23.00" in the "#cash_report_table_r1" "css_element"
     And I should see "Credits paid back by transfer" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
-    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r2" "css_element"
+    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
 
   @javascript
   Scenario: Shopping cart credits: cashier payback (cache) all of credits to user
@@ -190,7 +194,8 @@ Feature: Cashier manage credits in shopping cart
     And I should see "-22.00" in the "#cash_report_table_r1" "css_element"
     And I should see "Credits paid back by cash" in the "#cash_report_table_r1" "css_element"
     And I should see "Username1" in the "#cash_report_table_r1" "css_element"
-    And "//*[@id='cash_report_table_r2']" "xpath_element" should not exist
+    And I should see "Configured by Generator" in the "#cash_report_table_r2" "css_element"
+    And "//*[@id='cash_report_table_r3']" "xpath_element" should not exist
     ## Force credits to 0 to avoid potential issues in other tests
     And the following "local_shopping_cart > user credits" exist:
       | user  | credit | currency |
