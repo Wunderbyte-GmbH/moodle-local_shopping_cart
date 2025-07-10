@@ -116,18 +116,16 @@ class local_shopping_cart_generator extends testing_module_generator {
      * Function to create a dummy user credit record.
      *
      * @param array|stdClass $record
-     * @return array
+     * @return bool
      */
     public function create_user_credit($record = null) {
         global $DB, $USER;
 
         $record = (object) $record;
-        $res = shopping_cart_credits::add_credit(
-            $record->userid,
-            $record->credit,
-            $record->currency,
-            $record->costcenter ?? ''
-        );
+        $record->creditsmanagercredits = $record->credit;
+        $record->creditsmanagerreason = 'Configured by Generator';
+        // Switched to use creditsmanager_correct_credits in order of having ledger records too.
+        $res = shopping_cart_credits::creditsmanager_correct_credits($record);
         return $res;
     }
 
