@@ -107,4 +107,17 @@ class addresses {
         }
         return null;
     }
+
+    /**
+     * Retuens company name.
+     * @param int $userid
+     * @param int $addressid
+     */
+    public static function get_company_string_for_user(int $userid, int $addressid): ?string {
+        $address = address_operations::get_specific_user_address($addressid);
+        if ($address) {
+            return $address->company;
+        }
+        return null;
+    }
 }
