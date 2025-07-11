@@ -233,6 +233,16 @@ class create_invoice {
                 break;
         }
 
+
+        $grosstotal = array_sum(array_column($items, 'price'));
+        $grosstotal = number_format($grosstotal, 2, $commaseparator, '');
+
+        $vat = $total = array_sum(array_column($items, 'tax'));
+        $vat = number_format($vat, 2, $commaseparator, '');
+
+        $nettotal = $grosstotal - $vat;
+        $nettotal = number_format($nettotal, 2, $commaseparator, '');
+
         $timecreated = $items[array_key_first($items)]->timecreated;
         $payment = $items[array_key_first($items)]->payment;
 
@@ -363,12 +373,15 @@ class create_invoice {
         if (!empty($addressbilling)) {
             $billingaddress = addresses::get_address_string_for_user($userid, $addressbilling);
             $address .= $billingaddress;
+            $company = addresses::get_company_string_for_user($userid, $addressbilling);
         }
         if (!empty($addressshipping)) {
             $shippingaddress = addresses::get_address_string_for_user($userid, $addressshipping);
             $address .= "<br>" . html_writer::tag('b', get_string('addresses:shipping', 'local_shopping_cart'));
             $address .= ': <br>' .  $shippingaddress;
         }
+
+
 
         switch ($idcol) {
             case 'id':
@@ -394,6 +407,10 @@ class create_invoice {
         $cfghtml = str_replace("[[department]]", $user->department, $cfghtml);
         $cfghtml = str_replace("[[address]]", $address, $cfghtml);
         $cfghtml = str_replace("[[invoice_number]]", $invoicenumber ?: '', $cfghtml);
+        $cfghtml = str_replace("[[company]]", $company ?? '', $cfghtml);
+        $cfghtml = str_replace("[[vat]]", $vat ?: '', $cfghtml);
+        $cfghtml = str_replace("[[grosstotal]]", $grosstotal ?: '', $cfghtml);
+        $cfghtml = str_replace("[[nettotal]]", $nettotal ?: '', $cfghtml);
 
         // We also add the possibility to use any custom user profile field as param.
         if (empty($user->profile)) {
@@ -434,15 +451,16 @@ class create_invoice {
                 $installmentdata = shopping_cart_history::get_installmentdata($shistoryitem);
             }
             if (empty($installmentdata)) {
-                $price = $item->price;
+                $price = empty(get_config('local_shopping_cart', 'itempriceisnet')) ? $item->price : $item->price - $item->tax;
+
                 $tmp = str_replace(
                     "[[price]]",
-                    number_format((float) $item->price, 2, $commaseparator, ''),
+                    number_format((float) $price, 2, $commaseparator, ''),
                     $repeathtml[0]
                 );
                 $tmp = str_replace(
                     "[[originalprice]]",
-                    number_format((float) $item->price, 2, $commaseparator, ''),
+                    number_format((float) $price, 2, $commaseparator, ''),
                     $tmp
                 );
                 $tmp = str_replace(
