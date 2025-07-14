@@ -233,7 +233,6 @@ class create_invoice {
                 break;
         }
 
-
         $grosstotal = array_sum(array_column($items, 'price'));
         $grosstotal = number_format($grosstotal, 2, $commaseparator, '');
 
@@ -380,8 +379,6 @@ class create_invoice {
             $address .= "<br>" . html_writer::tag('b', get_string('addresses:shipping', 'local_shopping_cart'));
             $address .= ': <br>' .  $shippingaddress;
         }
-
-
 
         switch ($idcol) {
             case 'id':
