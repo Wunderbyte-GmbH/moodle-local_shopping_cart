@@ -129,7 +129,7 @@
 <div class="shopping-cart-checkout-manager-container">
     <div class="shopping-cart-checkout-manager-form-group">
         <label for="shopping-cart-checkout-manager-country-select" class="shopping-cart-checkout-manager-form-label">
-            Select your country
+            {{#str}} checkvatnrcountrycode, local_shopping_cart {{/str}}
         </label>
         <select
             id="shopping-cart-checkout-manager-country-select"
@@ -154,14 +154,14 @@
     <!-- VAT Number Input -->
     <div class="shopping-cart-checkout-manager-form-group">
         <label for="shopping-cart-checkout-manager-vat-number" class="shopping-cart-checkout-manager-form-label">
-            Enter your VAT number
+            {{#str}} checkvatnrnumber, local_shopping_cart {{/str}}
         </label>
         <input
             type="text"
             id="shopping-cart-checkout-manager-vat-number"
             name="vat_number"
             class="shopping-cart-checkout-manager-form-input"
-            placeholder="Enter VAT number"
+            placeholder="{{#str}} usevatnr, local_shopping_cart {{/str}}".
             value="{{vatnumber}}"
             data-skip-webservice="true"
             data-shopping-cart-process-data="true"
@@ -173,8 +173,7 @@
         <button
             id="shopping-cart-checkout-manager-verify-vat"
             class="shopping-cart-checkout-manager-btn shopping-cart-checkout-manager-btn-primary"
-        >
-            Verify validity of VAT number
+        >   {{#str}} verify, local_shopping_cart {{/str}}
         </button>
     </div>
 </div>
