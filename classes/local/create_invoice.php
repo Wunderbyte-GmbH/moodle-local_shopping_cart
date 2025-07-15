@@ -619,13 +619,6 @@ class create_invoice {
 
         $pdf->AddPage();
 
-        // Add custom font.
-        $pdf->AddFont('roboto', '', 'roboto.php');      // Regular.
-        $pdf->AddFont('roboto', 'B', 'robotob.php');    // Bold.
-        $pdf->AddFont('roboto', 'I', 'robotoi.php');    // Italic.
-        $pdf->AddFont('roboto', 'BI', 'robotobi.php');  // Bold Italic.
-
-
         // Print text using writeHTMLCell().
         // Now, we write the HTML into a TCPDF cell.
         $pdf->writeHTMLCell(0, 0, null, null, $html, 0, 1, 0, true, '', true);
