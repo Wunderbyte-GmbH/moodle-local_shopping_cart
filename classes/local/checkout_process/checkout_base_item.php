@@ -115,4 +115,12 @@ abstract class checkout_base_item {
     public static function get_error_feedback(): string {
         return '';
     }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_info_feedback(): string {
+        return '';
+    }
 }

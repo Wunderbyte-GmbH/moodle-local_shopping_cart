@@ -193,7 +193,7 @@ $string['choosedefaultcountrydesc'] = 'Select the default country for your custo
 $string['choosehighertimestamp'] = 'Choose a later time';
 $string['chooseplatform'] = 'Choose Platform';
 $string['chooseplatformdesc'] = 'Select your invoicing platform.';
-$string['completeshoppingcartprecheckout'] = 'Submit all mandatory fields, before continuing with the payment process..';
+$string['completeshoppingcartprecheckout'] = 'Submit all mandatory fields, before continuing with the payment process.';
 $string['confirmadditionalconditions'] = "I accept the additional conditions";
 $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase for all users?
  The following users will get their money back as credit:
@@ -677,6 +677,7 @@ $string['shortcodeschistorysettings'] = 'Shopping cart history shortcode setting
 $string['showdailysums'] = '&sum; Show daily sums';
 $string['showdailysumscurrentcashier'] = '&sum; Show daily sums of current cashier';
 $string['showdescription'] = 'Show description';
+$string['showdisabledcheckoutbutton'] = 'Show disabled checkout-button';
 $string['showextrareceiptstousers'] = "Show receipts for credit changes to users in their order history";
 $string['showorderid'] = 'Show Order-ID...';
 $string['showvatnrchecker'] = "Use VAT number and potentially waive VAT";

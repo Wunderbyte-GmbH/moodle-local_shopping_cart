@@ -609,6 +609,7 @@ $string['shortcodeschistorysettings'] = 'Buchungshistorie (Shortcode) anpassen';
 $string['showdailysums'] = '&sum; Tageseinnahmen anzeigen';
 $string['showdailysumscurrentcashier'] = '&sum; Tageseinnahmen der aktuell eingeloggten Kassier:in anzeigen';
 $string['showdescription'] = 'Zeige Beschreibung';
+$string['showdisabledcheckoutbutton'] = 'Inaktiven Checkout-Knopf anzeigen';
 $string['showextrareceiptstousers'] = "Zeige Buchungsbestätigungen für Guthabenbuchungen in der Buchungsübersicht der Nutzer:innen";
 $string['showorderid'] = 'Order-ID anzeigen...';
 $string['showvatnrchecker'] = "Verwende UID Nummer und verzichte gegebenenfalls auf Umsatzsteuer";

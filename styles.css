@@ -545,6 +545,12 @@ div.shopping-cart-items-container div.item-description {
     border: 1px solid #f5c6cb;
 }
 
+.shopping-cart-checkout-manager-alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
 .shopping-cart-checkout-manager-alert i {
     margin-right: 0.5rem;
     font-size: 1.2rem;

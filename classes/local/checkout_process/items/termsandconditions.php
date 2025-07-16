@@ -166,4 +166,12 @@ class termsandconditions extends checkout_base_item {
     public static function set_data_from_cache(&$termsandconditions, $cachedata): void {
         $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
     }
+
+    /**
+     * Validation feedback.
+     * @return string
+     */
+    public static function get_info_feedback(): string {
+        return get_string('completeshoppingcartprecheckout', 'local_shopping_cart');
+    }
 }
