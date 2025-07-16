@@ -906,7 +906,6 @@ if ($hassiteconfig) {
         )
     );
 
-
     $settings->add(
         new admin_setting_configselect(
             'local_shopping_cart/owncountrycode',
