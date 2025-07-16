@@ -686,14 +686,9 @@ class erpnext_invoice implements invoice {
         }
 
         // Now it's necessary to make sure that the connection to the address is correct.
-        $data = [
-            "links" => [
-                [
-                    "link_doctype" => "Customer",
-                    "link_name" => $this->customername,
-                ],
-            ],
-        ];
+        $data = [];
+        $links = ["link_doctype" => "Customer", "link_name" => $this->customername];
+        $data['links'] = [$links];
 
         $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
         $response = $this->client->put($url, [json_encode($data)]);
