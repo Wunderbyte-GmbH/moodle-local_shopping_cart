@@ -524,24 +524,6 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
                 // eslint-disable-next-line no-console
                 console.log(e);
             }));
-
-            const checkoutButton = document.querySelector(SELECTORS.CHECKOUTBUTTON);
-            const paymentbutton = document.querySelector(SELECTORS.PAYMENTREGIONBUTTON);
-            if (data.count == 0) {
-                if (checkoutButton) {
-                    checkoutButton.classList.add("disabled");
-                }
-                if (paymentbutton) {
-                    paymentbutton.style.display = "none";
-                }
-            } else {
-                if (checkoutButton) {
-                    checkoutButton.classList.remove("disabled");
-                }
-                if (paymentbutton) {
-                    paymentbutton.style.display = "inline";
-                }
-            }
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
