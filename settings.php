@@ -485,6 +485,15 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/showdisabledcheckoutbutton',
+            get_string('showdisabledcheckoutbutton', 'local_shopping_cart'),
+            '',
+            1
+        )
+    );
+
     // Cancellation settings.
     $cancellationsettings = new admin_settingpage(
         'local_shopping_cart_cancellation_settings',

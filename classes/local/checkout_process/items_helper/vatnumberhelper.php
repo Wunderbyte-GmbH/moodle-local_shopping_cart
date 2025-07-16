@@ -64,11 +64,12 @@ class vatnumberhelper {
         return [
             'novatnr' => $stringman->get_string('novatnr', 'local_shopping_cart'),
             'AT' => $stringman->get_string('at', 'local_shopping_cart'),
+            'DE' => $stringman->get_string('de', 'local_shopping_cart'),
+            'EU' => $stringman->get_string('eu', 'local_shopping_cart'),
             'BE' => $stringman->get_string('be', 'local_shopping_cart'),
             'BG' => $stringman->get_string('bg', 'local_shopping_cart'),
             'CY' => $stringman->get_string('cy', 'local_shopping_cart'),
             'CZ' => $stringman->get_string('cz', 'local_shopping_cart'),
-            'DE' => $stringman->get_string('de', 'local_shopping_cart'),
             'DK' => $stringman->get_string('dk', 'local_shopping_cart'),
             'EE' => $stringman->get_string('ee', 'local_shopping_cart'),
             'EL' => $stringman->get_string('el', 'local_shopping_cart'),
@@ -92,7 +93,6 @@ class vatnumberhelper {
             'SK' => $stringman->get_string('sk', 'local_shopping_cart'),
             'GB' => $stringman->get_string('gb', 'local_shopping_cart'),
             'XI' => $stringman->get_string('xi', 'local_shopping_cart'),
-            'EU' => $stringman->get_string('eu', 'local_shopping_cart'),
         ];
     }
 
