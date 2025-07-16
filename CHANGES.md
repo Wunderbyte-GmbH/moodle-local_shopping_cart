@@ -1,3 +1,25 @@
+## Version 1.0.11 (2025071600)
+* Improvement: Termsandcondition clickable for mobile.
+* Bugfix: Newly introduced values of history items (timecreated, timemodified, serviceperiodstart, serviceperiodend) were missing in execute_returns() function of get_history_items webservice.
+* Bugfix: Replace hardcoded strings.
+* Bugfix: Localize country names.
+* Bugfix: Remove addfont roboto.
+* Bugfix: Fix json encoding for ERPnext invoices.
+
+## Version 1.0.10 (2025071300)
+* New feature: Structure shopping cart history into dynamic sections (quarterly, semi-annually...),
+including new settings for collapsible sections in shoppingcarthistory shortcode.
+* New feature: Placeholders for company, total gross, total net and vat.
+* Improvement: New function to get company name.
+* Improvement: Introduce new error type: LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT.
+* Bugfix: Avoid permanent fallback on hardcoded receipt.
+* Bugfix: Don't print error in check_for_ongoing_payment when not in debug mode.
+* Bugfix: Replace hardcoded values in error message.
+* Bugfix: Prevent accessing nonexistent objectkey.
+* Bugfix: Add empty check for serviceperiod.
+* Bugfix: Require to avoid Exception - Warning: Undefined array key "itemname" for unprivileged roles.
+* Bugfix: No paymentaccountid being saved on form submit.
+
 ## Version 1.0.9 (2025060400)
 * Improvement: Accessibility - Remove alt texts for decorative images in shopping cart - as they should not appear in screen readers.
 * Improvement: Fix ERPNext invoice creation.
