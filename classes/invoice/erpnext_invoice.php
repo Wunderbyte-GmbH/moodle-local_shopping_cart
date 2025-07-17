@@ -273,13 +273,8 @@ class erpnext_invoice implements invoice {
      */
     public function submit_invoice(string $invoiceid): string {
         $submiturl = $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid;
-        $submitdata = json_encode([
-            'status' => 'Submitted',
-            'docstatus' => '1',
-        ]);
-        if (!$submitdata) {
-            return false;
-        }
+        $data = ['status' => 'Submitted', 'docstatus' => '1'];
+        $submitdata = json_encode($data);
         $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
         if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
@@ -297,13 +292,8 @@ class erpnext_invoice implements invoice {
         $paymentresponsedata = json_decode($paymentresponse, true);
         $paymententryid = $paymentresponsedata['data']['name'];
         $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
-        $submitdata = json_encode([
-            'status' => 'Submitted',
-            'docstatus' => '1',
-        ]);
-        if (!$submitdata) {
-            return false;
-        }
+        $data = ['status' => 'Submitted', 'docstatus' => '1'];
+        $submitdata = json_encode($data);
         $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
         if ($this->validate_response($submitresponse, $submiturl)) {
             return $submitresponse;
@@ -689,7 +679,6 @@ class erpnext_invoice implements invoice {
         $data = [];
         $links = ["link_doctype" => "Customer", "link_name" => $this->customername];
         $data['links'] = [$links];
-
         $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
         $response = $this->client->put($url, [json_encode($data)]);
 
@@ -802,13 +791,11 @@ class erpnext_invoice implements invoice {
     private function set_customer_name(): bool {
         $url = $this->baseurl . '/api/resource/Customer/' . rawurlencode($this->customername);
         if (!empty($this->customercompany)) {
-            $json = json_encode(['customer_name' => $this->customername]);
+            $customer = ['customer_name' => $this->customername];
         } else {
-            $json = json_encode(['customer_name' => fullname($this->user)]);
+            $customer = ['customer_name' => fullname($this->user)];
         }
-        if (!$json) {
-            return false;
-        }
+        $json = json_encode($customer);
         $response = $this->client->put(str_replace(' ', '%20', $url), [$json]);
         if (!$response) {
             return false;
