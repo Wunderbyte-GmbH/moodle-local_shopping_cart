@@ -1,3 +1,7 @@
+## Version 1.0.12 (2025072100)
+* New feature: enable safer pay provider
+* Improvement: user experience during checkout process
+
 ## Version 1.0.11 (2025071600)
 * Improvement: Termsandcondition clickable for mobile.
 * Bugfix: Newly introduced values of history items (timecreated, timemodified, serviceperiodstart, serviceperiodend) were missing in execute_returns() function of get_history_items webservice.
