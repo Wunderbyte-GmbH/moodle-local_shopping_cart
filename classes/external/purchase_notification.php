@@ -72,6 +72,7 @@ class purchase_notification extends external_api {
      * @param string $tid
      * @param string $paymentgateway
      * @param int $userid
+     * @param bool $justcheck
      *
      * @return array
      */
