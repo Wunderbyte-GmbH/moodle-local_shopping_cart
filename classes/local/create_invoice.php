@@ -379,6 +379,7 @@ class create_invoice {
             $address .= "<br>" . html_writer::tag('b', get_string('addresses:shipping', 'local_shopping_cart'));
             $address .= ': <br>' .  $shippingaddress;
         }
+        $addressbreaks = str_replace(', ', '<br>', $address);
 
         switch ($idcol) {
             case 'id':
@@ -403,6 +404,7 @@ class create_invoice {
         $cfghtml = str_replace("[[institution]]", $user->institution, $cfghtml);
         $cfghtml = str_replace("[[department]]", $user->department, $cfghtml);
         $cfghtml = str_replace("[[address]]", $address, $cfghtml);
+        $cfghtml = str_replace("[[addressbreaks]]", $addressbreaks, $cfghtml);
         $cfghtml = str_replace("[[invoice_number]]", $invoicenumber ?: '', $cfghtml);
         $cfghtml = str_replace("[[company]]", $company ?? '', $cfghtml);
         $cfghtml = str_replace("[[vat]]", $vat ?: '', $cfghtml);
