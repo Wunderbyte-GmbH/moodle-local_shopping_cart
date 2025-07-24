@@ -1,3 +1,7 @@
+## Version 1.0.13 (2025072400)
+* Improvement: Add addressbreaks placeholder to receipt
+* Bugfix: convert strings to floats in receipt
+
 ## Version 1.0.12 (2025072100)
 * New feature: enable safer pay provider
 * Improvement: user experience during checkout process
