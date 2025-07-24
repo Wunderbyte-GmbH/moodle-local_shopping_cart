@@ -239,7 +239,7 @@ class create_invoice {
         $vat = $total = array_sum(array_column($items, 'tax'));
         $vat = number_format($vat, 2, $commaseparator, '');
 
-        $nettotal = $grosstotal - $vat;
+        $nettotal = (float) $grosstotal - (float) $vat;
         $nettotal = number_format($nettotal, 2, $commaseparator, '');
 
         $timecreated = $items[array_key_first($items)]->timecreated;
