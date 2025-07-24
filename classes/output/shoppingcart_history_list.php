@@ -570,6 +570,17 @@ class shoppingcart_history_list implements renderable, templatable {
                 }
             }
         }
+
+        self::structure_historyitems_into_date_intervals($returnarray);
+    }
+
+    /**
+     * Helper function to generate an array of interval strings.
+     * @param array $returnarray reference to the returnarray
+     */
+    public static function structure_historyitems_into_date_intervals(
+        array &$returnarray
+    ): void {
         // Start one year earlier and end one year later, just to make sure, we don't lose anything.
         $lowestyear = (int) date('Y', min(array_column($returnarray['historyitems'], 'sortingdate'))) - 1;
         $highestyear = (int) date('Y', max(array_column($returnarray['historyitems'], 'sortingdate'))) + 1;
@@ -577,24 +588,6 @@ class shoppingcart_history_list implements renderable, templatable {
         $startingmonth = (int) get_config('local_shopping_cart', 'schistorysectionsstartingmonth') ?? 1;
         $interval = (int) get_config('local_shopping_cart', 'schistorysectionsinterval') ?? 1;
 
-        self::structure_historyitems_into_date_intervals($returnarray, $lowestyear, $highestyear, $startingmonth, $interval);
-    }
-
-    /**
-     * Helper function to generate an array of interval strings.
-     * @param array $returnarray reference to the returnarray
-     * @param int $lowestyear
-     * @param int $highestyear
-     * @param int $startingmonth
-     * @param int $interval
-     */
-    public static function structure_historyitems_into_date_intervals(
-        array &$returnarray,
-        int $lowestyear,
-        int $highestyear,
-        int $startingmonth,
-        int $interval
-    ): void {
         $historyitems = $returnarray['historyitems'];
         $returnarray['structuredhistoryitems'] = [];
 
@@ -622,6 +615,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
                 $intervalstarttime = strtotime("{$currentyear}-{$currentmonth}-01 00:00:00");
                 $monthafterendmonth = $endmonth + 1;
+                if ($monthafterendmonth > 12) {
+                    $monthafterendmonth -= 12;
+                    $endyear += 1;
+                }
                 $intervalendtime = strtotime("{$endyear}-{$monthafterendmonth}-01 00:00:00");
                 $intervalendtime -= 1; // So we'll get the last second (23:59:59) of the month before.
 
