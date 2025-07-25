@@ -74,8 +74,9 @@
     {{> local_shopping_cart/history_item }}
     {{/historyitems}}
 {{/structuredhistoryitems}}
-{{#structuredhistoryitems}}
+{{#structuredhistoryitems.0}}
 <div id="shoppingcarthistory-accordion">
+{{#structuredhistoryitems}}
     <div class="card rounded-0">
         <div class="card-header rounded-0 border-0" id="heading-{{dateintervalkey}}" data-toggle="collapse" role="button" data-target="#collapse-{{dateintervalkey}}" aria-expanded="true" aria-controls="collapse-{{dateintervalkey}}">
             <div class="shoppingcarthistory-accordion-header-text btn btn-link">
@@ -90,5 +91,6 @@
             </div>
         </div>
     </div>
-</div>
 {{/structuredhistoryitems}}
+</div>
+{{/structuredhistoryitems.0}}
