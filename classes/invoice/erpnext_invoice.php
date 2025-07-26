@@ -61,9 +61,9 @@ class erpnext_invoice implements invoice {
      */
     private curl $client;
     /**
-     * @var bool|stdClass
+     * @var stdClass
      */
-    private $user;
+    private stdClass $user;
     /**
      * @var string json
      */
@@ -92,6 +92,11 @@ class erpnext_invoice implements invoice {
      * @var array Data structure of the invoice as array that can be json encoded.
      */
     private array $invoicedata = [];
+
+    /**
+     * @var array Payment entry from ERPNext.
+     */
+    private array $paymententry = [];
     /**
      * @var string Billing address.
      */
@@ -160,11 +165,11 @@ class erpnext_invoice implements invoice {
                 $this->addressid = array_key_first($addressrecords);
             } else {
                 throw new \moodle_exception(
-                    'nobillingaddress',
-                    'local_shopping_cart',
-                    '',
-                    null,
-                    'No billing address available for the user.'
+                        'nobillingaddress',
+                        'local_shopping_cart',
+                        '',
+                        null,
+                        'No billing address available for the user.'
                 );
             }
         }
@@ -203,172 +208,81 @@ class erpnext_invoice implements invoice {
             $submitresponse = $this->submit_invoice($invoice->invoiceid);
             if ($submitresponse) {
                 // Mark the invoice as paid.
-                $paymentresponse = $this->create_payment($submitresponse, $invoice->invoiceid);
-                if ($paymentresponse) {
-                    $submitresponse = $this->submit_payment_entry($paymentresponse);
-                    if (
-                        $submitresponse
-                    ) {
-                        return true;
-                    }
+                $paymentsuccess = $this->create_payment($responsedata['data'], $invoice->invoiceid);
+                if ($paymentsuccess && $this->submit_payment_entry()) {
+                    return true;
+                } else {
+                    mtrace("ERROR: Payment was not saved in ERPNext.");
                 }
             }
         }
-        mtrace("Validation failed du to: $response");
         return false;
-    }
-
-    /**
-     * Create customer
-     *
-     * @param string $invoicename
-     * @param string $customeremail
-     * @return bool true if invoice was send, false if not
-     */
-    public function send_invoice(string $invoicename, string $customeremail): bool {
-
-        global $SESSION;
-        // Prepare the email parameters.
-        $invoicepdf = $this->get_invoice_pdf($invoicename);
-        if (!$invoicepdf) {
-            return false;
-        }
-        $currentlang = $SESSION->lang;
-        force_current_language($this->user->lang);
-        $emailparams = [
-            "recipients" => $customeremail,
-            "subject" => get_string('erpnext_subject', 'local_shopping_cart') . " " . $invoicename,
-            "content" => '<div class="ql-editor read-mode"><p>Testing Content</p></div>',
-            "doctype" => "Sales Invoice",
-            "name" => $invoicename,
-            "send_mail" => 1,
-            "print_html" => null,
-            "send_me_a_copy" => 0,
-            "print_format" => "Standardrechnung",
-            "sender" => "info@wunderbyte.at",
-            "attachments" => [],
-            "read_receipt" => 0,
-            "print_letterhead" => 1,
-            "send_after" => null,
-            "print_language" => "de",
-        ];
-        force_current_language($currentlang);
-        $jsondata = json_encode($emailparams);
-        $url = $this->baseurl . '/api/method/frappe.core.doctype.communication.email.make';
-        $response = $this->client->post(str_replace(' ', '%20', $url), $jsondata);
-
-        $success = $this->validate_response($response, $url);
-        if ($success) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
      * Submit invoice.
      *
      * @param string $invoiceid
-     * @return string true if invoice was submitted, false if not
+     * @return bool true if invoice was submitted, false if not
      */
-    public function submit_invoice(string $invoiceid): string {
+    public function submit_invoice(string $invoiceid): bool {
         $submiturl = $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid;
         $data = ['status' => 'Submitted', 'docstatus' => '1'];
         $submitdata = json_encode($data);
-        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
-        if ($this->validate_response($submitresponse, $submiturl)) {
-            return $submitresponse;
-        }
-        return false;
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        return $this->validate_response($submitresponse, $submiturl);
     }
 
     /**
-     * Submit invoice.
+     * Submit payment entry in ERPNext.
      *
-     * @param string $paymentresponse
-     * @return string true if invoice was submitted, false if not
+     * @return bool true if invoice was submitted, false if not
      */
-    public function submit_payment_entry(string $paymentresponse): string {
-        $paymentresponsedata = json_decode($paymentresponse, true);
-        $paymententryid = $paymentresponsedata['data']['name'];
+    public function submit_payment_entry(): bool {
+        $paymententryid = $this->paymententry['data']['name'];
         $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
         $data = ['status' => 'Submitted', 'docstatus' => '1'];
         $submitdata = json_encode($data);
-        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), [$submitdata]);
-        if ($this->validate_response($submitresponse, $submiturl)) {
-            return $submitresponse;
-        }
-        return false;
+        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
+        return $this->validate_response($submitresponse, $submiturl);
     }
-
 
     /**
      * Create payment
      *
-     * @param string $submitresponse
+     * @param array $invoicedata
      * @param string $invoiceid
      *
-     * @return string true if invoice was submitted, false if not
+     * @return bool true if invoice was submitted, false if not
      */
-    public function create_payment(string $submitresponse, string $invoiceid): string {
-        $jsoninvoice = json_decode($submitresponse);
+    public function create_payment(array $invoicedata, string $invoiceid): bool {
         $paymententryurl = $this->baseurl . '/api/resource/Payment Entry';
         $paymententrydata = json_encode([
             'payment_type' => 'Receive',
             'party_type' => 'Customer',
             'party' => $this->customername,
-            'paid_amount' => $jsoninvoice->data->grand_total,
-            'received_amount' => $jsoninvoice->data->grand_total,
+            'paid_amount' => $invoicedata['grand_total'],
+            'received_amount' => $invoicedata['grand_total'],
             'target_exchange_rate' => 1.0,
             'paid_to' => 'Erste Bank - WB',
             'paid_to_account_currency' => 'EUR',
-            'reference_no' => $jsoninvoice->data->name . '-' . $jsoninvoice->data->posting_date,
+            'reference_no' => $invoicedata['name'] . '-' . $invoicedata['posting_date'],
             'reference_date' => date('Y-m-d'),
             'references' => [
                 [
                     'reference_doctype' => 'Sales Invoice',
                     'reference_name' => $invoiceid,
-                    'total_amount' => $jsoninvoice->data->grand_total,
-                    'outstanding_amount' => $jsoninvoice->data->grand_total,
-                    'allocated_amount' => $jsoninvoice->data->grand_total,
+                    'total_amount' => $invoicedata['grand_total'],
+                    'outstanding_amount' => $invoicedata['grand_total'],
+                    'allocated_amount' => $invoicedata['grand_total'],
                 ],
             ],
         ]);
         $paymentresponse = $this->client->post(str_replace(' ', '%20', $paymententryurl), $paymententrydata);
-        if ($this->validate_response($paymentresponse, $paymententryurl)) {
-            return $paymentresponse;
+        if (!empty($paymentresponse)) {
+            $this->paymententry = json_decode($paymentresponse, true);
         }
-        return false;
-    }
-
-
-    /**
-     * Create customer
-     *
-     * @param string $invoicename
-     * @return string invoice as pdf
-     */
-    private function get_invoice_pdf(string $invoicename) {
-        $url = $this->baseurl . "/api/method/frappe.utils.print_format.download_pdf";
-        $params = [
-            "doctype" => get_string('erpnext_reference_doctype', 'local_shopping_cart'),
-            "name" => $invoicename,
-            "format" => "Standard",
-            "no_letterhead" => 0,
-        ];
-        $query = "doctype=" . urlencode($params["doctype"]) .
-             "&name=" . urlencode($params["name"]) .
-             "&format=" . urlencode($params["format"]) .
-             "&no_letterhead=" . urlencode($params["no_letterhead"]);
-
-        $urlwithquery = "$url?$query";
-        $response = $this->client->get($urlwithquery);
-        $success = $this->validate_response($response, $url);
-        if ($success) {
-            return false;
-        } else {
-            return base64_encode($response);
-        }
+        return $this->validate_response($paymentresponse, $paymententryurl);
     }
 
     /**
@@ -479,7 +393,6 @@ class erpnext_invoice implements invoice {
      * @return string
      */
     public function create_address(object $addressrecord, string $addresstitle): string {
-
         $url = $this->baseurl . '/api/resource/Address';
         $address = [];
         $address['address_title'] = $addresstitle;
@@ -578,7 +491,7 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['due_date'] = $date;
         $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
         $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
-
+        $this->invoicedata['terms'] = 'Thank you for your online payment and your trust in our services.';
         $this->invoicedata['customer_address'] = $billingaddress;
         $this->jsoninvoice = json_encode($this->invoicedata);
         return true;
@@ -601,13 +514,14 @@ class erpnext_invoice implements invoice {
             $responsetaxid = json_decode($response);
             if (
                 $responsetaxid->data->tax_id == '' &&
-                isset($this->invoicedata['vatid'])
+                isset($this->invoicedata['vatid']) &&
+                $this->invoicedata['vatid'] !== $responsetaxid->data->tax_id
             ) {
                 $responsetaxid->data->tax_id = $this->invoicedata['vatid'];
-                $response = $this->client->put($url, [json_encode($responsetaxid->data)]);
+                $response = $this->client->put($url, json_encode($responsetaxid->data));
             }
+            return true;
         }
-        return $this->validate_response($response, $url);
     }
 
     /**
@@ -677,10 +591,10 @@ class erpnext_invoice implements invoice {
 
         // Now it's necessary to make sure that the connection to the address is correct.
         $data = [];
-        $links = ["link_doctype" => "Customer", "link_name" => $this->customername];
+        $links = ['link_doctype' => 'Customer', 'link_name' => $this->customername];
         $data['links'] = [$links];
         $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
-        $response = $this->client->put($url, [json_encode($data)]);
+        $response = $this->client->put($url, json_encode($data));
 
         return $this->validate_response($response, $url);
     }
@@ -784,7 +698,7 @@ class erpnext_invoice implements invoice {
     }
 
     /**
-     * Set customer name, as it is not set correctly curing customer creation.
+     * Set customer name, as it is not set correctly during customer creation.
      *
      * @return bool
      */
@@ -796,7 +710,7 @@ class erpnext_invoice implements invoice {
             $customer = ['customer_name' => fullname($this->user)];
         }
         $json = json_encode($customer);
-        $response = $this->client->put(str_replace(' ', '%20', $url), [$json]);
+        $response = $this->client->put(str_replace(' ', '%20', $url), $json);
         if (!$response) {
             return false;
         }
