@@ -1,3 +1,8 @@
+## Version 1.0.14 (2025072800)
+* Bugfix: Fix collapsibles of new structured shopping cart history list feature.
+* Bugfix: Fixed annual (yearly) sections in new shopping cart history list collapsible sections feature.
+* Bugfix: ERPNext invoice creation
+
 ## Version 1.0.13 (2025072400)
 * Improvement: Add addressbreaks placeholder to receipt
 * Bugfix: convert strings to floats in receipt
