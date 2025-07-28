@@ -74,10 +74,12 @@ class shortcodes {
         if (!$historylist = new shoppingcart_history_list($userid)) {
             return '';
         }
-
+        /** @var renderer $output */
         $output = $PAGE->get_renderer('local_shopping_cart');
         $out = $output->render_history_card($historylist);
-
+        if (empty($out)) {
+            $out = '';
+        }
         return $out;
     }
 
@@ -89,9 +91,9 @@ class shortcodes {
      * @param string|null $content
      * @param object $env
      * @param Closure $next
-     * @return void
+     * @return string
      */
-    public static function userinfocard($shortcode, $args, $content, $env, $next) {
+    public static function userinfocard($shortcode, $args, $content, $env, $next): string {
 
         global $USER, $PAGE;
 
@@ -113,7 +115,11 @@ class shortcodes {
         $data = new userinfocard($userid, $args['fields']);
         /** @var renderer $output */
         $output = $PAGE->get_renderer('local_shopping_cart');
-        return $output->render_userinfocard($data);
+        $out = $output->render_userinfocard($data);
+        if (empty($out)) {
+            $out = '';
+        }
+        return $out;
     }
 
     /**
