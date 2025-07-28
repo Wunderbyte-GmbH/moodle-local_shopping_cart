@@ -50,10 +50,6 @@ class userinfocard implements renderable, templatable {
 
         global $CFG, $DB, $OUTPUT;
 
-        if (empty($fields)) {
-            return 'You can add fields like this in the shortcode \'fields="firstname,lastname"\'';
-        }
-
         require_once("$CFG->dirroot/user/profile/lib.php");
 
         $user = $DB->get_record("user", ["id" => $userid]);
