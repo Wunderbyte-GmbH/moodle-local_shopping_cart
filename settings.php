@@ -707,9 +707,7 @@ if ($hassiteconfig) {
                 AT A:20 B:10 C:0
                 DE A:19 B:10 C:0</pre><hr/>
                 Multi tax categories, no countries:
-                <pre class="mb-1 p-1">A:30 B:0</pre><hr/>
-                Just one default tax:
-                <pre class="mb-1 p-1">20</pre>
+                <pre class="mb-1 p-1">A:30 B:0</pre>
                 </div>
                 </div>';
         $taxsettings->add(
@@ -717,7 +715,7 @@ if ($hassiteconfig) {
                 'local_shopping_cart/taxcategories',
                 new lang_string('taxcategories', 'local_shopping_cart'),
                 new lang_string('taxcategories_desc', 'local_shopping_cart') . $taxcategoriesexample,
-                '20',
+                'default A:20',
                 PARAM_TEXT
             )
         );
