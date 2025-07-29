@@ -85,10 +85,10 @@ abstract class taxes extends modifier_base {
      * @return array
      */
     public static function update_item_price_data(
-            array &$items,
-            int $userid,
-            ?taxcategories $taxcategories
-        ): array {
+        array &$items,
+        int $userid,
+        ?taxcategories $taxcategories
+    ): array {
 
         $cartstore = cartstore::instance($userid);
         $countrycode = $cartstore->get_countrycode();
@@ -146,6 +146,8 @@ abstract class taxes extends modifier_base {
                     }
                     $items[$key]['taxpercentage_visual'] = round($taxpercent * 100, 2);
                     $items[$key]['taxpercentage'] = round($taxpercent, 2);
+                } else {
+                    throw new coding_exception("Tax percent cannot be negative: $taxpercent");
                 }
             }
         }

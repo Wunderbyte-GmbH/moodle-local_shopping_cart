@@ -60,25 +60,23 @@ class taxcategories {
      * @param string|null $category
      * @param string|null $countrycode
      *
-     * @return float the tax percentage in float (0.0-1.0), or -1 if the given $category is invalid
+     * @return float the tax percentage in float (0.0-1.0).
      */
     public function tax_for_category(?string $category = null, ?string $countrycode = null): float {
-        if (empty($category)) {
+        // Fallback to default category if no category found.
+        if (empty($category) || !in_array($category, $this->categories)) {
             // Use default category as a fallback.
             $category = $this->defaultcategory;
         }
-        if (in_array($category, $this->categories)) {
-            $taxdata = $this->taxdata_for_countrycode($countrycode);
-            if (key_exists($category, $taxdata)) {
-                // Given category exists for country.
-                return $taxdata[$category];
-            } else {
-                // Use category from default fallback.
-                return $this->taxdata_for_countrycode(null)[$category];
-            }
+        // Select given category if exists.
+        $taxdata = $this->taxdata_for_countrycode($countrycode);
+        if (key_exists($category, $taxdata)) {
+            // Given category exists for country.
+            return $taxdata[$category];
+        } else {
+            // Use category from default fallback.
+            return $this->taxdata_for_countrycode(null)[$category];
         }
-        // This $category is invalid.
-        return -1;
     }
 
     /**
