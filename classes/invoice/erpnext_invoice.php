@@ -343,6 +343,25 @@ class erpnext_invoice implements invoice {
     }
 
     /**
+     * Get all addresses for a given customer from ERPNext.
+     *
+     * @param string $customername The name of the customer.
+     * @return array An array of address titles.
+     */
+    private function get_all_customer_addresses(string $customername): array {
+        $filters = str_replace(' ', '%20',
+                '[["Address","address_type","=","Billing"],["Address","name","like","%' . $customername . '%"]]');
+        $url = $this->baseurl .
+                '/api/resource/Address?filters=' . $filters;
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return [];
+        }
+        $data = json_decode($response, true);
+        return array_column($data['data'], 'name');
+    }
+
+    /**
      * Get billing address of customer.
      * @return string Address of the customer or empty string
      */
@@ -359,24 +378,18 @@ class erpnext_invoice implements invoice {
                         $addressrecord->id;
             }
 
-            $uncleanedurl = $this->baseurl . "/api/resource/Address/" . rawurlencode($addresstitle . '-Abrechnung') . "/";
-            $url = str_replace(' ', '%20', $uncleanedurl);
-            $response = $this->client->get($url);
-            if (!$this->validate_response($response, $url)) {
-                // Create the new address.
-                $response = self::create_address($addressrecord, $addresstitle);
-                if (!$this->validate_response($response, $url)) {
-                    throw new \moodle_exception(
-                        'error',
-                        'local_shopping_cart',
-                        '',
-                        null,
-                        'There was a problem with adding the address in ERPNext: ' . $response
-                    );
+            $erpnextaddresses = $this->get_all_customer_addresses($addresstitle);
+            if (empty($erpnextaddresses)) {
+                if ($this->create_address($addressrecord, $addresstitle)) {
+                    return $addressrecord->name;
+                } else {
+                    return '';
                 }
+            } else {
+                // If there are more than 1 billing addresses in ERPNext we use the first one.
+                reset($erpnextaddresses);
+                return current($erpnextaddresses);
             }
-            $response = json_decode($response);
-            return $response->data->name;
         } else {
             throw new \moodle_exception(
                 'nobillingaddress',
@@ -393,9 +406,9 @@ class erpnext_invoice implements invoice {
      *
      * @param object $addressrecord
      * @param string $addresstitle
-     * @return string
+     * @return bool
      */
-    public function create_address(object $addressrecord, string $addresstitle): string {
+    public function create_address(object $addressrecord, string $addresstitle): bool {
         $url = $this->baseurl . '/api/resource/Address';
         $address = [];
         $address['address_title'] = $addresstitle;
@@ -405,8 +418,8 @@ class erpnext_invoice implements invoice {
         $address['pincode'] = $addressrecord->zip;
         $address['country'] = $this->get_country_name_by_code($addressrecord->state);
         $address['customer'] = $addressrecord->name;
-
-        return $this->client->post($url, json_encode($address));
+        $response = $this->client->post($url, json_encode($address));
+        return $this->validate_response($response, $url);
     }
 
     /**
@@ -443,9 +456,7 @@ class erpnext_invoice implements invoice {
             if (!$this->item_exists($item->itemname)) {
                 return false;
             }
-            if (empty($this->invoicedata['timecreated'])) {
-                $this->invoicedata['timecreated'] = $item->timemodified;
-            }
+            $this->invoicedata['timecreated'] = time();
             $itemdata = [];
             $itemdata['item_code'] = $item->itemname;
             $itemdata['qty'] = 1;
@@ -670,7 +681,7 @@ class erpnext_invoice implements invoice {
         }
 
         // Capture the calling function name for debugging.
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         $callhistory = var_export($backtrace, true);
 
         // Check if the response contains an error message.
