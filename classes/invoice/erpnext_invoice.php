@@ -186,10 +186,13 @@ class erpnext_invoice implements invoice {
         }
         $customerexists = $this->customer_exists();
         if (!$customerexists) {
+            mtrace('Customer does not yet exist in ERP');
             if (!$this->create_customer()) {
+                mtrace('Customer creation failed');
                 return false;
             }
             if (!$this->set_customer_name()) {
+                mtrace('Failed to set ERPNext customer name');
                 return false;
             }
         }
@@ -519,6 +522,7 @@ class erpnext_invoice implements invoice {
             ) {
                 $responsetaxid->data->tax_id = $this->invoicedata['vatid'];
                 $response = $this->client->put($url, json_encode($responsetaxid->data));
+                return $this->validate_response($response, $url);
             }
             return true;
         }
@@ -659,19 +663,30 @@ class erpnext_invoice implements invoice {
     public function validate_response(string $response, string $url): bool {
         // Decode the JSON response into an associative array.
         $resparray = json_decode($response, true);
+
         // Check if the response contains data.
         if (isset($resparray['data']) || isset($resparray['message'])) {
             return true; // Entry exists or entry was successfully created.
         }
+
+        // Capture the calling function name for debugging.
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        $callhistory = var_export($backtrace, true);
+
         // Check if the response contains an error message.
         if (isset($resparray['exc_type'])) {
             $this->errormessage = $resparray['exc_type'] . ' - ' . $url;
+            mtrace("API response: {$this->errormessage} | Called by: {$callhistory}");
             return false; // Entry does not exist (error).
         }
         if (isset($resparray['exception'])) {
             $this->errormessage = $resparray['exception'] . ' - ' . $url;
+            mtrace("API response: {$this->errormessage} | Called by: {$callhistory}");
             return false; // Entry does not exist (error).
         }
+
+        // Log a generic error message if no specific error is found.
+        mtrace("API response: Unknown issue with response from URL: {$url} | Called by: {$callhistory}");
         return false;
     }
 
