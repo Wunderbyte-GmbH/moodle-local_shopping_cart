@@ -456,7 +456,6 @@ class erpnext_invoice implements invoice {
             if (!$this->item_exists($item->itemname)) {
                 return false;
             }
-            $this->invoicedata['timecreated'] = time();
             $itemdata = [];
             $itemdata['item_code'] = $item->itemname;
             $itemdata['qty'] = 1;
@@ -498,7 +497,7 @@ class erpnext_invoice implements invoice {
         $this->billingaddress = $billingaddress;
         $this->invoicedata['address_billing'] = $billingaddress;
         $this->invoicedata['customer'] = $this->customername;
-        $date = date('Y-m-d', $this->invoicedata['timecreated']);
+        $date = date('Y-m-d', time());
         // Convert the Unix timestamp to ISO 8601 date format.
         $this->invoicedata['posting_date'] = $date;
         $this->invoicedata['set_posting_time'] = 1;
