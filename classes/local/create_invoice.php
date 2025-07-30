@@ -39,6 +39,65 @@ use moodle_exception;
 use stored_file;
 use TCPDF;
 
+class MYPDF extends TCPDF {
+
+    private function parseTags(string $content, string $tagname): string {
+        $dom = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $tags = $dom->getElementsByTagName($tagname);
+
+        if ($tags->length > 0) {
+            $element = $tags->item(0);
+            $innerHTML = '';
+            foreach ($element->childNodes as $child) {
+                $innerHTML .= $dom->saveHTML($child);
+            }
+            return $innerHTML;
+        }
+
+        return '';
+    }
+
+    public function isTagPresent(string $content, string $tagname): bool {
+        $dom = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+        $tags = $dom->getElementsByTagName($tagname);
+        return $tags->length > 0;
+    }
+
+    public function stripContent(string $content, string $tagname) {
+        $pattern = sprintf('#<%1$s\b[^>]*>.*?</%1$s>#is', preg_quote($tagname, '#'));
+        return preg_replace($pattern, '', $content);
+    }
+
+   	public function Header() {
+        $header = $this->parseTags(get_config('local_shopping_cart', 'receipthtml'), 'header');
+		$this->SetFont('helvetica', 'B', 20);
+		$this->writeHTMLCell(0, 0, '', '', $header, 0, 1, 0, true, 'L', true);
+	}
+
+	public function Footer() {
+        $this->SetY(-220); 
+        $this->SetFont('helvetica', '', 7);
+        $autoPageBreak = $this->AutoPageBreak;
+        $bMargin = $this->bMargin;
+        $this->SetAutoPageBreak(false, 0);
+
+        $footer = self::parseTags(get_config('local_shopping_cart', 'receipthtml'), 'footer');
+        $footer .= get_string("page") . ' ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages();
+
+        $this->writeHTMLCell(0, 0, '', '', $footer, 0, 1, 0, true, 'L', true);
+        $this->SetAutoPageBreak($autoPageBreak, $bMargin);
+	}
+}
+
 /**
  * Deals with local_shortcodes regarding booking.
  */
@@ -206,7 +265,7 @@ class create_invoice {
         ob_start();
 
         // Create new PDF document.
-        $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
+        $pdf = new MYPDF('p', 'pt', 'A4', true, 'UTF-8', false);
         // Set some content to print.
 
         // HTML templates.
@@ -607,8 +666,8 @@ class create_invoice {
         // Set default monospaced font.
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-        // Set auto page breaks.
-        $pdf->SetAutoPageBreak(false, PDF_MARGIN_BOTTOM);
+        $pdf->SetAutoPageBreak(true, $pdf->isTagPresent($cfghtml, 'footer') ? 220 : PDF_MARGIN_BOTTOM);
+        $pdf->SetMargins(15, $pdf->isTagPresent($cfghtml, 'header') ? 120 : 20, 15);
 
         // Set image scale factor.
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -616,20 +675,23 @@ class create_invoice {
         // Set default font subsetting mode.
         $pdf->setFontSubsetting(true);
 
-        $pdf->SetHeaderMargin(0);
-        $pdf->SetFooterMargin(0);
+        //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        //$pdf->SetFooterMargin(50);
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // Remove default footer.
-        $pdf->setPrintHeader(false);
+        $pdf->setPrintHeader(true);
 
-        $pdf->setPrintFooter(false);
+        $pdf->setPrintFooter(true);
 
         $pdf->AddPage();
 
         // Print text using writeHTMLCell().
         // Now, we write the HTML into a TCPDF cell.
-        $pdf->writeHTMLCell(0, 0, null, null, $html, 0, 1, 0, true, '', true);
+
+        $html = $pdf->stripContent($html, 'header');
+        $html = $pdf->stripContent($html, 'footer'); 
+        $pdf->writeHTML($html, true, false, true, false, '');
         ob_end_clean();
 
         $filename = $user->firstname . '_' . $user->lastname . '_' . $date . '.pdf';
