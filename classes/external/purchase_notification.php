@@ -92,10 +92,6 @@ class purchase_notification extends external_api {
         $context = context_system::instance();
 
         self::validate_context($context);
-
-        if (!has_capability('local/shopping_cart:canverifypayments', $context)) {
-            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
-        }
         $successurl = '';
         $success = self::return_checkout_status($params['identifier'], $params['paymentgateway']);
         if ($justcheck) {
