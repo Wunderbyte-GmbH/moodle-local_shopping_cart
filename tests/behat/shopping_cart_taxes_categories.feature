@@ -51,7 +51,7 @@ Feature: Admin tax actions with tax categories in shopping cart.
   Scenario: Add two items to the shopping cart as user when tax categories enabled
     Given the following "local_shopping_cart > plugin setup" exist:
       | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
-      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              | 
+      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              |
     And I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
@@ -72,7 +72,7 @@ Feature: Admin tax actions with tax categories in shopping cart.
   Scenario: Add four items to the shopping cart when tax categories enabled and goto checkout
     Given the following "local_shopping_cart > plugin setup" exist:
       | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
-      | Account1 | 1         |                    | A:15 B:10 C:0 | 1              | 
+      | Account1 | 1         |                    | A:15 B:10 C:0 | 1              |
     And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"

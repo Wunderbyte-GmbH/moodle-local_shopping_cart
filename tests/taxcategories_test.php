@@ -292,5 +292,4 @@ final class taxcategories_test extends advanced_testcase {
         $this->assertEquals(0.1, $taxcategories->tax_for_category("C", "mycountry"));
         $this->assertEquals(0.1, $taxcategories->tax_for_category("C", "other"));
     }
-
 }
