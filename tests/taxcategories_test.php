@@ -154,6 +154,14 @@ final class taxcategories_test extends advanced_testcase {
                 taxcategories::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX => ["A" => 0.2, "B" => 0.1, "C" => 0.0],
         ];
         $this->assertEqualsCanonicalizing($expected, $fromraw->taxmatrix());
+
+        // Anndtional validations for default tax categories.
+        $fromraw = taxcategories::from_raw_string("C", $raw);
+        $this->assertEquals("C", $fromraw->defaultcategory(), "Unexpected default category");
+        $this->assertEqualsCanonicalizing(['A', 'B', 'C'], $fromraw->validcategories());
+        $fromraw = taxcategories::from_raw_string("", $raw);
+        $this->assertEquals("A", $fromraw->defaultcategory(), "Unexpected default category");
+        $this->assertEqualsCanonicalizing(['A', 'B', 'C'], $fromraw->validcategories());
     }
 
     /**
@@ -166,8 +174,11 @@ final class taxcategories_test extends advanced_testcase {
         $raw = '20';
         $fromraw = taxcategories::from_raw_string("", $raw);
 
-        $this->assertEquals(taxcategories::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY,
-            $fromraw->defaultcategory(), "Unexpected default category");
+        $this->assertEquals(
+            taxcategories::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY,
+            $fromraw->defaultcategory(),
+            "Unexpected default category"
+        );
         $this->assertEqualsCanonicalizing([taxcategories::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY], $fromraw->validcategories());
         $expected = [
             taxcategories::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX => [
@@ -227,6 +238,11 @@ final class taxcategories_test extends advanced_testcase {
     public function test_tax_for_no_category_no_country_code(): void {
         $raw = 'A:25 B:10 C:1';
         $taxcategories = taxcategories::from_raw_string("A", $raw);
+
+        // Default category is used.
+        $this->assertEquals(0.25, $taxcategories->tax_for_category(""));
+
+        $taxcategories = taxcategories::from_raw_string("", $raw);
 
         // Default category is used.
         $this->assertEquals(0.25, $taxcategories->tax_for_category(""));
