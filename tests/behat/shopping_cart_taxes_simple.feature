@@ -35,13 +35,17 @@ Feature: Admin tax actions with simple taxin shopping cart.
       | Account1 | 1         |                    | 15            | 1              |
 
   @javascript
-  Scenario: Add single item to the shopping cart as user when tax without categories enabled
+  Scenario: Add two items to the shopping cart as user when tax without categories enabled
     Given I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
     And I wait until the page is ready
+    And I click on "#btn-local_shopping_cart-main-2" "css_element"
     And I click on "#btn-local_shopping_cart-main-4" "css_element"
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "Test item 4" in the "div.shopping-cart-items" "css_element"
+    When I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "Test item 2" in the "div.shopping-cart-items" "css_element"
+    And I should see "Test item 4" in the "div.shopping-cart-items" "css_element"
+    And I should see "23.35 EUR" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
+    And I should see "(20.30 EUR + 15%)" in the "#item-local_shopping_cart-main-2 .item-price" "css_element"
     And I should see "13.94 EUR" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
     And I should see "(12.12 EUR + 15%)" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
-    And I should see "13.94" in the "div.sc_initialtotal" "css_element"
+    And I should see "37.29" in the "div.sc_initialtotal" "css_element"
