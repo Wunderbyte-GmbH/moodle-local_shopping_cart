@@ -266,38 +266,41 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             case 1:
                 $price = 10.00;
                 $tax = 'A';
+                $description = 'dummy item, tax category: ' . $tax;
                 break;
             case 2:
                 $price = 20.30;
                 $tax = 'B';
+                $description = 'dummy item, tax category: ' . $tax;
                 break;
             case 3:
                 $price = 13.8;
                 $tax = 'C';
+                $description = 'dummy item, tax category: ' . $tax;
                 break;
             case 5:
                 $price = 42.42;
                 $tax = 'B';
                 $installment = 1;
-                $description = '(installment enabled)';
+                $description = '(installment enabled), tax category: ' . $tax;
                 break;
             case 6:
                 $price = 10.00;
                 $tax = 'A';
                 $costcenter = 'CostCenter1';
-                $description = '(' . $costcenter . ')';
+                $description = '(' . $costcenter . '), tax category: ' . $tax;
                 break;
             case 7:
                 $price = 20.30;
                 $tax = 'B';
                 $costcenter = 'CostCenter2';
-                $description = '(' . $costcenter . ')';
+                $description = '(' . $costcenter . '), tax category: ' . $tax;
                 break;
             case 8:
                 $price = 13.8;
                 $tax = 'C';
                 $costcenter = 'CostCenter2';
-                $description = '(' . $costcenter . ')';
+                $description = '(' . $costcenter . '), tax category: ' . $tax;
                 break;
             default:
                 $price = 12.12;

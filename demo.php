@@ -68,7 +68,9 @@ $item = new cartitem(
         'A',
         0,
         '');
-$button = new button($item->as_array());
+$item = service_provider::load_cartitem('main', 1);
+$item = $item['cartitem']->as_array();
+$button = new button($item);
 
 echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 'alert alert-info',
         ['style' => 'width: 500px;']);
@@ -76,7 +78,7 @@ echo html_writer::div(get_string('testing:description', 'local_shopping_cart'), 
 echo '<div class="testitem-container shadow bg-light rounded border border-primary p-3 mb-5">';
 echo html_writer::div(get_string('testing:item', 'local_shopping_cart') . ' 1', 'h4');
 echo html_writer::div("10.00 " . get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR', 'h5');
-echo html_writer::div('Description: dummy item description', 'h6');
+echo html_writer::div('Description: ' . $item['description'], 'h6');
 echo html_writer::div($renderer->render_button($button), 'testbutton-container mt-1',
         ['style' => 'width: 300px;']);
 echo '</div>';
