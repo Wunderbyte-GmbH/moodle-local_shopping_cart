@@ -212,8 +212,10 @@ final class taxcategories_test extends advanced_testcase {
         $this->assertEquals(0.10, $taxcategories->tax_for_category("B"));
         $this->assertEquals(0.01, $taxcategories->tax_for_category("C"));
 
-        // Unknown category.
-        $this->assertEquals(-1, $taxcategories->tax_for_category("X"));
+        // Unknown category - falnack to default or 1st category.
+        $this->assertEquals(0.25, $taxcategories->tax_for_category("X"));
+        $taxcategories = taxcategories::from_raw_string("B", $raw);
+        $this->assertEquals(0.1, $taxcategories->tax_for_category("X"));
     }
 
     /**
