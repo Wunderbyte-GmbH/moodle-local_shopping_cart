@@ -32,27 +32,28 @@ Feature: Admin tax actions with tax categories in shopping cart.
     ## Tax categories and their tax percentage = "A:15 B:10 C:0"
     ## Default tax category = "A"
     ## Prices for items are net prices: Add the tax = 1
-    And the following "local_shopping_cart > plugin setup" exist:
-      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
-      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              |
 
   @javascript
-  Scenario: Add single item to the shopping cart as user when tax categories enabled
-    Given I log in as "user1"
+  Scenario: Add an item without tax category to the shopping cart as user when tax categories enabled
+    Given the following "local_shopping_cart > plugin setup" exist:
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         | B                  | A:15 B:10 C:0 | 1              |
+    And I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
-    And I wait until the page is ready
-    And I click on "#btn-local_shopping_cart-main-1" "css_element"
-    And I click on "#nav-shopping_cart-popover-container" "css_element"
-    Then I should see "Test item 1" in the "div.shopping-cart-items" "css_element"
-    And I should see "11.50 EUR" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
-    And I should see "(10.00 EUR + 15%)" in the "#item-local_shopping_cart-main-1 .item-price" "css_element"
-    And I should see "11.50" in the "div.sc_initialtotal" "css_element"
+    And I click on "#btn-local_shopping_cart-main-4" "css_element"
+    When I click on "#nav-shopping_cart-popover-container" "css_element"
+    Then I should see "Test item 4" in the "div.shopping-cart-items" "css_element"
+    And I should see "13.33 EUR" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
+    And I should see "(12.12 EUR + 10%)" in the "#item-local_shopping_cart-main-4 .item-price" "css_element"
+    And I should see "13.33" in the "div.sc_initialtotal" "css_element"
 
   @javascript
   Scenario: Add two items to the shopping cart as user when tax categories enabled
-    Given I log in as "user1"
+    Given the following "local_shopping_cart > plugin setup" exist:
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         | A                  | A:15 B:10 C:0 | 1              | 
+    And I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"
-    And I wait until the page is ready
     And I click on "#btn-local_shopping_cart-main-1" "css_element"
     And I click on "#btn-local_shopping_cart-main-2" "css_element"
     And I click on "#nav-shopping_cart-popover-container" "css_element"
@@ -68,15 +69,19 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I should see "33.83" in the "div.sc_initialtotal" "css_element"
 
   @javascript
-  Scenario: Add three items to the shopping cart when tax categories enabled and goto checkout
-    Given I log in as "user1"
+  Scenario: Add four items to the shopping cart when tax categories enabled and goto checkout
+    Given the following "local_shopping_cart > plugin setup" exist:
+      | account  | enabletax | defaulttaxcategory | taxcategories | itempriceisnet |
+      | Account1 | 1         |                    | A:15 B:10 C:0 | 1              | 
+    And I log in as "user1"
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And Testitem "2" has been put in shopping cart of user "user1"
     And Testitem "3" has been put in shopping cart of user "user1"
-    And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
+    And Testitem "4" has been put in shopping cart of user "user1"
+    When I visit "/local/shopping_cart/checkout.php"
     And I should see "Your shopping cart"
+    And I wait "100" seconds
     Then I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
@@ -86,6 +91,9 @@ Feature: Admin tax actions with tax categories in shopping cart.
     And I should see "Test item 3" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3" "css_element"
     And I should see "13.80 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3 .item-price" "css_element"
     And I should see "(13.80 EUR + 0%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3 .item-price" "css_element"
+    And I should see "Test item 4" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3" "css_element"
+    And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-4 .item-price" "css_element"
+    And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-4 .item-price" "css_element"
     And I should see "Total Net:" in the ".checkoutgrid.checkout .sc_price_label" "css_element"
     And I should see "44.10" in the ".checkoutgrid.checkout .sc_totalprice_net" "css_element"
     And I should see "Total:" in the ".checkoutgrid.checkout .sc_price_label" "css_element"
