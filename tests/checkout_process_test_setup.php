@@ -291,6 +291,20 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
     }
 
     /**
+     * Assertion: The hastoryrecord should contain correct tax / price data.
+     * @param array $managercache
+     * @param array $historyrecords
+     * @param array $expectedtax
+     */
+    public function assertcartstoreexacttax($managercache, $historyrecords, $expectedtax): void {
+        $row = 0;
+        foreach ($historyrecords as $historyrecord) {
+            $this->assertEmpty(array_diff($expectedtax[$row], (array) $historyrecord));
+            $row++;
+        }
+    }
+
+    /**
      * Assertion: The transaction should be valid.
      * @param object $managercache
      * @param object $historyrecords
