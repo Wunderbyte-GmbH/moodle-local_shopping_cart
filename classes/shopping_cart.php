@@ -1778,59 +1778,34 @@ class shopping_cart {
      * @param array $data reference to the data array.
      */
     public static function convert_amount_of_items(array &$data) {
-        if (!class_exists('mod_booking\booking')) {
-            // This is currently only supported for booking.
-            return;
-        }
-        global $DB;
-        if (defined('BEHAT_SITE_RUNNING')) {
-            $user = $DB->get_record('user', ['id' => $data['userid']]);
-            $priceidentifier = price::get_pricecategory_for_user($user);
-        } else {
-            $user = singleton_service::get_instance_of_user($data['userid']);
-            $priceidentifier = singleton_service::get_pricecategory_for_user($user);
-        }
+        $user = singleton_service::get_instance_of_user($data['userid']);
+        $priceidentifier = singleton_service::get_pricecategory_for_user($user);
         $count = 0;
-        if (!empty($data['items'])) {
-            foreach ($data['items'] as &$item) {
-                if ($item['area'] != 'option') {
-                    // This is currently only supported for booking options.
-                    continue;
-                }
-                $pricechache = price::get_prices_from_cache_or_db(
-                    $item['area'],
-                    $item['itemid'],
-                    $user->id
-                );
-
-                foreach ($pricechache as $price) {
-                    $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
-                    if (in_array($priceidentifier, $pricecategoryidentifier)) {
-                        $item['singleprice'] = $price->price;
-                        $price = (float)$price->price;
-                        if (
-                            isset($item['price_net']) &&
-                            isset($item['price_gross']) &&
-                            $item['price_net'] == $item['price_gross']
-                        ) {
-                            $taxcategories = taxcategories::from_raw_string(
-                                $item['price_gross'],
-                                get_config('local_shopping_cart', 'taxcategories')
-                            );
-                            $taxes = $taxcategories->tax_for_category($item['taxcategory']);
-                            if ($taxes > 0) {
-                                $price *= ( 1 - $taxes );
-                            }
+        foreach ($data['items'] as &$item) {
+            $pricechache = price::get_prices_from_cache_or_db('option', $item['itemid'], $user->id);
+            foreach ($pricechache as $price) {
+                $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
+                if (in_array($priceidentifier, $pricecategoryidentifier)) {
+                    $item['singleprice'] = $price->price;
+                    $price = (int)$price->price;
+                    if ($item['price_net'] == $item['price_gross']) {
+                        $taxcategories = taxcategories::from_raw_string(
+                            $item['price_gross'],
+                            get_config('local_shopping_cart', 'taxcategories')
+                        );
+                        $taxes = $taxcategories->tax_for_category($item['taxcategory']);
+                        if ($taxes > 0) {
+                            $price *= ( 1 - $taxes );
                         }
-                        $amount = round((float)$item['price'] / $price);
-                        $item['itemamount'] = $amount;
-                        $count += $amount;
-                        continue;
                     }
+                    $amount = round((int)$item['price'] / $price);
+                    $item['itemamount'] = $amount;
+                    $count += $amount;
+                    continue;
                 }
             }
         }
-        self::convert_numbers_comma_separated($data);
+        self::convert_numbers_comma_seperated($data);
         $data['count'] = $count;
     }
 
@@ -1840,44 +1815,29 @@ class shopping_cart {
      * @param array $data
      * @return void
      */
-    public static function convert_numbers_comma_separated(&$data) {
+    public static function convert_numbers_comma_seperated(&$data) {
         $convertlabels = [
-            'credit',
-            'remainingcredit',
-            'price',
-            'initialtotal',
-            'deductible',
-            'price_net',
-            'initialtotal_net',
+            'credit', 'remainingcredit', 'price',
+            'initialtotal', 'deductible', 'price_net', 'initialtotal_net'
         ];
         $convertitemlabels = ['price', 'price_net', 'price_gross', 'tax', 'singleprice'];
-        foreach ($data as $label => $element) {
-            // Top-level conversion.
+        foreach ($data as $label => &$element) {
             if (
-                in_array($label, $convertlabels, true)
-                && is_string($element)
-                && strpos($element, '.') !== false
+                in_array($label, $convertlabels) &&
+                str_contains($element, '.')
             ) {
-                $data[$label] = str_replace('.', ',', $element);
-            } else if ($label === 'items' && is_array($element)) { // Items array conversion.
-                foreach ($element as $idx => $itemelement) {
-                    if (!is_array($itemelement)) {
-                        continue;
-                    }
-                    foreach ($itemelement as $itemlabel => $itemvalue) {
+                $element = str_replace('.', ',', $element);
+            } else if ($label == 'items') {
+                foreach ($element as &$itemelement) {
+                    foreach ($itemelement as $itemlabel => &$item) {
                         if (
-                            in_array($itemlabel, $convertitemlabels, true) &&
-                            is_string($itemvalue) &&
-                            strpos($itemvalue, '.') !== false
+                            in_array($itemlabel, $convertitemlabels) &&
+                            str_contains($item, '.')
                         ) {
-                            $itemelement[$itemlabel] = str_replace('.', ',', $itemvalue);
+                            $item = str_replace('.', ',', $item);
                         }
                     }
-                    // Write back the modified sub-array.
-                    $element[$idx] = $itemelement;
                 }
-                // Write back the modified 'items' array.
-                $data[$label] = $element;
             }
         }
     }
