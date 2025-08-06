@@ -102,7 +102,26 @@ class checkout_manager {
         self::render_body_buttons($checkoutmanager['checkout_manager_body'], $currentstep);
 
         self::render_checkout_head($checkoutmanager['checkout_manager_head']);
+
+        self::set_feedback($checkoutmanager['checkout_manager_body']);
         return $checkoutmanager;
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
+     * @param mixed $checkoutmanagerbody
+     * @return void
+     *
+     */
+    public function set_feedback(&$checkoutmanagerbody): void {
+        $currentstep = $checkoutmanagerbody['currentstep'];
+        if (isset($checkoutmanagerbody['item_list'][$currentstep])) {
+            $item = $checkoutmanagerbody['item_list'][$currentstep];
+            if (self::class_exists_is_active($item['classname'])) {
+                $iteminstance = new $item['classname']($this->identifier);
+                $checkoutmanagerbody['feedback'] = $iteminstance->get_info_feedback($this->cartstoredata);
+            }
+        }
     }
 
     /**
@@ -154,11 +173,18 @@ class checkout_manager {
         }
         $checkoutmanagerbody['body'] =
             self::render_checkout_body($checkoutmanagerbody['item_list']);
+
         if (empty($checkoutmanagerbody['item_list'])) {
             $checkoutmanagerbody['buttons']['checkout_button'] = true;
         } else {
             $checkoutmanagerbody['buttons']['checkout_button'] =
                 self::render_checkout_button();
+        }
+        if (
+            get_config('local_shopping_cart', 'showdisabledcheckoutbutton') == '1' &&
+            !$checkoutmanagerbody['buttons']['checkout_button']
+        ) {
+            $checkoutmanagerbody['buttons']['hide_disabled_checkout_button'] = true;
         }
     }
 

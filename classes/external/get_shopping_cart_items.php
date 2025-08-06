@@ -64,7 +64,7 @@ class get_shopping_cart_items extends external_api {
      * Excecute this webservice.
      *
      * @param int $userid
-     * @return void
+     * @return array
      */
     public static function execute($userid) {
         global $USER;
@@ -91,7 +91,7 @@ class get_shopping_cart_items extends external_api {
 
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_localized_data();
-
+        shopping_cart::convert_amount_of_items($data);
         return $data;
     }
 
@@ -166,6 +166,8 @@ class get_shopping_cart_items extends external_api {
                                                 'canceluntil' => new external_value(PARAM_INT,
                                                         'Timestamp until when cancel is possible', VALUE_OPTIONAL),
                                                 'nodelete' => new external_value(PARAM_INT, 'Marker for no delete', VALUE_OPTIONAL),
+                                                'itemamount' => new external_value(PARAM_INT, 'Number of one item', VALUE_OPTIONAL),
+
                                         ]
                                 )
                         ),

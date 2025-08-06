@@ -28,6 +28,9 @@ use core\task\manager;
 use local_shopping_cart\event\payment_confirmed;
 use local_shopping_cart\local\taskmanager;
 use local_shopping_cart\output\shoppingcart_history_list;
+use mod_booking\local\mobile\customformstore;
+use mod_booking\price;
+use mod_booking\singleton_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -1766,6 +1769,76 @@ class shopping_cart {
                 }
             }
             $data['items'] = array_values($data['items']);
+        }
+    }
+
+    /**
+     * Helper function to convert the bought amount
+     *
+     * @param array $data reference to the data array.
+     */
+    public static function convert_amount_of_items(array &$data) {
+        $user = singleton_service::get_instance_of_user($data['userid']);
+        $priceidentifier = singleton_service::get_pricecategory_for_user($user);
+        $count = 0;
+        foreach ($data['items'] as &$item) {
+            $pricechache = price::get_prices_from_cache_or_db('option', $item['itemid'], $user->id);
+            foreach ($pricechache as $price) {
+                $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
+                if (in_array($priceidentifier, $pricecategoryidentifier)) {
+                    $item['singleprice'] = $price->price;
+                    $price = (int)$price->price;
+                    if ($item['price_net'] == $item['price_gross']) {
+                        $taxcategories = taxcategories::from_raw_string(
+                            $item['price_gross'],
+                            get_config('local_shopping_cart', 'taxcategories')
+                        );
+                        $taxes = $taxcategories->tax_for_category($item['taxcategory']);
+                        if ($taxes > 0) {
+                            $price *= ( 1 - $taxes );
+                        }
+                    }
+                    $amount = round((int)$item['price'] / $price);
+                    $item['itemamount'] = $amount;
+                    $count += $amount;
+                    continue;
+                }
+            }
+        }
+        self::convert_numbers_comma_seperated($data);
+        $data['count'] = $count;
+    }
+
+    /**
+     * Receive quota consumed via callback to component.
+     *
+     * @param array $data
+     * @return void
+     */
+    public static function convert_numbers_comma_seperated(&$data) {
+        $convertlabels = [
+            'credit', 'remainingcredit', 'price',
+            'initialtotal', 'deductible', 'price_net', 'initialtotal_net'
+        ];
+        $convertitemlabels = ['price', 'price_net', 'price_gross', 'tax', 'singleprice'];
+        foreach ($data as $label => &$element) {
+            if (
+                in_array($label, $convertlabels) &&
+                str_contains($element, '.')
+            ) {
+                $element = str_replace('.', ',', $element);
+            } else if ($label == 'items') {
+                foreach ($element as &$itemelement) {
+                    foreach ($itemelement as $itemlabel => &$item) {
+                        if (
+                            in_array($itemlabel, $convertitemlabels) &&
+                            str_contains($item, '.')
+                        ) {
+                            $item = str_replace('.', ',', $item);
+                        }
+                    }
+                }
+            }
         }
     }
 

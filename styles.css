@@ -398,6 +398,10 @@ div.shopping-cart-items-container div.item-description {
     display: none;
 }
 
+.shopping-cart-items div.item-content {
+    display: inline-grid;
+}
+
 .shopping-cart-items .item-button {
     cursor: pointer;
     color: #abb0be;

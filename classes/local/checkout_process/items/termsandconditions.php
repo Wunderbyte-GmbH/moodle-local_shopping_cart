@@ -171,7 +171,18 @@ class termsandconditions extends checkout_base_item {
      * Validation feedback.
      * @return string
      */
-    public static function get_info_feedback(): string {
-        return get_string('completeshoppingcartprecheckout', 'local_shopping_cart');
+    public function get_info_feedback(): string {
+        $requiredfields = [];
+        if (!empty(get_config('local_shopping_cart', 'termsandconditions'))) {
+            $requiredfields[] = get_string('confirmterms', 'local_shopping_cart');
+        }
+        if (!empty(get_config('local_shopping_cart', 'additionalconditions'))) {
+            $requiredfields[] = get_string('confirmadditionalconditions', 'local_shopping_cart');
+        }
+        if (empty($requiredfields)) {
+            return '';
+        }
+        return get_string('completeshoppingcartprecheckout', 'local_shopping_cart') .
+            implode(', ', $requiredfields);
     }
 }
