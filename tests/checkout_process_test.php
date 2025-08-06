@@ -132,13 +132,67 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
      */
     public static function checkoutprocessdataprovider(): array {
         return [
-            'Only billing address mandatory' => [
+            'Only one shipping address mandatory, two default tax categories, "default B" forced as default' => [
+                [
+                    'addresses_required' => 'shipping',
+                    'taxcategories' => 'default A:31 B:21
+                        AT A:32 B:12 C:2
+                        DE A:23 B:13 C:3',
+                    'defaulttaxcategory' => 'B', // The "default B" will be used as sefault tax category if not provided.
+                    'enabletax' => '1',
+                ],
+                [
+                    [
+                        'changedinput' => '[{"name":"selectedaddress_shipping","value":"REPLACE_WITH_ADDRESSID"}]',
+                        'controlparameter' => [
+                            "currentstep" => 0,
+                            "action" => null,
+                        ],
+                    ],
+                ],
+                [
+                    'assertvalidcheckout',
+                    'assertcartstorevatnumberempty',
+                    'assertcartstoretax',
+                    'assertcartstoreexacttax' => [
+                        [
+                            'itemid' => "1",
+                            'price' => "10.00",
+                            'tax' => "2.370",
+                            'taxpercentage' => "0.3100",
+                            'taxcategory' => "A",
+                        ],
+                        [
+                            'itemid' => "2",
+                            'price' => "20.30",
+                            'tax' => "3.520",
+                            'taxpercentage' => "0.2100",
+                            'taxcategory' => "B",
+                        ],
+                        [
+                            'itemid' => "3",
+                            'price' => "13.80",
+                            'tax' => "2.400",
+                            'taxpercentage' => "0.2100", // The "default B" is used as "default C" not provided.
+                            'taxcategory' => "C",
+                        ],
+                        [
+                            'itemid' => "4",
+                            'price' => "12.12",
+                            'tax' => "2.100",
+                            'taxpercentage' => "0.2100", // The "default B" is used as no category provided.
+                            'taxcategory' => "",
+                        ],
+                    ],
+                ],
+            ],
+            'Only billing address mandatory, three default tax categories, no force default (default A)' => [
                 [
                     'addresses_required' => 'billing',
                     'taxcategories' => 'default A:20 B:20 C:10
                         AT A:20 B:10 C:0
                         DE A:19 B:10 C:0',
-                    'defaulttaxcategory' => '', // The "default A" will be used ad sefault tax category if not provided.
+                    'defaulttaxcategory' => '', // The "default A" will be used as sefault tax category if not provided.
                     'enabletax' => '1',
                 ],
                 [
@@ -232,29 +286,6 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertinvalidcheckout',
-                    'assertcartstorevatnumberempty',
-                    'assertcartstoretax',
-                ],
-            ],
-            'Only one shipping address mandatory' => [
-                [
-                    'addresses_required' => 'shipping',
-                    'taxcategories' => 'default A:20 B:20 C:10
-                        AT A:20 B:10 C:0
-                        DE A:19 B:10 C:0',
-                    'enabletax' => '1',
-                ],
-                [
-                    [
-                        'changedinput' => '[{"name":"selectedaddress_shipping","value":"REPLACE_WITH_ADDRESSID"}]',
-                        'controlparameter' => [
-                            "currentstep" => 0,
-                            "action" => null,
-                        ],
-                    ],
-                ],
-                [
-                    'assertvalidcheckout',
                     'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
