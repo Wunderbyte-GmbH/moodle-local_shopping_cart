@@ -266,4 +266,21 @@ class addresses extends checkout_base_item {
         }
         return true;
     }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     * @return bool
+     *
+     */
+    public function get_info_feedback(): string {
+        $feedback = [];
+        $requiredaddresses = self::get_required_address_data();
+        foreach ($requiredaddresses as $requiredaddress) {
+            $feedback[] = $requiredaddress['addresslabel'];
+        }
+        if (empty($feedback)) {
+            return '';
+        }
+        return get_string('addresses:feedback', 'local_shopping_cart') . implode(', ', $feedback);
+    }
 }
