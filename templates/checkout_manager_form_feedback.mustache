@@ -37,25 +37,11 @@
     }
 }}
 
-<div id="shopping-cart-checkout-manager-form">
-    <div id="shopping-cart-checkout-manager-status-bar">
-        {{> local_shopping_cart/checkout_manager_form_progress_bar }}
+
+{{#checkout_manager_body.feedback}}
+    <div class="d-flex justify-content-center mt-4">
+        <div class="alert alert-info text-center w-75">
+            {{checkout_manager_body.feedback}}
+        </div>
     </div>
-
-    {{> local_shopping_cart/checkout_manager_form_body }}
-    {{> local_shopping_cart/checkout_manager_feedback }}
-
-
-    <div id="shopping-cart-checkout-manager-buttons">
-        {{> local_shopping_cart/checkout_manager_form_buttons }}
-    </div>
-    <div id="shopping-cart-checkout-manager-feedback">
-        {{> local_shopping_cart/checkout_manager_form_feedback }}
-    </div>
-</div>
-
-{{#js}}
-    require(['core_payment/gateways_modal'], function(fn) {
-        fn.init();
-    });
-{{/js}}
+{{/checkout_manager_body.feedback}}

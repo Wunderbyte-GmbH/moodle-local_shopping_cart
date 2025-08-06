@@ -225,4 +225,16 @@ class vatnrchecker extends checkout_base_item {
     public static function get_error_feedback(): string {
         return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
+
+    /**
+     * Returns the required-address keys as specified in the plugin config.
+     * @return bool
+     *
+     */
+    public function get_info_feedback(): string {
+        if (self::is_mandatory()) {
+            get_string('vatnrfeedbackmandatory', 'local_shopping_cart');
+        }
+        return get_string('vatnrfeedbackoptional', 'local_shopping_cart');
+    }
 }

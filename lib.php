@@ -145,6 +145,7 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
 
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
+    shopping_cart::convert_amount_of_items($data);
 
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;

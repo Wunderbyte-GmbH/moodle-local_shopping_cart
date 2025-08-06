@@ -49,6 +49,7 @@
 }}
 {{#checkout_manager_body.buttons.checkout_button}}
     <div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
+    {{checkout_manager_body.buttons.hide_disabled_checkout_button}}
         {{#isguestuser}}
             <div class="mdl-align">
                 <p>{{#str}} paymentrequired {{/str}}</p>
@@ -91,11 +92,13 @@
                 data-identifier="{{identifier}}"
                 data-itemid="{{identifier}}"
                 disabled
+                {{#checkout_manager_body.buttons.hide_disabled_checkout_button}}
+                    hidden
+                {{/checkout_manager_body.buttons.hide_disabled_checkout_button}}
             >
                 {{#str}} sendpaymentbutton, local_shopping_cart {{/str}}
             </button>
             <br>
-            {{#str}} completeshoppingcartprecheckout, local_shopping_cart {{/str}}
         {{/isguestuser}}
     </div>
 {{/checkout_manager_body.buttons.checkout_button}}
