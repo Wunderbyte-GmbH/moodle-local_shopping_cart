@@ -72,16 +72,19 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
         // Set local_shopping_cart to use the payment account.
         set_config('accountid', $this->account->get('id'), 'local_shopping_cart');
 
-        shopping_cart::add_item_to_cart(
-            'local_shopping_cart',
-            'testitem',
-            1,
-            $student1->id
-        );
+        for ($id = 1; $id <= 4; $id++) {
+            shopping_cart::add_item_to_cart(
+                'local_shopping_cart',
+                'main',
+                $id,
+                $student1->id
+            );
+        }
 
         $cartstore = cartstore::instance($student1->id);
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
+        $cartitems = $cartstore->get_items();
 
         foreach ($config as $key => $value) {
             set_config($key, $value, 'local_shopping_cart');
@@ -113,10 +116,12 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
         $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
 
-        $cartstore = cartstore::instance($student1->id);
-
         foreach ($assertions as $step => $assertion) {
-            $this->$assertion($managercache, $historyrecords);
+            if ($step == 'assertcartstoreexacttax') {
+                $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion);
+            } else {
+                $this->$assertion($managercache, $historyrecords);
+            }
         }
     }
 
@@ -127,6 +132,60 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
      */
     public static function checkoutprocessdataprovider(): array {
         return [
+            'Only billing address mandatory' => [
+                [
+                    'addresses_required' => 'billing',
+                    'taxcategories' => 'default A:20 B:20 C:10
+                        AT A:20 B:10 C:0
+                        DE A:19 B:10 C:0',
+                    'defaulttaxcategory' => '', // The "default A" will be used ad sefault tax category if not provided.
+                    'enabletax' => '1',
+                ],
+                [
+                    [
+                        'changedinput' => '[{"name":"selectedaddress_billing","value":"REPLACE_WITH_ADDRESSID"}]',
+                        'controlparameter' => [
+                            "currentstep" => 0,
+                            "action" => null,
+                        ],
+                    ],
+                ],
+                [
+                    'assertvalidcheckout',
+                    'assertcartstorevatnumberempty',
+                    'assertcartstoretax',
+                    'assertcartstoreexacttax' => [
+                        [
+                            'itemid' => "1",
+                            'price' => "10.00",
+                            'tax' => "1.670",
+                            'taxpercentage' => "0.2000",
+                            'taxcategory' => "A",
+                        ],
+                        [
+                            'itemid' => "2",
+                            'price' => "20.30",
+                            'tax' => "1.850",
+                            'taxpercentage' => "0.1000",
+                            'taxcategory' => "B",
+                        ],
+                        [
+                            'itemid' => "3",
+                            'price' => "13.80",
+                            'tax' => "0.000",
+                            'taxpercentage' => "0.0000",
+                            'taxcategory' => "C",
+                        ],
+                        [
+                            'itemid' => "4",
+                            'price' => "12.12",
+                            'tax' => "2.020",
+                            'taxpercentage' => "0.2000",
+                            'taxcategory' => "",
+                        ],
+                    ],
+                ],
+            ],
             'Only vatnumber mandatory, valid' => [
                 [
                     'showvatnrchecker' => '1',
@@ -173,29 +232,6 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 ],
                 [
                     'assertinvalidcheckout',
-                    'assertcartstorevatnumberempty',
-                    'assertcartstoretax',
-                ],
-            ],
-            'Only billing address mandatory' => [
-                [
-                    'addresses_required' => 'billing',
-                    'taxcategories' => 'default A:20 B:20 C:10
-                        AT A:20 B:10 C:0
-                        DE A:19 B:10 C:0',
-                    'enabletax' => '1',
-                ],
-                [
-                    [
-                        'changedinput' => '[{"name":"selectedaddress_billing","value":"REPLACE_WITH_ADDRESSID"}]',
-                        'controlparameter' => [
-                            "currentstep" => 0,
-                            "action" => null,
-                        ],
-                    ],
-                ],
-                [
-                    'assertvalidcheckout',
                     'assertcartstorevatnumberempty',
                     'assertcartstoretax',
                 ],
