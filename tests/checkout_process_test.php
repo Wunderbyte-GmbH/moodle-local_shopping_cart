@@ -117,7 +117,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
         $historyrecords = $DB->get_records('local_shopping_cart_history');
 
         foreach ($assertions as $step => $assertion) {
-            if ($step == 'assertcartstoreexacttax') {
+            if ($step === 'assertcartstoreexacttax') {
                 $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion);
             } else {
                 $this->$assertion($managercache, $historyrecords);
