@@ -1778,11 +1778,8 @@ class shopping_cart {
      * @param array $data reference to the data array.
      */
     public static function convert_amount_of_items(array &$data) {
-        if (
-            (defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) ||
-            (defined('PHPUNIT_TEST') && PHPUNIT_TEST)
-        ) {
-            global $DB;
+        global $DB;
+        if (defined('BEHAT_SITE_RUNNING')) {
             $user = $DB->get_record('user', ['id' => $data['userid']]);
             $priceidentifier = price::get_pricecategory_for_user($user);
         } else {
@@ -1791,7 +1788,12 @@ class shopping_cart {
         }
         $count = 0;
         foreach ($data['items'] as &$item) {
-            $pricechache = price::get_prices_from_cache_or_db('option', $item['itemid'], $user->id);
+            $pricechache = price::get_prices_from_cache_or_db(
+                'option',
+                $item['itemid'],
+                $user->id
+            );
+
             foreach ($pricechache as $price) {
                 $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
                 if (in_array($priceidentifier, $pricecategoryidentifier)) {
