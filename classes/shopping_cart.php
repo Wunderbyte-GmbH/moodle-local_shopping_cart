@@ -1787,8 +1787,12 @@ class shopping_cart {
                 $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
                 if (in_array($priceidentifier, $pricecategoryidentifier)) {
                     $item['singleprice'] = $price->price;
-                    $price = (int)$price->price;
-                    if ($item['price_net'] == $item['price_gross']) {
+                    $price = (float)$price->price;
+                    if (
+                        isset($item['price_net']) &&
+                        isset($item['price_gross']) &&
+                        $item['price_net'] == $item['price_gross']
+                    ) {
                         $taxcategories = taxcategories::from_raw_string(
                             $item['price_gross'],
                             get_config('local_shopping_cart', 'taxcategories')
@@ -1798,7 +1802,7 @@ class shopping_cart {
                             $price *= ( 1 - $taxes );
                         }
                     }
-                    $amount = round((int)$item['price'] / $price);
+                    $amount = round((float)$item['price'] / $price);
                     $item['itemamount'] = $amount;
                     $count += $amount;
                     continue;
