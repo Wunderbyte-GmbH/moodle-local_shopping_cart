@@ -1817,8 +1817,13 @@ class shopping_cart {
      */
     public static function convert_numbers_comma_seperated(&$data) {
         $convertlabels = [
-            'credit', 'remainingcredit', 'price',
-            'initialtotal', 'deductible', 'price_net', 'initialtotal_net'
+            'credit',
+            'remainingcredit',
+            'price',
+            'initialtotal',
+            'deductible',
+            'price_net',
+            'initialtotal_net',
         ];
         $convertitemlabels = ['price', 'price_net', 'price_gross', 'tax', 'singleprice'];
         foreach ($data as $label => &$element) {
