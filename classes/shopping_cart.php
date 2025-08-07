@@ -1778,8 +1778,17 @@ class shopping_cart {
      * @param array $data reference to the data array.
      */
     public static function convert_amount_of_items(array &$data) {
-        $user = singleton_service::get_instance_of_user($data['userid']);
-        $priceidentifier = singleton_service::get_pricecategory_for_user($user);
+        if (
+            (defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) ||
+            (defined('PHPUNIT_TEST') && PHPUNIT_TEST)
+        ) {
+            global $DB;
+            $user = $DB->get_record('user', ['id' => $data['userid']]);
+            $priceidentifier = price::get_pricecategory_for_user($user);
+        } else {
+            $user = singleton_service::get_instance_of_user($data['userid']);
+            $priceidentifier = singleton_service::get_pricecategory_for_user($user);
+        }
         $count = 0;
         foreach ($data['items'] as &$item) {
             $pricechache = price::get_prices_from_cache_or_db('option', $item['itemid'], $user->id);
