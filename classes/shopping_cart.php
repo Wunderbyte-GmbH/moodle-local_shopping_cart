@@ -1778,6 +1778,10 @@ class shopping_cart {
      * @param array $data reference to the data array.
      */
     public static function convert_amount_of_items(array &$data) {
+        if (!class_exists('mod_booking\booking')) {
+            // This is currently only supported for booking.
+            return;
+        }
         global $DB;
         if (defined('BEHAT_SITE_RUNNING')) {
             $user = $DB->get_record('user', ['id' => $data['userid']]);
@@ -1788,8 +1792,12 @@ class shopping_cart {
         }
         $count = 0;
         foreach ($data['items'] as &$item) {
+            if ($item['area'] != 'option') {
+                // This is currently only supported for booking options.
+                continue;
+            }
             $pricechache = price::get_prices_from_cache_or_db(
-                'option',
+                $item['area'],
                 $item['itemid'],
                 $user->id
             );
