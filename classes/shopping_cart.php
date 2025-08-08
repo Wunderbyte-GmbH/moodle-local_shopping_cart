@@ -1828,7 +1828,7 @@ class shopping_cart {
                 }
             }
         }
-        self::convert_numbers_comma_seperated($data);
+        self::convert_numbers_comma_separated($data);
         $data['count'] = $count;
     }
 
@@ -1838,7 +1838,7 @@ class shopping_cart {
      * @param array $data
      * @return void
      */
-    public static function convert_numbers_comma_seperated(&$data) {
+    public static function convert_numbers_comma_separated(&$data) {
         $convertlabels = [
             'credit',
             'remainingcredit',
@@ -1849,23 +1849,33 @@ class shopping_cart {
             'initialtotal_net',
         ];
         $convertitemlabels = ['price', 'price_net', 'price_gross', 'tax', 'singleprice'];
-        foreach ($data as $label => &$element) {
+        foreach ($data as $label => $element) {
+            // Top-level conversion.
             if (
-                in_array($label, $convertlabels) &&
-                str_contains($element, '.')
+                in_array($label, $convertlabels, true)
+                && is_string($element)
+                && strpos($element, '.') !== false
             ) {
-                $element = str_replace('.', ',', $element);
-            } else if ($label == 'items') {
-                foreach ($element as &$itemelement) {
-                    foreach ($itemelement as $itemlabel => &$item) {
+                $data[$label] = str_replace('.', ',', $element);
+            } else if ($label === 'items' && is_array($element)) { // Items array conversion.
+                foreach ($element as $idx => $itemelement) {
+                    if (!is_array($itemelement)) {
+                        continue;
+                    }
+                    foreach ($itemelement as $itemlabel => $itemvalue) {
                         if (
-                            in_array($itemlabel, $convertitemlabels) &&
-                            str_contains($item, '.')
+                            in_array($itemlabel, $convertitemlabels, true) &&
+                            is_string($itemvalue) &&
+                            strpos($itemvalue, '.') !== false
                         ) {
-                            $item = str_replace('.', ',', $item);
+                            $itemelement[$itemlabel] = str_replace('.', ',', $itemvalue);
                         }
                     }
+                    // Write back the modified sub-array.
+                    $element[$idx] = $itemelement;
                 }
+                // Write back the modified 'items' array.
+                $data[$label] = $element;
             }
         }
     }
