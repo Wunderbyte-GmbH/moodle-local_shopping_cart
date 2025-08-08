@@ -1791,40 +1791,42 @@ class shopping_cart {
             $priceidentifier = singleton_service::get_pricecategory_for_user($user);
         }
         $count = 0;
-        foreach ($data['items'] as &$item) {
-            if ($item['area'] != 'option') {
-                // This is currently only supported for booking options.
-                continue;
-            }
-            $pricechache = price::get_prices_from_cache_or_db(
-                $item['area'],
-                $item['itemid'],
-                $user->id
-            );
-
-            foreach ($pricechache as $price) {
-                $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
-                if (in_array($priceidentifier, $pricecategoryidentifier)) {
-                    $item['singleprice'] = $price->price;
-                    $price = (float)$price->price;
-                    if (
-                        isset($item['price_net']) &&
-                        isset($item['price_gross']) &&
-                        $item['price_net'] == $item['price_gross']
-                    ) {
-                        $taxcategories = taxcategories::from_raw_string(
-                            $item['price_gross'],
-                            get_config('local_shopping_cart', 'taxcategories')
-                        );
-                        $taxes = $taxcategories->tax_for_category($item['taxcategory']);
-                        if ($taxes > 0) {
-                            $price *= ( 1 - $taxes );
-                        }
-                    }
-                    $amount = round((float)$item['price'] / $price);
-                    $item['itemamount'] = $amount;
-                    $count += $amount;
+        if (!empty($data['items'])) {
+            foreach ($data['items'] as &$item) {
+                if ($item['area'] != 'option') {
+                    // This is currently only supported for booking options.
                     continue;
+                }
+                $pricechache = price::get_prices_from_cache_or_db(
+                    $item['area'],
+                    $item['itemid'],
+                    $user->id
+                );
+
+                foreach ($pricechache as $price) {
+                    $pricecategoryidentifier = explode(',', $price->pricecategoryidentifier);
+                    if (in_array($priceidentifier, $pricecategoryidentifier)) {
+                        $item['singleprice'] = $price->price;
+                        $price = (float)$price->price;
+                        if (
+                            isset($item['price_net']) &&
+                            isset($item['price_gross']) &&
+                            $item['price_net'] == $item['price_gross']
+                        ) {
+                            $taxcategories = taxcategories::from_raw_string(
+                                $item['price_gross'],
+                                get_config('local_shopping_cart', 'taxcategories')
+                            );
+                            $taxes = $taxcategories->tax_for_category($item['taxcategory']);
+                            if ($taxes > 0) {
+                                $price *= ( 1 - $taxes );
+                            }
+                        }
+                        $amount = round((float)$item['price'] / $price);
+                        $item['itemamount'] = $amount;
+                        $count += $amount;
+                        continue;
+                    }
                 }
             }
         }
