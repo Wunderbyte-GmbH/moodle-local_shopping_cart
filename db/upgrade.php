@@ -774,6 +774,72 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025052103, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2025081000) {
+        // The install.xml file was different from changes done in upgrade.php!
+        // Change length of vatnumber from 20 to 24.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('vatnumber', XMLDB_TYPE_CHAR, '24', null, null, null, null, 'address_shipping');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+        }
+
+        // Add taxcountrycode was not install.xml until this upgrade.
+        $field = new xmldb_field('taxcountrycode', XMLDB_TYPE_CHAR, '5', null, null, null, null, 'taxcategory');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Change allowinstallment to allow NULL.
+        $table = new xmldb_table('local_shopping_cart_iteminfo');
+        $field = new xmldb_field('allowinstallment', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'area');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $table = new xmldb_table('local_shopping_cart_address');
+
+        $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'userid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('state', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'name');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('address', XMLDB_TYPE_CHAR, '1000', null, XMLDB_NOTNULL, null, null, 'state');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('address2', XMLDB_TYPE_CHAR, '1000', null, XMLDB_NOTNULL, null, null, 'address');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('city', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'address2');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('zip', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'city');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        $field = new xmldb_field('phone', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'zip');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Mark upgrade savepoint.
+        upgrade_plugin_savepoint(true, 2025081000, 'local', 'shopping_cart');
+    }
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

@@ -84,6 +84,7 @@
                 <FIELD NAME="taxpercentage" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="4"
                        COMMENT="Tax applied to this item price in percent float (20% tax = 0.2 float value)."/>
                 <FIELD NAME="taxcategory" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Tax category defined for this item."/>
+                <FIELD NAME="taxcountrycode" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="discount" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
                        COMMENT="Given discount in absolute amount. If 10% is given on 19, the value here will be 1.9."/>
                 <FIELD NAME="credits" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"
@@ -167,12 +168,12 @@
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="state" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="state" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="address" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="address2" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="city" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="zip" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="phone" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="address2" TYPE="char" LENGTH="1000" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="city" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="zip" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="company" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>
