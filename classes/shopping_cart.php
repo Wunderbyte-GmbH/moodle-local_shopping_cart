@@ -1731,41 +1731,41 @@ class shopping_cart {
     public static function convert_prices_to_number_format(array &$data) {
         // Render all prices to 2 fixed decimals.
         if (!empty($data['price'])) {
-            $data['price'] = number_format(round((float) $data['price'], 2), 2, '.', '');
+            $data['price'] = format_float(round((float) $data['price'], 2), 2);
         }
         if (!empty($data['initialtotal'])) {
-            $data['initialtotal'] = number_format(round((float) $data['initialtotal'], 2), 2, '.', '');
+            $data['initialtotal'] = format_float(round((float) $data['initialtotal'], 2), 2);
         }
         if (!empty($data['initialtotal_net'])) {
-            $data['initialtotal_net'] = number_format(round((float) $data['initialtotal_net'], 2), 2, '.', '');
+            $data['initialtotal_net'] = format_float(round((float) $data['initialtotal_net'], 2), 2);
         }
         if (!empty($data['discount'])) {
-            $data['discount'] = number_format(round((float) $data['discount'], 2), 2, '.', '');
+            $data['discount'] = format_float(round((float) $data['discount'], 2), 2);
         }
         if (!empty($data['deductible'])) {
-            $data['deductible'] = number_format(round((float) $data['deductible'], 2), 2, '.', '');
+            $data['deductible'] = format_float(round((float) $data['deductible'], 2), 2);
         }
         if (!empty($data['credit'])) {
-            $data['credit'] = number_format(round((float) $data['credit'], 2), 2, '.', '');
+            $data['credit'] = format_float(round((float) $data['credit'], 2), 2);
         }
         if (!empty($data['remainingcredit'])) {
-            $data['remainingcredit'] = number_format(round((float) $data['remainingcredit'], 2), 2, '.', '');
+            $data['remainingcredit'] = format_float(round((float) $data['remainingcredit'], 2), 2);
         }
         if (!empty($data['price_net'])) {
-            $data['price_net'] = number_format(round((float) $data['price_net'], 2), 2, '.', '');
+            $data['price_net'] = format_float(round((float) $data['price_net'], 2), 2);
         }
         if (!empty($data['price_gross'])) {
-            $data['price_gross'] = number_format(round((float) $data['price_gross'], 2), 2, '.', '');
+            $data['price_gross'] = format_float(round((float) $data['price_gross'], 2), 2);
         }
         // Also convert prices for each item.
         if (!empty($data['items'])) {
             foreach ($data['items'] as &$item) {
-                $item['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
+                $item['price'] = format_float(round((float) $item['price'], 2), 2);
                 if (!empty($item['price_net'])) {
-                    $item['price_net'] = number_format(round((float) $item['price_net'], 2), 2, '.', '');
+                    $item['price_net'] = format_float(round((float) $item['price_net'], 2), 2);
                 }
                 if (!empty($item['price_gross'])) {
-                    $item['price_gross'] = number_format(round((float) $item['price_gross'], 2), 2, '.', '');
+                    $item['price_gross'] = format_float(round((float) $item['price_gross'], 2), 2);
                 }
             }
             $data['items'] = array_values($data['items']);
@@ -1805,7 +1805,7 @@ class shopping_cart {
                 }
             }
         }
-        self::convert_numbers_comma_seperated($data);
+        //self::convert_numbers_comma_separated($data);
         $data['count'] = $count;
     }
 
@@ -1826,15 +1826,20 @@ class shopping_cart {
                 in_array($label, $convertlabels) &&
                 str_contains($element, '.')
             ) {
-                $element = str_replace('.', ',', $element);
-            } else if ($label == 'items') {
-                foreach ($element as &$itemelement) {
-                    foreach ($itemelement as $itemlabel => &$item) {
+                //$data[$label] = str_replace('.', ',', $element);
+                $itemelement[$itemlabel] = format_float($itemvalue, 2);
+            } else if ($label === 'items' && is_array($element)) { // Items array conversion.
+                foreach ($element as $idx => $itemelement) {
+                    if (!is_array($itemelement)) {
+                        continue;
+                    }
+                    foreach ($itemelement as $itemlabel => $itemvalue) {
                         if (
                             in_array($itemlabel, $convertitemlabels) &&
                             str_contains($item, '.')
                         ) {
-                            $item = str_replace('.', ',', $item);
+                            //$itemelement[$itemlabel] = str_replace('.', ',', $itemvalue);
+                            $itemelement[$itemlabel] = format_float($itemvalue, 2); // Ensure we have two decimal places.
                         }
                     }
                 }
