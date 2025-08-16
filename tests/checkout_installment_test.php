@@ -73,6 +73,13 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         // Set local_shopping_cart to use the payment account.
         set_config('accountid', $this->account->get('id'), 'local_shopping_cart');
 
+        // Add the item with no installment neither taxcategory to the cart.
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'main',
+            4,
+            $student1->id
+        );
         // Add the only item with installment to the cart.
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
@@ -83,14 +90,10 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
 
         $cartstore = cartstore::instance($student1->id);
         $data = $cartstore->get_localized_data();
-        $cartstore->get_expanded_checkout_data($data);
-        $cartitems1 = $cartstore->get_items();
 
         foreach ($config as $key => $value) {
             set_config($key, $value, 'local_shopping_cart');
         }
-
-        $cartitems2 = $cartstore->get_items();
 
         $addresids = $this->generate_fake_addresses($student1);
 
@@ -112,36 +115,39 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
 
             $balance = shopping_cart_credits::add_credit($student1->id, $stepdata['generatedcredits'], 'EUR', '');
             shopping_cart::save_used_credit_state($student1->id, $stepdata['usecredit']);
-
-            //$prices = get_price::execute($student1->id, $stepdata['usecredit'], $stepdata['useinstallments']);
-            $cartstore->save_useinstallments_state($stepdata['useinstallments']);
+            shopping_cart::save_used_installments_state($student1->id, $stepdata['useinstallments']);
 
             // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
             $cartstore = cartstore::instance($student1->id);
-            //$data = $cartstore->get_data();
             $data = $cartstore->get_localized_data();
-            $cartstore->get_expanded_checkout_data($data);
 
-            service_provider::get_payable('', $data['identifier']);
             if ($stepdata['purgecache']) {
                 \cache_helper::purge_all();
             }
         }
         unset($stepdata);
 
-        $cartitems3 = $cartstore->get_items();
-
-        //service_provider::get_payable('', $data['identifier']);
+        // Invoke checkout::prepare_checkout() only after all customization steps are done.
+        $cartstore->get_expanded_checkout_data($data);
+        service_provider::get_payable('', $data['identifier']);
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
 
         $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
 
-        foreach ($assertions as $step => $assertion) {
-            if ($step === 'assertcartstoreexacttax') {
-                $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion);
+        foreach ($assertions as $step => $assertiontype) {
+            if ($step == 'checkoutmanager') {
+                foreach ($assertiontype as $typekey => $assertion) {
+                    if ($typekey === 'assertcartstoreexacttax') {
+                        $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion);
+                    } else {
+                        $this->$assertion($managercache, $historyrecords);
+                    }
+                }
             } else {
-                $this->$assertion($managercache, $historyrecords);
+                foreach ($assertiontype as $assertion) {
+                    $this->$assertion($historyrecords, $cartstore, $student1->id);
+                }
             }
         }
     }
@@ -153,13 +159,14 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
      */
     public static function checkoutprocessdataprovider(): array {
         return [
-            'User has cerdits, uses credits, cache cleared' => [
+            'Installment, shipping address mandatory, default tax category, user uses credits, cache cleared' => [
                 [
                     'addresses_required' => 'shipping',
-                    'taxcategories' => 'default A:20 B:20 C:10
+                    'taxcategories' => 'default A:25 B:25 C:15
                         AT A:20 B:10 C:0
                         DE A:19 B:10 C:0',
                     'enabletax' => '1',
+                    'defaulttaxcategory' => 'C', // The "default C" will be used as sefault tax category if not provided.
                     'defaultcostcenterforcredits' => 'IT140030',
                     'costcenterstrings' => 'IT140030',
                     'enableinstallments' => '1',
@@ -180,82 +187,33 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
                     ],
                 ],
                 [
-                    'assertbalanceisnotnull',
-                    'payedpriceissame',
-                    'assertcartstoretax',
-                    'assertcartstoreexacttax' => [
-                        [
-                            'itemid' => "5",
-                            'price' => "42.42",
-                            'tax' => "7.070",
-                            'taxpercentage' => "0.2000",
-                            'taxcategory' => "B",
-                            'usecredit' => 1,
+                    'checkoutmanager' => [
+                        'assertvalidcheckout',
+                        'assertcartstoretax',
+                        'assertcartstoreexacttax' => [
+                            [
+                                'itemid' => "4",
+                                'price' => "12.12",
+                                'tax' => "1.580",
+                                'taxpercentage' => "0.1500", // The "default C" is used as no category provided.
+                                'taxcategory' => "",
+                                'usecredit' => 1,
+                            ],
+                            [
+                                'itemid' => "5",
+                                'price' => "20.00",
+                                'tax' => "4.000",
+                                'taxpercentage' => "0.2500",
+                                'taxcategory' => "B",
+                                'usecredit' => 1,
+                                'useinstallment' => 1,
+                                'useinstallments' => "2",
+                            ],
                         ],
                     ],
-                ],
-            ],
-            'User has cerdits, and uses credits, cache cleared' => [
-                [
-                    'taxcategories' => 'default A:20 B:20 C:10
-                        AT A:20 B:10 C:0
-                        DE A:19 B:10 C:0',
-                    'enabletax' => '1',
-                    'defaultcostcenterforcredits' => 'IT140030',
-                    'costcenterstrings' => 'IT140030',
-                ],
-                [
-                    [
-                        'generatedcredits' => '5',
-                        'usecredit' => true,
-                        'purgecache' => true,
+                    'shoppingcart' => [
+                        'assertbalanceisnull',
                     ],
-                ],
-                [
-                    'assertbalanceisnotnull',
-                    'payedpriceissame',
-                ],
-            ],
-            'User has cerdits, but does not uses credits, cache not cleared' => [
-                [
-                    'taxcategories' => 'default A:20 B:20 C:10
-                        AT A:20 B:10 C:0
-                        DE A:19 B:10 C:0',
-                    'enabletax' => '1',
-                    'defaultcostcenterforcredits' => 'IT140030',
-                    'costcenterstrings' => 'IT140030',
-                ],
-                [
-                    [
-                        'generatedcredits' => '5',
-                        'usecredit' => false,
-                        'purgecache' => false,
-                    ],
-                ],
-                [
-                    'assertbalanceisnotnull',
-                    'payedpriceissame',
-                ],
-            ],
-            'User has cerdits, and uses credits, cache not cleared' => [
-                [
-                    'taxcategories' => 'default A:20 B:20 C:10
-                        AT A:20 B:10 C:0
-                        DE A:19 B:10 C:0',
-                    'enabletax' => '1',
-                    'defaultcostcenterforcredits' => 'IT140030',
-                    'costcenterstrings' => 'IT140030',
-                ],
-                [
-                    [
-                        'generatedcredits' => '5',
-                        'usecredit' => true,
-                        'purgecache' => false,
-                    ],
-                ],
-                [
-                    'assertbalanceisnotnull',
-                    'payedpriceissame',
                 ],
             ],
         ];
