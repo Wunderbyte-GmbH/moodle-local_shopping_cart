@@ -30,7 +30,7 @@ use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
 use paygw_payone\external\get_config_for_js;
-use local_shopping_cart\external\get_price;
+use tool_mocktesttime\time_mock;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -61,6 +61,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
     public function test_checkout_process(array $config, array $changedinputsteps, array $assertions): void {
         global $DB;
 
+        time_mock::set_mock_time(strtotime('-10 days', time()));
         // Create users.
         $student1 = $this->getDataGenerator()->create_user();
         $this->setUser($student1);
@@ -150,6 +151,23 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
                 }
             }
         }
+
+        // Move +5 day forward - we should pay one more time.
+        time_mock::set_mock_time(strtotime('+5 days', time()));
+        $td = userdate(time());
+        $cartstore = cartstore::instance($student1->id);
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
+        $open = $cartstore->get_open_installments();
+        $this->assertCount(3, $open);
+        $due = $cartstore->get_due_installments();
+        $this->assertCount(1, $due);
+        //service_provider::get_payable('', $data['identifier']);
+        //service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
+        shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
+
+        //$res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
+        $historyrecords = $DB->get_records('local_shopping_cart_history');
     }
 
     /**
