@@ -621,6 +621,19 @@ class shopping_cart {
     }
 
     /**
+     * Sets the useinstallments value in Cache for the user.
+     *
+     * @param int $userid
+     * @param int $useinstallments
+     * @return void
+     */
+    public static function save_used_installments_state(int $userid, int $useinstallments) {
+
+        $cartstore = cartstore::instance($userid);
+        return $cartstore->save_useinstallments_state($useinstallments);
+    }
+
+    /**
      * To add or reschedule addhoc tasks to delete all the items once the shopping cart is expired.
      * As the expiration date is always calculated by the cart, not the item, this always updates the whole cart.
      *
