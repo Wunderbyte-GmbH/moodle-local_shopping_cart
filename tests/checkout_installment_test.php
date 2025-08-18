@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
@@ -133,7 +134,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         service_provider::get_payable('', $data['identifier']);
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
 
-        $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
+        // $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
 
         foreach ($assertions as $step => $assertiontype) {
@@ -155,16 +156,30 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         // Move +5 day forward - we should pay one more time.
         time_mock::set_mock_time(strtotime('+5 days', time()));
         $td = userdate(time());
-        $cartstore = cartstore::instance($student1->id);
+        $cartstore->reset_instance($student1->id);
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
+        $cartstore = cartstore::instance($student1->id);
         $open = $cartstore->get_open_installments();
         $this->assertCount(3, $open);
         $due = $cartstore->get_due_installments();
         $this->assertCount(1, $due);
+
+        foreach ($due as $dueitem) {
+            shopping_cart::add_item_to_cart(
+                $dueitem['componentname'],
+                $dueitem['area'],
+                $dueitem['itemid'],
+                $student1->id
+            );
+        }
+
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
+
         //service_provider::get_payable('', $data['identifier']);
         //service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
-        shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
+        $pay = shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
 
         //$res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
