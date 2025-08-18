@@ -724,7 +724,7 @@ class shopping_cart_history {
             ) {
                 // GH-94: Fix paymentstatus for installments in shopping cart history.
                 $updaterecord = new stdClass();
-                $updaterecord->id = $record->id;
+                $updaterecord->id = $record->id ?? $record->itemid;
                 $updaterecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
                 $updaterecord->timemodified = $record->timemodified;
                 $DB->update_record('local_shopping_cart_history', $updaterecord);
