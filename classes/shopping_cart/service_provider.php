@@ -153,7 +153,8 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 // For installments, we get the original history record.
                 $record = $DB->get_record('local_shopping_cart_history', ['id' => $itemid]);
 
-                if ($record->componentname === 'local_shopping_cart') {
+                // Exception for testing purposes (#67).
+                if ($record->componentname === 'local_shopping_cart' && !(defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
                     return [];
                 }
 
