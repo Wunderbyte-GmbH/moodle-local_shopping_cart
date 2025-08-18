@@ -134,14 +134,13 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         service_provider::get_payable('', $data['identifier']);
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
 
-        // $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
 
         foreach ($assertions as $step => $assertiontype) {
             if ($step == 'checkoutmanager') {
                 foreach ($assertiontype as $typekey => $assertion) {
                     if ($typekey === 'assertcartstoreexacttax') {
-                        $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion);
+                        $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion[0]);
                     } else {
                         $this->$assertion($managercache, $historyrecords);
                     }
@@ -153,18 +152,21 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
             }
         }
 
-        // Move +5 day forward - we should pay one more time.
-        time_mock::set_mock_time(strtotime('+5 days', time()));
-        $td = userdate(time());
+        // Reset cart and move +5 day forward - we should pay 1st installment.
         $cartstore->reset_instance($student1->id);
-        $data = $cartstore->get_localized_data();
-        $cartstore->get_expanded_checkout_data($data);
+        time_mock::set_mock_time(strtotime('+5 days', time()));
+
+        // Re-init shoppng cart.
         $cartstore = cartstore::instance($student1->id);
+        $data = $cartstore->get_localized_data();
+
+        // Get infor about installments.
         $open = $cartstore->get_open_installments();
         $this->assertCount(3, $open);
         $due = $cartstore->get_due_installments();
         $this->assertCount(1, $due);
 
+        // Required: add installment to the cart.
         foreach ($due as $dueitem) {
             shopping_cart::add_item_to_cart(
                 $dueitem['componentname'],
@@ -174,15 +176,75 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
             );
         }
 
+        // Prepere checkout, confirm payment and get history.
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
-
-        //service_provider::get_payable('', $data['identifier']);
-        //service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
         $pay = shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
-
-        //$res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
         $historyrecords = $DB->get_records('local_shopping_cart_history');
+
+        // Validate 1sr installment payment.
+        foreach ($assertions as $step => $assertiontype) {
+            if ($step == 'checkoutmanager') {
+                foreach ($assertiontype as $typekey => $assertion) {
+                    if ($typekey === 'assertcartstoreexacttax') {
+                        $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion[1]);
+                    } else {
+                        $this->$assertion($managercache, $historyrecords);
+                    }
+                }
+            } else {
+                foreach ($assertiontype as $assertion) {
+                    $this->$assertion($historyrecords, $cartstore, $student1->id);
+                }
+            }
+        }
+
+        // Reset cart and move +5 day forward - we should pay 2nd installment.
+        $cartstore->reset_instance($student1->id);
+        time_mock::set_mock_time(strtotime('+5 days', time()));
+
+        // Re-init shoppng cart.
+        $cartstore = cartstore::instance($student1->id);
+        $data = $cartstore->get_localized_data();
+
+        // Get infor about installments.
+        $open = $cartstore->get_open_installments();
+        $this->assertCount(2, $open);
+        $due = $cartstore->get_due_installments();
+        $this->assertCount(1, $due);
+
+        // Required: add 2nd installment to the cart.
+        foreach ($due as $dueitem) {
+            shopping_cart::add_item_to_cart(
+                $dueitem['componentname'],
+                $dueitem['area'],
+                $dueitem['itemid'],
+                $student1->id
+            );
+        }
+
+        // Prepere checkout, confirm payment and get history.
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
+        $pay = shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
+        $historyrecords = $DB->get_records('local_shopping_cart_history');
+
+        // Validate 2nd installment payment.
+        foreach ($assertions as $step => $assertiontype) {
+            if ($step == 'checkoutmanager') {
+                foreach ($assertiontype as $typekey => $assertion) {
+                    if ($typekey === 'assertcartstoreexacttax') {
+                        $this->assertcartstoreexacttax($managercache, $historyrecords, $assertion[2]);
+                    } else {
+                        $this->$assertion($managercache, $historyrecords);
+                    }
+                }
+            } else {
+                foreach ($assertiontype as $assertion) {
+                    $this->$assertion($historyrecords, $cartstore, $student1->id);
+                }
+            }
+        }
     }
 
     /**
@@ -225,22 +287,66 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
                         'assertcartstoretax',
                         'assertcartstoreexacttax' => [
                             [
-                                'itemid' => "4",
-                                'price' => "12.12",
-                                'tax' => "1.580",
-                                'taxpercentage' => "0.1500", // The "default C" is used as no category provided.
-                                'taxcategory' => "",
-                                'usecredit' => 1,
+                                [
+                                    'itemid' => "4",
+                                    'price' => "12.12",
+                                    'tax' => "1.580",
+                                    'taxpercentage' => "0.1500", // The "default C" is used as no category provided.
+                                    'taxcategory' => "",
+                                    'usecredit' => 1,
+                                ],
+                                // After downpayment.
+                                [
+                                    'itemid' => "5",
+                                    'price' => "20.00",
+                                    'tax' => "4.000",
+                                    'taxpercentage' => "0.2500",
+                                    'taxcategory' => "B",
+                                    'usecredit' => 1,
+                                    'useinstallment' => 1,
+                                    'useinstallments' => "2",
+                                ],
                             ],
                             [
-                                'itemid' => "5",
-                                'price' => "20.00",
-                                'tax' => "4.000",
-                                'taxpercentage' => "0.2500",
-                                'taxcategory' => "B",
-                                'usecredit' => 1,
-                                'useinstallment' => 1,
-                                'useinstallments' => "2",
+                                [
+                                    'itemid' => "4",
+                                    'price' => "12.12",
+                                    'tax' => "1.580",
+                                    'taxpercentage' => "0.1500", // The "default C" is used as no category provided.
+                                    'taxcategory' => "",
+                                    'usecredit' => 1,
+                                ],
+                                // After 1st installment.
+                                [
+                                    'itemid' => "5",
+                                    'price' => "31.21",
+                                    'tax' => "6.240",
+                                    'taxpercentage' => "0.2500",
+                                    'taxcategory' => "B",
+                                    'usecredit' => 1,
+                                    'useinstallment' => 1,
+                                    'useinstallments' => "2",
+                                ],
+                            ],
+                            [
+                                [
+                                    'itemid' => "4",
+                                    'price' => "12.12",
+                                    'tax' => "1.580",
+                                    'taxpercentage' => "0.1500", // The "default C" is used as no category provided.
+                                    'taxcategory' => "",
+                                    'usecredit' => 1,
+                                ],
+                                // After 2nd installment.
+                                [
+                                    'itemid' => "5",
+                                    'price' => "42.42",
+                                    'tax' => "8.480",
+                                    'taxpercentage' => "0.2500",
+                                    'taxcategory' => "B",
+                                    'usecredit' => 1,
+                                    'useinstallments' => "0",
+                                ],
                             ],
                         ],
                     ],
