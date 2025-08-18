@@ -134,7 +134,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         service_provider::get_payable('', $data['identifier']);
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
 
-        $historyrecords = $DB->get_records('local_shopping_cart_history');
+        $historyrecords = $DB->get_records('local_shopping_cart_history', [], 'id ASC');
 
         foreach ($assertions as $step => $assertiontype) {
             if ($step == 'checkoutmanager') {
@@ -153,7 +153,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         }
 
         // Reset cart and move +5 day forward - we should pay 1st installment.
-        $cartstore->reset_instance($student1->id);
+        cartstore::reset();
         time_mock::set_mock_time(strtotime('+5 days', time()));
 
         // Re-init shoppng cart.
@@ -180,7 +180,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
         $pay = shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
-        $historyrecords = $DB->get_records('local_shopping_cart_history');
+        $historyrecords = $DB->get_records('local_shopping_cart_history', [], 'id ASC');
 
         // Validate 1sr installment payment.
         foreach ($assertions as $step => $assertiontype) {
@@ -200,7 +200,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         }
 
         // Reset cart and move +5 day forward - we should pay 2nd installment.
-        $cartstore->reset_instance($student1->id);
+        cartstore::reset();
         time_mock::set_mock_time(strtotime('+5 days', time()));
 
         // Re-init shoppng cart.
@@ -227,7 +227,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         $data = $cartstore->get_localized_data();
         $cartstore->get_expanded_checkout_data($data);
         $pay = shopping_cart::confirm_payment($student1->id, LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE, $data);
-        $historyrecords = $DB->get_records('local_shopping_cart_history');
+        $historyrecords = $DB->get_records('local_shopping_cart_history', [], 'id ASC');
 
         // Validate 2nd installment payment.
         foreach ($assertions as $step => $assertiontype) {

@@ -102,7 +102,7 @@ final class checkout_process_with_credits_test extends checkout_process_test_set
         service_provider::deliver_order('', $data['identifier'], 1, $student1->id);
         $res = get_config_for_js::execute('local_shopping_cart', 'main', $data['identifier']);
 
-        $historyrecords = $DB->get_records('local_shopping_cart_history');
+        $historyrecords = $DB->get_records('local_shopping_cart_history', [], 'id ASC');
         $cartstore = cartstore::instance($student1->id);
 
         foreach ($assertions as $step => $assertion) {

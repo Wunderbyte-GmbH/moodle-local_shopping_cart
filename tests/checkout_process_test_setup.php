@@ -146,9 +146,9 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
     public function tearDown(): void {
         parent::tearDown();
         // Mandatory clean-up.
+        time_mock::reset_mock_time();
         cartstore::reset();
         \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
-        time_mock::reset_mock_time();
     }
     /**
      * Generate fake addresses for a given user.
@@ -299,7 +299,8 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
     public function assertcartstoreexacttax($managercache, $historyrecords, $expectedtax): void {
         $row = 0;
         foreach ($historyrecords as $historyrecord) {
-            $this->assertEmpty(array_diff($expectedtax[$row], (array) $historyrecord));
+            $arrdiff = array_diff($expectedtax[$row], (array) $historyrecord); // For debugging.
+            $this->assertEmpty($arrdiff);
             $row++;
         }
     }
