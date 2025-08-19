@@ -840,6 +840,44 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Mark upgrade savepoint.
         upgrade_plugin_savepoint(true, 2025081000, 'local', 'shopping_cart');
     }
+
+    if ($oldversion < 2025081901) {
+        // Define field nritems to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('nritems', XMLDB_TYPE_INTEGER, '10', null, null, null, '1', 'vatnumber');
+
+        // Conditionally launch add field nritems.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('multipliable', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'nritems');
+
+        // Conditionally launch add field multipliable.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field nritems to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('nritems', XMLDB_TYPE_INTEGER, '10', null, null, null, '1', 'vatnumber');
+
+        // Conditionally launch add field nritems.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('multipliable', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'nritems');
+
+        // Conditionally launch add field multipliable.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025081901, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
