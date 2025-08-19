@@ -1,3 +1,6 @@
+## Version 1.0.16 (2025081900)
+* Improvement: Add new fields to make items multipliable
+
 ## Version 1.0.14 (2025072800)
 * Bugfix: Fix collapsibles of new structured shopping cart history list feature.
 * Bugfix: Fixed annual (yearly) sections in new shopping cart history list collapsible sections feature.

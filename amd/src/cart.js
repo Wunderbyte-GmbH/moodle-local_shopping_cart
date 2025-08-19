@@ -65,6 +65,9 @@ const SELECTORS = {
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
     ACCEPTTERMS: '#accepttermsandconditions',
     CHECKVATNRFORM: 'div.form_vatnrchecker',
+    INCREASEBUTTON: 'increase',
+    DECREASEBUTTON: 'decrease',
+    SHOPPINGCARTITEM: '[data-itemid]',
 };
 /**
  *
@@ -87,19 +90,29 @@ const SELECTORS = {
 
             // Decide the target of the click.
             const element = event.target;
+            const parent = element.closest(SELECTORS.SHOPPINGCARTITEM);
+
+            const userid = parent.dataset.userid ? parent.dataset.userid : 0;
+            const component = parent.dataset.component ?? '';
+            const area = parent.dataset.area ?? '';
+            const itemid = parent.dataset.itemid ?? 0;
 
             if (element.classList.contains(SELECTORS.TRASHCLASS)) {
-
-                const userid = element.dataset.userid ? element.dataset.userid : 0;
-                const component = element.dataset.component;
-                const area = element.dataset.area;
-                const itemid = element.dataset.itemid;
-
                 deleteItem(itemid, component, area, userid);
             } else if (element.classList.contains(SELECTORS.DISCOUNTCLASS)) {
                 discountModal(event);
             } else if (element.classList.contains(SELECTORS.MODIFYTIMECLASS)) {
                 modifyTimeModal(event);
+            } else if (element.dataset.action == SELECTORS.INCREASEBUTTON) {
+                // eslint-disable-next-line no-console
+                console.log('increase button clicked');
+                event.preventDefault();
+                event.stopPropagation();
+                increaseItem(itemid, component, area, userid);
+            } else if (element.dataset.action == SELECTORS.DECREASEBUTTON) {
+                event.preventDefault();
+                event.stopPropagation();
+                decreaseItem(itemid, component, area, userid);
             }
         });
     });
@@ -310,7 +323,6 @@ export const reinit = (userid = 0) => {
 
                 updateTotalPrice(userid);
 
-                updateItemPrice(data);
                 return;
             }).catch(e => {
                 // eslint-disable-next-line no-console
@@ -325,29 +337,6 @@ export const reinit = (userid = 0) => {
     }]);
 };
 
-/**
- * Update item price.
- *
- * @param {mixed} data
- *
- */
-function updateItemPrice(data) {
-    data.items.forEach(item => {
-        document.querySelectorAll(
-            '[data-itemid="'
-            + item.itemid
-            + '"][data-component="'
-            + item.componentname
-            + '"][data-area="'
-            + item.area
-            + '"][data-objecttable="local_shopping_cart"]'
-        ).forEach(element => {
-            const pricecontainer = element.closest(".pricecontainer");
-            const pricecurrency = pricecontainer.querySelector("span.pricecurrency");
-            pricecurrency.innerHTML = item.price + " " + item.currency;
-        });
-    });
-}
 
 /**
  * This function is only called when the timer invalidates the cart.
@@ -1102,4 +1091,89 @@ function addAcceptTermsListener(accepttermsbutton, paymentbutton) {
             paymentbutton.disabled = true;
         }
     });
+}
+
+/**
+ * Triggers the ajax call to increase the number of items in the cart.
+ *
+ * @param {int} itemid
+ * @param {string} component
+ * @param {string} area
+ * @param {int} userid
+ *
+ * @return [type]
+ *
+ */
+function increaseItem(itemid, component, area, userid) {
+
+    // eslint-disable-next-line no-console
+    console.log(itemid, component, area, userid);
+
+    Ajax.call([{
+        methodname: "local_shopping_cart_increase_number_of_item",
+        args: {
+            'itemid': itemid,
+            'component': component,
+            'area': area,
+            'userid': userid
+        },
+        done: function(data) {
+            // eslint-disable-next-line no-console
+            console.log('done');
+            getString('item_deleted', 'local_shopping_cart', data.itemname).then(message => {
+                showNotification(message, 'success');
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+
+            reinit(userid);
+        },
+        fail: function() {
+            // eslint-disable-next-line no-console
+            console.log('fail');
+            reinit(userid);
+        },
+    }]);
+}
+
+/**
+ * Triggers the ajax call to decrease the number of items in the cart.
+ *
+ * @param {int} itemid
+ * @param {string} component
+ * @param {string} area
+ * @param {int} userid
+ *
+ * @return [type]
+ *
+ */
+function decreaseItem(itemid, component, area, userid) {
+
+    Ajax.call([{
+        methodname: "local_shopping_cart_decrease_number_of_item",
+        args: {
+            'itemid': itemid,
+            'component': component,
+            'area': area,
+            'userid': userid
+        },
+        done: function(data) {
+
+            getString('item_deleted', 'local_shopping_cart', data.itemname).then(message => {
+                showNotification(message, 'success');
+                return;
+            }).catch(e => {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            });
+
+            reinit(userid);
+        },
+        fail: function() {
+
+            reinit(userid);
+        },
+    }]);
 }

@@ -35,7 +35,6 @@ use local_shopping_cart\local\entities\cartitem;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface service_provider {
-
     /**
      * Callback function that returns the price and description of the given item in the specified area
      *
@@ -114,6 +113,25 @@ interface service_provider {
      * @param int $userid
      * @return array
      */
-    public static function allow_add_item_to_cart(string $area, int $itemid,
-        int $userid = 0): array;
+    public static function allow_add_item_to_cart(
+        string $area,
+        int $itemid,
+        int $userid = 0
+    ): array;
+
+    /**
+     * Callback to adjust the number of items currently bought.
+     *
+     * @param string $area
+     * @param int $itemid
+     * @param int $nritems
+     * @param int $userid
+     * @return bool
+     */
+    public static function adjust_number_of_items(
+        string $area,
+        int $itemid,
+        int $nritems,
+        int $userid = 0
+    ): bool;
 }

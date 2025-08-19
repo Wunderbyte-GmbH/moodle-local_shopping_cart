@@ -644,6 +644,7 @@ $string['timebetweenpayments_desc'] = 'Die Zeit zwischen Zahlungen, üblicherwei
 $string['timecreated'] = 'Erstellt';
 $string['timeleft'] = 'Warenkorb Zeit verlbeidend';
 $string['timemodified'] = 'Abgeschlossen';
+$string['timesitem'] = ' x {$a}';
 $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';
