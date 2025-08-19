@@ -180,7 +180,6 @@ $data['area'] = 'main';
 if (empty($jsononly)) {
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
-    shopping_cart::convert_amount_of_items($data);
 
     // Organize return array into collapsible sections (if setting is active).
     if (get_config('local_shopping_cart', 'schistorysections')) {
