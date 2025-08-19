@@ -19,7 +19,7 @@ namespace local_shopping_cart\shopping_cart;
 use context_system;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
-use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\mock\mockitems;
 use moodle_exception;
 
 /**
@@ -261,52 +261,13 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
 
         $imageurl = new \moodle_url('/local/shopping_cart/pix/edu.png');
 
+        $nritems = 1;
+        $multipliable = 0; // Not multipliable.
+        $price = 10.00;
+        $tax = 'A';
+
         // For tests, we want clear separation of items and no random values.
-        switch ($itemid) {
-            case 1:
-                $price = 10.00;
-                $tax = 'A';
-                $description = 'dummy item, tax category: ' . $tax;
-                break;
-            case 2:
-                $price = 20.30;
-                $tax = 'B';
-                $description = 'dummy item, tax category: ' . $tax;
-                break;
-            case 3:
-                $price = 13.8;
-                $tax = 'C';
-                $description = 'dummy item, tax category: ' . $tax;
-                break;
-            case 5:
-                $price = 42.42;
-                $tax = 'B';
-                $installment = 1;
-                $description = '(installment enabled), tax category: ' . $tax;
-                break;
-            case 6:
-                $price = 10.00;
-                $tax = 'A';
-                $costcenter = 'CostCenter1';
-                $description = '(' . $costcenter . '), tax category: ' . $tax;
-                break;
-            case 7:
-                $price = 20.30;
-                $tax = 'B';
-                $costcenter = 'CostCenter2';
-                $description = '(' . $costcenter . '), tax category: ' . $tax;
-                break;
-            case 8:
-                $price = 13.8;
-                $tax = 'C';
-                $costcenter = 'CostCenter2';
-                $description = '(' . $costcenter . '), tax category: ' . $tax;
-                break;
-            default:
-                $price = 12.12;
-                $tax = '';
-                break;
-        }
+        mockitems::transform_item($itemid, $price, $tax, $description, $costcenter, $nritems, $multipliable);
 
         $cartitem = new cartitem(
             $itemid,
@@ -323,7 +284,10 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             $tax,
             $nodelete,
             $costcenter,
-            $installment
+            $installment,
+            null,
+            $nritems,
+            $multipliable
         );
 
         // Spoecial case to crate installment.
@@ -457,5 +421,18 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         /** @var cartitem $cartitem */
         $cartitem = $data['cartitem'];
         return $cartitem->as_array() ?? [];
+    }
+
+    /**
+     * Callback to adjust the number of items currently bought.
+     *
+     * @param string $area
+     * @param int $itemid
+     * @param int $nritems
+     * @param int $userid
+     * @return bool
+     */
+    public static function adjust_number_of_items(string $area, int $itemid, int $nritems, int $userid = 0): bool {
+        return true;
     }
 }

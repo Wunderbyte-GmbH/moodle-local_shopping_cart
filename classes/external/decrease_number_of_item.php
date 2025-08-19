@@ -31,12 +31,13 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
-use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 
 /**
  * External Service for shopping cart.
@@ -46,8 +47,7 @@ require_once($CFG->libdir . '/externallib.php');
  * @author    Georg Maißer
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class add_item_to_cart extends external_api {
-
+class decrease_number_of_item extends external_api {
     /**
      * Describes the parameters for add_item_to_cart.
      *
@@ -59,12 +59,11 @@ class add_item_to_cart extends external_api {
             'area'  => new external_value(PARAM_TEXT, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            ]
-        );
+        ]);
     }
 
     /**
-     * Webservice for shopping_cart class to add a new item to the cart.
+     * Increases the number of items.
      *
      * @param string $component
      * @param string $area
@@ -74,29 +73,21 @@ class add_item_to_cart extends external_api {
      * @return array
      */
     public static function execute(string $component, string $area, int $itemid, int $userid): array {
-        $params = self::validate_parameters(self::execute_parameters(), [
-            'component' => $component,
-            'area' => $area,
-            'itemid' => $itemid,
-            'userid' => $userid,
-        ]);
-
-        global $USER;
 
         require_login();
-
         $context = context_system::instance();
 
         self::validate_context($context);
 
-        if (!has_capability('local/shopping_cart:canbuy', $context)) {
-            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
-        }
+        $providerclass = shopping_cart::get_service_provider_classname($component);
+        $nritems = 3;
+        $allowed = component_class_callback($providerclass, 'adjust_number_of_items', [$area, $itemid, $nritems, $userid]);
 
-        // The transformation of the userid will be done in the add_item_to_cart function.
-        $item = shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
-        $item['itemname'] = format_string($item['itemname'] ?? "");
-        return $item;
+        if ($allowed) {
+            $cartstore = cartstore::instance($userid);
+            return $cartstore->decrease_number_of_item($component, $area, $itemid);
+        }
+        return ['success' => 0];
     }
 
     /**
@@ -105,17 +96,9 @@ class add_item_to_cart extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure([
-            'itemid' => new external_value(PARAM_INT, 'Item id', VALUE_DEFAULT, 0),
-            'itemname' => new external_value(PARAM_TEXT, 'Item name', VALUE_DEFAULT, ''),
-            'price' => new external_value(PARAM_FLOAT, 'Item price', VALUE_DEFAULT, ''),
-            'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
-            'componentname' => new external_value(PARAM_COMPONENT, 'Component name', VALUE_DEFAULT, ''),
-            'area' => new external_value(PARAM_TEXT, 'Area', VALUE_DEFAULT, ''),
-            'expirationtime' => new external_value(PARAM_INT, 'Expiration timestamp'),
-            'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
-            'success' => new external_value(PARAM_INT, 'Successfully added'),
-            'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),
+        return new external_single_structure(
+            [
+                'success' => new external_value(PARAM_INT, 'Successfully increased the number'),
             ]
         );
     }

@@ -643,6 +643,7 @@ $string['timebetweenpayments'] = 'Zeit zwischen Zahlungen';
 $string['timebetweenpayments_desc'] = 'Die Zeit zwischen Zahlungen, üblicherweise 30 Tage.';
 $string['timecreated'] = 'Erstellt';
 $string['timemodified'] = 'Abgeschlossen';
+$string['timesitem'] = ' x {$a}';
 $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';
 $string['titledailysums:current'] = 'Aktuelle:r Kassier:in';

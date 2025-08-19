@@ -264,6 +264,83 @@ class cartstore {
     }
 
     /**
+     * This changes the number of items we have of a specific item.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param int $numberofitems
+     *
+     * @return array
+     *
+     */
+    public function multiply_item(
+        string $component,
+        string $area,
+        int $itemid,
+        int $numberofitems
+    ) {
+        $item = $this->get_item($component, $area, $itemid);
+
+        $nritems = $item['nritems'];
+        $price = $item['price'];
+        $singleitemprice = $price / $nritems;
+
+        $item['nritems'] = $numberofitems;
+        $item['price'] = $singleitemprice * $numberofitems;
+
+        $this->save_item($item);
+
+        return ['success' => 1];
+    }
+
+    /**
+     * This increases the number of items we have of a specific item.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     *
+     * @return array
+     *
+     */
+    public function decrease_number_of_item(
+        string $component,
+        string $area,
+        int $itemid,
+    ) {
+        $item = $this->get_item($component, $area, $itemid);
+        $nritems = $item['nritems'] - 1;
+
+        if (empty($nritems)) {
+            $this->delete_item($component, $area, $itemid);
+        }
+
+        return $this->multiply_item($component, $area, $itemid, $nritems);
+    }
+
+    /**
+     * This increases the number of items we have of a specific item.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     *
+     * @return array
+     *
+     */
+    public function increase_number_of_item(
+        string $component,
+        string $area,
+        int $itemid,
+    ) {
+        $item = $this->get_item($component, $area, $itemid);
+        $nritems = $item['nritems'] + 1;
+
+        return $this->multiply_item($component, $area, $itemid, $nritems);
+    }
+
+    /**
      * Returns all items.
      * @return array
      * @throws coding_exception

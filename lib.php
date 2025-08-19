@@ -69,6 +69,7 @@ define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 50); // Apply Taxes on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 100); // Apply Credits on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS', 150); // Applies Terms and conditions, normally for checkout.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CHECKOUT', 200); // Checkout is a price modifier, but only applied manually.
+define('LOCAL_SHOPPING_CART_PRICEMOD_NUMBEROFITEMS', 250); // Adds the number of items values for rendering.
 
 /**
  * Adds module specific settings to the settings block
@@ -145,7 +146,6 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
 
     // Convert numbers to strings with 2 fixed decimals right before rendering.
     shopping_cart::convert_prices_to_number_format($data);
-    shopping_cart::convert_amount_of_items($data);
 
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;

@@ -171,4 +171,18 @@ $functions = [
             'capabilities'  => '',
             'ajax'          => 1,
         ],
+        'local_shopping_cart_increase_number_of_item' => [
+            'classname'     => 'local_shopping_cart\external\increase_number_of_item',
+            'description'   => 'Increase number of item',
+            'type'          => 'write',
+            'capabilities'  => '',
+            'ajax'          => 1,
+        ],
+        'local_shopping_cart_decrease_number_of_item' => [
+            'classname'     => 'local_shopping_cart\external\decrease_number_of_item',
+            'description'   => 'Decrease number of item',
+            'type'          => 'write',
+            'capabilities'  => '',
+            'ajax'          => 1,
+        ],
 ];

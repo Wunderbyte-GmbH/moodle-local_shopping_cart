@@ -71,6 +71,14 @@
             <span class="itemname">
                 {{itemname}}
             </span>
+            <span class="number_of_items">
+                {{nritemsstring}}
+            </span>
+            {{#multipliable}}
+                <span class="multipliable_buttons">
+                    <i class="fa fa-minus-circle" aria-hidden="true" data-action="decrease"></i><i class="fa fa-plus-circle" aria-hidden="true" data-action="increase"></i>
+                </span>
+            {{/multipliable}}
             <span>
                 {{#installment}}
                     ({{#str}} allowinstallment, local_shopping_cart {{/str}})

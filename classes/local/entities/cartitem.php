@@ -145,6 +145,20 @@ class cartitem {
     private $linkeditem;
 
     /**
+     * Number of items is used to buy more than one item.
+     *
+     * @var ?int
+     */
+    private $nritems;
+
+    /**
+     * Indicates if the item can be multiplied (e.g. for subscriptions).
+     *
+     * @var ?int // 0 us no, 1 is yes.
+     */
+    private $multipliable;
+
+    /**
      * Constructor for creating a cartitem.
      *
      * @param int $itemid id of cartitem
@@ -163,6 +177,8 @@ class cartitem {
      * @param string|null $costcenter The cost center of this item.
      * @param string|null $installment The identifier (unixtimestamp) of the installment.
      * @param string|null $linkeditem The identifier of linked items.
+     * @param int|null $nritems The number of items bought
+     * @param int|null $multipliable Indicates if the item can be multiplied (e.g. for subscriptions).
      */
     public function __construct(
         int $itemid,
@@ -180,7 +196,9 @@ class cartitem {
         ?int $nodelete = 0,
         ?string $costcenter = null,
         ?string $installment = null,
-        ?string $linkeditem = null
+        ?string $linkeditem = null,
+        ?int $nritems = 1,
+        ?int $multipliable = 0,
     ) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
@@ -198,6 +216,8 @@ class cartitem {
         $this->costcenter = $costcenter;
         $this->installment = $installment;
         $this->linkeditem = $linkeditem;
+        $this->nritems = $nritems;
+        $this->multipliable = $multipliable;
     }
 
     /**
@@ -223,6 +243,8 @@ class cartitem {
         $item['costcenter'] = $this->costcenter;
         $item['installment'] = $this->installment;
         $item['linkeditem'] = $this->linkeditem;
+        $item['nritems'] = $this->nritems;
+        $item['multipliable'] = $this->multipliable;
         return $item;
     }
 

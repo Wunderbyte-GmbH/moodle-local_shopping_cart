@@ -711,6 +711,7 @@ $string['timebetweenpayments'] = 'Time Between Payments';
 $string['timebetweenpayments_desc'] = 'The time between payments, usually 30 days.';
 $string['timecreated'] = 'Created';
 $string['timemodified'] = 'Completed';
+$string['timesitem'] = ' x {$a}';
 $string['titledailysums'] = 'Daily revenue';
 $string['titledailysums:all'] = 'All revenues';
 $string['titledailysums:current'] = 'Current cashier';
