@@ -451,7 +451,7 @@ class create_invoice {
             }
             if (empty($installmentdata)) {
                 $price = empty(get_config('local_shopping_cart', 'itempriceisnet')) ? $item->price : $item->price - $item->tax;
-
+                $nritems = $item->nritems ?? 1;
                 $tmp = str_replace(
                     "[[price]]",
                     number_format((float) $price, 2, $commaseparator, ''),
@@ -465,6 +465,11 @@ class create_invoice {
                 $tmp = str_replace(
                     "[[outstandingprice]]",
                     number_format(0.0, 2, $commaseparator, ''),
+                    $tmp
+                );
+                $tmp = str_replace(
+                    "[[nritems]]",
+                    number_format($nritems, 0, $commaseparator, ''),
                     $tmp
                 );
             } else {
