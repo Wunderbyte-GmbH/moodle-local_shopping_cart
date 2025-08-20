@@ -295,6 +295,30 @@ class cartstore {
     }
 
     /**
+     * Returns the current number of items.
+     * If item is not found, returns 0.
+     * If nritems key not set, it returns 1.
+     *
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     *
+     * @return [type]
+     *
+     */
+    public function get_number_of_items_for_item(
+        string $component,
+        string $area,
+        int $itemid
+    ) {
+        $item = $this->get_item($component, $area, $itemid);
+        if (empty($item)) {
+            return 0;
+        }
+        return $item['nritems'] ?? 1;
+    }
+
+    /**
      * This increases the number of items we have of a specific item.
      *
      * @param string $component

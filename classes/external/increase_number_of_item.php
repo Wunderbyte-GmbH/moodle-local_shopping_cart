@@ -81,7 +81,10 @@ class increase_number_of_item extends external_api {
         self::validate_context($context);
 
         $providerclass = shopping_cart::get_service_provider_classname($component);
-        $nritems = 4;
+        $cartstore = cartstore::instance($userid);
+        $nritems = $cartstore->get_number_of_items_for_item($component, $area, $itemid);
+        // We increase them.
+        $nritems++;
         $allowed = component_class_callback($providerclass, 'adjust_number_of_items', [$area, $itemid, $nritems, $userid]);
 
         if ($allowed) {
