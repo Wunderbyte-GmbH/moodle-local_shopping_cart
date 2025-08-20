@@ -146,6 +146,7 @@ $string['canceled'] = 'Canceled';
 $string['cancellationsettings'] = 'Cancellation settings';
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['cancelsuccess'] = 'Successfully canceled';
+$string['cart'] = 'Shopping cart';
 $string['cartisempty'] = 'Your shopping cart is empty.';
 $string['cartisfull'] = 'Your shopping cart is full.';
 $string['cash'] = 'Cash';
