@@ -296,6 +296,7 @@ $string['definefeesforcostcenters_desc'] = 'Bitte im folgenden Format eingeben:<
   Kostenstelle1:3.5<br>
   Kostenstelle2:5<br>
   Kostenstelle3:0 ';
+$string['delete'] = 'löschen';
 $string['deletecreditcash'] = 'Ausbezahlt bar';
 $string['deletecredittransfer'] = 'Ausbezahlt überwiesen';
 $string['deleteledger'] = "Lösche das Zahlungsjournal wenn ein/e NutzerIn das Löschen ihrer Daten verlangt";

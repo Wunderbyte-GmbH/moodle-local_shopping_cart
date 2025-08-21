@@ -84,7 +84,7 @@
     {{/iscashier}}
     {{^nodelete}}
     <span class="item-button pull-right">
-          <button class="delete-button fa fa-fw fa-trash-o"
+          <button class="delete-button fa fa-fw fa-trash-o" aria-label="{{#str}} delete, local_shopping_cart {{/str}}"
         data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
         data-area="{{area}}" data-action="delete" data-userid="{{userid}}"></button>
     </span>
@@ -97,7 +97,7 @@
     {{/nodelete}}
     {{#iscashier}}
         <span class="item-button pull-right">
-            <i class="shoppingcart-modifytime-icon fa fa-clock-o pl-2" aria-hidden="true"
+            <i class="shoppingcart-modifytime-icon fa fa-clock-o pl-2" aria-label="löschen"
             data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
             data-itemid="{{itemid}}" data-action="modifyreservationtime" data-userid="{{userid}}"></i>
         </span>
