@@ -299,6 +299,7 @@ $string['definefeesforcostcenters_desc'] = 'Please enter in the following format
   CostCenter1:3.5 <br>
   CostCenter2:5 <br>
   CostCenter3:0 ';
+$string['delete'] = 'Delete';
 $string['deletecreditcash'] = 'Refunded with cash';
 $string['deletecredittransfer'] = 'Refunded via transfer';
 $string['deleteledger'] = "Delete ledger on deletion request of user";
