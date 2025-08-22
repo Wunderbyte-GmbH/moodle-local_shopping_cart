@@ -545,9 +545,17 @@ class shoppingcart_history_list implements renderable, templatable {
         In all other cases, we just use timemodified (or timecreated if timemodified is not set). */
         foreach ($returnarray['historyitems'] as $key => $value) {
             // Default behavior.
-            $returnarray['historyitems'][$key]['sortingdate'] = empty($returnarray['historyitems'][$key]['timemodified']) ?
-                    strtotime($returnarray['historyitems'][$key]['timecreated'], time()) :
-                    strtotime($returnarray['historyitems'][$key]['timemodified'], time());
+            if (
+                empty($returnarray['historyitems'][$key]['timemodified'])
+                && !empty($returnarray['historyitems'][$key]['timecreated'])
+            ) {
+                $returnarray['historyitems'][$key]['sortingdate'] = strtotime($returnarray['historyitems'][$key]['timecreated']);
+            } else if (!empty($returnarray['historyitems'][$key]['timemodified'])) {
+                $returnarray['historyitems'][$key]['sortingdate'] = strtotime($returnarray['historyitems'][$key]['timemodified']);
+            } else {
+                // Fallback. Should never happen.
+                $returnarray['historyitems'][$key]['sortingdate'] = time();
+            }
 
             // Check if the Booking plugin is installed.
             if (
