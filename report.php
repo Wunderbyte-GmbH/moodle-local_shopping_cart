@@ -502,7 +502,7 @@ if ($debug != 1 && $debug != 3) {
     // Dismissible alert containing the description of the report.
     echo '<div class="alert alert-secondary alert-dismissible fade show" role="alert">' .
         get_string('cashreport_desc', 'local_shopping_cart') .
-        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        '<button type="button" class="close btn-close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>';
@@ -511,7 +511,7 @@ if ($debug != 1 && $debug != 3) {
     if (!$gatewaysupported) {
         echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">' .
             get_string('error:gatewaymissingornotsupported', 'local_shopping_cart') .
-            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            '<button type="button" class="close btn-close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
         </div>';

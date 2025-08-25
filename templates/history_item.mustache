@@ -85,7 +85,7 @@
     <p>
         <span><small>Payment gateway: <b>{{gateway}}</b></small></span>
         {{#orderid}}
-            <br><a data-toggle="collapse" href="#collapseOrderid{{id}}" role="button" aria-expanded="false" aria-controls="collapseOrderid{{id}}">
+            <br><a data-toggle="collapse" data-bs-toggle="collapse" href="#collapseOrderid{{id}}" role="button" aria-expanded="false" aria-controls="collapseOrderid{{id}}">
                     <small>{{#str}} showorderid, local_shopping_cart {{/str}}</small>
             </a>
             <div class="collapse" id="collapseOrderid{{id}}">

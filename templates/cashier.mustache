@@ -120,19 +120,19 @@
                         id="cashiertabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link {{^userid}}active{{/userid}} {{#userid}}success{{/userid}}"
-                                    id="user-tab" data-toggle="" role="tab" aria-controls="user-tab"
+                                    id="user-tab" data-toggle="" data-bs-toggle="" role="tab" aria-controls="user-tab"
                                aria-selected="true" href="{{wwwroot}}/local/shopping_cart/cashier.php">
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
                             <span class="nav-link {{#userid}}active{{/userid}} {{^userid}}disabled{{/userid}} disabled"
-                                id="cart-tab" data-toggle="tab" role="tab" aria-controls="cart" aria-selected="false"></span>
+                                id="cart-tab" data-toggle="tab" data-bs-toggle="tab" role="tab" aria-controls="cart" aria-selected="false"></span>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" role="tab" aria-controls="checkout" aria-selected="false"></span>
+                            <span class="nav-link disabled" id="checkout-tab" data-toggle="tab" data-bs-toggle="tab" role="tab" aria-controls="checkout" aria-selected="false"></span>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <span class="nav-link disabled" id="success-tab" data-toggle="tab" role="tab" aria-controls="success" aria-selected="false"></span>
+                            <span class="nav-link disabled" id="success-tab" data-toggle="tab" data-bs-toggle="tab" role="tab" aria-controls="success" aria-selected="false"></span>
                         </li>
                     </ul>
                 </div>
@@ -147,7 +147,7 @@
                         {{! 2. Tab which lets you chose the item }}
                         <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
                             <div class="d-flex flex-row-reverse">
-                                <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="button" aria-controls="checkout">{{#str}}
+                                <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" data-bs-toggle="tab" href="#checkout" role="button" aria-controls="checkout">{{#str}}
                                     checkout, local_shopping_cart {{/str}}</a>
                             </div>
                             <p class="additonalcashiersection">
@@ -169,20 +169,20 @@
                                 </div>
                             </div>
                             <div>
-                                <a class="btn btn-danger d-block my-4 mx-2" id="shoppingcart-cancel-btn" data-toggle="tab"
+                                <a class="btn btn-danger d-block my-4 mx-2" id="shoppingcart-cancel-btn" data-toggle="tab" data-bs-toggle="tab"
                                    role="button" aria-controls="shoppingcart-cancel-btn"><i class="fa fa-times" aria-hidden="true"> </i>
                                    {{#str}} cancel, core {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" id="cashpayment-btn" data-paymenttype="3" data-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" id="cashpayment-btn" data-paymenttype="3" data-toggle="tab" data-bs-toggle="tab" href="#success"
                                    role="button" aria-controls="cashpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithcash, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" id="creditcardpayment-btn" data-paymenttype="5" data-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" id="creditcardpayment-btn" data-paymenttype="5" data-toggle="tab" data-bs-toggle="tab" href="#success"
                                    role="button" aria-controls="creditcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithcreditcard, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" data-bs-toggle="tab" href="#success"
                                    role="button" aria-controls="debitcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithdebitcard, local_shopping_cart {{/str}}</a>
                                 {{#allowmanualrebooking}}
-                                    <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualrebook" id="cashiermanualrebook-btn" data-paymenttype="7" data-toggle="tab" href="#success"
+                                    <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualrebook" id="cashiermanualrebook-btn" data-paymenttype="7" data-toggle="tab" data-bs-toggle="tab" href="#success"
                                         role="button" aria-controls="cashiermanualrebook-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                         {{#str}} cashiermanualrebook, local_shopping_cart {{/str}}</a>
                                 {{/allowmanualrebooking}}

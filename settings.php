@@ -695,7 +695,7 @@ if ($hassiteconfig) {
     $taxprocessingenabled = get_config('local_shopping_cart', 'enabletax') == 1;
     if ($taxprocessingenabled) {
         $taxcategoriesexample = '
-                <a data-toggle="collapse" href="#collapseTaxCategories" role="button"
+                <a data-toggle="collapse" data-bs-toggle="collapse" href="#collapseTaxCategories" role="button"
                         aria-expanded="false" aria-controls="collapseTaxCategories">
                 ' . get_string('taxcategories_examples_button', 'local_shopping_cart') . '
                 </a>
