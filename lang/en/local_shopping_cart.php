@@ -708,6 +708,7 @@ $string['testing:title'] = 'Shopping cart demo';
 $string['timebetweenpayments'] = 'Time Between Payments';
 $string['timebetweenpayments_desc'] = 'The time between payments, usually 30 days.';
 $string['timecreated'] = 'Created';
+$string['timeleft'] = 'Shopping cart remaining time';
 $string['timemodified'] = 'Completed';
 $string['titledailysums'] = 'Daily revenue';
 $string['titledailysums:all'] = 'All revenues';

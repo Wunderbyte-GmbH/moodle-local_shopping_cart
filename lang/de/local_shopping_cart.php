@@ -640,6 +640,7 @@ $string['testing:title'] = 'Warenkorb-Demo';
 $string['timebetweenpayments'] = 'Zeit zwischen Zahlungen';
 $string['timebetweenpayments_desc'] = 'Die Zeit zwischen Zahlungen, üblicherweise 30 Tage.';
 $string['timecreated'] = 'Erstellt';
+$string['timeleft'] = 'Warenkorb Zeit verlbeidend';
 $string['timemodified'] = 'Abgeschlossen';
 $string['titledailysums'] = 'Tageseinnahmen';
 $string['titledailysums:all'] = 'Gesamteinnahmen';

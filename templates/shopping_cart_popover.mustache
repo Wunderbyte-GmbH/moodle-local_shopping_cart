@@ -132,7 +132,7 @@
 
     {{$headertext}}
         <i class="fa fa-3x fa-shopping-cart" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
-        <span class="expirationtime" data-expirationtime = '{{expirationtime}}'>[{{expirationtime}}]</span>
+        <span class="expirationtime" aria-live="polite"  aria-label="{{#str}} timeleft, local_shopping_cart {{/str}}" data-expirationtime='{{expirationtime}}'>[{{expirationtime}}] </span>
     {{/headertext}}
     {{$content}}
     <h4 class="p-2 shopping-cart-items-title text-dark">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
