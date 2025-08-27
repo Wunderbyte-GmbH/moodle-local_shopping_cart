@@ -198,7 +198,7 @@ class cartitem {
         ?string $installment = null,
         ?string $linkeditem = null,
         ?int $nritems = 1,
-        ?int $multipliable = 0,
+        ?int $multipliable = 0
     ) {
         $this->itemid = $itemid;
         $this->itemname = $itemname;
