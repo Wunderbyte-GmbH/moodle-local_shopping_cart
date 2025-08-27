@@ -1788,44 +1788,6 @@ class shopping_cart {
     /**
      * Receive quota consumed via callback to component.
      *
-     * @param array $data
-     * @return void
-     */
-    public static function convert_numbers_comma_seperated(&$data) {
-        $convertlabels = [
-            'credit', 'remainingcredit', 'price',
-            'initialtotal', 'deductible', 'price_net', 'initialtotal_net'
-        ];
-        $convertitemlabels = ['price', 'price_net', 'price_gross', 'tax', 'singleprice'];
-        foreach ($data as $label => &$element) {
-            if (
-                in_array($label, $convertlabels) &&
-                str_contains($element, '.')
-            ) {
-                //$data[$label] = str_replace('.', ',', $element);
-                $itemelement[$itemlabel] = format_float($itemvalue, 2);
-            } else if ($label === 'items' && is_array($element)) { // Items array conversion.
-                foreach ($element as $idx => $itemelement) {
-                    if (!is_array($itemelement)) {
-                        continue;
-                    }
-                    foreach ($itemelement as $itemlabel => $itemvalue) {
-                        if (
-                            in_array($itemlabel, $convertitemlabels) &&
-                            str_contains($item, '.')
-                        ) {
-                            //$itemelement[$itemlabel] = str_replace('.', ',', $itemvalue);
-                            $itemelement[$itemlabel] = format_float($itemvalue, 2); // Ensure we have two decimal places.
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Receive quota consumed via callback to component.
-     *
      * @param stdClass $item
      * @param int $userid
      * @return [type]

@@ -45,8 +45,43 @@ class cash_report_table extends wunderbyte_table {
      * @throws dml_exception
      */
     public function col_price(object $values): string {
-        $commaseparator = current_language() == 'de' ? ',' : '.';
-        return number_format((float)$values->price, 2, $commaseparator, '');
+        return format_float((float)$values->price, 2);
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'discount' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered discount.
+     * @throws dml_exception
+     */
+    public function col_discount(object $values): string {
+        return format_float((float)$values->discount, 2);
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'credits' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered credits.
+     * @throws dml_exception
+     */
+    public function col_credits(object $values): string {
+        return format_float((float)$values->credits, 2);
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
+     * 'fee' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered fee.
+     * @throws dml_exception
+     */
+    public function col_fee(object $values): string {
+        return format_float((float)$values->fee, 2);
     }
 
     /**
