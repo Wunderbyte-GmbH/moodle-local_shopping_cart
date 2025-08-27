@@ -356,7 +356,7 @@ class cartstore {
     public function increase_number_of_item(
         string $component,
         string $area,
-        int $itemid,
+        int $itemid
     ) {
         $item = $this->get_item($component, $area, $itemid);
         $nritems = $item['nritems'] + 1;
