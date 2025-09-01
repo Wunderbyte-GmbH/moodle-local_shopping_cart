@@ -490,6 +490,13 @@ class erpnext_invoice implements invoice {
             }
             $this->invoicedata['address_billing'] = $item->address_billing;
         }
+        // For 1 year booking license we have to adapt the end date of service period. It's a hack.
+        foreach ($this->invoiceitems as $item) {
+            if (strpos($item->itemname, '1 year') !== false) {
+                $serviceperiodend = strtotime('+1 year -1 day', $serviceperiodstart);
+                break;
+            }
+        }
         $billingaddress = $this->get_billing_address();
         if (empty($billingaddress)) {
             return false;
