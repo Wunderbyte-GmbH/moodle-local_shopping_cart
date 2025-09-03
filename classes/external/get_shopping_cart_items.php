@@ -90,6 +90,7 @@ class get_shopping_cart_items extends external_api {
 
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_localized_data();
+        $data['lang'] = current_language() ?? 'en';
         return $data;
     }
 
@@ -121,6 +122,7 @@ class get_shopping_cart_items extends external_api {
                 'expirationtime' => new external_value(PARAM_INT, 'Expiration timestamp of cart', VALUE_REQUIRED),
                 'nowdate' => new external_value(PARAM_INT, 'current Timestamp', VALUE_REQUIRED),
                 'maxitems' => new external_value(PARAM_INT, 'Max Items', VALUE_REQUIRED),
+                'lang' => new external_value(PARAM_TEXT, 'Language', VALUE_REQUIRED),
                 'items' => new external_multiple_structure(
                     new external_single_structure(
                         [

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -34,8 +35,8 @@ import DynamicForm from 'core_form/dynamicform';
 import {
     get_strings as getStrings,
     get_string as getString
-        }
-        from 'core/str';
+}
+    from 'core/str';
 import {modifyTimeModal} from './cashier';
 
 export var interval = null;
@@ -74,7 +75,7 @@ const SELECTORS = {
  * @param {*} expirationtime
  */
 
- export const init = (expirationtime, nowdate) => {
+export const init = (expirationtime, nowdate) => {
 
     initTimer(expirationtime, nowdate);
 
@@ -213,12 +214,12 @@ export const buttoninit = (itemid, component, area, userid) => {
 
     // Return all buttons with the add to cart functionality.
     const buttons =
-    document.querySelectorAll(
-        'div'
-        + '[data-itemid="' + itemid + '"]'
-        + '[data-component="' + component + '"]'
-        + '[data-area="' + area + '"]'
-        + '[data-objecttable="local_shopping_cart"');
+        document.querySelectorAll(
+            'div'
+            + '[data-itemid="' + itemid + '"]'
+            + '[data-component="' + component + '"]'
+            + '[data-area="' + area + '"]'
+            + '[data-objecttable="local_shopping_cart"');
 
     buttons.forEach(addtocartbutton => {
 
@@ -300,7 +301,7 @@ export const reinit = (userid = 0) => {
             // We render for promise for all the containers.
             promises.push(Templates.renderForPromise('local_shopping_cart/shopping_cart_items', data).then(({html, js}) => {
                 containers.forEach(container => {
-                // We know we will always find the Navbar, so we can do this right away.
+                    // We know we will always find the Navbar, so we can do this right away.
                     Templates.replaceNodeContents(container, html, js);
                 });
                 return true;
@@ -391,7 +392,7 @@ export const deleteItem = (itemid, component, area, userid) => {
                     // Handle any errors, including if the module doesn't exist
                     // eslint-disable-next-line no-console
                     console.log(err);
-            });
+                });
 
         },
         fail: function() {
@@ -792,8 +793,8 @@ async function dealWithZeroPrice(event) {
 function startTimer(duration, display) {
 
     var timer = duration,
-                minutes,
-                seconds;
+        minutes,
+        seconds;
     interval = setInterval(function() {
 
         minutes = parseInt(timer / 60, 10);
@@ -867,21 +868,21 @@ function confirmZeroPriceCheckoutModal(element) {
         ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
 
             modal.setTitle(strings[0]);
-                modal.setBody(strings[1]);
-                modal.setSaveButtonText(strings[2]);
-                modal.getRoot().on(ModalEvents.save, function() {
+            modal.setBody(strings[1]);
+            modal.setSaveButtonText(strings[2]);
+            modal.getRoot().on(ModalEvents.save, function() {
 
-                    const userid = element.dataset.userid;
+                const userid = element.dataset.userid;
 
-                    if (userid) {
-                        // The second parameter designs the payment method.
-                        // In the cart, the constant PAYMENT_METHOD_CREDITS translates to 2.
-                        confirmPayment(userid, 2);
-                    }
-                });
+                if (userid) {
+                    // The second parameter designs the payment method.
+                    // In the cart, the constant PAYMENT_METHOD_CREDITS translates to 2.
+                    confirmPayment(userid, 2);
+                }
+            });
 
-                modal.show();
-                return modal;
+            modal.show();
+            return modal;
         }).catch(e => {
             // eslint-disable-next-line no-console
             console.log(e);
@@ -939,8 +940,8 @@ function toggleActiveButtonState(button = null) {
         // As we might have more than one of these buttons, we always need to look for all of them in the document.
         // We will update for all the buttons we find.
         selector =
-        'div'
-        + '[data-objecttable="local_shopping_cart"';
+            'div'
+            + '[data-objecttable="local_shopping_cart"';
     }
 
     const buttons = document.querySelectorAll(selector);
@@ -1029,49 +1030,59 @@ export function initPriceLabel(userid) {
  * @param {Object} data the data containing the price values
  */
 function convertPricesToNumberFormat(data) {
-    // Render all prices to 2 fixed decimals.
+    // Create a formatter based on the current language of the user.
+    const formatter = new Intl.NumberFormat(data.lang, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    /**
+     * Formats a number using the Intl.NumberFormat instance.
+     * @param {number} value - The value to format.
+     * @returns {string} The formatted number.
+     */
+    function formatNumber(value) {
+        // Convert the value to a number and then format it
+        const numberValue = Number(value);
+        return formatter.format(numberValue);
+    }
+
     if (data.price) {
-        data.price = Number(data.price).toFixed(2);
+        data.price = formatNumber(data.price);
     }
     if (data.initialtotal) {
-        data.initialtotal = Number(data.initialtotal).toFixed(2);
+        data.initialtotal = formatNumber(data.initialtotal);
     }
     if (data.initialtotal_net) {
-        // eslint-disable-next-line camelcase
-        data.initialtotal_net = Number(data.initialtotal_net).toFixed(2);
+        data.initialtotal_net = formatNumber(data.initialtotal_net);
     }
     if (data.discount) {
-        data.discount = Number(data.discount).toFixed(2);
+        data.discount = formatNumber(data.discount);
     }
     if (data.deductible) {
-        data.deductible = Number(data.deductible).toFixed(2);
+        data.deductible = formatNumber(data.deductible);
     }
     if (data.credit) {
-        data.credit = Number(data.credit).toFixed(2);
+        data.credit = formatNumber(data.credit);
     }
     if (data.remainingcredit) {
-        data.remainingcredit = Number(data.remainingcredit).toFixed(2);
+        data.remainingcredit = formatNumber(data.remainingcredit);
     }
     if (data.price_net) {
-        // eslint-disable-next-line camelcase
-        data.price_net = Number(data.price_net).toFixed(2);
+        data.price_net = formatNumber(data.price_net);
     }
     if (data.price_gross) {
-        // eslint-disable-next-line camelcase
-        data.price_gross = Number(data.price_gross).toFixed(2);
+        data.price_gross = formatNumber(data.price_gross);
     }
     if (data.items) {
         for (var i = 0; i < data.items.length; i++) {
             if (data.items[i].price) {
-                data.items[i].price = Number(data.items[i].price).toFixed(2);
+                data.items[i].price = formatNumber(data.items[i].price);
             }
             if (data.items[i].price_gross) {
-                // eslint-disable-next-line camelcase
-                data.items[i].price_gross = Number(data.items[i].price_gross).toFixed(2);
+                data.items[i].price_gross = formatNumber(data.items[i].price_gross);
             }
             if (data.items[i].price_net) {
-                // eslint-disable-next-line camelcase
-                data.items[i].price_net = Number(data.items[i].price_net).toFixed(2);
+                data.items[i].price_net = formatNumber(data.items[i].price_net);
             }
         }
     }

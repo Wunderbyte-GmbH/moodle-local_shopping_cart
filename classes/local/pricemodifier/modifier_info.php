@@ -35,7 +35,6 @@ use core_component;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modifier_info {
-
     /**
      * Applies the given price modifiers on the cached data.
      * @param array $data

@@ -114,6 +114,7 @@ class get_price extends external_api {
         // For the webservice, we must make sure that the keys exist.
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
+        $data['lang'] = current_language() ?? 'en';
 
         return $data;
     }
@@ -140,6 +141,7 @@ class get_price extends external_api {
                         ),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
+                        'lang' => new external_value(PARAM_TEXT, 'Language', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
                         'useinstallments' => new external_value(PARAM_INT, 'If we want to use installments or not', VALUE_REQUIRED),
                         'discount' => new external_value(PARAM_FLOAT, 'The sum of all discounts on the items.', VALUE_DEFAULT, 0),
