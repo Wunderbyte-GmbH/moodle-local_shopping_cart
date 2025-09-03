@@ -231,14 +231,14 @@ class create_invoice {
                 break;
         }
 
-        $grosstotal = array_sum(array_column($items, 'price'));
-        $grosstotal = number_format($grosstotal, 2, $commaseparator, '');
+        $grosstotal = (float)array_sum(array_column($items, 'price'));
+        $grosstotal = round($grosstotal, 2);
 
-        $vat = $total = array_sum(array_column($items, 'tax'));
-        $vat = number_format($vat, 2, $commaseparator, '');
+        $vat = $total = (float)array_sum(array_column($items, 'tax'));
+        $vat = round($vat, 2);
 
-        $nettotal = (float) $grosstotal - (float) $vat;
-        $nettotal = number_format($nettotal, 2, $commaseparator, '');
+        $nettotal = round($grosstotal - $vat, 2);
+        $nettotal = round($nettotal, 2);
 
         $timecreated = $items[array_key_first($items)]->timecreated;
         $payment = $items[array_key_first($items)]->payment;
@@ -405,9 +405,9 @@ class create_invoice {
         $cfghtml = str_replace("[[addressbreaks]]", $addressbreaks, $cfghtml);
         $cfghtml = str_replace("[[invoice_number]]", $invoicenumber ?: '', $cfghtml);
         $cfghtml = str_replace("[[company]]", $company ?? '', $cfghtml);
-        $cfghtml = str_replace("[[vat]]", $vat ?: '', $cfghtml);
-        $cfghtml = str_replace("[[grosstotal]]", $grosstotal ?: '', $cfghtml);
-        $cfghtml = str_replace("[[nettotal]]", $nettotal ?: '', $cfghtml);
+        $cfghtml = str_replace("[[vat]]", format_float($vat ?? 0, 2), $cfghtml);
+        $cfghtml = str_replace("[[grosstotal]]", format_float($grosstotal ?? 0, 2), $cfghtml);
+        $cfghtml = str_replace("[[nettotal]]", format_float($nettotal ?? 0, 2), $cfghtml);
 
         // We also add the possibility to use any custom user profile field as param.
         if (empty($user->profile)) {
