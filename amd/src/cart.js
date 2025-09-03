@@ -1117,17 +1117,16 @@ function increaseItem(itemid, component, area, userid) {
             'area': area,
             'userid': userid
         },
-        done: function(data) {
-            // eslint-disable-next-line no-console
-            console.log('done');
+        done: function() {
+            /* Commented out:
+            function(data) {
             getString('item_deleted', 'local_shopping_cart', data.itemname).then(message => {
                 showNotification(message, 'success');
                 return;
             }).catch(e => {
                 // eslint-disable-next-line no-console
                 console.log(e);
-            });
-
+            }); */
             reinit(userid);
         },
         fail: function() {
@@ -1159,16 +1158,16 @@ function decreaseItem(itemid, component, area, userid) {
             'area': area,
             'userid': userid
         },
-        done: function(data) {
-
+        done: function() {
+            /* Commented out:
+            function(data) {
             getString('item_deleted', 'local_shopping_cart', data.itemname).then(message => {
                 showNotification(message, 'success');
                 return;
             }).catch(e => {
                 // eslint-disable-next-line no-console
                 console.log(e);
-            });
-
+            }); */
             reinit(userid);
         },
         fail: function() {
