@@ -498,12 +498,12 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         if (!empty($this->credit)) {
-            $returnarray['credit'] = number_format(round((float) $this->credit ?? 0, 2), 2, '.', '');
+            $returnarray['credit'] = format_float(round((float)$this->credit ?? 0, 2), 2);
         }
 
         if (!empty($this->costcentercredits)) {
             foreach ($this->costcentercredits as $key => $value) {
-                $this->costcentercredits[$key]['balance'] = number_format(round((float) $value['balance'] ?? 0, 2), 2, '.', '');
+                $this->costcentercredits[$key]['balance'] = format_float(round((float)$value['balance'] ?? 0, 2), 2);
             }
             $returnarray['costcentercredits'] = array_values($this->costcentercredits);
         }

@@ -39,8 +39,6 @@ if (!has_capability('local/shopping_cart:cashier', $context)) {
     throw new moodle_exception('cashiercapabilitymissing');
 }
 
-$commaseparator = current_language() == 'de' ? ',' : '.';
-
 ob_start();
 
 // Create new PDF document.
@@ -57,10 +55,10 @@ $PAGE->set_heading('Daily sums');
 $data = shopping_cart::get_daily_sums_data($date);
 
 // Calculate the sum of all not-online payments.
-$creditpart = (float) $data['creditcard'] ?? 0.0;
-$debitpart = (float) $data['debitcard'] ?? 0.0;
-$cashpart = (float) $data['cash'] ?? 0.0;
-$cashandcards = number_format($creditpart + $debitpart + $cashpart, 2, $commaseparator, '');
+$creditpart = $data['creditcard'] ?? 0.0;
+$debitpart = $data['debitcard'] ?? 0.0;
+$cashpart = $data['cash'] ?? 0.0;
+$cashandcards = format_float((float)$creditpart + (float)$debitpart + (float)$cashpart, 2);
 
 $html = get_config('local_shopping_cart', 'dailysumspdfhtml');
 if (empty($html)) {

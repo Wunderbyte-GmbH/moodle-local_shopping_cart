@@ -43,8 +43,7 @@ class installments_table extends wunderbyte_table {
      * @throws dml_exception
      */
     public function col_price(object $values): string {
-        $commaseparator = current_language() == 'de' ? ',' : '.';
-        return number_format((float)$values->price, 2, $commaseparator, '');
+        return format_float((float)$values->price, 2);
     }
 
     /**

@@ -1783,6 +1783,19 @@ class shopping_cart {
             }
             $data['items'] = array_values($data['items']);
         }
+        // Also convert prices for each history item.
+        if (!empty($data['historyitems'])) {
+            foreach ($data['historyitems'] as &$hitem) {
+                $hitem['price'] = format_float(round((float) $hitem['price'], 2), 2);
+                if (!empty($hitem['price_net'])) {
+                    $hitem['price_net'] = format_float(round((float) $hitem['price_net'], 2), 2);
+                }
+                if (!empty($hitem['price_gross'])) {
+                    $hitem['price_gross'] = format_float(round((float) $hitem['price_gross'], 2), 2);
+                }
+            }
+            $data['historyitems'] = array_values($data['historyitems']);
+        }
     }
 
     /**
@@ -1859,8 +1872,6 @@ class shopping_cart {
     public static function get_daily_sums_data(string $date, string $selectorformoutput = '', bool $fromform = false): array {
         global $DB, $USER;
 
-        $commaseparator = current_language() == 'de' ? ',' : '.';
-
         // Get the current date and daily sums date.
         $now = time();
         $dailysumstimestamp = strtotime($date);
@@ -1902,7 +1913,7 @@ class shopping_cart {
 
         foreach ($dailysumsfromdb as $dailysumrecord) {
             $add = true;
-            $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
+            $dailysumrecord->dailysumformatted = format_float((float)$dailysumrecord->dailysum, 2);
             switch ($dailysumrecord->payment) {
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                     $total += (float)$dailysumrecord->dailysum;
@@ -1956,8 +1967,8 @@ class shopping_cart {
             if ($add) {
                 $dailysumsdata['dailysums'][] = (array)$dailysumrecord;
             }
-            $dailysumsdata['totalsum'] = number_format($total, 2, $commaseparator, '');
-            $dailysumsdata['totalcash'] = number_format($totalcash, 2, $commaseparator, '');
+            $dailysumsdata['totalsum'] = format_float((float)$total, 2);
+            $dailysumsdata['totalcash'] = format_float((float)$totalcash, 2);
         }
 
         if (get_config('local_shopping_cart', 'showdailysumscurrentcashier')) {
@@ -1981,7 +1992,7 @@ class shopping_cart {
             $dailysumsfromdbcurrentcashier = $DB->get_records_sql($dailysumssqlcurrent, $dailysumsparamscurrent);
             foreach ($dailysumsfromdbcurrentcashier as $dailysumrecord) {
                 $add = true;
-                $dailysumrecord->dailysumformatted = number_format((float)$dailysumrecord->dailysum, 2, $commaseparator, '');
+                $dailysumrecord->dailysumformatted = format_float((float)$dailysumrecord->dailysum, 2);
                 switch ($dailysumrecord->payment) {
                     case LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE:
                         $dailysumrecord->paymentmethod = get_string('paymentmethodonline', 'local_shopping_cart');

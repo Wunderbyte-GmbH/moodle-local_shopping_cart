@@ -193,8 +193,6 @@ class create_invoice {
 
         $context = context_system::instance();
 
-        $commaseparator = current_language() == 'de' ? ',' : '.';
-
         // Localized date format.
         switch (current_language()) {
             case 'de':
@@ -454,22 +452,22 @@ class create_invoice {
                 $nritems = $item->nritems ?? 1;
                 $tmp = str_replace(
                     "[[price]]",
-                    number_format((float) $price, 2, $commaseparator, ''),
+                    format_float((float)$price, 2),
                     $repeathtml[0]
                 );
                 $tmp = str_replace(
                     "[[originalprice]]",
-                    number_format((float) $price, 2, $commaseparator, ''),
+                    format_float((float)$price, 2),
                     $tmp
                 );
                 $tmp = str_replace(
                     "[[outstandingprice]]",
-                    number_format(0.0, 2, $commaseparator, ''),
+                    format_float(0.0, 2),
                     $tmp
                 );
                 $tmp = str_replace(
                     "[[nritems]]",
-                    number_format($nritems, 0, $commaseparator, ''),
+                    format_float((float)$nritems, 0),
                     $tmp
                 );
             } else {
@@ -477,12 +475,12 @@ class create_invoice {
                 $price = $shistoryitem->price;
                 $tmp = str_replace(
                     "[[price]]",
-                    number_format((float) $price, 2, $commaseparator, ''),
+                    format_float((float)$price, 2),
                     $repeathtml[0]
                 );
                 $tmp = str_replace(
                     "[[originalprice]]",
-                    number_format((float) $installmentdata['originalprice'], 2, $commaseparator, ''),
+                    format_float((float)$installmentdata['originalprice'], 2),
                     $tmp
                 );
                 // Make sure to display the price that was actually already payed as price.
@@ -494,7 +492,7 @@ class create_invoice {
                 }
                 $tmp = str_replace(
                     "[[outstandingprice]]",
-                    number_format((float) $outstanding, 2, $commaseparator, ''),
+                    format_float((float)$outstanding, 2),
                     $tmp
                 );
             }
@@ -546,7 +544,7 @@ class create_invoice {
             $pos++;
         }
 
-        $sumstring = number_format((float) $sum, 2, $commaseparator, '');
+        $sumstring = format_float((float)$sum, 2);
         $posthtml = str_replace("[[sum]]", $sumstring, $posthtml);
         $html = '
         <style>

@@ -49,7 +49,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_price extends external_api {
-
     /**
      * Describes the parameters for get_price.
      *
@@ -60,8 +59,7 @@ class get_price extends external_api {
                         'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                         'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
                         'useinstallments' => new external_value(PARAM_INT, 'use installments', VALUE_DEFAULT, 0),
-                ]
-        );
+                ]);
     }
 
     /**
@@ -138,7 +136,8 @@ class get_price extends external_api {
                             PARAM_FLOAT,
                             'Initial price before deduced credits net amount',
                             VALUE_DEFAULT,
-                            0),
+                            0
+                        ),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'usecredit' => new external_value(PARAM_INT, 'If we want to use the credit or not', VALUE_REQUIRED),
@@ -169,12 +168,10 @@ class get_price extends external_api {
                                         'originalprice' => new external_value(PARAM_FLOAT, 'Original price', VALUE_REQUIRED),
                                         'itemname' => new external_value(PARAM_TEXT, 'Item name', VALUE_REQUIRED),
                                         'currency' => new external_value(PARAM_TEXT, 'Currency', VALUE_REQUIRED),
-                                        ]
-                                    ),
+                                        ]),
                                 ),
                             ])
                         ),
-                ]
-        );
+                ]);
     }
 }
