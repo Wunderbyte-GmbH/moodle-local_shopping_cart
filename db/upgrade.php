@@ -800,39 +800,46 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
 
         $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'userid');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET name = '' WHERE name IS NULL");
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('state', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'name');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET state = '' WHERE state IS NULL");
             $dbman->change_field_precision($table, $field);
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('address', XMLDB_TYPE_CHAR, '1000', null, XMLDB_NOTNULL, null, null, 'state');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET address = '' WHERE address IS NULL");
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('address2', XMLDB_TYPE_CHAR, '1000', null, XMLDB_NOTNULL, null, null, 'address');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET address2 = '' WHERE address2 IS NULL");
             $dbman->change_field_precision($table, $field);
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('city', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'address2');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET city = '' WHERE city IS NULL");
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('zip', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'city');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET zip = '' WHERE zip IS NULL");
             $dbman->change_field_precision($table, $field);
             $dbman->change_field_notnull($table, $field);
         }
 
         $field = new xmldb_field('phone', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'zip');
         if ($dbman->field_exists($table, $field)) {
+            $DB->execute("UPDATE {local_shopping_cart_address} SET phone = '' WHERE phone IS NULL");
             $dbman->change_field_precision($table, $field);
             $dbman->change_field_notnull($table, $field);
         }
