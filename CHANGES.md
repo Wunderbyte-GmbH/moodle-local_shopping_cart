@@ -1,3 +1,18 @@
+## Version 1.0.17 (2025090400)
+* Improvement: Localize prices with format_float.
+* Improvement: Use format_float in cash report and improve code quality.
+* Improvement: Add [[nritems]] placeholder to receipt.
+* Improvement: Add multipliable items.
+* Improvement: Apply localized number formatter in convertPricesToNumberFormat.
+* Improvement: Static method shopping_cart::save_used_installments_state().
+* Improvement: No amount, if only one item or no booking option.
+* Improvement: Harden code for sorting date for shopping cart history sections.
+* Bugfix: No "item deleted" alerts when increasing or decreasing number of items.
+* Bugfix: Fix invoice for format_float.
+* Bugfix: PHP 7.4 compatibility.
+* Bugfix: Make sure the increase–decrease works correctly with the component callbacks (booking).
+* Bugfix: Shopping cart price multiplication fix.
+
 ## Version 1.0.16 (2025081900)
 * Improvement: Add new fields to make items multipliable
 
