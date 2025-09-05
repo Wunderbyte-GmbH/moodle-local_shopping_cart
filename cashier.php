@@ -63,7 +63,10 @@ echo $OUTPUT->header();
 $cashier = new cashier($userid, true);
 $data = $cashier->returnaslist();
 
-if (has_capability('local/shopping_cart:cashier', $context)) {
+if (
+    has_capability('local/shopping_cart:cashier', $context)
+    && !empty($userid)
+) {
     $data['additonalcashiersection'] = format_text(get_config('local_shopping_cart', 'additonalcashiersection'));
 }
 
