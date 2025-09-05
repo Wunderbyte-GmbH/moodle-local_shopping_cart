@@ -199,7 +199,7 @@ class cartstore {
         if (!empty($percent)) {
             // Validation of percent value.
             if ($percent < 0 || $percent > 100) {
-                throw new moodle_exception('absolutevalueinvalid', 'local_shopping_cart');
+                throw new moodle_exception('percentvalueinvalid', 'local_shopping_cart');
             }
             $item['discount'] = $initialprice / 100 * $percent;
 
