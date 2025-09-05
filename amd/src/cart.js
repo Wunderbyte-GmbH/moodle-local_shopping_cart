@@ -195,70 +195,54 @@ const initVATNRChecker = () => {
 
 };
 
-export const buttoninit = (itemid, component, area, userid) => {
+/**
+ * Initializes delegated add-to-cart button handling.
+ */
+export const buttoninit = () => {
 
-    // If we don't have an itemid, we need to look for all the buttons.
-    if (!itemid || !component || !area || userid === undefined) {
-        const selector = '[data-objecttable="local_shopping_cart"';
-        const allbuttons = document.querySelectorAll(
-            selector);
-        allbuttons.forEach(button => {
-            const itemid = button.dataset.itemid;
-            const area = button.dataset.area;
-            const component = button.dataset.component;
-            let userid = button.dataset.userid?.trim() ? button.dataset.userid : 0;
-            buttoninit(itemid, component, area, userid);
-        });
+    const container = document.querySelector('body'); // or a closer wrapper if known
+    if (!container) {
         return;
     }
 
-    // Return all buttons with the add to cart functionality.
-    const buttons =
-        document.querySelectorAll(
-            'div'
-            + '[data-itemid="' + itemid + '"]'
-            + '[data-component="' + component + '"]'
-            + '[data-area="' + area + '"]'
-            + '[data-objecttable="local_shopping_cart"');
+    // Add one event listener only once
+    if (!container.dataset.cartDelegated) {
+        container.dataset.cartDelegated = 'true';
 
-    buttons.forEach(addtocartbutton => {
-
-        // We need to check all the buttons.
-        toggleActiveButtonState(addtocartbutton);
-
-        // We only ever initialize the button once.
-        if (!addtocartbutton || addtocartbutton.dataset.initialized === 'true') {
-            return;
-        }
-        addtocartbutton.dataset.initialized = 'true';
-
-        // If the button has the nojs flag, we don't add the listener at all.
-
-        if (addtocartbutton.dataset.nojs) {
-            return;
-        }
-
-        // Add click eventlistern to oneself.
-        addtocartbutton.addEventListener('click', event => {
-
-            if (addtocartbutton.dataset.blocked == 'true') {
+        container.addEventListener('click', (e) => {
+            const button = e.target.closest(
+                'div[data-objecttable="local_shopping_cart"][data-itemid][data-component][data-area]'
+            );
+            if (!button) {
                 return;
             }
 
-            // If we find the disabled class, the click event is aborted.
-            if (addtocartbutton.classList.contains('disabled')) {
-                event.preventDefault();
-                event.stopPropagation();
+            // Ensure dataset values
+            const { itemid, component, area } = button.dataset;
+            let userid = button.dataset.userid?.trim() ? button.dataset.userid : 0;
+
+            // Skip nojs buttons
+            if (button.dataset.nojs) {
+                return;
+            }
+
+            // Keep button state up to date
+            toggleActiveButtonState(button);
+
+            // Blocked buttons do nothing
+            if (button.dataset.blocked === 'true') {
+                return;
+            }
+
+            if (button.classList.contains('disabled')) {
+                e.preventDefault();
+                e.stopPropagation();
                 // DeleteItem(itemid, component, area);
             } else {
-                // Event.preventDefault();
-                // Event.stopPropagation();
                 addItem(itemid, component, area, userid);
             }
         });
-    });
-
-    return;
+    }
 };
 
 /**
