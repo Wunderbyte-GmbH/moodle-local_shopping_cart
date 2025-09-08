@@ -62,6 +62,7 @@ class modal_new_address extends dynamic_form {
             $attributes,
             $this->_ajaxformdata["name"] ?? ''
         );
+        $mform->setType('name', PARAM_TEXT);
 
         // Company Name.
         $attributes = ["placeholder" => get_string('addresses:newaddress:company:label', 'local_shopping_cart')];
