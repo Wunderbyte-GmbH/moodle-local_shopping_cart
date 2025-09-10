@@ -166,7 +166,6 @@ export function cancelPurchase(itemid, area, userid, componentname, historyid, c
                     console.log(e);
                 });
 
-                // When we have no button, this means that we
                 if (!button) {
                     import('local_wunderbyte_table/reload')
                     .then(wbt => {
@@ -255,8 +254,14 @@ function setButtonToCanceled(button) {
     button.classList.add('btn-danger');
     button.dataset.canceled = true;
 
-    getString('canceled', 'local_shopping_cart').then(result => {
+    let historyid = button.dataset.historyid;
+    // We also need to remove the rebook button if there is one.
+    let rebookbutton = document.querySelector('.shopping_cart_history_rebook_button[data-historyid="' + historyid + '"]');
+    if (rebookbutton) {
+        rebookbutton.remove();
+    }
 
+    getString('canceled', 'local_shopping_cart').then(result => {
         button.innerText = result;
         return;
     }).catch(e => {

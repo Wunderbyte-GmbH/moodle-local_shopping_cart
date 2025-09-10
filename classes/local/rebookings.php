@@ -62,10 +62,20 @@ class rebookings {
             return false;
         }
 
-        // If the item is outside the service period.
         if (
             !empty($item->serviceperiodend)
-            && $item->serviceperiodend < time()
+            && !is_number($item->serviceperiodend)
+            && is_string($item->serviceperiodend)
+        ) {
+            $serviceperiodend = strtotime($item->serviceperiodend);
+        } else {
+            $serviceperiodend = $item->serviceperiodend;
+        }
+
+        // If the item is outside the service period.
+        if (
+            !empty($serviceperiodend)
+            && (int)$serviceperiodend < time()
         ) {
             return false;
         }

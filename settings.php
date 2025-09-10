@@ -860,7 +860,6 @@ if ($hassiteconfig) {
         get_string('rebookingheadingdescription', 'local_shopping_cart')
     ));
 
-    // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox(
             'local_shopping_cart/allowrebooking',
