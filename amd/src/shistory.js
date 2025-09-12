@@ -22,13 +22,9 @@
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 
-import {updateTotalPrice, buttoninit} from 'local_shopping_cart/cart';
+import {updateTotalPrice, buttoninit, reinit} from 'local_shopping_cart/cart';
 
-import {
-    get_string as getString,
-    get_strings as getStrings
-        }
-        from 'core/str';
+import {get_string as getString, get_strings as getStrings} from 'core/str';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalFactory from 'core/modal_factory';
 import ModalEvents from 'core/modal_events';
@@ -254,19 +250,15 @@ function setButtonToCanceled(button) {
     button.classList.add('btn-danger');
     button.dataset.canceled = true;
 
-    let historyid = button.dataset.historyid;
-    // We also need to remove the rebook button if there is one.
-    let rebookbutton = document.querySelector('.shopping_cart_history_rebook_button[data-historyid="' + historyid + '"]');
-    if (rebookbutton) {
-        rebookbutton.remove();
-    }
-
     getString('canceled', 'local_shopping_cart').then(result => {
         button.innerText = result;
+        reinit();
         return;
     }).catch(e => {
         // eslint-disable-next-line no-console
         console.log(e);
+        reinit();
+        return;
     });
 }
 

@@ -953,30 +953,6 @@ class shopping_cart_history {
     }
 
     /**
-     * Returns a history item record from DB by historyid.
-     *
-     * @param int $historyid
-     * @return stdClass
-     * @throws dml_exception
-     */
-    public static function get_historyitem_by_historyid(int $historyid) {
-        global $DB;
-
-        $record = $DB->get_record(
-            'local_shopping_cart_history',
-            [
-                'id' => $historyid,
-            ]
-        );
-
-        if (!empty($record)) {
-            return $record;
-        }
-
-        return (object)[];
-    }
-
-    /**
      * Returns items from shopping card history table.
      * We might have bought the same item multiple times (because of cancelation).
      *
@@ -1020,7 +996,7 @@ class shopping_cart_history {
         $cachekey = 'rebook_userid_' . $userid;
         $cache = \cache::make('local_shopping_cart', 'cacherebooking');
 
-        $historyitem = self::get_historyitem_by_historyid($historyid);
+        $historyitem = self::return_item_from_history($historyid);
         if (
             empty($historyitem)
             || $historyitem->paymentstatus != LOCAL_SHOPPING_CART_PAYMENT_SUCCESS
