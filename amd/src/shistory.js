@@ -35,7 +35,6 @@ import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
 // As there is a dependency, we can load it like this.
 import {queries} from 'local_wunderbyte_table/init';
-import { reinit } from './cart';
 
 const SELECTORS = {
     CANCELBUTTON: '.cashier-history-items .shopping_cart_history_cancel_button',
@@ -227,7 +226,7 @@ export function cancelPurchase(itemid, area, userid, componentname, historyid, c
                 getString('canceldidntwork', 'local_shopping_cart').then(message => {
 
                     showNotification(message, "danger");
-                    reinit();
+
                     return;
                 }).catch(e => {
                     // eslint-disable-next-line no-console

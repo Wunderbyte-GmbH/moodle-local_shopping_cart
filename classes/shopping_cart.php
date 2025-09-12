@@ -1301,6 +1301,11 @@ class shopping_cart {
             return false;
         }
 
+        $cartstore = cartstore::instance($userid);
+        if ($cartstore->is_rebooking()) {
+            return false;
+        }
+
         return self::allowed_to_cancel_for_item($item, $area);
     }
 
