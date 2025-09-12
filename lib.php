@@ -93,7 +93,6 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
     }
 }
 
-
 /**
  * Renders the popup.
  *

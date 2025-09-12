@@ -216,10 +216,8 @@ export function newAddressModal(button) {
         redrawRenderedAddresses(response.templatedata);
     });
 
-
     modalForm.show();
 }
-
 
 /**
  * Re-Renders the address list with the newly returned data (most possible containing new saved addresses)

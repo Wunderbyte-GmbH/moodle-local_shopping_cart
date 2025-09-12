@@ -145,7 +145,6 @@ class modal_add_discount_to_item extends dynamic_form {
         return $data;
     }
 
-
     /**
      * Load in existing data as form defaults
      *

@@ -724,7 +724,6 @@ class cartstore {
         $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
     }
 
-
     /**
      * Reset the singleton to force new build from cache and price modifiers.
      * @param int $userid
@@ -983,8 +982,6 @@ class cartstore {
         return $returnarray;
     }
 
-
-
     /**
      * Gets the openinstallments.
      * @param array|bool $openinstallments
@@ -1000,7 +997,6 @@ class cartstore {
 
         return true;
     }
-
 
     /**
      * Items can be linked via a key which is part of the cartitem class.

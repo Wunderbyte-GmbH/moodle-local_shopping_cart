@@ -410,7 +410,6 @@ class shoppingcart_history_list implements renderable, templatable {
         $this->costcentercredits = shopping_cart_credits::get_balance_for_all_costcenters($userid);
     }
 
-
     /**
      * Insert the values from this function to an existing array.
      *

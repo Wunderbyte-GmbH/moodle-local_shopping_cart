@@ -23,7 +23,6 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
@@ -40,7 +39,6 @@ require_login();
 
 global $USER, $PAGE, $OUTPUT, $CFG, $ME;
 $PAGE->requires->css('/local/shopping_cart/styles.css');
-
 
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);

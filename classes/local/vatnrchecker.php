@@ -138,7 +138,6 @@ class vatnrchecker {
         return $response;
     }
 
-
     /**
      * Function to return an array of localized country codes.
      * @param string $countrycode

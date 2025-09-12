@@ -27,7 +27,6 @@ namespace local_shopping_cart\local\checkout_process\items;
 
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 
-
 /**
  * Class checkout
  *

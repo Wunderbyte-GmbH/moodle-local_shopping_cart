@@ -273,7 +273,6 @@ class taxcategories {
     public const LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY = "cat";
 }
 
-
 // Based on original work from the PHP Laravel framework.
 if (!function_exists('str_contains')) {
     /**

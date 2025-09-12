@@ -322,7 +322,6 @@ export const reinit = (userid = 0) => {
     }]);
 };
 
-
 /**
  * This function is only called when the timer invalidates the cart.
  * If no userid is provided the logged in USER will be used.

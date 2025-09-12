@@ -344,7 +344,6 @@ class shopping_cart_handler {
 
     }
 
-
     /**
      * This function writes the current instance of the class to the db.
      * @return void

@@ -260,7 +260,6 @@
     padding-top: 15px;
 }
 
-
 #cashiertabs:not(.moodleversionminfourtwo) #success-tab:before {
     font-family: FontAwesome;
     content: "\f00c";
@@ -421,7 +420,6 @@ div.shopping-cart-items-container div.item-description {
     color: rgb(29, 33, 37);
 }
 
-
 .shopping-cart-item[data-area="rebookingcredit"] img,
 .shopping-cart-item[data-area="rebookitem"] img,
 .shopping-cart-item[data-area="bookingfee"] img,
@@ -447,7 +445,6 @@ div.shopping-cart-items-container div.item-description {
 #page-local-shopping_cart-installments #region-main-box .shopping_cart-paymentbutton {
     width: 250px;
 }
-
 
 #page-local-shopping_cart-installments #region-main-box .shopping-cart-item {
     width: 500px;

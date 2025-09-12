@@ -444,7 +444,6 @@ class erpnext_invoice implements invoice {
         return $data->data[0]->name;
     }
 
-
     /**
      * Prepare the json for the REST API.
      * @return bool

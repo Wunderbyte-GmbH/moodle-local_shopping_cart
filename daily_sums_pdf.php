@@ -83,7 +83,6 @@ if (empty($html)) {
     $html = str_replace("[[cashandcards]]", $cashandcards ?? '', $html);
 }
 
-
 // Set document information.
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor("$USER->firstname $USER->lastname");

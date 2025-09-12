@@ -92,7 +92,6 @@ class modal_cashier_manual_rebook extends dynamic_form {
         return $data;
     }
 
-
     /**
      * Load in existing data as form defaults
      *

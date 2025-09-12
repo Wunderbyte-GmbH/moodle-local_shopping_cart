@@ -104,7 +104,6 @@ class shopping_cart_credits {
         return [round($balance, 2), $currency];
     }
 
-
     /**
      * Returns the current balance of the given user.
      *

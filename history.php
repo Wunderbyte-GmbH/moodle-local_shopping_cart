@@ -48,7 +48,6 @@ $PAGE->set_heading(get_string('yourcart', 'local_shopping_cart'));
 
 $PAGE->set_pagelayout('standard');
 
-
 // Output the header.
 echo $OUTPUT->header();
 $userid = $USER->id;

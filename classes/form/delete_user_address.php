@@ -74,7 +74,6 @@ class delete_user_address extends dynamic_form {
         return address_operations::delete_user_address($data->addressid);
     }
 
-
     /**
      * Load in existing data as form defaults
      *

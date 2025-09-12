@@ -160,7 +160,6 @@ class modal_cancel_all_addcredit extends dynamic_form {
         return $data;
     }
 
-
     /**
      * Load in existing data as form defaults
      *
