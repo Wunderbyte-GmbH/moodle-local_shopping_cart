@@ -23,11 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shopping_cart\classes;
+namespace local_shopping_cart\checkout_process\items_helper;
 
 use advanced_testcase;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
-use SoapClient;
+use local_shopping_cart\tests\SoapClientMock;
 
 /**
  * Test for vatnumberhelper
@@ -45,14 +45,25 @@ final class vatnumberhelper_test extends advanced_testcase {
     /**
      * Set up the test environment.
      */
-    protected function setUp(): void {
+    public function setUp(): void {
         parent::setUp();
-        $this->resetAfterTest();
         // Mock SoapClient.
-        $this->soapmock = $this->getMockBuilder(SoapClient::class)
-            ->setConstructorArgs(["https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"])
-            ->setMethods(['checkVat'])
-            ->getMock();
+        $builder = $this->getMockBuilder(SoapClientMock::class);
+
+        // Prefer to disable the real constructor to avoid WSDL/network calls in tests.
+        if (method_exists($builder, 'disableOriginalConstructor')) {
+            $builder->disableOriginalConstructor();
+        }
+
+        // PHPUnit 9/10+: onlyMethods / addMethods.
+        if (method_exists($builder, 'onlyMethods')) {
+            $builder->onlyMethods(['checkVat']);
+        } else {
+            // Older PHPUnit.
+            $builder->setMethods(['checkVat']);
+        }
+
+        $this->soapmock = $builder->getMock();
     }
 
     /**
