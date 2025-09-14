@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_shopping_cart\classes;
+namespace local_shopping_cart\checkout_process\items;
 
 use advanced_testcase;
 use local_shopping_cart\local\checkout_process\items\addresses;
