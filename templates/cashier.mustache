@@ -147,7 +147,7 @@
                         {{! 2. Tab which lets you chose the item }}
                         <div class="tab-pane fade {{#userid}}show active{{/userid}}" id="cart" role="tabpanel" aria-labelledby="cart-tab">
                             <div class="d-flex flex-row-reverse">
-                                <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" data-bs-toggle="tab" href="#checkout" role="button" aria-controls="checkout">{{#str}}
+                                <a class="btn btn-primary" id="checkout-btn" data-toggle="tab" href="#checkout" role="button" aria-controls="checkout">{{#str}}
                                     checkout, local_shopping_cart {{/str}}</a>
                             </div>
                             <p class="additonalcashiersection">
@@ -157,7 +157,7 @@
                             </p>
                         </div>
                         {{! 3. Tab before checkout }}
-                        <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">´
+                        <div class="tab-pane fade" id="checkout" role="tabpanel" aria-labelledby="checkout-tab">
                             <div class="row">
                                 <div class="col-md-12 cashier-list-price-container">
                                     <div class="shopping-cart-cashier-items-container">
@@ -169,20 +169,20 @@
                                 </div>
                             </div>
                             <div>
-                                <a class="btn btn-danger d-block my-4 mx-2" id="shoppingcart-cancel-btn" data-toggle="tab" data-bs-toggle="tab"
+                                <a class="btn btn-danger d-block my-4 mx-2" id="shoppingcart-cancel-btn" data-toggle="tab"
                                    role="button" aria-controls="shoppingcart-cancel-btn"><i class="fa fa-times" aria-hidden="true"> </i>
                                    {{#str}} cancel, core {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" id="cashpayment-btn" data-paymenttype="3" data-toggle="tab" data-bs-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_cashpayment buy-btn" id="cashpayment-btn" data-paymenttype="3" data-toggle="tab" href="#success"
                                    role="button" aria-controls="cashpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithcash, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" id="creditcardpayment-btn" data-paymenttype="5" data-toggle="tab" data-bs-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_creditcardpayment buy-btn" id="creditcardpayment-btn" data-paymenttype="5" data-toggle="tab" href="#success"
                                    role="button" aria-controls="creditcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithcreditcard, local_shopping_cart {{/str}}</a>
-                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" data-bs-toggle="tab" href="#success"
+                                <a class="btn btn-success d-block my-4 mx-2 btn_debitcardpayment buy-btn" id="debitcardpayment-btn" data-paymenttype="4" data-toggle="tab" href="#success"
                                    role="button" aria-controls="debitcardpayment-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                    {{#str}} paidwithdebitcard, local_shopping_cart {{/str}}</a>
                                 {{#allowmanualrebooking}}
-                                    <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualrebook" id="cashiermanualrebook-btn" data-paymenttype="7" data-toggle="tab" data-bs-toggle="tab" href="#success"
+                                    <a class="btn btn-warning d-block my-4 mx-2 btn_cashiermanualrebook" id="cashiermanualrebook-btn" data-paymenttype="7" data-toggle="tab" href="#success"
                                         role="button" aria-controls="cashiermanualrebook-btn"><i class="fa fa-check-square-o" aria-hidden="true"> </i>
                                         {{#str}} cashiermanualrebook, local_shopping_cart {{/str}}</a>
                                 {{/allowmanualrebooking}}
