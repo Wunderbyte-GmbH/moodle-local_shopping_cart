@@ -28,9 +28,7 @@ namespace local_shopping_cart;
 use advanced_testcase;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
-use local_shopping_cart\local\vatnrchecker;
-use PHPUnit\Framework\TestCase;
-use SoapClient;
+use local_shopping_cart\tests\SoapClientMock;
 /**
  * Test for taxcategories
  * @covers \local_shopping_cart\taxcategories
@@ -49,10 +47,22 @@ final class vatnrchecker_test extends advanced_testcase {
     public function setUp(): void {
         parent::setUp();
         // Mock SoapClient.
-        $this->soapmock = $this->getMockBuilder(SoapClient::class)
-            ->setConstructorArgs(["https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl"])
-            ->setMethods(['checkVat'])
-            ->getMock();
+        $builder = $this->getMockBuilder(SoapClientMock::class);
+
+        // Prefer to disable the real constructor to avoid WSDL/network calls in tests.
+        if (method_exists($builder, 'disableOriginalConstructor')) {
+            $builder->disableOriginalConstructor();
+        }
+
+        // PHPUnit 9/10+: onlyMethods / addMethods.
+        if (method_exists($builder, 'onlyMethods')) {
+            $builder->onlyMethods(['checkVat']);
+        } else {
+            // Older PHPUnit.
+            $builder->setMethods(['checkVat']);
+        }
+
+        $this->soapmock = $builder->getMock();
     }
 
     /**
