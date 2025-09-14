@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace local_shopping_cart\classes;
+namespace local_shopping_cart\checkout_process\items;
 
 use advanced_testcase;
+use phpunit_util;
 use local_shopping_cart\local\checkout_process\items\vatnrchecker;
+use local_shopping_cart\local\cartstore;
 
 /**
  * Unit tests for the vatnrchecker class.
@@ -40,6 +42,16 @@ final class vatnrchecker_test extends advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
+    }
+
+
+    /**
+     * Mandatory clean-up after each test.
+     */
+    public function tearDown(): void {
+        parent::tearDown();
+        // Mandatory clean-up.
+        \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
     }
 
     /**
@@ -105,6 +117,10 @@ final class vatnrchecker_test extends advanced_testcase {
     public function test_check_status(): void {
         $managercachestep = [];
         $changedinput = json_encode(['vatCodeCountry' => 'DE,123456789']);
+
+        $user1 = $this->get_data_generator()->create_user();
+        vatnrchecker::$identifier = $user1->id;
+
         $result = vatnrchecker::check_status($managercachestep, $changedinput);
 
         $this->assertIsArray($result, 'Expected check_status to return an array.');
@@ -139,5 +155,13 @@ final class vatnrchecker_test extends advanced_testcase {
     public function test_get_error_feedback(): void {
         $result = vatnrchecker::get_error_feedback();
         $this->assertIsString($result, 'Expected error feedback to be a string.');
+    }
+
+    /**
+     * Get data generator
+     * @return \testing_data_generator
+     */
+    public static function get_data_generator() {
+        return phpunit_util::get_data_generator();
     }
 }
