@@ -43,6 +43,8 @@ class SoapClientMock {
     /**
      * Declare the method so PHPUnit's onlyMethods() sees it.
      * It is empty — we'll mock it in the test.
+     *
+     * @param array $params
      */
     public function checkVat($params) { // phpcs:ignore
     }
