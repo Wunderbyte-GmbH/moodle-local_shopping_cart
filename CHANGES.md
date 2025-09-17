@@ -1,3 +1,19 @@
+## Version 1.0.18 (2025091700)
+* Improvement: Improve Javascript performance.
+* Improvement: Avoid unnecessary rendering of shortcode.
+* Improvement: Code quality - remove multiple empty lines.
+* Improvement: Use reinit() instead of removing button node, also use already existing return_item_from_history function.
+* Improvement: Performance: Improve buy for user
+* Improvement: Update version to support Moodle 5.
+* Bugfix: Clean null values in upgrade.php before changing field precision and setting to notnull.
+* Bugfix: Add missing setType for name.
+* Bugfix: Make sure that a cancelled purchase cannot be rebooked anymore.
+* Bugfix: Don't allow cancellation during rebooking process.
+* Bugfix: Moodle 5: manual processing controls on the cashier page.
+* Tests: Create SoapClientMock class to solve Moodle 5.0/phpunit 11 issues.
+* Tests: Fix PHPUnit tests and namespaces for Moodle 5.0.
+* Tests: Create separate github action to support Moodle 5.
+
 ## Version 1.0.17 (2025090400)
 * Improvement: Localize prices with format_float.
 * Improvement: Use format_float in cash report and improve code quality.
