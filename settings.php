@@ -128,16 +128,6 @@ if ($hassiteconfig) {
 
     $settings->add(
         new admin_setting_configtext(
-            'local_shopping_cart/expirationtime',
-            new lang_string('expirationtime', 'local_shopping_cart'),
-            new lang_string('expirationtime:description', 'local_shopping_cart'),
-            15,
-            PARAM_INT
-        )
-    );
-
-    $settings->add(
-        new admin_setting_configtext(
             'local_shopping_cart/bookingfee',
             get_string('bookingfee', 'local_shopping_cart'),
             get_string('bookingfee_desc', 'local_shopping_cart'),

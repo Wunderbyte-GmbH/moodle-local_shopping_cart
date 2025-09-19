@@ -42,7 +42,6 @@ global $CFG;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete_item_task extends \core\task\adhoc_task {
-
     /**
      * Get name of Module.
      *
