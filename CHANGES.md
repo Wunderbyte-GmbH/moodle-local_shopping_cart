@@ -1,3 +1,9 @@
+## Version 1.0.19 (2025091900)
+* Improvement: Show real number of items (also multipliable).
+* Bugfix: Set book for user on each iteration of price bookforuser.
+* Bugfix: Take out buyforuser singleton.
+* Bugfix: Remove duplicated setting expirationtime.
+
 ## Version 1.0.18 (2025091700)
 * Improvement: Improve Javascript performance.
 * Improvement: Avoid unnecessary rendering of shortcode.
