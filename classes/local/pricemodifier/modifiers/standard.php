@@ -55,7 +55,7 @@ abstract class standard extends modifier_base {
     public static function apply(array &$data): array {
 
         $items = $data['items'];
-        $data['count'] = count($items);
+        $data['count'] = array_sum(array_map(fn($i) => $i['multipliable'] ? $i['nritems'] : 1, $items));
         $data['price'] = shopping_cart::calculate_total_price($items);
         $data['initialtotal'] = $data['price'];
         $data['items'] = $data['items'] ?? [];
