@@ -66,12 +66,6 @@ use stdClass;
  */
 class shopping_cart {
     /**
-     * A sttatic variable to store the userid we buy for.
-     *
-     * @var int
-     */
-    public static $buyforuserid = 0;
-    /**
      * entities constructor.
      */
     public function __construct() {
@@ -699,7 +693,6 @@ class shopping_cart {
             $cache->set('buyforuser', $userid);
         }
 
-        self::$buyforuserid = $userid;
         return $userid;
     }
 
@@ -711,17 +704,12 @@ class shopping_cart {
     public static function return_buy_for_userid() {
         global $USER;
 
-        if (!empty(self::$buyforuserid)) {
-            $userid = self::$buyforuserid;
-        } else {
-            $cache = \cache::make('local_shopping_cart', 'cashier');
-            $userid = $cache->get('buyforuser');
-        }
+        $cache = \cache::make('local_shopping_cart', 'cashier');
+        $userid = $cache->get('buyforuser');
+
         if (!$userid) {
             $userid = $USER->id;
         }
-        // We always set the static, no matter what, to speed things up.
-        self::$buyforuserid = $userid;
 
         return $userid;
     }
