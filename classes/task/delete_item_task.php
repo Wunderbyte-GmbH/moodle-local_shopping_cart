@@ -25,8 +25,10 @@
 namespace local_shopping_cart\task;
 
 use context_system;
+use core_component;
 use local_shopping_cart\event\item_deleted;
 use local_shopping_cart\shopping_cart;
+use mod_booking\price;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -63,10 +65,13 @@ class delete_item_task extends \core\task\adhoc_task {
         $taskdata = $this->get_custom_data();
         $userid = $this->get_userid();
 
+        if (core_component::get_plugin_directory('mod', 'booking')) {
+            price::set_bookforuser($userid);
+        }
+
         if (!isset($taskdata->area)) {
             return;
         }
-        $context = context_system::instance();
 
         shopping_cart::delete_item_from_cart($taskdata->componentname, $taskdata->area, $taskdata->itemid, $userid);
 
