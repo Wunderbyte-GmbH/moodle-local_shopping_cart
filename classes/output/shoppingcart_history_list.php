@@ -397,7 +397,6 @@ class shoppingcart_history_list implements renderable, templatable {
             $item->serviceperiodend = !empty($item->serviceperiodend) ?
                 userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
 
-
             $item->itemname = format_string($item->itemname);
 
             $this->historyitems[] = (array)$item;
