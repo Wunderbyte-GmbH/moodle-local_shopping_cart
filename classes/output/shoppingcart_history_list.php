@@ -296,15 +296,6 @@ class shoppingcart_history_list implements renderable, templatable {
                 self::add_tax_info($item);
             }
 
-            $item->timecreated = !empty($item->timecreated) ?
-                userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->timemodified = !empty($item->timemodified) ?
-                userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
-                userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodend = !empty($item->serviceperiodend) ?
-                userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
-
             $item->canceled = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ? true : false;
 
             // Depending on how is calling this and which status the person has, we display different cancel options.
@@ -395,6 +386,17 @@ class shoppingcart_history_list implements renderable, templatable {
                     $item->showrebooking = null; // So we can hide it in mustache template.
                 }
             }
+
+            // Format the Items for output at the last moment.
+            $item->timecreated = !empty($item->timecreated) ?
+                userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->timemodified = !empty($item->timemodified) ?
+                userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
+                userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->serviceperiodend = !empty($item->serviceperiodend) ?
+                userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
+
 
             $item->itemname = format_string($item->itemname);
 
