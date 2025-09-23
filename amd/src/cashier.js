@@ -73,9 +73,30 @@ export const init = (userid = 0) => {
 
     console.log(checkoutbutton);
     if (checkoutbutton) {
-        checkoutbutton.addEventListener('click', function() {
-
-            document.getElementById('checkout-tab').classList.add('success');
+        checkoutbutton.addEventListener('click', function(e) {
+            // Prevent Bootstrap's delegated handler.
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            // Run safe logic:
+            console.log('Captured #checkout-btn; running safe logic instead of Bootstrap handler');
+            document.getElementById('checkout-tab')?.classList.add('success');
+            const cartpane = document.getElementById('cart');
+            const checkoutpane = document.getElementById('checkout');
+            if (window.bootstrap && window.bootstrap.Tab) {
+                try {
+                    let bstabcontent = window.bootstrap.Tab.getOrCreateInstance(cartpane);
+                    bstabcontent.hide();
+                    bstabcontent = window.bootstrap.Tab.getOrCreateInstance(checkoutpane);
+                    bstabcontent.show();
+                } catch (err) {
+                    console.warn('BS5 Error showing tab programmatically', err);
+                }
+            } else {
+                // Fallback: show checkout pane manually.
+                console.log('Fallback: show checkout pane manually');
+                cartpane?.classList.remove('show', 'active');
+                checkoutpane?.classList.add('show', 'active');
+            }
         });
     }
 
@@ -124,6 +145,28 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
                     if (successtab) {
                         successtab.classList.add('success');
                         displayPaymentMessage('paymentsuccessful');
+                        const cartpane = document.getElementById('cart');
+                        const checkoutpane = document.getElementById('checkout');
+                        const successpane = document.getElementById('success');
+                        /* eslint max-depth: ["error", 5] */
+                        if (window.bootstrap && window.bootstrap.Tab) {
+                            try {
+                                let bstabcontent = window.bootstrap.Tab.getOrCreateInstance(checkoutpane);
+                                bstabcontent.hide();
+                                bstabcontent = window.bootstrap.Tab.getOrCreateInstance(cartpane);
+                                bstabcontent.hide();
+                                bstabcontent = window.bootstrap.Tab.getOrCreateInstance(successpane);
+                                bstabcontent.show();
+                            } catch (err) {
+                                console.warn('BS5 Error switch from checkout to success tab programmatically', err);
+                            }
+                        } else {
+                            // Fallback: show pane manually.
+                            console.log('Fallback: hide checkout and show success pane manually');
+                            cartpane?.classList.remove('show', 'active');
+                            checkoutpane?.classList.remove('show', 'active');
+                            successpane?.classList.add('show', 'active');
+                        }
                     }
 
                 }
