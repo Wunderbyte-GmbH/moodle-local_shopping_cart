@@ -120,6 +120,8 @@ class rebookings {
             if (empty($jsonobject) || empty($jsonobject->allowrebooking)) {
                 return false;
             }
+        } else {
+            return false;
         }
 
         return true;
