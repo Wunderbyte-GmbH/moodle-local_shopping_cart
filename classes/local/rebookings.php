@@ -117,11 +117,13 @@ class rebookings {
         ) {
             $jsonobject = json_decode($record->json);
 
-            if (empty($jsonobject) || empty($jsonobject->allowrebooking)) {
+            if (
+                !empty($jsonobject)
+                && isset($jsonobject->allowrebooking)
+                && empty($jsonobject->allowrebooking)
+            ) {
                 return false;
             }
-        } else {
-            return false;
         }
 
         return true;
