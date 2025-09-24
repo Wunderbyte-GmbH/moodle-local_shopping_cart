@@ -363,7 +363,7 @@ class erpnext_invoice implements invoice {
 
     /**
      * Get billing address of customer.
-     * @return string Address of the customer or empty string
+     * @return string Address name of the customer or empty string
      */
     public function get_billing_address(): string {
         $addressrecord = address_operations::get_specific_user_address($this->addressid);
@@ -380,11 +380,7 @@ class erpnext_invoice implements invoice {
 
             $erpnextaddresses = $this->get_all_customer_addresses($addresstitle);
             if (empty($erpnextaddresses)) {
-                if ($this->create_address($addressrecord, $addresstitle)) {
-                    return $addressrecord->name;
-                } else {
-                    return '';
-                }
+                return $this->create_address($addressrecord, $addresstitle);
             } else {
                 // If there are more than 1 billing addresses in ERPNext we use the first one.
                 reset($erpnextaddresses);
@@ -406,9 +402,9 @@ class erpnext_invoice implements invoice {
      *
      * @param object $addressrecord
      * @param string $addresstitle
-     * @return bool
+     * @return string address name in ERPNext
      */
-    public function create_address(object $addressrecord, string $addresstitle): bool {
+    public function create_address(object $addressrecord, string $addresstitle): string {
         $url = $this->baseurl . '/api/resource/Address';
         $address = [];
         $address['address_title'] = $addresstitle;
@@ -419,7 +415,27 @@ class erpnext_invoice implements invoice {
         $address['country'] = $this->get_country_name_by_code($addressrecord->state);
         $address['customer'] = $addressrecord->name;
         $response = $this->client->post($url, json_encode($address));
-        return $this->validate_response($response, $url);
+        $success = $this->validate_response($response, $url);
+        if ($success) {
+            $response_data = json_decode($response, true);
+            // Extract address name from response
+            if (isset($response_data['data']['name'])) {
+                $address_name = $response_data['data']['name'];
+                mtrace('Successfully created ERPNext address: ' . $address_name, DEBUG_DEVELOPER);
+                return $address_name;
+            } else {
+                mtrace('ERPNext address created but name not found in response', DEBUG_DEVELOPER);
+                return ''; // Success but couldn't extract name
+            }
+        } else {
+            throw new \moodle_exception(
+                    'error',
+                    'local_shopping_cart',
+                    '',
+                    null,
+                    'There was a problem with retrieving the address from ERPNext: ' . $response
+            );
+        }
     }
 
     /**
