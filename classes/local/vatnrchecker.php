@@ -182,11 +182,11 @@ class vatnrchecker {
     }
 
     /**
-     * Function to return an array of localized country codes.
+     * Function to determine if country is within EU. Returns false when no country code was given.
      * @param string $countrykey
      * @return bool
      */
-    public static function is_european($countrykey) {
+    public static function is_european(string $countrykey): bool {
         $countries = vatnumberhelper::get_countrycodes_array();
         if (isset($countries[$countrykey])) {
             return true;
@@ -199,7 +199,7 @@ class vatnrchecker {
      * @param string $countrykey
      * @return bool
      */
-    public static function is_own_country($countrykey) {
+    public static function is_own_country(string $countrykey): bool {
         $hostvatnr = get_config('local_shopping_cart', 'owncountrycode');
         if ($countrykey == $hostvatnr) {
             return true;

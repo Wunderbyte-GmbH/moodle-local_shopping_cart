@@ -30,6 +30,7 @@ use core\task\manager;
 use core_user;
 use curl;
 use local_shopping_cart\interfaces\invoice;
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart_history;
@@ -97,10 +98,33 @@ class erpnext_invoice implements invoice {
      * @var array Payment entry from ERPNext.
      */
     private array $paymententry = [];
+
     /**
-     * @var string Billing address.
+     * @var string Billing address name as used in ERP.
      */
-    private string $billingaddress = '';
+    private string $billingaddressname = '';
+
+    /**
+     * Contents of the object:
+     * id
+     * userid
+     * name
+     * state
+     * address
+     * address2
+     * city
+     * zip
+     * phone
+     * company
+     *
+     * @var stdClass Address record from DB.
+     */
+    private stdClass $billingaddress;
+
+    /**
+     * @var int shopping cart history identifier
+     */
+    private int $identifier;
 
     /**
      * Set up curl to be able to connect to ERPNext using config settings.
@@ -145,6 +169,7 @@ class erpnext_invoice implements invoice {
      */
     public function create_invoice(int $identifier): bool {
         global $DB;
+        $this->identifier = $identifier;
         $url = $this->baseurl . '/api/resource/Sales Invoice';
         // Set up invoice creation.
         $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
@@ -158,7 +183,7 @@ class erpnext_invoice implements invoice {
             }
             break;
         }
-        // Get addressid.
+        // Get user addressid if no addressid was given.
         if (!$this->addressid) {
             $addressrecords = address_operations::get_all_user_addresses($this->user->id);
             if (!empty($addressrecords)) {
@@ -173,7 +198,9 @@ class erpnext_invoice implements invoice {
                 );
             }
         }
-        if ($this->addressid > 0 && !empty(address_operations::get_specific_user_address($this->addressid)->company)) {
+
+        $this->billingaddress = address_operations::get_specific_user_address($this->addressid);
+        if (!empty($this->billingaddress->company)) {
             $this->customername = address_operations::get_specific_user_address($this->addressid)->company;
             $this->customercompany = $this->customername;
         } else {
@@ -323,18 +350,30 @@ class erpnext_invoice implements invoice {
     public function set_taxes_charges_template(): string {
         // Fetch 20 templates from ERP.
         $taxtemplates = $this->get_erp_taxes_charges_templates();
-
+        $countrykey = $this->billingaddress->state;
+        $cartstore = cartstore::instance($this->user->id);
+        $cartstore->set_countrycode($countrykey);
         // ToDo: This is hardcoded, for internal use only, to make tax templates generic, we have to implement additional settings.
 
         // Pre-Checks for finding out which template to use.
-        $iseuropean = vatnrchecker::is_european($this->invoicedata['taxcountrycode'] ?? null);
-        $isowncountry = vatnrchecker::is_own_country($this->invoicedata['taxcountrycode'] ?? null);
+        $isowncountry = vatnrchecker::is_own_country($countrykey);
+        $iseuropean = vatnrchecker::is_european($countrykey);
+        $ledgerentries = shopping_cart_history::return_data_from_ledger_via_identifier($this->identifier);
+        $hasvatid = !empty(reset($ledgerentries)->vatnumber);
+
         // Condtion for EU reverse charge template.
-        if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates)) {
+        if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates) && $hasvatid) {
             $taxtemplate = 'EU Reverse Charge';
-        } else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
+        }
+        else if (($iseuropean && !$hasvatid)) {
+            $taxtemplate = 'Austria Tax';
+        }
+        // Condition for Export (Non-EU) sales.
+        else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
             $taxtemplate = 'Export VAT';
-        } else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
+        }
+        // Default fallback to Austria Tax if no other condition is met.
+        else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
             $taxtemplate = 'Austria Tax';
         } else {
             $taxtemplate = 'Austria Tax';
@@ -365,7 +404,7 @@ class erpnext_invoice implements invoice {
      * Get billing address of customer.
      * @return string Address name of the customer or empty string
      */
-    public function get_billing_address(): string {
+    public function get_erp_billing_address_name(): string {
         $addressrecord = address_operations::get_specific_user_address($this->addressid);
         if ($addressrecord) {
             // Check if the address exists in ERPNext.
@@ -462,11 +501,14 @@ class erpnext_invoice implements invoice {
 
     /**
      * Prepare the json for the REST API.
+     * Return true on success false on failure.
+     *
      * @return bool
      */
     public function prepare_json_invoice_data(): bool {
         $serviceperiodstart = null;
         $serviceperiodend = null;
+        $this->invoicedata['taxcountrycode'] = $this->billingaddress->state;
         foreach ($this->invoiceitems as $item) {
             if (!$this->item_exists($item->itemname)) {
                 return false;
@@ -475,7 +517,6 @@ class erpnext_invoice implements invoice {
             $itemdata['item_code'] = $item->itemname;
             $itemdata['qty'] = 1;
 
-            $this->invoicedata['taxcountrycode'] = $item->taxcountrycode;
             $this->invoicedata['vatid'] = $item->vatnumber;
             if (!isset($this->invoicedata['taxes_and_charges'])) {
                 $this->invoicedata['taxes_and_charges'] = self::set_taxes_charges_template();
@@ -512,12 +553,11 @@ class erpnext_invoice implements invoice {
                 break;
             }
         }
-        $billingaddress = $this->get_billing_address();
-        if (empty($billingaddress)) {
+        $this->billingaddressname = $this->get_erp_billing_address_name();
+        if (empty($this->billingaddressname)) {
             return false;
         }
-        $this->billingaddress = $billingaddress;
-        $this->invoicedata['address_billing'] = $billingaddress;
+        $this->invoicedata['address_billing'] = $this->billingaddressname;
         $this->invoicedata['customer'] = $this->customername;
         $date = date('Y-m-d', time());
         // Convert the Unix timestamp to ISO 8601 date format.
@@ -527,7 +567,7 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
         $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
         $this->invoicedata['terms'] = 'Thank you for your online payment and your trust in our services.';
-        $this->invoicedata['customer_address'] = $billingaddress;
+        $this->invoicedata['customer_address'] = $this->billingaddressname;
         $this->jsoninvoice = json_encode($this->invoicedata);
         return true;
     }
@@ -601,7 +641,7 @@ class erpnext_invoice implements invoice {
         $customer = [];
         $customer['customer_name'] = $this->customername;
         // Todo: Hardcoded ERP values. Replace with variabls.
-        if (!empty($tihs->customercompany)) {
+        if (!empty($this->customercompany)) {
             $customer['customer_type'] = 'Company';
         } else {
             $customer['customer_type'] = 'Individual';
@@ -621,7 +661,8 @@ class erpnext_invoice implements invoice {
             $customer['tax_id'] = $this->invoicedata['vatid'];
         }
         $response = $this->client->post($url, json_encode($customer));
-        if (!$response) {
+        $success = $this->validate_response($response, $url);
+        if (!$success) {
             return false;
         }
 
@@ -629,7 +670,7 @@ class erpnext_invoice implements invoice {
         $data = [];
         $links = ['link_doctype' => 'Customer', 'link_name' => $this->customername];
         $data['links'] = [$links];
-        $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddress);
+        $url = $this->baseurl . '/api/resource/Address/' . rawurlencode($this->billingaddressname);
         $response = $this->client->put($url, json_encode($data));
 
         return $this->validate_response($response, $url);

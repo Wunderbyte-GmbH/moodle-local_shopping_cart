@@ -1177,7 +1177,7 @@ class cartstore {
     public function get_countrycode() {
         $data = $this->get_cache();
 
-        return $data['vatnrcountry'] ?? $data['taxcountrycode'] ?? null;
+        return $data['vatnrcountry'] ?? $data['taxcountrycode'] ?? '';
     }
 
     /**

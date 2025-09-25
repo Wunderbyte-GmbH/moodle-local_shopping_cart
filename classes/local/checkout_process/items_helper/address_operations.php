@@ -87,14 +87,26 @@ class address_operations {
     }
 
     /**
-     * Generates complete required-address data as specified by the plugin config.
+     * Return the database object for a specific address ID as stdClass.
      *
      * @param int $addressid
-     * @return mixed
+     * @return \stdClass
      */
-    public static function get_specific_user_address(int $addressid) {
+    public static function get_specific_user_address(int $addressid): \stdClass {
         global $DB;
-        return $DB->get_record('local_shopping_cart_address', ['id' => $addressid]);
+
+        // Define a static variable to hold the cache for all addresses queried in this request.
+        static $addresscache = [];
+        // Check if the specific address ID is already in the cache.
+        if (isset($addresscache[$addressid])) {
+            // Return the cached result immediately.
+            return $addresscache[$addressid];
+        }
+        // If not in cache, execute the database query.
+        $record = $DB->get_record('local_shopping_cart_address', ['id' => $addressid], '*', MUST_EXIST);
+        // Save the result to the cache for future calls within this request.
+        $addresscache[$addressid] = $record;
+        return $record;
     }
 
     /**
@@ -104,6 +116,24 @@ class address_operations {
      */
     public static function get_all_user_addresses(int $userid): array {
         global $DB;
-        return $DB->get_records('local_shopping_cart_address', ['userid' => $userid]);
+
+        // Define a static variable to hold the cache for all user addresses queried in this request.
+        static $useraddresscache = [];
+
+        // 1. Check if the specific user ID is already in the cache.
+        if (isset($useraddresscache[$userid])) {
+            // Return the cached result immediately.
+            return $useraddresscache[$userid];
+        }
+
+        // 2. If not in cache, execute the database query.
+        $records = $DB->get_records('local_shopping_cart_address', ['userid' => $userid]);
+
+        // 3. Save the result to the cache for future calls within this request.
+        // get_records returns an object array, which is cast to an array by the function signature.
+        $useraddresscache[$userid] = $records;
+
+        // 4. Return the result.
+        return $records;
     }
 }
