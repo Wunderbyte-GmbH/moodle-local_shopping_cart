@@ -361,21 +361,18 @@ class erpnext_invoice implements invoice {
         $ledgerentries = shopping_cart_history::return_data_from_ledger_via_identifier($this->identifier);
         $hasvatid = !empty(reset($ledgerentries)->vatnumber);
 
-        // Condtion for EU reverse charge template.
         if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates) && $hasvatid) {
+            // Condtion for EU reverse charge template.
             $taxtemplate = 'EU Reverse Charge';
-        }
-        else if (($iseuropean && !$hasvatid)) {
+        } else if (($iseuropean && !$hasvatid)) {
             $taxtemplate = 'Austria Tax';
-        }
-        // Condition for Export (Non-EU) sales.
-        else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
+        } else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
+            // Condition for Export (Non-EU) sales.
             $taxtemplate = 'Export VAT';
-        }
-        // Default fallback to Austria Tax if no other condition is met.
-        else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
+        } else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
             $taxtemplate = 'Austria Tax';
         } else {
+            // Default fallback to Austria Tax if no other condition is met.
             $taxtemplate = 'Austria Tax';
         }
         return $taxtemplate;
@@ -456,15 +453,15 @@ class erpnext_invoice implements invoice {
         $response = $this->client->post($url, json_encode($address));
         $success = $this->validate_response($response, $url);
         if ($success) {
-            $response_data = json_decode($response, true);
-            // Extract address name from response
-            if (isset($response_data['data']['name'])) {
-                $address_name = $response_data['data']['name'];
-                mtrace('Successfully created ERPNext address: ' . $address_name, DEBUG_DEVELOPER);
-                return $address_name;
+            $responsedata = json_decode($response, true);
+            // Extract address name from response.
+            if (isset($responsedata['data']['name'])) {
+                $addressname = $responsedata['data']['name'];
+                mtrace('Successfully created ERPNext address: ' . $addressname, DEBUG_DEVELOPER);
+                return $addressname;
             } else {
                 mtrace('ERPNext address created but name not found in response', DEBUG_DEVELOPER);
-                return ''; // Success but couldn't extract name
+                return ''; // Success but couldn't extract name.
             }
         } else {
             throw new \moodle_exception(
