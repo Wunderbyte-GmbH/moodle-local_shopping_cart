@@ -56,7 +56,7 @@ $string['addresses:delete:selected'] = 'Lösche ausgewählte Adresse';
 $string['addresses:delete:submit'] = 'Löschen bestätigen';
 $string['addresses:delete:success'] = 'Die Adresse wurde erfolgreich gelöscht';
 $string['addresses:edit:selected'] = 'Ausgewählte Adresse bearbeiten';
-$string['addresses:feedback'] = 'Bitte hinterlege folgende Addressen: ';
+$string['addresses:feedback'] = 'Bitte hinterlege folgende Addresse: {$a}';
 $string['addresses:heading'] = 'Adresse';
 $string['addresses:newaddress'] = 'Neue Adresse hinzufügen';
 $string['addresses:newaddress:address2:label'] = 'Addresszusatz';
@@ -197,7 +197,7 @@ $string['choosedefaultcountrydesc'] = 'Wählen Sie das Standardland für die Rec
  $string['choosehighertimestamp'] = 'Wählen Sie einen späteren Zeipunkt';
 $string['chooseplatform'] = 'Plattform wählen';
 $string['chooseplatformdesc'] = 'Wählen Sie Ihre Rechnungsplattform aus.';
-$string['completeshoppingcartprecheckout'] = 'Füllen Sie zunächst alle Pflichtfelder aus, um den Einkauf abzuschließen.';
+$string['completeshoppingcartprecheckout'] = 'Bitte bestätigen Sie noch folgende Felder: {$a}';
 $string['confirmadditionalconditions'] = "Zusätzliche Konditionen akzeptieren";
 $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Käufer:innen wirklich stornieren?
     Folgende Nutzer:innen erhalten den Kaufpreis zurück:

@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart\local\checkout_process\items;
 
+use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 
 /**
@@ -171,17 +172,38 @@ class termsandconditions extends checkout_base_item {
      * @return string
      */
     public function get_info_feedback(): string {
+
+        global $USER;
+        $carstore = cartstore::instance($USER->id);
+
+        if (!$carstore->has_items()) {
+            return get_string('cartisempty', 'local_shopping_cart');
+        }
+
         $requiredfields = [];
         if (!empty(get_config('local_shopping_cart', 'termsandconditions'))) {
-            $requiredfields[] = get_string('confirmterms', 'local_shopping_cart');
+            $firststring = get_string(
+                'completeshoppingcartprecheckout',
+                'local_shopping_cart',
+                get_string('confirmterms', 'local_shopping_cart')
+            );
+            $requiredfields[] = $firststring;
         }
+
         if (!empty(get_config('local_shopping_cart', 'additionalconditions'))) {
-            $requiredfields[] = get_string('confirmadditionalconditions', 'local_shopping_cart');
+            $secondstring = get_string(
+                'completeshoppingcartprecheckout',
+                'local_shopping_cart',
+                get_string('confirmadditionalconditions', 'local_shopping_cart')
+            );
+            if ($secondstring != ($firststring ?? '')) {
+                $requiredfields[] = $secondstring;
+            }
+
         }
         if (empty($requiredfields)) {
             return '';
         }
-        return get_string('completeshoppingcartprecheckout', 'local_shopping_cart') .
-            implode(', ', $requiredfields);
+        return implode('<br>', $requiredfields);
     }
 }

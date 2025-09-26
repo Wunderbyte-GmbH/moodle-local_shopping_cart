@@ -273,14 +273,21 @@ class addresses extends checkout_base_item {
      *
      */
     public function get_info_feedback(): string {
+        global $USER;
+        $carstore = cartstore::instance($USER->id);
+
+        if (!$carstore->has_items()) {
+            return get_string('cartisempty', 'local_shopping_cart');
+        }
+
         $feedback = [];
         $requiredaddresses = self::get_required_address_data();
         foreach ($requiredaddresses as $requiredaddress) {
-            $feedback[] = $requiredaddress['addresslabel'];
+            $feedback[] = get_string('addresses:feedback', 'local_shopping_cart', $requiredaddress['addresslabel']);
         }
         if (empty($feedback)) {
             return '';
         }
-        return get_string('addresses:feedback', 'local_shopping_cart') . implode(', ', $feedback);
+        return implode('<br>', $feedback);
     }
 }
