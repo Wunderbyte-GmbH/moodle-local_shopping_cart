@@ -101,7 +101,7 @@ class get_history_items extends external_api {
                     'itemname' => new external_value(PARAM_TEXT, 'Item name'),
                     'area' => new external_value(PARAM_TEXT, 'Area'),
                     'componentname' => new external_value(PARAM_TEXT, 'Componentname'),
-                    'buttonclass' => new external_value(PARAM_TEXT, 'Buttonclass'),
+                    'buttonclass' => new external_value(PARAM_TEXT, 'Buttonclass', VALUE_DEFAULT, ''),
                     'price' => new external_value(PARAM_FLOAT, 'Price'),
                     'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quota consumed', VALUE_DEFAULT, 0),
                     'round' => new external_value(PARAM_INT, 'Round', VALUE_DEFAULT, 0),
@@ -118,7 +118,7 @@ class get_history_items extends external_api {
                     'gateway' => new external_value(PARAM_TEXT, 'Gateway', VALUE_DEFAULT, ''),
                     'canceluntil' => new external_value(PARAM_TEXT, 'Cancel until', VALUE_DEFAULT, ''),
                     'hasinstallments' => new external_value(PARAM_BOOL, 'Has installments', VALUE_DEFAULT, false),
-                    'receipturl' => new external_value(PARAM_URL, 'Receipt url'),
+                    'receipturl' => new external_value(PARAM_URL, 'Receipt url', VALUE_DEFAULT, ''),
                     'installmentreceipturls' => new external_multiple_structure(
                         new external_single_structure(
                             [
