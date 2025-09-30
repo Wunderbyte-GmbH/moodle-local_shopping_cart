@@ -233,7 +233,7 @@ class vatnrchecker extends checkout_base_item {
      */
     public function get_info_feedback(): string {
         if (self::is_mandatory()) {
-            get_string('vatnrfeedbackmandatory', 'local_shopping_cart');
+            return get_string('vatnrfeedbackmandatory', 'local_shopping_cart');
         }
         return get_string('vatnrfeedbackoptional', 'local_shopping_cart');
     }
