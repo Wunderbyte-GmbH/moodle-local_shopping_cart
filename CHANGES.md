@@ -1,3 +1,13 @@
+## Version 1.0.20 (2025100100)
+* Improvement: Make Feedback on checkout page more granular
+* Bugfix: Revert wrong implementation of service period check
+* Bugfix: Avoid unwanted rebooking possibility to rebook
+* Bugfix: Fix customer and address creation in ERPNext
+* Bugfix: Fix VAT problems for ERPNext invoice
+* Bugfix: Fix cashier page with shortcodes
+* Bugfix: Display correct info about mandatory VAT checker
+* Bugfix: Fix get_history_items webservice
+
 ## Version 1.0.19 (2025091900)
 * Improvement: Show real number of items (also multipliable).
 * Bugfix: Set book for user on each iteration of price bookforuser.
