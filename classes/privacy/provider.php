@@ -45,10 +45,7 @@ use moodle_exception;
  * @author     Thomas Winkler
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider,
-                          \core_privacy\local\request\plugin\provider,
-                          \core_privacy\local\request\core_userlist_provider {
-
+class provider implements \core_privacy\local\request\core_userlist_provider, \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
     /**
      * Get data from tables.
      * @param collection $collection
@@ -287,7 +284,7 @@ class provider implements \core_privacy\local\metadata\provider,
         if (!$userids = $userlist->get_userids()) {
             return;
         }
-        list($usql, $params) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        [$usql, $params] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
         $sql = "
             SELECT sch.identifier
             FROM {local_shopping_cart_history} sch
@@ -334,7 +331,6 @@ class provider implements \core_privacy\local\metadata\provider,
 
         $schout = [];
         foreach ($DB->get_records_sql($sql, $params) as $sch) {
-
             $subcontext = [
                 get_string('pluginname', 'local_shopping_cart'),
                 get_string('history', 'local_shopping_cart'),
@@ -397,7 +393,6 @@ class provider implements \core_privacy\local\metadata\provider,
 
         $sclout = [];
         foreach ($DB->get_records_sql($sql, $params) as $scl) {
-
             $subcontext = [
                 get_string('pluginname', 'local_shopping_cart'),
                 get_string('ledger', 'local_shopping_cart'),
@@ -462,7 +457,6 @@ class provider implements \core_privacy\local\metadata\provider,
 
         $schout = [];
         foreach ($DB->get_records_sql($sql, $params) as $scc) {
-
             $subcontext = [
                 get_string('pluginname', 'local_shopping_cart'),
                 get_string('credits', 'local_shopping_cart'),

@@ -33,5 +33,4 @@ namespace local_shopping_cart\local\pricemodifier;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class modifier_base {
-
 }

@@ -50,7 +50,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete_item_from_cart extends external_api {
-
     /**
      * Describes the paramters for this service.
      *
@@ -62,8 +61,7 @@ class delete_item_from_cart extends external_api {
             'area'  => new external_value(PARAM_TEXT, 'area like main', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, '0'),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -97,7 +95,7 @@ class delete_item_from_cart extends external_api {
         }
 
         $context = context_system::instance();
-        if ($params['userid'] == 0 ) {
+        if ($params['userid'] == 0) {
             $userid = (int)$USER->id;
         } else if ($params['userid'] < 0) {
             if (has_capability('local/shopping_cart:cashier', $context)) {
@@ -108,14 +106,18 @@ class delete_item_from_cart extends external_api {
         }
 
         // We can't delete the fee item via webservice.
-        if (shopping_cart_bookingfee::is_fee($params['component'], $params['area'])
-            && !has_capability('local/shopping_cart:cashier', $context)) {
+        if (
+            shopping_cart_bookingfee::is_fee($params['component'], $params['area'])
+            && !has_capability('local/shopping_cart:cashier', $context)
+        ) {
             return false;
         }
 
         // We can't delete the rebookingcredit item via webservice.
-        if (shopping_cart::is_rebookingcredit($params['component'], $params['area'])
-            && !has_capability('local/shopping_cart:cashier', $context)) {
+        if (
+            shopping_cart::is_rebookingcredit($params['component'], $params['area'])
+            && !has_capability('local/shopping_cart:cashier', $context)
+        ) {
             return false;
         }
 

@@ -38,7 +38,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_cashout extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -46,16 +45,20 @@ class modal_cashout extends dynamic_form {
     public function definition() {
         $mform = $this->_form;
 
-        $mform->addElement('float',
+        $mform->addElement(
+            'float',
             'cashoutamount',
             get_string('cashoutamount', 'local_shopping_cart'),
-            get_string('cashoutamount_desc', 'local_shopping_cart'));
+            get_string('cashoutamount_desc', 'local_shopping_cart')
+        );
         $mform->setDefault('cashoutamount', 0.00);
 
-        $mform->addElement('text',
+        $mform->addElement(
+            'text',
             'cashoutreason',
             get_string('cashoutreason', 'local_shopping_cart'),
-            get_string('cashoutreason_desc', 'local_shopping_cart'));
+            get_string('cashoutreason_desc', 'local_shopping_cart')
+        );
     }
 
     /**
@@ -91,7 +94,14 @@ class modal_cashout extends dynamic_form {
             'cash',
             0,
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH,
-            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            null,
+            0,
+            0,
+            null,
+            null,
+            null,
+            null,
             $data->cashoutreason,
             $USER->id
         );

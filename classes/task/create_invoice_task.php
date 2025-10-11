@@ -37,7 +37,6 @@ use local_shopping_cart\shopping_cart;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class create_invoice_task extends \core\task\adhoc_task {
-
     /**
      * Get name of the component.
      *
@@ -67,7 +66,6 @@ class create_invoice_task extends \core\task\adhoc_task {
             $invoiceprovider = new $classname();
             $success = $invoiceprovider->create_invoice($taskdata->identifier);
             mtrace('Invoice creation success: ' . $success);
-
         } catch (\Throwable $e) {
             mtrace_exception($e);
             $anyexception = $e;
@@ -77,8 +75,13 @@ class create_invoice_task extends \core\task\adhoc_task {
             throw $anyexception;
         }
         if (!$success) {
-            throw new \moodle_exception('serverconnection', 'local_shopping_cart', '', null,
-                    $invoiceprovider->errormessage);
+            throw new \moodle_exception(
+                'serverconnection',
+                'local_shopping_cart',
+                '',
+                null,
+                $invoiceprovider->errormessage
+            );
         }
         mtrace('Invoice created for user ' . $userid . ' with identifier ' . $taskdata->identifier);
     }

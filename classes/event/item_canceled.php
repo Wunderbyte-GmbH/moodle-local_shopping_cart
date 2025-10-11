@@ -40,7 +40,6 @@ use core\event\base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_canceled extends \core\event\base {
-
     /**
      * Init method.
      */

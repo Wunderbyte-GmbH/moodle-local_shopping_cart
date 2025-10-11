@@ -41,7 +41,6 @@ use stdClass;
  * Dynamic new address form with edit functionality
  */
 class modal_new_address extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -67,11 +66,11 @@ class modal_new_address extends dynamic_form {
         // Company Name.
         $attributes = ["placeholder" => get_string('addresses:newaddress:company:label', 'local_shopping_cart')];
         $mform->addElement(
-                'text',
-                'company',
-                get_string('addresses:newaddress:company:label', 'local_shopping_cart'),
-                $attributes,
-                $this->_ajaxformdata["company"] ?? ''
+            'text',
+            'company',
+            get_string('addresses:newaddress:company:label', 'local_shopping_cart'),
+            $attributes,
+            $this->_ajaxformdata["company"] ?? ''
         );
 
         // Country.

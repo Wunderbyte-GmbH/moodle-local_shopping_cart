@@ -105,8 +105,10 @@ class purchase_notification extends external_api {
         }
         if (($success !== 3 || $success !== 2) && !empty($params['paymentgateway'])) {
             if ((!empty($params['tid']) || $params['tid'] == '') && !empty($params['identifier'])) {
-                $dbrec = $DB->get_record('paygw_' . $params['paymentgateway'] . '_openorders',
-                ['itemid' => $params['identifier']]);
+                $dbrec = $DB->get_record(
+                    'paygw_' . $params['paymentgateway'] . '_openorders',
+                    ['itemid' => $params['identifier']]
+                );
                 if ($dbrec) {
                     $params['tid'] = $dbrec->customorderid;
                 }

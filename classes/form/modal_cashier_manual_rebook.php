@@ -37,7 +37,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_cashier_manual_rebook extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -49,7 +48,9 @@ class modal_cashier_manual_rebook extends dynamic_form {
         $mform->addElement('hidden', 'identifier', $this->_ajaxformdata['identifier']);
         $mform->addElement('hidden', 'userid', $this->_ajaxformdata['userid']);
 
-        $mform->addElement('text', 'annotation',
+        $mform->addElement(
+            'text',
+            'annotation',
             get_string('annotation', 'local_shopping_cart'),
             get_string('annotation_rebook_desc', 'local_shopping_cart')
         );

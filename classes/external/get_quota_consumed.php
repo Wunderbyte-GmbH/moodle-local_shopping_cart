@@ -47,7 +47,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_quota_consumed extends external_api {
-
     /**
      * Describes the parameters for add_item_to_cart.
      *
@@ -60,8 +59,7 @@ class get_quota_consumed extends external_api {
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             'historyid'  => new external_value(PARAM_INT, 'historyid', VALUE_DEFAULT, 0),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -101,7 +99,8 @@ class get_quota_consumed extends external_api {
             $params['area'],
             $params['itemid'],
             $params['userid'],
-            $params['historyid']);
+            $params['historyid']
+        );
     }
 
     /**
@@ -117,7 +116,6 @@ class get_quota_consumed extends external_api {
             'initialvalue' => new external_value(PARAM_FLOAT, 'Item price', VALUE_DEFAULT, 0),
             'currency' => new external_value(PARAM_ALPHA, 'Currency', VALUE_DEFAULT, ''),
             'cancelationfee' => new external_value(PARAM_FLOAT, 'Cancelaton fee', VALUE_DEFAULT, 0),
-            ]
-        );
+            ]);
     }
 }

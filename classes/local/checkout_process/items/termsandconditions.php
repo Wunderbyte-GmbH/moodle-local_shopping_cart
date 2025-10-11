@@ -199,7 +199,6 @@ class termsandconditions extends checkout_base_item {
             if ($secondstring != ($firststring ?? '')) {
                 $requiredfields[] = $secondstring;
             }
-
         }
         if (empty($requiredfields)) {
             return '';

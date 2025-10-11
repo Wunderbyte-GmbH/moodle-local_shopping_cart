@@ -178,5 +178,4 @@ final class checkout_manager_test extends advanced_testcase {
 
         $this->assertIsArray($cachedata, 'Cache data should be an array.');
     }
-
 }

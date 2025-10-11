@@ -40,7 +40,6 @@ function fix_ledger_bug() {
     $records = $DB->get_records_sql($sql);
 
     foreach ($records as $record) {
-
         $record->schistoryid = $record->id;
         unset($record->id);
         $record->annotation = "Fixed record because of bug in Mai 2024";
@@ -55,7 +54,6 @@ function fix_ledger_bug() {
     $records = $DB->get_records_sql($sql);
 
     foreach ($records as $record) {
-
         $record->timecreated = $record->timemodified;
 
         $DB->update_record('local_shopping_cart_ledger', $record);

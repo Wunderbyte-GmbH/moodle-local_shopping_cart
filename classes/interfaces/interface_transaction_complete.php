@@ -40,7 +40,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface interface_transaction_complete {
-
     /**
      * Returns description of method parameters.
      *
@@ -63,8 +62,17 @@ interface interface_transaction_complete {
      * @param int $userid
      * @return array
      */
-    public static function execute(string $component, string $paymentarea, int $itemid, string $tid, string $token = '0',
-     string $customer = '0', bool $ischeckstatus = false, string $resourcepath = '', int $userid = 0): array;
+    public static function execute(
+        string $component,
+        string $paymentarea,
+        int $itemid,
+        string $tid,
+        string $token = '0',
+        string $customer = '0',
+        bool $ischeckstatus = false,
+        string $resourcepath = '',
+        int $userid = 0
+    ): array;
 
     /**
      * Returns description of method result value.

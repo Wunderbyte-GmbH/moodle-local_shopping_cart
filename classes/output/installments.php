@@ -43,7 +43,6 @@ use local_shopping_cart\local\entities\cartitem;
  *
  */
 class installments implements renderable, templatable {
-
     /**
      * Data is the array used for output.
      *
@@ -70,7 +69,6 @@ class installments implements renderable, templatable {
 
         // Here we create the data object.
         if (empty($userid) && has_capability('local/shopping_cart:cashier', $context)) {
-
             // In this case, we create a wb table for the cashier to overview payments.
 
             $table = new installments_table('installmentstable');
@@ -112,14 +110,11 @@ class installments implements renderable, templatable {
             $html = $table->outhtml(20, true);
 
             $this->installmentstable = $html;
-
         } else {
-
             $cartstore = cartstore::instance($userid);
             $items = $cartstore->get_open_installments();
 
             foreach ($items as $key => $item) {
-
                 if (strpos($item['area'], 'installment') === false) {
                     continue;
                 }

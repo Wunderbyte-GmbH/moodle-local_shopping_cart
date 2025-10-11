@@ -39,7 +39,6 @@ use context_system;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class standard extends modifier_base {
-
     /**
      * The id is nedessary for the hierarchie of modifiers.
      * @var int
@@ -67,13 +66,17 @@ abstract class standard extends modifier_base {
         $rebooking = 0;
         foreach ($items as $key => $item) {
             // As a cashier, I always want to be able to delete the booking fee.
-            if ($items[$key]['nodelete'] === 1 &&
-                has_capability('local/shopping_cart:cashier', $context)) {
+            if (
+                $items[$key]['nodelete'] === 1 &&
+                has_capability('local/shopping_cart:cashier', $context)
+            ) {
                     unset($data['items'][$key]['nodelete']);
             }
 
-            if ($item['componentname'] === 'local_shopping_cart'
-                && $item['area'] === 'rebookitem') {
+            if (
+                $item['componentname'] === 'local_shopping_cart'
+                && $item['area'] === 'rebookitem'
+            ) {
                     $rebooking++;
             }
         }

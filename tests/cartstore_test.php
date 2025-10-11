@@ -87,19 +87,22 @@ final class cartstore_test extends advanced_testcase {
             'local_shopping_cart',
             'testitem',
             1,
-            $user1->id);
+            $user1->id
+        );
 
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
             2,
-            $user1->id);
+            $user1->id
+        );
 
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
             3,
-            $user1->id);
+            $user1->id
+        );
 
         $data = $cartstore->get_data();
 
@@ -138,19 +141,22 @@ final class cartstore_test extends advanced_testcase {
             'local_shopping_cart',
             'testitem',
             1,
-            $user1->id);
+            $user1->id
+        );
 
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
             2,
-            $user1->id);
+            $user1->id
+        );
 
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
             3,
-            $user1->id);
+            $user1->id
+        );
 
         $data = $cartstore->get_data();
 
@@ -181,13 +187,15 @@ final class cartstore_test extends advanced_testcase {
             'local_shopping_cart',
             'testitem',
             1,
-            $user1->id);
+            $user1->id
+        );
 
         shopping_cart::add_item_to_cart(
             'local_shopping_cart',
             'testitem',
             2,
-            $user1->id);
+            $user1->id
+        );
 
         $data = $cartstore->get_data();
 

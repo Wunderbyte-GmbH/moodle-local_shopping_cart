@@ -47,7 +47,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cancel_purchase extends external_api {
-
     /**
      * Describes the parameters for cancel_purchase.
      *
@@ -61,8 +60,7 @@ class cancel_purchase extends external_api {
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
             'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
             'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -77,12 +75,13 @@ class cancel_purchase extends external_api {
      * @return array
      */
     public static function execute(
-            string $componentname,
-            string $area,
-            int $itemid,
-            int $userid,
-            int $historyid,
-            float $credit): array {
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $userid,
+        int $historyid,
+        float $credit
+    ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
             'area' => $area,
@@ -102,8 +101,14 @@ class cancel_purchase extends external_api {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
 
-        return shopping_cart::cancel_purchase($params['itemid'], $params['area'], $params['userid'], $params['componentname'],
-            $params['historyid'],  $params['credit']);
+        return shopping_cart::cancel_purchase(
+            $params['itemid'],
+            $params['area'],
+            $params['userid'],
+            $params['componentname'],
+            $params['historyid'],
+            $params['credit']
+        );
     }
 
     /**
@@ -116,7 +121,6 @@ class cancel_purchase extends external_api {
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
             'error' => new external_value(PARAM_RAW, 'Error message if something went wrong'),
             'credit' => new external_value(PARAM_FLOAT, 'New credit value'),
-            ]
-        );
+            ]);
     }
 }

@@ -31,7 +31,6 @@ use local_shopping_cart\invoice\invoicenumber;
  * Event observer for local_shopping_cart.
  */
 class observer {
-
     /**
      * Triggered via payment_error event from any payment provider
      * If we receive a payment error, check for the order id in our shopping cart history.
@@ -88,7 +87,6 @@ class observer {
         }
 
         if ($invoiceprovidername == 'saveinvoicenumber') {
-
             invoicenumber::save_invoice_number($event);
             return;
         }

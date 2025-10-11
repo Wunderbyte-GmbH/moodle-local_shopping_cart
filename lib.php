@@ -87,8 +87,14 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
         $pluginname = get_string('pluginname', 'local_shopping_cart');
         $link = new moodle_url('/local/shopping_cart/cashier.php', []);
         $icon = new pix_icon('i/shopping_cart', $pluginname, 'local_shopping_cart');
-        $nodecreatecourse = $nodehome->add($pluginname, $link, navigation_node::NODETYPE_LEAF,
-            $pluginname, 'shopping_cart_cashier', $icon);
+        $nodecreatecourse = $nodehome->add(
+            $pluginname,
+            $link,
+            navigation_node::NODETYPE_LEAF,
+            $pluginname,
+            'shopping_cart_cashier',
+            $icon
+        );
         $nodecreatecourse->showinflatnavigation = true;
     }
 }
@@ -125,7 +131,6 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
 
     if (!empty($dueinstallments)) {
         foreach ($dueinstallments as $dueinstallement) {
-
             if ($dueinstallement['installment'] > time()) {
                 $message = get_string('installmentpaymentisdue', 'local_shopping_cart', $dueinstallement);
                 $type = \core\notification::INFO;

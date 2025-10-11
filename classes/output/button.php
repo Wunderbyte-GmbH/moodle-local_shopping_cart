@@ -35,7 +35,6 @@ use templatable;
  *
  */
 class button implements renderable, templatable {
-
     /**
      * data is the array used for output.
      *

@@ -38,7 +38,7 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 
-require_once($CFG->dirroot.'/user/lib.php');
+require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class checkout
@@ -48,7 +48,6 @@ require_once($CFG->dirroot.'/user/lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class checkout extends modifier_base {
-
     /**
      * The id is nedessary for the hierarchie of modifiers.
      * @var int

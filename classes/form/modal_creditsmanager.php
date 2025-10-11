@@ -41,7 +41,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_creditsmanager extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -77,18 +76,28 @@ class modal_creditsmanager extends dynamic_form {
             1 => get_string('creditsmanager:correctcredits', 'local_shopping_cart'),
             2 => get_string('creditsmanager:payback', 'local_shopping_cart'),
         ];
-        $mform->addElement('select', 'creditsmanagermode',
-            get_string('creditsmanagermode', 'local_shopping_cart'), $modes);
+        $mform->addElement(
+            'select',
+            'creditsmanagermode',
+            get_string('creditsmanagermode', 'local_shopping_cart'),
+            $modes
+        );
         $mform->setDefault('creditsmanagermode', 0);
 
-        $mform->addElement('float', 'creditsmanagercredits',
-            get_string('creditsmanagercredits', 'local_shopping_cart'));
+        $mform->addElement(
+            'float',
+            'creditsmanagercredits',
+            get_string('creditsmanagercredits', 'local_shopping_cart')
+        );
         $mform->setDefault('creditsmanagercredits', 0.00);
         $mform->addHelpButton('creditsmanagercredits', 'creditsmanagercredits', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercredits', 'creditsmanagermode', 'neq', 1);
 
-        $mform->addElement('text', 'creditsmanagercreditscostcenter',
-            get_string('creditsmanagercreditscostcenter', 'local_shopping_cart'));
+        $mform->addElement(
+            'text',
+            'creditsmanagercreditscostcenter',
+            get_string('creditsmanagercreditscostcenter', 'local_shopping_cart')
+        );
         $mform->setDefault('creditsmanagercreditscostcenter', '');
         $mform->addHelpButton('creditsmanagercreditscostcenter', 'creditsmanagercreditscostcenter', 'local_shopping_cart');
         $mform->hideIf('creditsmanagercreditscostcenter', 'creditsmanagermode', 'eq', 0);
@@ -100,16 +109,22 @@ class modal_creditsmanager extends dynamic_form {
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER =>
                 get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart'),
         ];
-        $mform->addElement('select', 'creditsmanagerpaymentmethod',
-            get_string('paymentmethod', 'local_shopping_cart'), $paymentmethods);
+        $mform->addElement(
+            'select',
+            'creditsmanagerpaymentmethod',
+            get_string('paymentmethod', 'local_shopping_cart'),
+            $paymentmethods
+        );
         $mform->setDefault('creditsmanagerpaymentmethod', 0);
         $mform->hideIf('creditsmanagerpaymentmethod', 'creditsmanagermode', 'eq', 0);
         $mform->disabledIf('creditsmanagerpaymentmethod', 'creditsmanagermode', 'eq', 1);
 
-        $mform->addElement('text', 'creditsmanagerreason',
-            get_string('creditsmanagerreason', 'local_shopping_cart'));
+        $mform->addElement(
+            'text',
+            'creditsmanagerreason',
+            get_string('creditsmanagerreason', 'local_shopping_cart')
+        );
         $mform->hideIf('creditsmanagerreason', 'creditsmanagermode', 'eq', 0);
-
     }
 
     /**

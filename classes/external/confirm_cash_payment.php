@@ -47,7 +47,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confirm_cash_payment extends external_api {
-
     /**
      * Describes the paramters for this service.
      *
@@ -83,8 +82,12 @@ class confirm_cash_payment extends external_api {
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
         }
-        return shopping_cart::confirm_payment($params['userid'], $params['paymenttype'], null,
-            $params['annotation']);
+        return shopping_cart::confirm_payment(
+            $params['userid'],
+            $params['paymenttype'],
+            null,
+            $params['annotation']
+        );
     }
 
     /**

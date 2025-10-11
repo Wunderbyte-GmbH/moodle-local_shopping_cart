@@ -39,7 +39,6 @@ use local_shopping_cart\shopping_cart_handler;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class installments extends modifier_base {
-
     /**
      * The id is nedessary for the hierarchie of modifiers.
      * @var int
@@ -67,11 +66,9 @@ abstract class installments extends modifier_base {
         }
 
         foreach ($data['items'] as $key => $itemdata) {
-
             // We treat an installment payment differently.
 
             if (!empty($itemdata['installmentpayment'])) {
-
                 $installments = (object)[
                     'installments' => [
                         'payments' => $itemdata['installmentpayment'],
@@ -80,12 +77,13 @@ abstract class installments extends modifier_base {
                 ];
 
                 $data['items'][$key]['json'] = json_encode($installments);
-
-            } else if (shopping_cart_handler::installment_exists(
-                $itemdata['componentname'],
-                $itemdata['area'],
-                $itemdata['itemid'])) {
-
+            } else if (
+                shopping_cart_handler::installment_exists(
+                    $itemdata['componentname'],
+                    $itemdata['area'],
+                    $itemdata['itemid']
+                )
+            ) {
                 // Next step, we check if there is enough time for this particular installement.
                 $searchdata = [
                     'itemid' => $itemdata['itemid'],
@@ -98,10 +96,11 @@ abstract class installments extends modifier_base {
 
                 $timebetweenpayments = get_config('local_shopping_cart', 'timebetweenpayments') ?: 30;
                 // If a value before coursestart is set, we need to check if it's not too late.
-                if (!empty($jsonobject->duedaysbeforecoursestart)
-                    && $timebetweenpayments > 0) {
+                if (
+                    !empty($jsonobject->duedaysbeforecoursestart)
+                    && $timebetweenpayments > 0
+                ) {
                     if (!empty($itemdata['serviceperiodstart'])) {
-
                         // Calculate the date of last payment.
                         $dateoflastpayment =
                             strtotime(" - $jsonobject->duedaysbeforecoursestart days", $itemdata['serviceperiodstart']);
@@ -122,7 +121,6 @@ abstract class installments extends modifier_base {
                 $data['installments'] = $data['installments'] ?? [];
 
                 if (!empty($data['useinstallments'])) {
-
                     // Check which payment it is.
                     // If this is the first payment, price is downpayment.
 
@@ -147,7 +145,6 @@ abstract class installments extends modifier_base {
 
                         // We want to apply the same ratio to the subbooking items.
                         foreach ($linkeditems as $linkeditem) {
-
                             $linkedkey = array_search($linkeditem, $data['items']);
 
                             $originallinkedprice = $linkeditem['price'];
@@ -170,7 +167,6 @@ abstract class installments extends modifier_base {
                         // Now we reduce the announced price of all the other items as well.
                         // But we need to ad the reduction to the initial item.
                         // We don't want to multiply our installment payments, but only increase the one we had before.
-
                     } else {
                         $data['items'][$key]['price'] = $jsonobject->downpayment;
                     }
@@ -252,7 +248,6 @@ abstract class installments extends modifier_base {
         $items = [];
 
         foreach ($records as $record) {
-
             // First, we add the down payment.
             $item = new cartitem(
                 $record->itemid,
@@ -277,7 +272,6 @@ abstract class installments extends modifier_base {
             $items[] = $item->as_array();
 
             foreach ($payments as $payment) {
-
                 // If this is already paid, we don't show the button.
                 if (!empty($payment->paid)) {
                     continue;

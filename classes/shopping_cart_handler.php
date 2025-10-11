@@ -42,7 +42,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart_handler {
-
     /**
      * @var int
      */
@@ -75,7 +74,6 @@ class shopping_cart_handler {
         $this->componentname = $componentname ?? '';
         $this->area = $area ?? '';
         $this->itemid = $itemid ?? 0;
-
     }
 
     /**
@@ -87,18 +85,21 @@ class shopping_cart_handler {
      */
     public function definition(MoodleQuickForm &$mform, array $formdata) {
 
-        if (get_config('local_shopping_cart', 'enableinstallments')
+        if (
+            get_config('local_shopping_cart', 'enableinstallments')
             || get_config('local_shopping_cart', 'allowrebooking')
-            || get_config('local_shopping_cart', 'allowchooseaccount')) {
-            $mform->addElement('header',
+            || get_config('local_shopping_cart', 'allowchooseaccount')
+        ) {
+            $mform->addElement(
+                'header',
                 'sch_shoppingcartheader',
                 '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;'
-                . get_string('pluginname', 'local_shopping_cart'));
+                . get_string('pluginname', 'local_shopping_cart')
+            );
         }
 
         if (has_capability('local/shopping_cart:changepaymentaccount', context_system::instance())) {
             if (get_config('local_shopping_cart', 'allowchooseaccount')) {
-
                 $paymentaccountrecords = helper::get_payment_accounts_to_manage(context_system::instance(), false);
 
                 $paymentaccounts = [];
@@ -123,7 +124,6 @@ class shopping_cart_handler {
 
         // Fields for Rebooking.
         if (get_config('local_shopping_cart', 'allowrebooking')) {
-
             $mform->addElement(
                 'advcheckbox',
                 'sch_allowrebooking',
@@ -193,7 +193,6 @@ class shopping_cart_handler {
             $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
             $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
         }
-
     }
 
     /**
@@ -205,13 +204,13 @@ class shopping_cart_handler {
     public function validation(array $data, array &$errors) {
         // Validate.
 
-        if (!empty($data['sch_duedatevariable'])
-            && !empty($data['sch_duedaysbeforecoursestart'])) {
-
+        if (
+            !empty($data['sch_duedatevariable'])
+            && !empty($data['sch_duedaysbeforecoursestart'])
+        ) {
             $errors['sch_duedatevariable'] = get_string('onlyone', 'local_shopping_cart');
             $errors['sch_duedaysbeforecoursestart'] = get_string('onlyone', 'local_shopping_cart');
         }
-
     }
 
     /**
@@ -256,7 +255,6 @@ class shopping_cart_handler {
         }
 
         if (isset($formdata->sch_allowrebooking)) {
-
             $this->add_key_to_jsonobject('allowrebooking', $formdata->sch_allowrebooking);
         }
 
@@ -306,7 +304,6 @@ class shopping_cart_handler {
         // Rebooking.
         $formdata->sch_allowrebooking = $jsonobject->allowrebooking
             ?? get_config('local_shopping_cart', 'allowrebooking') ?: 0;
-
     }
 
     /**
@@ -341,7 +338,6 @@ class shopping_cart_handler {
         }
 
         $this->jsonobject->{$key} = $value;
-
     }
 
     /**
@@ -369,7 +365,6 @@ class shopping_cart_handler {
 
             $DB->insert_record('local_shopping_cart_iteminfo', $data);
         } else {
-
             // We never save a totally empty jsonobject but assume that we then would want to keep the current.
             if (empty($this->jsonobject)) {
                 $this->jsonobject = json_decode($record->json);

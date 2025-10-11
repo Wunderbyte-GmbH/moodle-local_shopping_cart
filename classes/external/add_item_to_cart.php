@@ -47,7 +47,6 @@ require_once($CFG->libdir . '/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class add_item_to_cart extends external_api {
-
     /**
      * Describes the parameters for add_item_to_cart.
      *
@@ -59,8 +58,7 @@ class add_item_to_cart extends external_api {
             'area'  => new external_value(PARAM_TEXT, 'area', VALUE_DEFAULT, ''),
             'itemid'  => new external_value(PARAM_INT, 'itemid', VALUE_DEFAULT, 0),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -116,7 +114,6 @@ class add_item_to_cart extends external_api {
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),
-            ]
-        );
+            ]);
     }
 }

@@ -48,7 +48,6 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class credit_paid_back extends external_api {
-
     /**
      * Describes the paramters for this service.
      *
@@ -57,8 +56,12 @@ class credit_paid_back extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, '0'),
-            'method' => new external_value(PARAM_INT, 'method', VALUE_DEFAULT,
-                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH),
+            'method' => new external_value(
+                PARAM_INT,
+                'method',
+                VALUE_DEFAULT,
+                LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH
+            ),
             'costcenter' => new external_value(PARAM_TEXT, 'costcenter', VALUE_DEFAULT, ''),
         ]);
     }

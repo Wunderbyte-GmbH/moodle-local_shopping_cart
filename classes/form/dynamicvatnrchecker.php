@@ -38,7 +38,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dynamicvatnrchecker extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -82,7 +81,6 @@ class dynamicvatnrchecker extends dynamic_form {
      * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
-
     }
 
     /**
@@ -102,20 +100,17 @@ class dynamicvatnrchecker extends dynamic_form {
 
         // If the user has entered a valid VATNR, we retrieve here the data fetched during validation.
         if (!empty(vatnrchecker::$vatnrdataset)) {
-
             $cartstore = cartstore::instance($USER->id);
 
             if (vatnrchecker::$vatnrdataset->vatNumber === false) {
-
                 $cartstore->delete_vatnr_data();
-
             } else {
                 // In order to have all the relevant data on our Invoice, we save this here.
                 $data->name = vatnrchecker::$vatnrdataset->name;
                 $address = vatnrchecker::$vatnrdataset->address;
                 $addressstr = explode(PHP_EOL, $address);
                 if (count($addressstr) > 1) {
-                    list($street, $city) = explode(PHP_EOL, $address);
+                    [$street, $city] = explode(PHP_EOL, $address);
                 } else {
                     $street = $addressstr[0] ?? '';
                     $city = '';
@@ -128,7 +123,8 @@ class dynamicvatnrchecker extends dynamic_form {
                     vatnrchecker::$vatnrdataset->vatNumber,
                     vatnrchecker::$vatnrdataset->name,
                     $street,
-                    $city);
+                    $city
+                );
             }
         }
 
@@ -161,7 +157,6 @@ class dynamicvatnrchecker extends dynamic_form {
             $data->usevatnr = 1;
             $data->checkvatnrcountrycode = $vatnrdata['vatnrcountry'];
             $data->checkvatnrnumber = $vatnrdata['vatnrnumber'];
-
         } else if (!empty($mform->getSubmitValue('checkvatnrnumber'))) {
             $data->usevatnr = 1;
             // phpcs:disable
@@ -214,13 +209,15 @@ class dynamicvatnrchecker extends dynamic_form {
 
         // If there actually is a VATNR number... we check online.
         if (!empty($data['usevatnr'])) {
-
-            if ($data['checkvatnrcountrycode'] == 'novatnr'
-                && !empty($data['checkvatnrnumber'])) {
+            if (
+                $data['checkvatnrcountrycode'] == 'novatnr'
+                && !empty($data['checkvatnrnumber'])
+            ) {
                 $errors['checkvatnrcountrycode'] = get_string('errorselectcountry', 'local_shopping_cart');
-            } else if ($data['checkvatnrcountrycode'] == 'novatnr'
-                && empty($data['checkvatnrnumber'])) {
-
+            } else if (
+                $data['checkvatnrcountrycode'] == 'novatnr'
+                && empty($data['checkvatnrnumber'])
+            ) {
                 vatnrchecker::$vatnrdataset = (object)[
                     'vatNumber' => false,
                     'countryCode' => false,
@@ -241,7 +238,7 @@ class dynamicvatnrchecker extends dynamic_form {
                     $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
                 } else {
                     vatnrchecker::$vatnrdataset = (object)[
-                            'vatNumber' => $data['checkvatnrcountrycode'] ,
+                            'vatNumber' => $data['checkvatnrcountrycode'],
                             'countryCode' => $data['checkvatnrnumber'],
                     ];
                 }

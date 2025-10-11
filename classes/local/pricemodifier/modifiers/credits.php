@@ -42,7 +42,6 @@ use Random\RandomException;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class credits extends modifier_base {
-
     /**
      * The id is nedessary for the hierarchie of modifiers.
      * @var int
@@ -67,7 +66,6 @@ abstract class credits extends modifier_base {
 
         // Now we account for discounts.
         if (isset($data['discount'])) {
-
             // If setting to round discounts is turned on, we round to full int.
             $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
             $data['discount'] = round($data['discount'], $discountprecision);
@@ -77,14 +75,12 @@ abstract class credits extends modifier_base {
             $context = context_system::instance();
             // Right now, only the cashier has the right to use discounts.
             if (!has_capability('local/shopping_cart:cashier', $context)) {
-
                 $data['price'] = $data['price'] + $data['discount'];
             }
         }
 
         // Only if the user has any credit at all, we apply the function.
         if ($balance > 0) {
-
             // We always calculate the deductible.
             if ($data['price'] <= $balance) {
                 $deductible = $data['price'];
@@ -94,12 +90,10 @@ abstract class credits extends modifier_base {
 
             // We reduce the price if we use the credit.
             if ($usecredit) {
-
                 $remainingtotal = $data['price'] - $deductible;
                 $remainingcredit = $balance - $deductible;
 
                 $data['usecredit'] = true;
-
             } else {
                 $remainingcredit = $balance;
                 $remainingtotal = $data['price'];

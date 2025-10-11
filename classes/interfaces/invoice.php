@@ -34,7 +34,6 @@ use core\event\base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface invoice {
-
     /**
      * Create invoice as task. When invoice provider is down, we can reschedule the invoice creation.
      * The task is created based on the checkout_completed event.

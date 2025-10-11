@@ -38,7 +38,6 @@ use stdClass;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_modify_time_of_deletion_task extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()

@@ -190,11 +190,11 @@ class erpnext_invoice implements invoice {
                 $this->addressid = array_key_first($addressrecords);
             } else {
                 throw new \moodle_exception(
-                        'nobillingaddress',
-                        'local_shopping_cart',
-                        '',
-                        null,
-                        'No billing address available for the user.'
+                    'nobillingaddress',
+                    'local_shopping_cart',
+                    '',
+                    null,
+                    'No billing address available for the user.'
                 );
             }
         }
@@ -385,8 +385,11 @@ class erpnext_invoice implements invoice {
      * @return array An array of address titles.
      */
     private function get_all_customer_addresses(string $customername): array {
-        $filters = str_replace(' ', '%20',
-                '[["Address","address_type","=","Billing"],["Address","name","like","%' . $customername . '%"]]');
+        $filters = str_replace(
+            ' ',
+            '%20',
+            '[["Address","address_type","=","Billing"],["Address","name","like","%' . $customername . '%"]]'
+        );
         $url = $this->baseurl .
                 '/api/resource/Address?filters=' . $filters;
         $response = $this->client->get($url);
@@ -465,11 +468,11 @@ class erpnext_invoice implements invoice {
             }
         } else {
             throw new \moodle_exception(
-                    'error',
-                    'local_shopping_cart',
-                    '',
-                    null,
-                    'There was a problem with retrieving the address from ERPNext: ' . $response
+                'error',
+                'local_shopping_cart',
+                '',
+                null,
+                'There was a problem with retrieving the address from ERPNext: ' . $response
             );
         }
     }

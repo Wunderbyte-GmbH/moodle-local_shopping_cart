@@ -42,7 +42,6 @@ use local_shopping_cart\taxcategories;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class taxes extends modifier_base {
-
     /**
      * The id is nedessary for the hierarchie of modifiers.
      * @var int
@@ -61,8 +60,8 @@ abstract class taxes extends modifier_base {
         $taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
         if ($taxesenabled) {
             $taxcategories = taxcategories::from_raw_string(
-                    get_config('local_shopping_cart', 'defaulttaxcategory'),
-                    get_config('local_shopping_cart', 'taxcategories')
+                get_config('local_shopping_cart', 'defaulttaxcategory'),
+                get_config('local_shopping_cart', 'taxcategories')
             );
             self::update_item_price_data($data['items'], $data['userid'], $taxcategories);
             $data['price'] = shopping_cart::calculate_total_price($data["items"]);

@@ -41,7 +41,6 @@ define('LOCAL_SHOPPING_CART_BOOKINGFEE_ONLYONCE', 2);
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class shopping_cart_bookingfee {
-
     /**
      * entities constructor.
      */
@@ -61,8 +60,10 @@ class shopping_cart_bookingfee {
     public static function add_fee_to_cart(int $userid, int $buyforuserid = 0): bool {
 
         // Do we need to add a fee at all?
-        if (get_config('local_shopping_cart', 'bookingfee') <= 0
-            && empty(get_config('local_shopping_cart', 'bookingfeevariable'))) {
+        if (
+            get_config('local_shopping_cart', 'bookingfee') <= 0
+            && empty(get_config('local_shopping_cart', 'bookingfeevariable'))
+        ) {
             return false;
         }
 
@@ -109,12 +110,14 @@ class shopping_cart_bookingfee {
                 LOCAL_SHOPPING_CART_BOOKINGFEE_ONLYONCE,
                 'local_shopping_cart',
                 'bookingfee',
-                $userid);
+                $userid
+            );
             $records2 = shopping_cart_history::return_items_from_history(
                 LOCAL_SHOPPING_CART_BOOKINGFEE_EACHPURCHASE,
                 'local_shopping_cart',
                 'bookingfee',
-                $userid);
+                $userid
+            );
             $records = array_merge($records1, $records2);
         } else {
             // Specific booking fee type.
@@ -122,7 +125,8 @@ class shopping_cart_bookingfee {
                 $bookingfeetype,
                 'local_shopping_cart',
                 'bookingfee',
-                $userid);
+                $userid
+            );
         }
 
         if (count($records) > 0) {
@@ -141,9 +145,10 @@ class shopping_cart_bookingfee {
      */
     public static function is_fee(string $component, string $area): bool {
 
-        if ($component === 'local_shopping_cart'
-            && $area === 'bookingfee') {
-
+        if (
+            $component === 'local_shopping_cart'
+            && $area === 'bookingfee'
+        ) {
             return true;
         }
 

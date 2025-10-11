@@ -37,7 +37,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modal_cashtransfer extends dynamic_form {
-
     /**
      * {@inheritdoc}
      * @see moodleform::definition()
@@ -51,7 +50,9 @@ class modal_cashtransfer extends dynamic_form {
         $listofcashiers = get_users_by_capability(context_system::instance(), 'local/shopping_cart:cashier');
         foreach ($listofcashiers as $cashier) {
             $cashiertemplates[$cashier->id] = $OUTPUT->render_from_template(
-                'local_shopping_cart/form-user-selector-suggestion', $cashier);
+                'local_shopping_cart/form-user-selector-suggestion',
+                $cashier
+            );
         }
 
         // From cashier...
@@ -59,25 +60,40 @@ class modal_cashtransfer extends dynamic_form {
             'multiple' => false,
             'noselectionstring' => get_string('choose...', 'local_shopping_cart'),
         ];
-        $mform->addElement('autocomplete', 'cashtransfercashierfrom',
-            get_string('cashtransfercashierfrom', 'local_shopping_cart'), $cashiertemplates, $options);
+        $mform->addElement(
+            'autocomplete',
+            'cashtransfercashierfrom',
+            get_string('cashtransfercashierfrom', 'local_shopping_cart'),
+            $cashiertemplates,
+            $options
+        );
         $mform->addHelpButton('cashtransfercashierfrom', 'cashtransfercashierfrom', 'local_shopping_cart');
 
         // ...to cashier.
-        $mform->addElement('autocomplete', 'cashtransfercashierto',
-            get_string('cashtransfercashierto', 'local_shopping_cart'), $cashiertemplates, $options);
+        $mform->addElement(
+            'autocomplete',
+            'cashtransfercashierto',
+            get_string('cashtransfercashierto', 'local_shopping_cart'),
+            $cashiertemplates,
+            $options
+        );
         $mform->addHelpButton('cashtransfercashierto', 'cashtransfercashierto', 'local_shopping_cart');
 
-        $mform->addElement('float', 'cashtransferamount',
+        $mform->addElement(
+            'float',
+            'cashtransferamount',
             get_string('cashtransferamount', 'local_shopping_cart'),
-            get_string('cashtransferamount_desc', 'local_shopping_cart'));
+            get_string('cashtransferamount_desc', 'local_shopping_cart')
+        );
         $mform->setDefault('cashtransferamount', 0.00);
         $mform->addHelpButton('cashtransferamount', 'cashtransferamount', 'local_shopping_cart');
 
-        $mform->addElement('text', 'cashtransferreason',
+        $mform->addElement(
+            'text',
+            'cashtransferreason',
             get_string('cashtransferreason', 'local_shopping_cart'),
-            get_string('cashtransferreason_desc', 'local_shopping_cart'));
-
+            get_string('cashtransferreason_desc', 'local_shopping_cart')
+        );
     }
 
     /**
@@ -113,7 +129,14 @@ class modal_cashtransfer extends dynamic_form {
             'cash',
             0,
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH,
-            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            null,
+            0,
+            0,
+            null,
+            null,
+            null,
+            null,
             $data->cashtransferreason,
             $data->cashtransfercashierfrom
         );
@@ -129,7 +152,14 @@ class modal_cashtransfer extends dynamic_form {
             'cash',
             0,
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH,
-            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, null, 0, 0, null, null, null, null,
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            null,
+            0,
+            0,
+            null,
+            null,
+            null,
+            null,
             $data->cashtransferreason,
             $data->cashtransfercashierto
         );

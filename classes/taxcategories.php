@@ -150,9 +150,9 @@ class taxcategories {
         }
         $taxmatrix = self::taxmatrix_from_raw_string($rawcategories, $categories);
         return new taxcategories(
-                $categories,
-                $defaultcategory,
-                $taxmatrix,
+            $categories,
+            $defaultcategory,
+            $taxmatrix,
         );
     }
 

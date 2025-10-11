@@ -27,7 +27,6 @@ use local_shopping_cart\shopping_cart_credits;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_shopping_cart_generator extends testing_module_generator {
-
     /**
      *
      * @var int keep track of how many booking options have been created.
@@ -58,22 +57,26 @@ class local_shopping_cart_generator extends testing_module_generator {
 
         if (!isset($record['accountid'])) {
             throw new coding_exception(
-                    'accountid must be present in phpunit_util::create_option() $record');
+                'accountid must be present in phpunit_util::create_option() $record'
+            );
         }
 
         if (!isset($record['gateway'])) {
             throw new coding_exception(
-                    'gateway must be present in phpunit_util::create_option() $record');
+                'gateway must be present in phpunit_util::create_option() $record'
+            );
         }
 
         if (!isset($record['enabled'])) {
             throw new coding_exception(
-                    'enabled must be present in phpunit_util::create_option() $record');
+                'enabled must be present in phpunit_util::create_option() $record'
+            );
         }
 
         if (!isset($record['config'])) {
             throw new coding_exception(
-                    'config must be present in phpunit_util::create_option() $record');
+                'config must be present in phpunit_util::create_option() $record'
+            );
         }
 
         $this->paymentgateway++;
@@ -99,7 +102,8 @@ class local_shopping_cart_generator extends testing_module_generator {
         // Check required params.
         if (!isset($record['accountid'])) {
             throw new coding_exception(
-                    'accountid must be present in create_plugin_setup() $record');
+                'accountid must be present in create_plugin_setup() $record'
+            );
         }
         // Set all params.
         $res = true;

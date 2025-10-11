@@ -26,7 +26,6 @@ use admin_setting_configtextarea;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_setting_taxcategories extends admin_setting_configtextarea {
-
     /**
      * Validate the contents of the textarea as taxcategories
      * Used to validate a new line separated list of tax categories collected from a textarea control.

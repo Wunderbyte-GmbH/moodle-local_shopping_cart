@@ -34,7 +34,6 @@ namespace local_shopping_cart\event;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class payment_rebooked extends \core\event\base {
-
     /**
      * Init method.
      */

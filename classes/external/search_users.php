@@ -39,7 +39,6 @@ require_once($CFG->dirroot . '/lib/externallib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class search_users extends external_api {
-
     /**
      * Describes the external function parameters.
      *
