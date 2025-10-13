@@ -386,7 +386,8 @@ class shoppingcart_history_list implements renderable, templatable {
                     $item->showrebooking = null; // So we can hide it in mustache template.
                 }
             }
-
+            // For sorting, we still need an unconverted timestamp.
+            $item->timestampmodified = (int) $item->timemodified ?? null;
             // Format the Items for output at the last moment.
             $item->timecreated = !empty($item->timecreated) ?
                 userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;

@@ -97,11 +97,11 @@ if ($CFG->version >= 2023042400) {
 // Convert numbers to strings with 2 fixed decimals right before rendering.
 shopping_cart::convert_prices_to_number_format($data);
 
-// Here, we want to sort by the timecreated timestamp.
+// Here, we want to sort by the timemodified timestamp.
 // Newest items should come first.
 if (!empty($data['historyitems'])) {
     usort($data['historyitems'], function ($a, $b) {
-        return $b['timemodified'] <=> $a['timemodified'];
+        return $b['timestampmodified'] <=> $a['timestampmodified'];
     });
 }
 
