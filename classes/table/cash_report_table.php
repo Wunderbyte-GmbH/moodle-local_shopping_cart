@@ -134,6 +134,26 @@ class cash_report_table extends wunderbyte_table {
 
     /**
      * This function is called for each data row to allow processing of the
+     * 'gateway' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered gatewayname.
+     * @throws dml_exception
+     */
+    public function col_gateway(object $values): string {
+        if (isset($values->gateway)) {
+            try {
+                return get_string('pluginname', 'paygw_' . $values->gateway);
+            } catch (dml_exception $e) {
+                return $values->gateway;
+            }
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * This function is called for each data row to allow processing of the
      * 'payment' value.
      *
      * @param object $values Contains object with all the values of record.
