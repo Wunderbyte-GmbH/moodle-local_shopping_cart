@@ -467,6 +467,24 @@ class shoppingcart_history_list implements renderable, templatable {
     }
 
     /**
+     * Return gateway name.
+     *
+     * @param array $item historyitem.
+     * @return string
+     */
+    private function return_gatewayname(array $item): string {
+        if (isset($item['gateway'])) {
+            try {
+                return get_string('pluginname', 'paygw_' . $item['gateway']);
+            } catch (dml_exception $e) {
+                return $item['gateway'];
+            }
+        } else {
+            return '';
+        }
+    }
+
+    /**
      * Return list of items, when we want to use it separately from the renderer.
      *
      * @return array
@@ -486,6 +504,7 @@ class shoppingcart_history_list implements renderable, templatable {
             } else {
                 $this->historyitems[$key]['receipturl'] = null;
             }
+            $this->historyitems[$key]['gateway'] = $this->return_gatewayname($item);
         }
 
         $returnarray = ['historyitems' => $this->historyitems];
