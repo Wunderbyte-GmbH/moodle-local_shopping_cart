@@ -127,6 +127,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
         $componentname = $data->componentname;
         $area = $data->area;
 
+        $userstocancel = [];
         foreach ($bookedusers as $buser) {
             $credit = $buser->price - $cancelationfee;
 
@@ -146,6 +147,7 @@ class modal_cancel_all_addcredit extends dynamic_form {
                 1,
                 1
             );
+            $userstocancel[] = $buser->userid;
         }
 
         // For the booking component, we have a special treatment here.
@@ -153,7 +155,12 @@ class modal_cancel_all_addcredit extends dynamic_form {
             $pluginmanager = \core_plugin_manager::instance();
             $plugins = $pluginmanager->get_plugins_of_type('mod');
             if (isset($plugins['booking'])) {
-                booking_option::cancelbookingoption($data->itemid);
+                booking_option::cancelbookingoption(
+                    $data->itemid,
+                    '',
+                    false,
+                    $userstocancel
+                );
             }
         }
 
