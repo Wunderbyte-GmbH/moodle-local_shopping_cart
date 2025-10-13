@@ -1,3 +1,8 @@
+## Version 1.0.21 (2025101300)
+* Bugfix: Correctly interpret serviceperiodend for rebookings
+* Bugfix: Correctly sort schistory items
+* Linting: as per 2025-10 Moodle standards update
+
 ## Version 1.0.20 (2025100100)
 * Improvement: Make Feedback on checkout page more granular
 * Bugfix: Revert wrong implementation of service period check
