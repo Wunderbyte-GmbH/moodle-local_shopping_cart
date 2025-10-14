@@ -1,3 +1,7 @@
+## Version 1.0.22 (2025101400)
+* Improvement: Display Payment Pluginnames in cash report table and history list
+* Bugfix: Add userstocancel to potential booking event
+
 ## Version 1.0.21 (2025101300)
 * Bugfix: Correctly interpret serviceperiodend for rebookings
 * Bugfix: Correctly sort schistory items
