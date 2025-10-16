@@ -276,7 +276,7 @@
 #cashiertabs li .active:after,
 #cashiertabs li .success:before,
 #cashiertabs li .success:after {
-    background: var(--success);
+    background: var(--success, var(--bs-success));
 }
 
 .shopping-cart-items {
