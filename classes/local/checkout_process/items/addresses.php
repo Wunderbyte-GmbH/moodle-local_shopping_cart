@@ -38,10 +38,20 @@ use local_shopping_cart\local\checkout_process\items_helper\address_operations;
  */
 class addresses extends checkout_base_item {
     /**
+     * Returns order number of form.
+     * @return int
+     */
+    public static function get_ordernumber(): int {
+        return 0;
+    }
+
+    /**
      * Renders checkout item.
+     * @param array $changedinput
+     * @param array $managercache
      * @return bool
      */
-    public static function is_active(): bool {
+    public static function is_active($changedinput, $managercache): bool {
         if (get_config('local_shopping_cart', 'addresses_required')) {
             return true;
         }

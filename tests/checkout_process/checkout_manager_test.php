@@ -60,7 +60,7 @@ final class checkout_manager_test extends advanced_testcase {
 
         $checkoutmanager = new checkout_manager($mockdata, $mockcontrol);
         $this->assertNotEmpty($checkoutmanager, 'The checkout_manager instance should be created.');
-        $this->assertEquals(3, checkout_manager::get_cache(1)['body_mandatory_count']['body_count']);
+        $this->assertEquals(2, checkout_manager::get_cache(1)['body_mandatory_count']['body_count']);
         $this->assertEquals(2, checkout_manager::get_cache(1)['body_mandatory_count']['mandatory_count']);
     }
 

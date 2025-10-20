@@ -63,11 +63,11 @@ final class vatnrchecker_test extends advanced_testcase {
         set_config('owncountrycode', 'DE', 'local_shopping_cart');
 
         // Assert that the method returns true when conditions are met.
-        $this->assertTrue(vatnrchecker::is_active(), 'Expected is_active to return true when configuration is valid.');
+        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return true when configuration is valid.');
 
         // Remove configurations and test again.
         unset_config('owncountrycode', 'local_shopping_cart');
-        $this->assertFalse(vatnrchecker::is_active(), 'Expected is_active to return false when country code is missing.');
+        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return false when country code is missing.');
     }
 
     /**

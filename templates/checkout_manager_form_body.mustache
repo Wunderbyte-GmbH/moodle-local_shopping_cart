@@ -45,5 +45,8 @@
     data-currentstep="{{checkout_manager_body.currentstep}}"
 >
     {{{template}}}
+    {{#checkout_manager_body.vat_number_voluntarily}}
+        {{> local_shopping_cart/vatnumbervoluntarily }}
+    {{/checkout_manager_body.vat_number_voluntarily}}
 </div>
 {{/checkout_manager_body.body}}

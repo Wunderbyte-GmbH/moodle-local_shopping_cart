@@ -39,17 +39,60 @@ use moodle_exception;
  */
 class vatnrchecker extends checkout_base_item {
     /**
+     * Returns order number of form.
+     * @return int
+     */
+    public static function get_ordernumber(): int {
+        return 1;
+    }
+
+    /**
      * Renders checkout item.
+     * @param mixed $changedinput
+     * @param array $managercache
      * @return bool
      */
-    public static function is_active(): bool {
+    public static function is_active($changedinput, $managercache): bool {
         if (
-            get_config('local_shopping_cart', 'showvatnrchecker')
+            self::show_vat_nr($changedinput, $managercache)
             && !empty(get_config('local_shopping_cart', 'owncountrycode'))
         ) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks status of checkout item.
+     * @param mixed $changedinput
+     * @param array $managercache
+     * @return string
+     */
+    public static function show_vat_nr($changedinputs, $managercache): string {
+        $showvatnrchecker = get_config('local_shopping_cart', 'showvatnrchecker');
+        $onlywithvatnrnumber = get_config('local_shopping_cart', 'onlywithvatnrnumber');
+        if ($onlywithvatnrnumber) {
+            return true;
+        }
+        if (!$showvatnrchecker) {
+            return false;
+        }
+        if (!is_string($changedinputs)) {
+            return false;
+        }
+        $changedinputs = json_decode($changedinputs);
+
+        if (!empty($changedinputs)) {
+            foreach ($changedinputs as $changedinput) {
+                if (
+                    isset($changedinput->name) &&
+                    $changedinput->name == 'vatnumbervoluntarily'
+                ) {
+                    return $changedinput->value;
+                }
+            }
+        }
+        return $managercache['vatnumbervoluntarily'] ?? false;
     }
 
     /**

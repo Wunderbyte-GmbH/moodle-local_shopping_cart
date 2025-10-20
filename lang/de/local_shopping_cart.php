@@ -249,6 +249,7 @@ $string['confirmpaidbackbody'] = 'Wollen Sie die Auszahlung bestätigen? Das set
 $string['confirmpaidbacktitle'] = 'Bestätige Auszahlung';
 $string['confirmpayment'] = 'Bezahlung bestätigen';
 $string['confirmterms'] = "AGBs akzeptieren";
+$string['confirmvatnumbervoluntarily'] = 'Bestätige';
 $string['confirmzeropricecheckout'] = 'Bestätige';
 $string['confirmzeropricecheckoutbody'] = 'Für diese Buchung ist keine Zahlung notwendig.
 Wollen Sie fortfahren und direkt buchen?';
@@ -675,6 +676,7 @@ $string['vatnrerrorfeedback'] = 'UID ist nicht gültig!';
 $string['vatnrfeedbackmandatory'] = 'Die Angabe der UID ist verpflichtend!';
 $string['vatnrfeedbackoptional'] = 'Die Angabe der UID ist optional';
 $string['vatnrvalidationfeedback'] = 'Gültige UID erkannt';
+$string['vatnumbervoluntarily'] = 'Ich buche für ein Unternehmen außerhelb {$a} aber innerhalb der EU.';
 $string['verify'] = "UID prüfen";
 $string['wronginputvalue'] = 'Die eingegebenen Werte sind ungültig.';
 $string['xi'] = "Nordirland";

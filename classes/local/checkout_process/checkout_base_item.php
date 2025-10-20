@@ -61,9 +61,11 @@ abstract class checkout_base_item {
 
     /**
      * Renders checkout item.
+     * @param array $changedinput
+     * @param array $managercache
      * @return bool
      */
-    public static function is_active(): bool {
+    public static function is_active($changedinput, $managercache): bool {
         return true;
     }
 

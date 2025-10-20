@@ -47,9 +47,9 @@ final class addresses_test extends advanced_testcase {
      */
     public function test_is_active(): void {
         set_config('addresses_required', 1, 'local_shopping_cart');
-        $this->assertTrue(addresses::is_active(), 'Expected is_active to return true.');
+        $this->assertTrue(addresses::is_active([], []), 'Expected is_active to return true.');
         unset_config('addresses_required', 'local_shopping_cart');
-        $this->assertFalse(addresses::is_active(), 'Expected is_active to return false.');
+        $this->assertFalse(addresses::is_active([], []), 'Expected is_active to return false.');
     }
 
     /**

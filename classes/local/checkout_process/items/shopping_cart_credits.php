@@ -36,6 +36,13 @@ use local_shopping_cart\local\checkout_process\checkout_base_item;
  */
 class shopping_cart_credits extends checkout_base_item {
     /**
+     * Returns order number of form.
+     * @return int
+     */
+    public static function get_ordernumber(): int {
+        return 4;
+    }
+    /**
      * Renders checkout item.
      * @return string
      */

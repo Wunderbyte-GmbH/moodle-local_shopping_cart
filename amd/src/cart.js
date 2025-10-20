@@ -65,6 +65,7 @@ const SELECTORS = {
     CHECKOUTBUTTON: '#nav-shopping_cart-popover-container #shopping-cart-checkout-button',
     PAYMENTREGIONBUTTON: 'div.shopping_cart_payment_region button',
     ACCEPTTERMS: '#accepttermsandconditions',
+    VATNUMBERVOLUNTARILY: '#vatnumbervoluntarily',
     CHECKVATNRFORM: 'div.form_vatnrchecker',
     INCREASEBUTTON: 'increase',
     DECREASEBUTTON: 'decrease',

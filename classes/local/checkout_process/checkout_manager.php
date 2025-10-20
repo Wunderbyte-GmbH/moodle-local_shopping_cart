@@ -76,7 +76,6 @@ class checkout_manager {
         $data,
         $controlparameter = null
     ) {
-        global $CFG;
         $this->cartstoredata = $data;
         $this->identifier = $data['userid'];
         $this->controlparameter = $controlparameter;
@@ -99,12 +98,56 @@ class checkout_manager {
 
         self::set_active_page($checkoutmanager['checkout_manager_body']['item_list'], $currentstep);
 
+        self::set_vat_number_checkbox($checkoutmanager);
+
         self::render_body_buttons($checkoutmanager['checkout_manager_body'], $currentstep);
 
         self::render_checkout_head($checkoutmanager['checkout_manager_head']);
 
-        self::set_feedback($checkoutmanager['checkout_manager_body']);
+        self::set_feedback(checkoutmanagerbody: $checkoutmanager['checkout_manager_body']);
         return $checkoutmanager;
+    }
+
+    /**
+     * Applies the given price modifiers on the cached data.
+     *
+     * @param mixed $checkoutmanager
+     *
+     * @return void
+     *
+     */
+    public function set_vat_number_checkbox(&$checkoutmanager): void {
+        $showvatnrchecker = get_config('local_shopping_cart', 'showvatnrchecker');
+        $onlywithvatnrnumber = get_config('local_shopping_cart', 'onlywithvatnrnumber');
+        if (
+            $showvatnrchecker &&
+            !$onlywithvatnrnumber &&
+            $checkoutmanager['checkout_manager_body']['currentstep'] == '0'
+        ) {
+            $owncountry = get_config('local_shopping_cart', 'owncountrycode');
+            $vatvoluntarily = false;
+            $changedinputs = json_decode($this->controlparameter['changedinput'] ?? '[]');
+            if (!empty($changedinputs)) {
+                foreach ($changedinputs as $changedinput) {
+                    if ($changedinput->name == 'vatnumbervoluntarily') {
+                        $vatvoluntarily = $changedinput->value;
+                        $this->managercache['vatnumbervoluntarily'] = $vatvoluntarily;
+                        continue;
+                    }
+                }
+            } else {
+                $vatvoluntarily = $this->managercache['vatnumbervoluntarily'] ?? false;
+            }
+            if (
+                !get_config('local_shopping_cart', 'onlywithvatnrnumber') &&
+                $owncountry
+            ) {
+                $checkoutmanager['checkout_manager_body']['vat_number_voluntarily'] = [
+                    'active' => $vatvoluntarily,
+                    'text' => get_string('vatnumbervoluntarily', 'local_shopping_cart', $owncountry),
+                ];
+            }
+        }
     }
 
     /**
@@ -190,11 +233,21 @@ class checkout_manager {
 
     /**
      * Applies the given price modifiers on the cached data.
+     * @return array
      */
     public function get_itemlist_preprocess() {
         global $CFG;
         $path = $CFG->dirroot . '/local/shopping_cart/classes/local/checkout_process/items/*';
-        return glob($path . '*.php');
+        $items = glob($path . '*.php');
+        $sorteditems = [];
+        foreach ($items as $item) {
+            $filename = basename($item, '.php');
+            $classname = self::NAMESPACE_PREFIX . $filename;
+            $iteminstance = new $classname($this->identifier);
+            $sorteditems[$iteminstance->get_ordernumber()] = $item;
+        }
+        ksort($sorteditems, SORT_NUMERIC);
+        return array_values($sorteditems);
     }
 
     /**
@@ -508,7 +561,9 @@ class checkout_manager {
     public function class_exists_is_active($classname): bool {
         if (class_exists($classname)) {
             $iteminstance = new $classname($this->identifier);
-            if ($iteminstance->is_active()) {
+            if (
+                $iteminstance->is_active($this->controlparameter['changedinput'] ?? [], $this->managercache ?? [])
+            ) {
                 return true;
             }
         }
