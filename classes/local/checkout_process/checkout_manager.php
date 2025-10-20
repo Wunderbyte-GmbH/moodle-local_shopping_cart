@@ -537,6 +537,12 @@ class checkout_manager {
      */
     public function is_step_valid($classnamepath) {
         $classname = self::get_class_name($classnamepath);
+        if (
+            isset($this->managercache['steps']) &&
+            !$this->managercache['steps'][$classname]['mandatory']
+        ) {
+            return true;
+        }
         if (isset($this->managercache['steps'][$classname]['valid'])) {
             return $this->managercache['steps'][$classname]['valid'];
         }
