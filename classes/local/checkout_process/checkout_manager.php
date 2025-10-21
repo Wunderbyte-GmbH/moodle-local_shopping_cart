@@ -104,7 +104,7 @@ class checkout_manager {
 
         self::render_checkout_head($checkoutmanager['checkout_manager_head']);
 
-        self::set_feedback(checkoutmanagerbody: $checkoutmanager['checkout_manager_body']);
+        self::set_feedback($checkoutmanager['checkout_manager_body']);
         return $checkoutmanager;
     }
 
