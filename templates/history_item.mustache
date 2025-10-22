@@ -44,11 +44,11 @@
       "payment":"3",
       "paymentstatus":"2",
       "usermodified":"2",
-      "timecreated":"1668028796",
-      "timemodified":"1668028796",
+      "timecreatedrendered":"22 October 2025, 12:25 PM",
+      "timemodifiedrendered":"22 October 2025, 12:25 PM",
       "canceluntil":"1669238377",
-      "serviceperiodstart":"0",
-      "serviceperiodend":"0",
+      "serviceperiodstartrendered":"22 October 2025, 12:25 PM",
+      "serviceperiodendrendered":"22 October 2025, 12:25 PM",
       "gateway":null,
       "canceled":false,
       "canceluntilstring":"2022-11-23",
@@ -66,18 +66,18 @@
     <div class="d-flex w-100 justify-content-between {{#canceled}}text-danger{{/canceled}}">
         <p><span><small>
             {{#bocoursestarttime}}{{#str}} bocoursestarttime, local_shopping_cart {{/str}}:&nbsp;{{bocoursestarttime}}<br>{{/bocoursestarttime}}
-            {{#str}} booked, local_shopping_cart {{/str}}:&nbsp;{{timecreated}}
+            {{#str}} booked, local_shopping_cart {{/str}}:&nbsp;{{timecreatedrendered}}
             {{#canceled}}
-                | {{#str}} canceled, local_shopping_cart {{/str}}:&nbsp;{{timemodified}}
+                | {{#str}} canceled, local_shopping_cart {{/str}}:&nbsp;{{timemodifiedrendered}}
             {{/canceled}}
-            {{#canpayback}}
-                {{#serviceperiodstart}}
-                    <br>{{#str}} serviceperiodstart, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodstart}}
-                    {{#serviceperiodend}}
-                        | {{#str}} serviceperiodend, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodend}}
-                    {{/serviceperiodend}}
-                {{/serviceperiodstart}}
-            {{/canpayback}}
+            {{#showserviceperiod}}{{#canpayback}}
+                {{#serviceperiodstartrendered}}
+                    <br>{{#str}} serviceperiodstart, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodstartrendered}}
+                    {{#serviceperiodendrendered}}
+                        | {{#str}} serviceperiodend, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodendrendered}}
+                    {{/serviceperiodendrendered}}
+                {{/serviceperiodstartrendered}}
+            {{/canpayback}}{{/showserviceperiod}}
         </small></span></p>
         <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small></span></p>
     </div>

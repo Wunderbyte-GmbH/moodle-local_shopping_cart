@@ -26,9 +26,9 @@
 namespace local_shopping_cart\output;
 
 use context_system;
+use dml_exception;
 use local_shopping_cart\context_helper;
 use local_shopping_cart\local\rebookings;
-use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_credits;
 use local_shopping_cart\shopping_cart_history;
@@ -37,7 +37,6 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
-use Throwable;
 
 /**
  * viewtable class to display view.php
@@ -91,6 +90,12 @@ class shoppingcart_history_list implements renderable, templatable {
      * @var bool
      */
     private $canpayback = false;
+
+    /**
+     * Bool showserviceperiod.
+     * @var bool
+     */
+    private $showserviceperiod = false;
 
     /**
      * Bool fromledger.
@@ -162,6 +167,10 @@ class shoppingcart_history_list implements renderable, templatable {
             $this->canpayback = true;
         }
 
+        if (get_config('local_shopping_cart', 'schistoryshowserviceperiod')) {
+            $this->showserviceperiod = true;
+        }
+
         $this->taxesenabled = get_config('local_shopping_cart', 'enabletax') == 1;
 
         $now = time();
@@ -190,13 +199,13 @@ class shoppingcart_history_list implements renderable, templatable {
                 // We want to show the credits at the place of the price.
                 $item->price = $item->credits;
                 $item->taxesenabled = false;
-                $item->timecreated = !empty($item->timecreated) ?
+                $item->timecreatedrendered = !empty($item->timecreated) ?
                     userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->timemodified = !empty($item->timemodified) ?
+                $item->timemodifiedrendered = !empty($item->timemodified) ?
                     userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
+                $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
                     userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
-                $item->serviceperiodend = !empty($item->serviceperiodend) ?
+                $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
                     userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->buttonclass = ' hidden ';
                 $this->historyitems[] = (array)$item;
@@ -388,14 +397,15 @@ class shoppingcart_history_list implements renderable, templatable {
             }
             // For sorting, we still need an unconverted timestamp.
             $item->timestampmodified = (int) $item->timemodified ?? null;
+
             // Format the Items for output at the last moment.
-            $item->timecreated = !empty($item->timecreated) ?
+            $item->timecreatedrendered = !empty($item->timecreated) ?
                 userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->timemodified = !empty($item->timemodified) ?
+            $item->timemodifiedrendered = !empty($item->timemodified) ?
                 userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodstart = !empty($item->serviceperiodstart) ?
+            $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
                 userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
-            $item->serviceperiodend = !empty($item->serviceperiodend) ?
+            $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
                 userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
 
             $item->itemname = format_string($item->itemname);
@@ -455,6 +465,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if (isset($historyarray['canpayback'])) {
             $data['canpayback'] = $historyarray['canpayback'];
+        }
+
+        if (isset($historyarray['showserviceperiod'])) {
+            $data['showserviceperiod'] = $historyarray['showserviceperiod'];
         }
 
         if (!empty($historyarray['currency'])) {
@@ -536,6 +550,10 @@ class shoppingcart_history_list implements renderable, templatable {
             $returnarray['canpayback'] = true;
         }
 
+        if ($this->showserviceperiod) {
+            $returnarray['showserviceperiod'] = true;
+        }
+
         // The "taxesenabled" array key must exist and contains value.
         $returnarray['taxesenabled'] = $this->taxesenabled ?? false;
 
@@ -569,9 +587,9 @@ class shoppingcart_history_list implements renderable, templatable {
                 empty($returnarray['historyitems'][$key]['timemodified'])
                 && !empty($returnarray['historyitems'][$key]['timecreated'])
             ) {
-                $returnarray['historyitems'][$key]['sortingdate'] = strtotime($returnarray['historyitems'][$key]['timecreated']);
+                $returnarray['historyitems'][$key]['sortingdate'] = (int) $returnarray['historyitems'][$key]['timecreated'];
             } else if (!empty($returnarray['historyitems'][$key]['timemodified'])) {
-                $returnarray['historyitems'][$key]['sortingdate'] = strtotime($returnarray['historyitems'][$key]['timemodified']);
+                $returnarray['historyitems'][$key]['sortingdate'] = (int) $returnarray['historyitems'][$key]['timemodified'];
             } else {
                 // Fallback. Should never happen.
                 $returnarray['historyitems'][$key]['sortingdate'] = time();
@@ -657,9 +675,7 @@ class shoppingcart_history_list implements renderable, templatable {
                         && $item['sortingdate'] <= $intervalendtime
                 ));
                 usort($sectionhistoryitems, function ($a, $b) {
-                    // Unfortunately, at this point, timecreated has already been transformed into a string.
-                    // So we need to use strtotime to get timestamps for sorting.
-                    return strtotime($b['timecreated']) <=> strtotime($a['timecreated']);
+                    return (int)$b['timecreated'] <=> (int)$a['timecreated'];
                 });
 
                 // Now we add all matching items to the section.

@@ -617,6 +617,14 @@ if ($hassiteconfig) {
     );
     $shortcodeschistorysettings->add(
         new admin_setting_configcheckbox(
+            'local_shopping_cart/schistoryshowserviceperiod',
+            get_string('schistoryshowserviceperiod', 'local_shopping_cart'),
+            get_string('schistoryshowserviceperiod_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+    $shortcodeschistorysettings->add(
+        new admin_setting_configcheckbox(
             'local_shopping_cart/schistorysections',
             get_string('schistorysections', 'local_shopping_cart'),
             get_string('schistorysections_desc', 'local_shopping_cart'),

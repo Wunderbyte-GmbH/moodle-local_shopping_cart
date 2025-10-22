@@ -593,6 +593,8 @@ $string['schistorysectionssortbybookingcoursestarttime_desc'] = 'Sie haben das B
 Daher können Sie für die Sortierung anstatt dem Datum des Kaufs auch den Beginn der tatsächlichen Buchungsoption verwenden.
 Das macht zum Beispiel dann Sinn, wenn Sie Ihre Kurse in Semestern organisiert haben.';
 $string['schistorysectionsstartingmonth'] = 'Startmonat';
+$string['schistoryshowserviceperiod'] = 'Serviceperiode anzeigen';
+$string['schistoryshowserviceperiod_desc'] = 'Wenn aktiviert, wird die Serviceperiode in der Buchungshistorie angezeigt.';
 $string['se'] = "Schweden";
 $string['searchforitem'] = 'Suche...';
 $string['selectuser'] = 'Wähle eine/n TeilnehmerIn aus...';
@@ -610,7 +612,7 @@ $string['shopping_cart:cashtransfer'] = 'Kann Bargeld von einer Kassa auf eine a
 $string['shopping_cart:changepaymentaccount'] = 'Kann den paymentaccount von Artikeln ändern';
 $string['shopping_cart:history'] = 'Verlauf (History) anzeigen';
 $string['shoppingcarthistory'] = 'Alle bisherigen Käufe einer Person';
-$string['shortcodeschistorysettings'] = 'Buchungshistorie (Shortcode) anpassen';
+$string['shortcodeschistorysettings'] = 'Anzeige der Buchungshistorie (Shopping Cart History) anpassen';
 $string['showdailysums'] = '&sum; Tageseinnahmen anzeigen';
 $string['showdailysumscurrentcashier'] = '&sum; Tageseinnahmen der aktuell eingeloggten Kassier:in anzeigen';
 $string['showdescription'] = 'Zeige Beschreibung';

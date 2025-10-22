@@ -661,6 +661,8 @@ $string['schistorysectionssortbybookingcoursestarttime_desc'] = 'As you have ins
 you can make the sorting dependent on the actual start of booking options instead of the time when the item was booked.
 This makes sense - for example - if you have structured your courses into semesters.';
 $string['schistorysectionsstartingmonth'] = 'Starting month';
+$string['schistoryshowserviceperiod'] = 'Show service period in history';
+$string['schistoryshowserviceperiod_desc'] = 'If enabled, the service period will be displayed.';
 $string['se'] = "Sweden";
 $string['searchforitem'] = 'Search for item...';
 $string['selectuser'] = 'Select a user...';
@@ -678,7 +680,7 @@ $string['shopping_cart:cashtransfer'] = 'Can transfer cash from one cashier to a
 $string['shopping_cart:changepaymentaccount'] = 'Can change the payment account of articles';
 $string['shopping_cart:history'] = 'See History';
 $string['shoppingcarthistory'] = 'All purchases of a given user';
-$string['shortcodeschistorysettings'] = 'Shopping cart history shortcode settings';
+$string['shortcodeschistorysettings'] = 'Shopping cart history settings';
 $string['showdailysums'] = '&sum; Show daily sums';
 $string['showdailysumscurrentcashier'] = '&sum; Show daily sums of current cashier';
 $string['showdescription'] = 'Show description';

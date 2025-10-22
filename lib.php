@@ -38,7 +38,7 @@ define('LOCAL_SHOPPING_CART_PAYMENT_CANCELED', 3);
 
 // Payment methods.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE', 0);
-    // Payment via payment gateway (which is usually connected with a credit card).
+// Payment via payment gateway (which is usually connected with a credit card).
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER', 1); // Payment at cashier's office (unknown if cash, debit or credit card).
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS', 2); // Payment via credits.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH', 3); // Payment at cashier's office using cash.
@@ -46,9 +46,9 @@ define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_DEBITCARD', 4); // Payment at
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CREDITCARD', 5); // Payment at cashier's office using a credit card.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_CASH', 6); // Credits removed and paid back to user by cash.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_MANUAL', 7);
-    // If someone paid, but there was an error, the cashier can re-book someone manually.
+// If someone paid, but there was an error, the cashier can re-book someone manually.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8);
-    // Credits removed and paid back to user by (bank) transfer.
+// Credits removed and paid back to user by (bank) transfer.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION', 10); // Credits payed back during rebooking.
 
