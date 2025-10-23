@@ -50,7 +50,7 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I set the field "Enter your VAT number" to "U1100"
     And I click on "Verify validity of VAT number" "button"
     And I wait "2" seconds
-    And I should see "Vat number is invalid!" in the ".shopping-cart-checkout-manager-alert-error" "css_element"
+    And I should see "VAT number is invalid!" in the ".shopping-cart-checkout-manager-alert-error" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Provide a valid VAT number finally
     And I set the field "Enter your VAT number" to "U74259768"
