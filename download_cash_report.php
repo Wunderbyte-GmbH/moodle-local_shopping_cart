@@ -23,6 +23,7 @@
  */
 
 use local_wunderbyte_table\wunderbyte_table;
+use local_shopping_cart\table\cash_report_table;
 
 require_once("../../config.php");
 
@@ -63,6 +64,7 @@ $table->define_headers([
     get_string('email', 'local_shopping_cart'),
     get_string('itemid', 'local_shopping_cart'),
     get_string('itemname', 'local_shopping_cart'),
+    get_string('nritems', 'local_shopping_cart'),
     get_string('payment', 'local_shopping_cart'),
     get_string('paymentstatus', 'local_shopping_cart'),
     get_string('gateway', 'local_shopping_cart'),
@@ -89,6 +91,7 @@ $table->define_columns([
     'email',
     'itemid',
     'itemname',
+    'nritems',
     'payment',
     'paymentstatus',
     'gateway',

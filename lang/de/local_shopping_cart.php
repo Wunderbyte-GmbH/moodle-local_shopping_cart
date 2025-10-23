@@ -457,6 +457,7 @@ $string['notenoughcredits'] = 'Nicht genügend Guthaben vorhanden.';
 $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
 $string['novatnr'] = "Keine UID verwenden";
+$string['nritems'] = 'Anzahl';
 $string['numberofpayments'] = 'Anzahl der Zahlungen';
 $string['numberofpayments_help'] = 'Anzahl notwendiger Zahlungen NACH der ersten Zahlung. Bitte beachten Sie, dass Ratenzahlungen nicht möglich sind, wenn nicht genügend Zeit bis zum Kursbeginn verbleibt, unter Berücksichtigung der Anzahl der Zahlungen und der Zeit zwischen den Zahlungen (Admin-Plugin-Einstellung).';
 $string['numbersinitemname'] = "Zahlen in Artikelname";
@@ -559,7 +560,7 @@ $string['receipt:total'] = 'Gesamtsumme';
 $string['receipt:transactionno'] = 'Transaktionsnummer';
 $string['receipthtml'] = 'HTML-Vorlage zur Erstellung von Kassenbelegen';
 $string['receipthtml:description'] = 'Sie können die folgenden Platzhalter verwenden:
-[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
+[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[nritems]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] zwischen [[items]] und [[/items]].
 Außerhalb von [[items]] können Sie auch [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]] (Adresse in einer Zeile, [[addressbreaks]] (Adresse mit Zeilenumbrüchen),
 [[date]], [[invoice_number]] und [[order_number]] verwenden.
 Verwenden Sie nur einfaches HTML, das von TCPDF unterstützt wird.';

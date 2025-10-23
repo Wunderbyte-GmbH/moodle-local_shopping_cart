@@ -183,7 +183,8 @@ if (!empty($colselects)) {
 $fields = "s1.*";
 $from = "(SELECT DISTINCT " . $uniqueidpart .
         " AS uniqueid, scl.id, scl.userid, scl.identifier, scl.price, scl.discount, scl.credits, scl.fee, scl.currency,
-        u.lastname, u.firstname, u.email, scl.itemid, scl.itemname, scl.payment, scl.paymentstatus, scl.schistoryid, " .
+        u.lastname, u.firstname, u.email,
+        scl.itemid, scl.itemname, scl.nritems, scl.payment, scl.paymentstatus, scl.schistoryid, " .
         $ootid .
         $DB->sql_concat("um.firstname", "' '", "um.lastname") . " as usermodified, scl.timecreated, scl.timemodified,
         scl.annotation,
@@ -192,7 +193,7 @@ $from = "(SELECT DISTINCT " . $uniqueidpart .
         sch.serviceperiodend
         FROM {local_shopping_cart_ledger} scl
         LEFT JOIN {local_shopping_cart_history} sch
-        ON sch.itemid = scl.itemid AND scl.identifier = sch.identifier
+        ON scl.schistoryid = sch.id
         LEFT JOIN {payments} p
         ON p.itemid = scl.identifier
         $ootidpart
@@ -241,6 +242,7 @@ if ($debug != 2) {
         get_string('email', 'local_shopping_cart'),
         get_string('itemid', 'local_shopping_cart'),
         get_string('itemname', 'local_shopping_cart'),
+        get_string('nritems', 'local_shopping_cart'),
         get_string('payment', 'local_shopping_cart'),
         get_string('paymentbrand', 'local_shopping_cart'),
         get_string('paymentstatus', 'local_shopping_cart'),
@@ -269,6 +271,7 @@ if ($debug != 2) {
         'email',
         'itemid',
         'itemname',
+        'nritems',
         'payment',
         'paymentbrand',
         'paymentstatus',
@@ -365,8 +368,8 @@ if ($debug != 2) {
     ]);
     $table->add_filter($standardfilter);
 
-    $intragefilter = new intrange('itemname', get_string('numbersinitemname', 'local_shopping_cart'));
-    $table->add_filter($intragefilter);
+    $intrangefilter = new intrange('itemname', get_string('numbersinitemname', 'local_shopping_cart'));
+    $table->add_filter($intrangefilter);
 
     $datepicker = new datepicker(
         'serviceperiodstart',
@@ -416,6 +419,7 @@ if ($debug != 2) {
         'email',
         'itemid',
         'itemname',
+        'nritems',
         'payment',
         'paymentbrand',
         'paymentstatus',

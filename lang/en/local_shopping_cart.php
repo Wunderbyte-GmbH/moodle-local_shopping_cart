@@ -462,6 +462,7 @@ $string['notenoughcredits'] = 'Not enough credits available.';
 $string['nouserselected'] = 'No user selected';
 $string['nousersfound'] = 'No users found';
 $string['novatnr'] = "No VAT number";
+$string['nritems'] = 'Number of items';
 $string['numberofpayments'] = 'Number of Payments';
 $string['numberofpayments_help'] = "This number refers to the required payments AFTER the first payment. Please note that installments will not be possible if there isn't enough time until coursestart, considering number of payments and time between payments (admin plugin setting).";
 $string['numbersinitemname'] = "Numbers in item name";
@@ -628,7 +629,7 @@ $string['receipt:total'] = 'Total sum';
 $string['receipt:transactionno'] = 'Transaction number';
 $string['receipthtml'] = 'Put in template for receipt';
 $string['receipthtml:description'] = 'You can use the following placeholders:
-[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
+[[price]], [[credits]], [[fee]], [[discount]], [[pos]], [[name]], [[nritems]], [[location]], [[dayofweektime]], [[originalprice]], [[outstandingprice]] between [[items]] and [[/items]].
 Before and afterwards you can also use [[sum]], [[semester]], [[semestername]], [[semestershort]], [[firstname]], [[lastname]], [[mail]], [[address]] (address in one line), [[addressbreaks]] (address in multiple lines)
 [[date]], [[invoice_number]] and [[order_number]] (outside of [[items]] tag).
 Only use basic HTML supported by TCPDF';
