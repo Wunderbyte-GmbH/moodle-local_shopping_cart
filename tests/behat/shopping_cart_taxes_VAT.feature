@@ -28,10 +28,11 @@ Feature: Configure tax categories and use VAT to reduce price.
       ## Mercedes-Bentz VAT :)
 
   @javascript
-  Scenario: Shopping Cart taxes: use VAT number to reduce net price of single item
+  Scenario: Shopping Cart taxes: use mandatory VAT number to reduce net price of single item
     Given the following config values are set as admin:
-      | config          | value | plugin              |
-      | itempriceisnet  | 1     | local_shopping_cart |
+      | config              | value | plugin              |
+      | itempriceisnet      | 1     | local_shopping_cart |
+      | onlywithvatnrnumber | 1     | local_shopping_cart |
     And VAT mock data is configured as:
       | countrycode | vatnumber   | response                                             |
       | AT          | U1100       | {"valid": false}                                     |
@@ -40,7 +41,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
     And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
@@ -49,23 +49,22 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U1100"
     And I click on "Verify validity of VAT number" "button"
-    And I wait "2" seconds
     And I should see "VAT number is invalid!" in the ".shopping-cart-checkout-manager-alert-error" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Provide a valid VAT number finally
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
-    And I wait "2" seconds
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
     ## Fall to invalid VAT will at this point will not change last valid VAT
     ## And it is intentional behavior - see https://github.com/Wunderbyte-GmbH/moodle-local_shopping_cart/issues/71#issuecomment-2144701017
 
   @javascript
-  Scenario: Shopping Cart taxes: use VAT number to reduce gross price of single item
+  Scenario: Shopping Cart taxes: use mandatory VAT number to reduce gross price of single item
     Given the following config values are set as admin:
-      | config         | value | plugin              |
-      | itempriceisnet | 0     | local_shopping_cart |
+      | config              | value | plugin              |
+      | itempriceisnet      | 0     | local_shopping_cart |
+      | onlywithvatnrnumber | 1     | local_shopping_cart |
     And VAT mock data is configured as:
       | countrycode | vatnumber   | response                                             |
       | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
@@ -73,7 +72,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And Shopping cart has been cleaned for user "user1"
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
     And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
@@ -82,18 +80,18 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
-    And I wait "2" seconds
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
     And I should see "8.70 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
-  Scenario: Shopping Cart taxes: use VAT number and installment to reduce net price of single item
+  Scenario: Shopping Cart taxes: use mandatory VAT number and installment to reduce net price of single item
     Given the following config values are set as admin:
       | config              | value | plugin              |
       | itempriceisnet      | 1     | local_shopping_cart |
       | enableinstallments  | 1     | local_shopping_cart |
       | timebetweenpayments | 2     | local_shopping_cart |
       | reminderdaysbefore  | 1     | local_shopping_cart |
+      | onlywithvatnrnumber | 1     | local_shopping_cart |
     And VAT mock data is configured as:
       | countrycode | vatnumber   | response                                             |
       | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
@@ -101,7 +99,6 @@ Feature: Configure tax categories and use VAT to reduce price.
     And Shopping cart has been cleaned for user "admin"
     And Testitem "5" has been put in shopping cart of user "admin"
     And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
     And I should see "Test item 5" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-5" "css_element"
     And I should see "44.54 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-5 .item-price" "css_element"
     And I should see "(42.42 EUR + 5%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-5 .item-price" "css_element"
@@ -118,7 +115,5 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I set the field "Select your country" to "Austria"
     And I set the field "Enter your VAT number" to "U74259768"
     And I click on "Verify validity of VAT number" "button"
-    And I wait "2" seconds
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
-    And I wait "1" seconds
     And I should see "20.00 EUR" in the ".sc_totalprice" "css_element"
