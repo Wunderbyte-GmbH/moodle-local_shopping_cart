@@ -42,6 +42,44 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I log out
 
   @javascript
+  Scenario: Shopping Cart taxes: use optional VAT number and Austrian address to reduce net price of single item
+    Given the following config values are set as admin:
+      | config              | value     | plugin              |
+      | itempriceisnet      | 1         | local_shopping_cart |
+      | owncountrycode      | DE        | local_shopping_cart |
+      | ownvatnrnumber      | 812526315 | local_shopping_cart |
+      ## Mercedes-Bentz :)
+      | onlywithvatnrnumber |           | local_shopping_cart |
+      ## optional settings not affecting the test
+      ##| showdisabledcheckoutbutton                        | 1         | local_shopping_cart |
+      ##| s_local_shopping_cart_addresses_required[billing] | 1         | local_shopping_cart |
+    And VAT mock data is configured as:
+      | countrycode | vatnumber   | response                                             |
+      | AT          | U74259768   | {"valid": true, "name": "Wunderbyte", "address": ""} |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
+    And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
+    ## Select billing address
+    And I should see "Wien" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I click on "Wien" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    ## Add optional VAT number
+    And I set the field "vatnumbervoluntarily" to "checked"
+    And I press "Next Step"
+    ## Provide a valid VAT number and verify price
+    And I set the field "Select your country" to "Austria"
+    And I set the field "Enter your VAT number" to "U74259768"
+    And I click on "Verify validity of VAT number" "button"
+    And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
+    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
+
+  @javascript
   Scenario: Shopping Cart taxes: mandatory use VAT number and Austrian address to reduce net price of single item
     Given the following config values are set as admin:
       | config              | value     | plugin              |
