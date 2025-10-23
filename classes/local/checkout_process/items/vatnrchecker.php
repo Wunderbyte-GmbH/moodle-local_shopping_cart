@@ -64,7 +64,7 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Checks status of checkout item.
-     * @param mixed $changedinput
+     * @param mixed $changedinputs
      * @param array $managercache
      * @return string
      */

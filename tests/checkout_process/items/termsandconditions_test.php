@@ -57,7 +57,10 @@ final class termsandconditions_test extends advanced_testcase {
         unset_config('accepttermsandconditions', 'local_shopping_cart');
         unset_config('acceptadditionalconditions', 'local_shopping_cart');
 
-        $this->assertFalse(termsandconditions::is_active([], []), 'Expected is_active to return false when no conditions are true.');
+        $this->assertFalse(
+            termsandconditions::is_active([], []),
+            'Expected is_active to return false when no conditions are true.'
+        );
     }
 
     /**
