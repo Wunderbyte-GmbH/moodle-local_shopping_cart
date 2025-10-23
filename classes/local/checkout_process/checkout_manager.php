@@ -224,7 +224,7 @@ class checkout_manager {
                 self::render_checkout_button();
         }
         if (
-            get_config('local_shopping_cart', 'showdisabledcheckoutbutton') == '1' &&
+            !get_config('local_shopping_cart', 'showdisabledcheckoutbutton') &&
             !$checkoutmanagerbody['buttons']['checkout_button']
         ) {
             $checkoutmanagerbody['buttons']['hide_disabled_checkout_button'] = true;
@@ -538,8 +538,9 @@ class checkout_manager {
     public function is_step_valid($classnamepath) {
         $classname = self::get_class_name($classnamepath);
         if (
-            isset($this->managercache['steps']) &&
-            !$this->managercache['steps'][$classname]['mandatory']
+            isset($this->managercache['steps'])
+            && isset($this->managercache['steps'][$classname])
+            && !$this->managercache['steps'][$classname]['mandatory']
         ) {
             return true;
         }

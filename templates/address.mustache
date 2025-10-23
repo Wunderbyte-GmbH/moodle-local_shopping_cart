@@ -60,13 +60,17 @@
                     </div>
                 {{/saved_addresses}}
             </fieldset>
-            <div class="d-flex justify-content-between mt-2">
-                <a href="" class="shopping-cart-new-address">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</a>
+            <div class="d-flex justify-content-between ms-3 me-3 mt-2">
+                <a href="" class="shopping-cart-new-address text-primary">
+                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>&nbsp;
+                    {{#str}} addresses:addnew, local_shopping_cart{{/str}}
+                </a>
                 <a
                     href=""
                     class="shopping-cart-delete-selected-address text-danger"
                     data-addresskey="{{addresskey}}"
                 >
+                    <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;
                     {{#str}} addresses:delete:selected, local_shopping_cart{{/str}}
                 </a>
                 <a
@@ -74,6 +78,7 @@
                     class="shopping-cart-edit-selected-address text-info"
                     data-address-id="{{id}}"
                 >
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;
                     {{#str}} addresses:edit:selected, local_shopping_cart{{/str}}
                 </a>
             </div>

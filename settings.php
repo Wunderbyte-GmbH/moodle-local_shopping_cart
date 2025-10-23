@@ -902,6 +902,14 @@ if ($hassiteconfig) {
         get_string('vatnrcheckerheadingdescription', 'local_shopping_cart')
     ));
 
+    // Checkbox setting to only allow bookings, if a valid VAT number is provided.
+    $settings->add(new admin_setting_configcheckbox(
+        'local_shopping_cart/onlywithvatnrnumber',
+        get_string('onlywithvatnrnumber', 'local_shopping_cart'),
+        get_string('onlywithvatnrnumber_desc', 'local_shopping_cart'),
+        0,
+    ));
+
     // Checkbox to show vatnr check on checkout.
     $settings->add(
         new admin_setting_configcheckbox(
@@ -929,13 +937,6 @@ if ($hassiteconfig) {
         get_string('ownvatnrnumber_desc', 'local_shopping_cart'),
         '',
         PARAM_ALPHANUM
-    ));
-
-    $settings->add(new admin_setting_configcheckbox(
-        'local_shopping_cart/onlywithvatnrnumber',
-        get_string('onlywithvatnrnumber', 'local_shopping_cart'),
-        get_string('onlywithvatnrnumber_desc', 'local_shopping_cart'),
-        0,
     ));
 
     // Add a heading for the section.

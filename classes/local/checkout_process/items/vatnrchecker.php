@@ -160,10 +160,6 @@ class vatnrchecker extends checkout_base_item {
      */
     public static function get_country_code_name(): array {
         $countries = vatnumberhelper::get_countrycodes_array();
-        $owncountry = get_config('local_shopping_cart', 'owncountrycode');
-        if (isset($countries[$owncountry])) {
-            unset($countries[$owncountry]);
-        }
         $formattedcountrycodes = [];
         foreach ($countries as $code => $name) {
             $formattedcountrycodes[] = [
