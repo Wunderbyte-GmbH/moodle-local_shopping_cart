@@ -78,12 +78,13 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
-  Scenario: Shopping Cart taxes: use VAT number and Portugal address to reduce net price of single item
+  Scenario: Shopping Cart taxes: masndatory use VAT number and Portugal address to reduce net price of single item
     Given the following config values are set as admin:
-      | config          | value     | plugin              |
-      | itempriceisnet  | 1         | local_shopping_cart |
-      | owncountrycode  | AT        | local_shopping_cart |
-      | ownvatnrnumber  | U74259768 | local_shopping_cart |
+      | config              | value     | plugin              |
+      | itempriceisnet      | 1         | local_shopping_cart |
+      | owncountrycode      | AT        | local_shopping_cart |
+      | ownvatnrnumber      | U74259768 | local_shopping_cart |
+      | onlywithvatnrnumber | 1         | local_shopping_cart |
     And VAT mock data is configured as:
       | countrycode | vatnumber   | response                                           |
       | PT          | PT500697256 | {"valid": true, "name": "Portugal", "address": ""} |
@@ -91,7 +92,6 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And Shopping cart has been cleaned for user "user2"
     And Testitem "1" has been put in shopping cart of user "user2"
     And I visit "/local/shopping_cart/checkout.php"
-    And I wait until the page is ready
     And I should see "Test item 1" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1" "css_element"
     And I should see "11.50 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
@@ -99,17 +99,14 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     ## Select billing address
     And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Lisboa" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
-    And I wait until the page is ready
     And I press "Next Step"
-    And I wait until the page is ready
-    ##And I should see "11.90 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ##And I should see "(10.00 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "Select your country" to "Portugal"
     And I set the field "Enter your VAT number" to "PT500697256"
     And I click on "Verify validity of VAT number" "button"
-    And I wait "1" seconds
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
+    And I should see "(10.00 EUR + 0%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
@@ -135,11 +132,11 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Lisboa" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I press "Next Step"
-    ##And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ##And I should see "(8.40 EUR + 19%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
     And I set the field "Select your country" to "Portugal"
     And I set the field "Enter your VAT number" to "PT500697256"
     And I click on "Verify validity of VAT number" "button"
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
+    And I should see "(8.70 EUR + 0%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "8.70 EUR" in the ".sc_totalprice" "css_element"
