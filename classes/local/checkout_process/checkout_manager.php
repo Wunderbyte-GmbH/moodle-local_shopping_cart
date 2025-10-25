@@ -129,7 +129,7 @@ class checkout_manager {
             $changedinputs = json_decode($this->controlparameter['changedinput'] ?? '[]');
             if (!empty($changedinputs)) {
                 foreach ($changedinputs as $changedinput) {
-                    if ($changedinput->name == 'vatnumbervoluntarily') {
+                    if (isset($changedinput->name) && $changedinput->name == 'vatnumbervoluntarily') {
                         $vatvoluntarily = $changedinput->value;
                         $this->managercache['vatnumbervoluntarily'] = $vatvoluntarily;
                         continue;
