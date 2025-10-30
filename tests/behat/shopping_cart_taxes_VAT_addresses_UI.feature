@@ -62,7 +62,7 @@ Feature: Configure tax categories and use VAT and testing address UI.
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
-    ## Add another address and select it
+    ## Add another address, select it and verify taxes
     And I follow "Enter new address"
     And I set the field "Name" to "user1"
     And I set the field "Company Name" to "company1"
@@ -73,13 +73,13 @@ Feature: Configure tax categories and use VAT and testing address UI.
     And I press "Add address"
     And I should see "Wien" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Wien" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
-    ##And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ##And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ## Switch to previoue address and edit it
+    And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    ## Switch to previoue address, edit it and verify taxes
     And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I click on "Lisboa" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
-    ##And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
-    ##And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "10.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I follow "Edit selected address"
     And I set the field "Address" to "Commerco 100"
     And I press "Save address"
@@ -90,4 +90,7 @@ Feature: Configure tax categories and use VAT and testing address UI.
     And I press "Submit deletion"
     And I should not see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
     And I should see "Wien" in the ".local-shopping_cart-requiredaddress" "css_element"
+    ## Switch to remaining address and verify taxes again
     And I click on "Wien" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
+    And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
