@@ -124,7 +124,7 @@ function confirmAndDeleteAddress(addressId, button) {
         deselectAddressCheckbox(button.dataset.addresskey);
         const response = e.detail;
         deleteAddress(response);
-        redrawRenderedAddresses(response.templatedata);
+        redrawRenderedAddresses([]); // No template data there (Moodle 4.1 compatibility).
     });
 
     modalForm.show();
