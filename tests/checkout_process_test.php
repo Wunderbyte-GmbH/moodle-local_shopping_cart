@@ -257,6 +257,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                             "currentstep" => 0,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
                     ],
                 ],
                 [
@@ -282,6 +283,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                             "currentstep" => 0,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": false}',
                     ],
                 ],
                 [

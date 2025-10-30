@@ -149,6 +149,13 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
         time_mock::reset_mock_time();
         cartstore::reset();
         \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
+        // Reset all VAT mock data after each scenario.
+        $configs = get_config('local_shopping_cart');
+        foreach ($configs as $key => $value) {
+            if (strpos($key, 'mockvat_') === 0) {
+                unset_config($key, 'local_shopping_cart');
+            }
+        }
     }
     /**
      * Generate fake addresses for a given user.
@@ -171,6 +178,23 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
             $addressids[] = $DB->insert_record('local_shopping_cart_address', $record);
         }
         return $addressids;
+    }
+
+    /**
+     * Setup_vat_mock_data]
+     *
+     * @param array $stepdata
+     *
+     * @return void
+     *
+     */
+    protected function setup_vat_mock_data(array $stepdata): void {
+        $changedinput = json_decode($stepdata['changedinput']);
+        [$countrycode, $vatnumber] = explode(',', $changedinput->vatCodeCountry);
+        $key = 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnumber);
+        $value = $stepdata['vatresponse'];
+        // Store mock as config value under plugin.
+        set_config($key, $value, 'local_shopping_cart');
     }
 
     /**

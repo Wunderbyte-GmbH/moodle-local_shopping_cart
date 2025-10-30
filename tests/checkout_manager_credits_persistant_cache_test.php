@@ -110,6 +110,9 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                         $replacecount
                     );
                 }
+                if (str_contains($stepdata['changedinput'], 'vatCodeCountry')) {
+                    $this->setup_vat_mock_data($stepdata);
+                }
                 $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
                 $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
                 $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
@@ -197,6 +200,7 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                             "currentstep" => 1,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": false}',
                     ],
                 ],
                 [
@@ -260,6 +264,7 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                             "currentstep" => 1,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
                     ],
                 ],
                 [
@@ -321,6 +326,7 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                             "currentstep" => 1,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
                     ],
                 ],
                 [
@@ -384,6 +390,7 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                             "currentstep" => 1,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
                     ],
                 ],
                 [

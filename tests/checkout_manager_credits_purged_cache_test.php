@@ -197,6 +197,7 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
                             "currentstep" => 1,
                             "action" => null,
                         ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
                     ],
                 ],
                 [
