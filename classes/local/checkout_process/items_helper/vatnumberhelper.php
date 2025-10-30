@@ -104,8 +104,8 @@ class vatnumberhelper {
      * @return bool
      */
     public static function is_vatnr_valid(string $countrycode, string $vatnrnumber, ?object $client = null): bool {
-        // Special treatment for the Behat tests.
-        if (defined('BEHAT_SITE_RUNNING')) {
+        // Special treatment for the Behat and PHPUnit tests.
+        if ((defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) || (defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
             $key = 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnrnumber);
             $mockresponse = get_config('local_shopping_cart', $key);
             if (!empty($mockresponse)) {
