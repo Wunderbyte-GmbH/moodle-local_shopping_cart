@@ -104,6 +104,9 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                     $replacecount
                 );
             }
+            if (str_contains($stepdata['changedinput'], 'vatCodeCountry')) {
+                $this->setup_vat_mock_data($stepdata);
+            }
             $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
             $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
             $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);

@@ -110,6 +110,9 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
                         $replacecount
                     );
                 }
+                if (str_contains($stepdata['changedinput'], 'vatCodeCountry')) {
+                    $this->setup_vat_mock_data($stepdata);
+                }
                 $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
                 $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
                 $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
