@@ -1,3 +1,10 @@
+## Version 1.0.23 (2025103100)
+* New feature: Bugfix: New VAT checker in checkout process.
+* Improvement: Implemented new user-flow, using conditional vatnumber checker.
+* Improvement: Moodle 5 - Fix background color for icons on the cashier page.
+* Improvement: Fix left join of ledger and schistory and add number of items to cash report.
+* Bugfix: Fix errors in shopping cart history list (items were lost because of faulty timestamp conversions).
+
 ## Version 1.0.22 (2025101400)
 * Improvement: Display Payment Pluginnames in cash report table and history list
 * Bugfix: Add userstocancel to potential booking event
