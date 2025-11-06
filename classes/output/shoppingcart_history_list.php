@@ -239,7 +239,8 @@ class shoppingcart_history_list implements renderable, templatable {
                                WHERE schistoryid = :schistoryid
                                  AND identifier <> :identifier
                                  AND identifier IS NOT NULL
-                                 AND paymentstatus = :paymentstatus",
+                                 AND paymentstatus = :paymentstatus
+                            ORDER BY identifier DESC",
                     [
                         'schistoryid' => $schistoryid,
                         'identifier' => $item->identifier,

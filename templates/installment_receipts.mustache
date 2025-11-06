@@ -1,0 +1,58 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/installment_receipts
+
+    This template will render the receipts dropdown for installments
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * installmentreceipturls an array of receipt URLs
+
+    Example context (json):
+    {
+        "installmentreceipturls": [
+            {
+                "installmentreceipturl": "https://www.wunderbyte.at/",
+                "identifier": "1"
+            },
+            {
+                "installmentreceipturl": "https://showroom.wunderbyte.at/",
+                "identifier": "2"
+            }
+        ],
+        "buttonclasses": "musi-receipt-btn btn btn-secondary p-1 mt-2 mb-2 w-100"
+    }
+}}
+<div class="dropdown show d-inline">
+    <a class="{{#buttonclasses}}{{.}}{{/buttonclasses}}{{^buttonclasses}}shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left{{/buttonclasses}} dropdown-toggle"
+        href="#" role="button" id="shopping_cart_history_receipt_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-th-list" aria-hidden="true"></i>&nbsp;{{#str}} receipts, local_shopping_cart {{/str}}
+    </a>
+    <div class="dropdown-menu" aria-labelledby="shopping_cart_history_receipt_menu">
+        {{#installmentreceipturls}}
+            <a href="{{{installmentreceipturl}}}" target="_blank" class="dropdown-item shopping_cart_history_receipt_button btn btn-primary btn-sm pull-left">
+                {{#str}} receipt, local_shopping_cart {{/str}} #{{identifier}}
+            </a>
+        {{/installmentreceipturls}}
+    </div>
+</div>

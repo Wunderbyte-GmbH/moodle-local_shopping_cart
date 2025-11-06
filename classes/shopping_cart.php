@@ -1030,10 +1030,10 @@ class shopping_cart {
                     'userid' => $userid,
                     'relateduserid' => $USER->id,
                     'other' => [
-                            'identifier' => $identifier ?? null,
-                            'price' => $data['price'],
-                            'cart' => json_encode($data),
-                            'component' => 'mod_booking', // We want to use this event in mod booking rules.
+                        'identifier' => $identifier ?? null,
+                        'price' => $data['price'],
+                        'cart' => json_encode($data),
+                        'component' => 'mod_booking', // We want to use this event in mod booking rules.
 
                     ],
                 ]);
@@ -1438,6 +1438,9 @@ class shopping_cart {
                             'price' => $record->price ?? 0,
                             'cart' => json_encode($cart),
                             'orderid' => $record->orderid ?? 0,
+                            'itemid' => $record->itemid ?? 0,
+                            'componentname' => $record->componentname ?? null,
+                            'area' => $record->area ?? null,
                     ],
             ]);
             $event->trigger();
