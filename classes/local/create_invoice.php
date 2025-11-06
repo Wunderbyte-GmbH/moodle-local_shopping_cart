@@ -27,7 +27,6 @@
 namespace local_shopping_cart\local;
 
 use context_system;
-use core_payment\account;
 use core_user;
 use Exception;
 use html_writer;
@@ -35,9 +34,8 @@ use local_entities\entitiesrelation_handler;
 use local_shopping_cart\addresses;
 use local_shopping_cart\invoice\invoicenumber;
 use local_shopping_cart\shopping_cart_history;
+use mod_booking\booking_option_settings;
 use moodle_exception;
-use moodle_url;
-use stdClass;
 use stored_file;
 use TCPDF;
 
@@ -504,8 +502,13 @@ class create_invoice {
 
             // If it's a booking option, we add option-specific data.
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
-                $optionid = $item->itemid;
+                $optionid = (int)$item->itemid;
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
+                if (empty($optionsettings->cmid)) {
+                    // Bugfix: If for some reason cmid is empty, we re-create the option settings from DB.
+                    $dbrecord = $DB->get_record('booking_options', ['id' => $optionid]);
+                    $optionsettings = new booking_option_settings($optionid, $dbrecord);
+                }
                 $bookingsettings = \mod_booking\singleton_service::get_instance_of_booking_settings_by_cmid($optionsettings->cmid);
 
                 // If option has no semester id, then use semester id from instance.
