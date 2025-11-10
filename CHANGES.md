@@ -1,3 +1,8 @@
+## Version 1.0.24 (2025111000)
+* Improvement: Separate template for installments, so it can be reused at other places.
+* Bugfix: If for some reason cmid is empty, we re-create the option settings from DB.
+* Bugfix: Fix exception when tax not enabled, but prices and installments are.
+
 ## Version 1.0.23 (2025103100)
 * New feature: Bugfix: New VAT checker in checkout process.
 * Improvement: Implemented new user-flow, using conditional vatnumber checker.
