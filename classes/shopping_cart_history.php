@@ -757,7 +757,7 @@ class shopping_cart_history {
                 // Now we manipulate the orignal entry.
                 $newrecord = $historyitem;
                 $newrecord->price += $record->price;
-                $newrecord->tax += $record->tax;
+                $newrecord->tax += $record->tax ?? 0;
                 $newrecord->timemodified = $record->timemodified;
                 $newrecord->installments--;
                 $newrecord->paymentstatus = $record->paymentstatus;
