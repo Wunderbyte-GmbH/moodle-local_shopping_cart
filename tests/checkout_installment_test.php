@@ -60,7 +60,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
      * @covers \local_shopping_cart\local\checkout_process\checkout_manager
      */
     public function test_checkout_process(array $config, array $changedinputsteps, array $assertions): void {
-        global $DB;
+        global $DB, $OUTPUT;
 
         time_mock::set_mock_time(strtotime('-10 days', time()));
         // Create users.
@@ -165,6 +165,10 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         $this->assertCount(3, $open);
         $due = $cartstore->get_due_installments();
         $this->assertCount(1, $due);
+        // Validatee reminder message as per https://github.com/Wunderbyte-GmbH/moodle-mod_booking/issues/505.
+        $html = local_shopping_cart_render_navbar_output($OUTPUT);
+        $notess = \core\notification::fetch();
+        $this->assertStringContainsString('Don\'t forget: Test item 5, 11.21 EUR.', $notess[0]->get_message());
 
         // Required: add installment to the cart.
         foreach ($due as $dueitem) {
@@ -212,6 +216,10 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         $this->assertCount(2, $open);
         $due = $cartstore->get_due_installments();
         $this->assertCount(1, $due);
+        // Validatee reminder message as per https://github.com/Wunderbyte-GmbH/moodle-mod_booking/issues/505.
+        $html = local_shopping_cart_render_navbar_output($OUTPUT);
+        $notess = \core\notification::fetch();
+        $this->assertStringContainsString('Don\'t forget: Test item 5, 11.21 EUR.', $notess[0]->get_message());
 
         // Required: add 2nd installment to the cart.
         foreach ($due as $dueitem) {
