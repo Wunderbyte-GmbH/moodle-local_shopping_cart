@@ -679,33 +679,25 @@ class shopping_cart {
     }
 
     /**
-     * Add the selected user to cache in chachiermode
+     * Add the selected user to global variable ($_GET).
      *
      * @param int $userid
      * @return int
      */
     public static function buy_for_user(int $userid): int {
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-
-        if ($userid == 0) {
-            $cache->delete('buyforuser');
-        } else {
-            $cache->set('buyforuser', $userid);
-        }
-
+        $_GET['_buyforuser_'] = $userid;
         return $userid;
     }
 
     /**
-     * Return userid from cache. global userid if not to be found.
+     * Return userid from optional param. global userid if not to be found.
      *
      * @return int
      */
     public static function return_buy_for_userid() {
         global $USER;
 
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-        $userid = $cache->get('buyforuser');
+        $userid = optional_param('_buyforuser_', 0, PARAM_INT);
 
         if (!$userid) {
             $userid = $USER->id;
