@@ -99,7 +99,11 @@ class get_price extends external_api {
                 $userid = (int) shopping_cart::return_buy_for_userid();
             }
         } else {
-            $userid = (int) $params['userid'];
+            if (has_capability('local/shopping_cart:cashier', $context) || $params['userid'] == $USER->id) {
+                $userid = (int) $params['userid'];
+            } else {
+                $userid = $USER->id;
+            }
         }
 
         // Add the state to the cache.
