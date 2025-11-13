@@ -426,7 +426,8 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
     const oncashier = window.location.href.indexOf("cashier.php");
 
     if (oncashier > 0) {
-        userid = CASHIERUSER;
+        const params = new URLSearchParams(window.location.search);
+        userid = params.get("userid") || CASHIERUSER;
     }
 
     if (!Number.isInteger(userid)) {
