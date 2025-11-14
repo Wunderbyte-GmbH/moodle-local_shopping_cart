@@ -75,6 +75,8 @@ class delete_item_from_cart extends external_api {
      * @return array
      */
     public static function execute(string $component, string $area, int $itemid, int $userid) {
+        // We do this to ensure that we have the userid available during the request.
+        shopping_cart::buy_for_user($userid);
         $params = self::validate_parameters(self::execute_parameters(), [
             'component' => $component,
             'area' => $area,
