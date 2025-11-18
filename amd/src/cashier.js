@@ -249,7 +249,14 @@ export function discountModal(event) {
         /* Const response = e.detail;
         console.log('confirmCancelAndSetCreditModal response: ', response); */
 
-        reinit(-1);
+        let userid = -1;
+        const oncashier = window.location.href.indexOf("cashier.php");
+        if (oncashier > 0) {
+            const params = new URLSearchParams(window.location.search);
+            userid = params.get("userid") || -1;
+        }
+
+        reinit(userid);
     });
 
     // Show the form.
