@@ -15,7 +15,7 @@ jobs:
 
       # If you need to install additional plugins as dependencies
       extra_plugin_runners: |
-        moodle-plugin-ci add-plugin --branch MOODLE_401_TESTING Wunderbyte-GmbH/moodle-local_wunderbyte_table
+        moodle-plugin-ci add-plugin --branch MOODLE_401_DEV Wunderbyte-GmbH/moodle-local_wunderbyte_table
         moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-paygw_payone
@@ -78,7 +78,7 @@ jobs:
 
       # If you need to install additional plugins as dependencies
       extra_plugin_runners: |
-        moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-local_wunderbyte_table
+        moodle-plugin-ci add-plugin --branch MOODLE_401_DEV Wunderbyte-GmbH/moodle-local_wunderbyte_table
         moodle-plugin-ci add-plugin --branch master branchup/moodle-filter_shortcodes
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-tool_mocktesttime
         moodle-plugin-ci add-plugin --branch main Wunderbyte-GmbH/moodle-paygw_payone
