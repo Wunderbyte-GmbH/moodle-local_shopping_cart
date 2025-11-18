@@ -30,6 +30,7 @@ use local_shopping_cart\output\renderer;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\output\userinfocard;
+use local_wunderbyte_table\local\helper\actforuser;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -103,7 +104,13 @@ class shortcodes {
         // If the id argument was not passed on, we have a fallback in the config.
         $context = context_system::instance();
         if (empty($userid) && has_capability('local/shopping_cart:cashier', $context)) {
-            $userid = shopping_cart::return_buy_for_userid();
+            // Check if rendering is for another user id.
+            if ($urlparamforuserid = actforuser::get_urlparamforuserid($args)) {
+                $userid = optional_param($urlparamforuserid, 0, PARAM_INT);
+                $userid = $userid > 0 ? $userid : $USER->id;
+            } else {
+                $userid = $USER->id;
+            }
         } else if (!has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $USER->id;
         }
