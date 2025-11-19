@@ -105,12 +105,7 @@ class shortcodes {
         $context = context_system::instance();
         if (empty($userid) && has_capability('local/shopping_cart:cashier', $context)) {
             // Check if rendering is for another user id.
-            if ($urlparamforuserid = actforuser::get_urlparamforuserid($args)) {
-                $userid = optional_param($urlparamforuserid, 0, PARAM_INT);
-                $userid = $userid > 0 ? $userid : $USER->id;
-            } else {
-                $userid = $USER->id;
-            }
+            $userid = actforuser::get_foruserid($args, $USER->id);
         } else if (!has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $USER->id;
         }
