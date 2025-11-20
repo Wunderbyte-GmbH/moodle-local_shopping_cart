@@ -362,6 +362,8 @@ $string['error:paymentaccountsdonotmatch'] = 'You already have an item with a di
 You have to buy this item separately!';
 $string['error:paymentaccounttitle'] = 'Different payment account';
 $string['error:useonlyonefield'] = 'Can you use only one of these fields at the time';
+$string['errorcopyingfiles'] = 'Error copying files';
+$string['errorcreatingdirectory'] = 'Error creating directory';
 $string['errorinvalidvatdatadescription'] = 'Both fields must have input values to be valid';
 $string['errorinvalidvatdatatitle'] = 'Invalid data';
 $string['errorinvalidvatnr'] = 'The given VAT number {$a} is invalid';
