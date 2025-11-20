@@ -110,7 +110,11 @@ class WBPDF extends TCPDF {
      * @return void
      */
     public function Header(): void {
-        $header = $this->parse_tags(get_config('local_shopping_cart', 'receipthtml'), 'header');
+        $content = get_config('local_shopping_cart', 'receipthtml') ?? '';
+        if (!$this->is_tag_present($content, 'header')) {
+            return;
+        }
+        $header = $this->parse_tags($content, 'header');
         $this->SetFont('helvetica', 'B', 20);
         $this->writeHTMLCell(0, 0, '', '', $header, 0, 1, 0, true, 'L', true);
     }
@@ -120,16 +124,34 @@ class WBPDF extends TCPDF {
      * @return void
      */
     public function Footer(): void {
+        $content = get_config('local_shopping_cart', 'receipthtml') ?? '';
+
+        if (!$this->is_tag_present($content, 'footer')) {
+            return;
+        }
+
         $this->SetY(-220);
         $this->SetFont('helvetica', '', 7);
+
         $autopagebreak = $this->AutoPageBreak;
         $bmargin = $this->bMargin;
         $this->SetAutoPageBreak(false, 0);
 
-        $footer = self::parse_tags(get_config('local_shopping_cart', 'receipthtml'), 'footer');
-        $footer .= get_string("page") . ' ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages();
-
+        // Write footer HTML content.
+        $footer = $this->parse_tags($content, 'footer');
         $this->writeHTMLCell(0, 0, '', '', $footer, 0, 1, 0, true, 'L', true);
+
+        // Restore autopagebreak.
         $this->SetAutoPageBreak($autopagebreak, $bmargin);
+
+        // Page number section (always bottom-right).
+        $this->SetY(-20); // 20mm from bottom.
+        $this->SetFont('helvetica', '', 7);
+
+        $pagenum = get_string("page") . ' ' .
+            $this->getAliasNumPage() . '/' .
+            $this->getAliasNbPages();
+
+        $this->Cell(0, 10, $pagenum, 0, 0, 'R');
     }
 }
