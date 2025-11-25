@@ -55,12 +55,17 @@ class shortcodes {
 
         global $USER, $PAGE;
 
-        // If the id argument was not passed on, we have a fallback in the connfig.
+        $foruserid = actforuser::get_foruserid($args);
+        $hascashiercapability = has_capability('local/shopping_cart:cashier', context_system::instance());
 
-        if (!isset($args['userid'])) {
-            $userid = $USER->id;
-        } else {
+        // Important security check.
+        // The user must have the cashier capability to fetch data of other users.
+        if (isset($args['userid']) && $hascashiercapability) {
             $userid = $args['userid'];
+        } else if ($foruserid > 0 && $hascashiercapability) {
+            $userid = $foruserid;
+        } else {
+            $userid = $USER->id;
         }
 
         // If the given user doesn't want to see the history for herself...
