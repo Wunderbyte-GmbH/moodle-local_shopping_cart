@@ -1,3 +1,14 @@
+## Version 1.0.25 (2025120100)
+* New feature: Add header and footer to receipts with <header> and <footer> tags.
+* Improvement: Check whether the user has the cashier capability when trying to get prices for others.
+* Improvement: Retrieve the userid from the URL parameters and use it for the get_price external service.
+* Improvement: Store and retrieve the user ID using the $_POST and $_GET superglobals.
+* Improvement: Call buy_for_user in a separate external class to ensure the user ID is available during the request.
+* Improvement: Get paramforuserid as an argument from shortcode to get user ID from URL.
+* Improvement: Set the user ID instead of -1 in the reinit() function on the cashier page after applying a discount.
+* Improvement: Use actforuser::get_foruserid to cover getting userid from argument or optional param.
+* Improvement: Use actforuser::get_foruserid to render the shopping cart history of a user and add a security check.
+
 ## Version 1.0.24 (2025111000)
 * Improvement: Separate template for installments, so it can be reused at other places.
 * Bugfix: If for some reason cmid is empty, we re-create the option settings from DB.
