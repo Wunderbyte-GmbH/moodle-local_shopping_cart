@@ -1,3 +1,6 @@
+## Version 2.0.0 (2025120101)
+* Improvement: Now supporting Moodle 4.5+ (skipped support for Moodle 4.1 - 4.4).
+
 ## Version 1.0.25 (2025120100)
 * New feature: Add header and footer to receipts with <header> and <footer> tags.
 * Improvement: Check whether the user has the cashier capability when trying to get prices for others.
