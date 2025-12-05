@@ -54,6 +54,7 @@
         data-installment="{{installment}}">
   <i class="fa fa-cart-plus" aria-hidden="true"></i>
   <span class="addtocartstring">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
+  {{#main}}{{#foruser}}<br><span>{{{foruser}}}</span>{{/foruser}}{{/main}}
 </div>
 
 {{#js}}
