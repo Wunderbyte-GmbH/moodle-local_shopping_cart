@@ -84,7 +84,14 @@ class modal_add_discount_to_item extends dynamic_form {
         ) {
             global $DB;
             $itemid = $this->_ajaxformdata["itemid"];
-            $iteminfos = $DB->get_record('local_shopping_cart_iteminfo', ['itemid' => $itemid]);
+            $iteminfos = $DB->get_record(
+                'local_shopping_cart_iteminfo',
+                [
+                    'itemid' => $itemid,
+                    'componentname' => $this->_ajaxformdata["componentname"],
+                    'area' => $this->_ajaxformdata["area"],
+                ]
+            );
             $data = json_decode($iteminfos->json);
             if (
                 isset($data->allowinstallment)

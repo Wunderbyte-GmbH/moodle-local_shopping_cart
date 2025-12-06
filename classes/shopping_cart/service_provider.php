@@ -316,6 +316,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     'id',
                     [
                         'itemid' => $itemid,
+                        'componentname' => 'local_shopping_cart',
                         'area' => $area,
                     ],
                     IGNORE_MISSING
