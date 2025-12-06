@@ -127,7 +127,7 @@
 }}
 
 {{#taxesenabled}}
-    <div class="text-right mr-3">
+    <div class="text-end me-3">
         {{#price_net}}
             <span>{{#str}} total_net, local_shopping_cart {{/str}}</span>
             <span class="sc_totalprice_net">{{price_net}} {{currency}}</span>
@@ -140,7 +140,7 @@
 
 {{! prices without tax information }}
 {{^taxesenabled}}
-    <div class="text-right mt-1 mr-3">
+    <div class="text-end mt-1 me-3">
         <span><b>{{#str}} total, local_shopping_cart {{/str}}</b></span>
         <span class="sc_totalprice text-success"><b>{{price}} {{currency}}</b></span>
     </div>
