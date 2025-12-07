@@ -885,6 +885,64 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025081901, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2025120700) {
+
+        // Define table local_shopping_cart_coupons to be created.
+        $table = new xmldb_table('local_shopping_cart_coupons');
+
+        // Adding fields to table local_shopping_cart_coupons.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('coupon', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('discountpercentage', XMLDB_TYPE_NUMBER, '3, 1', null, null, null, '0');
+        $table->add_field('discountabsolute', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, '0');
+        $table->add_field('currency', XMLDB_TYPE_CHAR, '10', null, null, null, 'EUR');
+        $table->add_field('maxnumber', XMLDB_TYPE_INTEGER, '8', null, null, null, '1');
+        $table->add_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+        $table->add_field('starttime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('endtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table local_shopping_cart_coupons.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table local_shopping_cart_coupons.
+        $table->add_index('coupon_idx', XMLDB_INDEX_UNIQUE, ['coupon']);
+
+        // Conditionally launch create table for local_shopping_cart_coupons.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025120700, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2025120704) {
+        // Define field coupon to be added to local_shopping_cart_history.
+        $table = new xmldb_table('local_shopping_cart_history');
+        $field = new xmldb_field('coupon', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'multipliable');
+
+        // Conditionally launch add field coupon.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field coupon to be added to local_shopping_cart_ledger.
+        $table = new xmldb_table('local_shopping_cart_ledger');
+        $field = new xmldb_field('coupon', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'multipliable');
+
+        // Conditionally launch add field coupon.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2025120704, 'local', 'shopping_cart');
+    }
+
     if ($oldversion < 2026042100) {
         // Create the local_shopping_cart_guestusers table to track temporary guest
         // checkout accounts that have not yet been converted to real Moodle users.
