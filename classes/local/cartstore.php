@@ -165,6 +165,7 @@ class cartstore {
      * @param float $percent
      * @param float $absolute
      * @param float $downpayment
+     * @param string $couponcode
      * @return array
      */
     public function add_discount_to_item(
@@ -173,12 +174,25 @@ class cartstore {
         int $itemid,
         float $percent,
         float $absolute,
-        float $downpayment = -1
+        float $downpayment = -1,
+        string $couponcode = ''
     ): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
+
+        if (!empty($couponcode)) {
+            // We store that we have already applied the coupon code in this cartstore.
+            $data = $this->get_cache();
+
+            // If a coupon code is already applied, we do not allow to apply another one.
+            if (!empty($data['coupon'])) {
+                return ['success' => 0];
+            }
+            $data['coupon'] = $couponcode;
+            $this->set_cache($data);
         }
 
         $item = $this->get_item($component, $area, $itemid);
@@ -252,6 +266,32 @@ class cartstore {
         $this->save_item($item);
 
         return ['success' => 1];
+    }
+
+    /**
+     * Check if a coupon is applied.
+     *
+     * @return bool
+     *
+     */
+    public function coupon_applied(): bool {
+        $data = $this->get_cache();
+        return !empty($data['coupon']);
+    }
+
+    /**
+     * Returns the applied coupon code.
+     *
+     * @return string
+     *
+     */
+    public function get_applied_coupon(): string {
+        $data = $this->get_cache();
+        if (!empty($data['coupon'])) {
+            return $data['coupon'];
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -492,6 +532,7 @@ class cartstore {
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
+                unset($data['coupon']);
                 $this->set_cache($data);
                 $this->delete_saved_items_from_db();
             }

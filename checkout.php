@@ -26,6 +26,7 @@
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
+use local_shopping_cart\local\coupon;
 use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -150,6 +151,21 @@ if (isset($success) && isset($historylist)) {
     shopping_cart::check_for_ongoing_payment($userid);
 
     $cartstore->get_expanded_checkout_data($data);
+}
+
+// Coupon handling.
+if (get_config('local_shopping_cart', 'couponenabled')) {
+    $data['couponenabled'] = true;
+
+    $coupon = new coupon($userid);
+    [$success, $couponmessage] = $coupon->apply_coupon_code('');
+
+    if ($success) {
+        $data['couponenabled'] = false;
+        $data['couponmessage'] = $couponmessage;
+    }
+} else {
+    $data['couponenabled'] = false;
 }
 
 // Address handling.

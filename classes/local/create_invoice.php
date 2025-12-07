@@ -441,6 +441,7 @@ class create_invoice {
 
         $pos = 1;
         $sum = 0.0;
+        $discount = 0.0;
         $itemhtml = '';
         foreach ($items as $item) {
             if (isset($item->schistoryid)) {
@@ -547,10 +548,13 @@ class create_invoice {
             $sum += $price;
             $itemhtml .= $tmp;
             $pos++;
+            $discount += $item->discount ?? 0.0;
         }
 
         $sumstring = format_float((float)$sum, 2);
+        $discountstring = format_float((float)$discount, 2);
         $posthtml = str_replace("[[sum]]", $sumstring, $posthtml);
+        $posthtml = str_replace("[[discount]]", $discountstring, $posthtml);
         $html = '
         <style>
             h1 {

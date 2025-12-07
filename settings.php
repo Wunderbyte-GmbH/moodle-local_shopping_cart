@@ -1037,4 +1037,21 @@ if ($hassiteconfig) {
             0
         )
     );
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/couponsheading',
+        get_string('couponsheading', 'local_shopping_cart'),
+        get_string('couponsheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/couponenabled',
+            get_string('couponenabled', 'local_shopping_cart'),
+            get_string('couponenableddescription', 'local_shopping_cart'),
+            0
+        )
+    );
 }

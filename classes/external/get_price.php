@@ -33,6 +33,7 @@ use external_function_parameters;
 use external_value;
 use external_single_structure;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\coupon;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -59,6 +60,8 @@ class get_price extends external_api {
                         'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                         'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
                         'useinstallments' => new external_value(PARAM_INT, 'use installments', VALUE_DEFAULT, 0),
+                        'couponvalue' => new external_value(PARAM_TEXT, 'coupon value', VALUE_DEFAULT, ''),
+                        'couponenabled' => new external_value(PARAM_BOOL, 'If coupons are enabled', VALUE_DEFAULT, false),
                 ]);
     }
 
@@ -68,14 +71,23 @@ class get_price extends external_api {
      * @param int $userid
      * @param int $usecredit
      * @param int $useinstallments
+     * @param string $couponvalue
      *
      * @return array
      */
-    public static function execute(int $userid, int $usecredit, int $useinstallments): array {
+    public static function execute(
+        int $userid,
+        int $usecredit,
+        int $useinstallments,
+        string $couponvalue,
+        bool $couponenabled = false
+    ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
                 'userid' => $userid,
                 'usecredit' => $usecredit,
                 'useinstallments' => $useinstallments,
+                'couponvalue' => $couponvalue,
+                'couponenabled' => $couponenabled,
         ]);
 
         global $USER;
@@ -106,6 +118,10 @@ class get_price extends external_api {
             }
         }
 
+        // Before appliying the credit, we have to apply the coupon if any.
+        $coupon = new coupon($userid);
+        [$success, $couponmessage] = $coupon->apply_coupon_code($couponvalue);
+
         // Add the state to the cache.
         if ($params['usecredit'] != -1) {
             shopping_cart::save_used_credit_state($userid, $usecredit);
@@ -125,6 +141,11 @@ class get_price extends external_api {
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
         $data['lang'] = current_language() ?? 'en';
+
+        // If there is a coupon message, we disable the couponenabled flag.
+        $data['couponmessage'] = $couponmessage;
+        $data['couponenabled'] = $success ? false : $couponenabled;
+        $data['coupon'] = $couponvalue;
 
         return $data;
     }
@@ -149,6 +170,9 @@ class get_price extends external_api {
                             VALUE_DEFAULT,
                             0
                         ),
+                        'coupon' => new external_value(PARAM_TEXT, 'The applied coupon code', VALUE_DEFAULT, ''),
+                        'couponenabled' => new external_value(PARAM_BOOL, 'If coupons are enabled', VALUE_DEFAULT, false),
+                        'couponmessage' => new external_value(PARAM_TEXT, 'Message about the coupon', VALUE_DEFAULT, ''),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'lang' => new external_value(PARAM_TEXT, 'Language', VALUE_REQUIRED),

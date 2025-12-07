@@ -70,6 +70,7 @@ const SELECTORS = {
     INCREASEBUTTON: 'increase',
     DECREASEBUTTON: 'decrease',
     SHOPPINGCARTITEM: '[data-itemid]',
+    COUPONINPUT: 'input[data-id="couponcode"]',
 };
 /**
  *
@@ -423,8 +424,14 @@ export const addItem = (itemid, component, area, userid) => {
  * @param {*} userid
  * @param {*} usecredit 1 = enable it, 0 = disable it, -1 = no change
  * @param {*} useinstallments 1 = enable it, 0 = disable it, -1 = no change
+ * @param {*} couponvalue
  */
-export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0) => {
+export const updateTotalPrice = (
+    userid = 0,
+    usecredit = true,
+    useinstallments = false,
+    couponvalue = ''
+) => {
 
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
@@ -463,13 +470,16 @@ export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0)
             useinstallments = useinstallments ? 1 : 0;
         }
     }
+    const couponenabled = document.querySelector(SELECTORS.COUPONINPUT) !== null;
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
         args: {
             userid,
             usecredit,
-            useinstallments
+            useinstallments,
+            couponvalue,
+            couponenabled
         },
         done: function(data) {
 
@@ -991,40 +1001,66 @@ export function initPriceLabel(userid) {
         userid = 0;
     }
 
+    initChangeListener(document.querySelector(SELECTORS.PRICELABELCHECKBOX), userid);
+    initChangeListener(document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX), userid);
+    initChangeListener(document.querySelector(SELECTORS.COUPONINPUT), userid, true);
+}
+
+/**
+ * Debounce function to limit the rate of function calls.
+ * @param {*} fn
+ * @param {*} delay
+ */
+function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+/**
+ * Handles the price recalculation on change of the price label options.
+ * @param {int} userid
+ */
+function handlePriceRecalc(userid) {
+    // eslint-disable-next-line no-console
+    console.log('triggered', userid);
     const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
     const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
+    const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+    // eslint-disable-next-line no-console
+    console.log('values', checkbox, installmentscheckbox, couponinput);
 
-    if (checkbox && !checkbox.initialized) {
-        checkbox.initialized = true;
-        checkbox.addEventListener('change', event => {
+    const checkboxchecked = checkbox ? checkbox.checked : null;
+    const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
+    const couponvalue = couponinput ? couponinput.value : '';
 
-            if (event.currentTarget.checked) {
-                updateTotalPrice(userid, 1, -1);
-            } else {
-                updateTotalPrice(userid, 0, -1);
-            }
-        });
+    // Adapt this call if your updateTotalPrice supports coupon codes now
+    updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue);
+}
+
+/**
+ * Handles the price recalculation on change of the price label options.
+ * @param {*} el
+ * @param {int} userid
+ * @param {boolean} isCouponInput
+ */
+function initChangeListener(el, userid, isCouponInput = false) {
+    if (!el || el.initialized) {
+        return;
     }
+    el.initialized = true;
 
-    if (installmentscheckbox && !installmentscheckbox.initialized) {
-        installmentscheckbox.initialized = true;
+    if (isCouponInput) {
+        // React on every character, but debounce 500ms
+        el.addEventListener('input', debounce(() => {
+            handlePriceRecalc(userid);
+        }, 500));
 
-        // eslint-disable-next-line no-console
-        console.log('add event listener to installment');
-        installmentscheckbox.addEventListener('change', event => {
-
-            // eslint-disable-next-line no-console
-            console.log(event.currentTarget, event.currentTarget.checked);
-
-            // eslint-disable-next-line no-console
-            console.log(checkbox);
-            if (event.currentTarget.checked) {
-                updateTotalPrice(userid, -1, 1);
-            } else {
-                updateTotalPrice(userid, -1, 0);
-            }
-
-        });
+    } else {
+        // Checkboxes
+        el.addEventListener('change', () => handlePriceRecalc(userid));
     }
 }
 

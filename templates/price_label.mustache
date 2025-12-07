@@ -125,6 +125,31 @@
             <span class="sc_totalprice text-success"><b>{{price}} {{currency}}</b></span>
         </div>
     {{/taxesenabled}}
+    {{#couponenabled}}
+        <div class="form-group sc_coupon">
+            <label for="couponcode">
+                {{#str}} coupon:entercode, local_shopping_cart {{/str}}
+            </label>
+            <input type="text"
+                class="form-control"
+                data-id="couponcode"
+                name="couponcode"
+                placeholder="{{#str}} coupon:entercode, local_shopping_cart {{/str}}"
+                value="{{coupon}}">
+        </div>
+        <div class="text-right mr-3 sc_couponmessage">
+            {{#couponmessage}}
+                <span class="alert alert-danger" role="alert">{{couponmessage}}</span>
+            {{/couponmessage}}
+        </div>
+    {{/couponenabled}}
+    {{^couponenabled}}
+        <div class="text-right mr-3 sc_couponmessage">
+            {{#couponmessage}}
+                <span class="alert alert-success" role="alert">{{couponmessage}}</span>
+            {{/couponmessage}}
+        </div>
+    {{/couponenabled}}
 </div>
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {
