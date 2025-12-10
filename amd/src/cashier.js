@@ -117,6 +117,7 @@ export const confirmPayment = (userid, paymenttype, annotation = '') => {
 
                 console.log('payment confirmed', data);
                 reloadHistory(userid);
+                reinit(userid);
 
                 // The function can be called via cashier, or because a user pays via credits.
                 // If that's the case, we are not on the cashier site.
