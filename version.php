@@ -25,11 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_shopping_cart';
-$plugin->release = '2.0.0';
-$plugin->version = 2025120101;
+$plugin->release = '2.0.1';
+$plugin->version = 2025121000;
 $plugin->requires = 2024100700; // Requires this Moodle version. Current: Moodle 4.5.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->supported = [405, 501];
 $plugin->dependencies = [
-    'local_wunderbyte_table' => 2025120101,
+    'local_wunderbyte_table' => 2025121000,
 ];

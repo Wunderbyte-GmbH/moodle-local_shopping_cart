@@ -1,3 +1,9 @@
+## Version 2.0.1 (2025121000)
+* Improvement: Display the target user's name on the button.
+* Improvement: Various adjustments for Bootstrap 5 readiness.
+* Improvement: Make sure cart items of user does not contain items of buy for user.
+* Bugfix: Remove items from the cart after payment confirmation on the cashier page.
+
 ## Version 2.0.0 (2025120101)
 * Improvement: Now supporting Moodle 4.5+ (skipped support for Moodle 4.1 - 4.4).
 
