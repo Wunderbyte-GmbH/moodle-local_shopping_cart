@@ -261,7 +261,8 @@ export const reinit = (userid = 0) => {
         done: function(data) {
 
             // If we are on the cashier page, we add the possibility to add a discount to the cart items.
-            const oncashier = window.location.href.indexOf("cashier.php");
+            const loggedinuserid = M.cfg.userId;
+            const oncashier = (userid != 0 && userid != loggedinuserid);
 
             if (oncashier > 0) {
                 data.iscashier = true;
