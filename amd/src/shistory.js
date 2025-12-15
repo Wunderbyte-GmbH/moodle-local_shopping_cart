@@ -443,18 +443,10 @@ export async function confirmCancelModal(button, cancelationFee) {
         deducedvalue: deducedvalue,
     };
 
-    const roundvalues = button.dataset.round;
-    if (roundvalues) {
-        params.price = Math.round(price);
-        params.credit = Math.round(credit);
-        params.cancelationfee = Math.round(cancelationFee);
-        params.deducedvalue = Math.round(deducedvalue);
-    } else {
-        params.price = price.toFixed(2);
-        params.credit = credit.toFixed(2);
-        params.cancelationfee = cancelationFee.toFixed(2);
-        params.deducedvalue = deducedvalue.toFixed(2);
-    }
+    params.price = price.toFixed(2);
+    params.credit = credit.toFixed(2);
+    params.cancelationfee = cancelationFee.toFixed(2);
+    params.deducedvalue = deducedvalue.toFixed(2);
 
     let bodystring = 'confirmcancelbodyuser';
     if (quotaconsumed > 0 && quotaconsumed < 1) {
