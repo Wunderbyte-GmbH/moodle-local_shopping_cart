@@ -51,28 +51,29 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I click on "[data-quotaconsumed=\"0.67\"]" "css_element"
     And I wait "1" seconds
     And I should see "67%" in the ".modal-dialog .progress-bar" "css_element"
-    And I should see "10 EUR" in the ".show .modal-content" "css_element"
-    And I should see "- 7 EUR" in the ".show .modal-content" "css_element"
-    And I should see "- 1 EUR" in the ".show .modal-content" "css_element"
-    And I should see "= 2 EUR" in the ".show .modal-content" "css_element"
+    And I should see "10.00 EUR" in the ".show .modal-content" "css_element"
+    And I should see "- 6.70 EUR" in the ".show .modal-content" "css_element"
+    And I should see "- 1.00 EUR" in the ".show .modal-content" "css_element"
+    And I should see "= 2.30 EUR" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
     ## Then I should see "2" in the ".cashier-history-items span.credit_total" "css_element"
     Then I should see "2" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"0\"]" "css_element"
     And I wait "1" seconds
-    And I should see "the costs of your purchase (20 EUR)" in the ".show .modal-content" "css_element"
-    And I should see "minus a cancelation fee (1 EUR)" in the ".show .modal-content" "css_element"
-    And I should see "as credit (19 EUR) for your next purchase" in the ".show .modal-content" "css_element"
+    And I should see "the costs of your purchase (20.30 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "minus a cancelation fee (1.00 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "as credit (19.30 EUR) for your next purchase" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
-    And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
+    And I wait "1" seconds
+    And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"1\"]" "css_element"
     And I wait "1" seconds
-    And I should see "You have already consumed the whole article and won't get any refund of the price paid: 14 EUR" in the ".show .modal-content" "css_element"
+    And I should see "You have already consumed the whole article and won't get any refund of the price paid: 13.80 EUR" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
-    And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
+    And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
     And I log out
     ## Verify records in the ledger table.
     And I log in as "admin"
@@ -80,8 +81,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And the following should exist in the "cash_report_table" table:
       | Paid  | Credit: | Cancelation fee | Item name              | E-Mail                     | Payment method | Status   |
       | 0.00  | 0.00    | -1.00           | Canceled - Test item 3 | toolgenerator1@example.com | Credits	       | Canceled |
-      | 0.00  | 19.00   | 0.00            | Canceled - Test item 2 | toolgenerator1@example.com | Credits	       | Canceled |
-      | 0.00  | 2.00    | 0.00            | Canceled - Test item 1 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 19.30   | 0.00            | Canceled - Test item 2 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 2.30    | 0.00            | Canceled - Test item 1 | toolgenerator1@example.com | Credits	       | Canceled |
       | 13.80 |         |                 | Test item 3            | toolgenerator1@example.com | Cashier (Cash) | Success  |
       | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
       | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
