@@ -303,7 +303,7 @@ function showCredit(credit, currency, userid) {
         });
     }
     // We also need to call the udpateTotalPrice function from this place to make sure everything is uptodate.
-    updateTotalPrice();
+    updateTotalPrice(userid, -1, -1);
 }
 
 /**
@@ -346,7 +346,7 @@ function confirmPaidBack(element) {
             });
 
              // We also need to call the udpateTotalPrice function from this place to make sure everything is uptodate.
-            updateTotalPrice();
+            updateTotalPrice(userid, -1, -1);
             reloadHistory(userid);
             return;
         },

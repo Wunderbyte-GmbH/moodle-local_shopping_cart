@@ -307,8 +307,11 @@ export const reinit = (userid = 0) => {
                 }
 
                 toggleActiveButtonState();
-
-                updateTotalPrice(userid);
+                // eslint-disable-next-line no-console
+                console.log('reinit -> updateTotalPrice');
+                // We don’t want to set the useinstallment and usecredit values; we just want to get the price information.
+                // To achieve this, we pass -1 for both usecredit and useinstallment.
+                updateTotalPrice(userid, -1, -1);
 
                 return;
             }).catch(e => {
@@ -418,10 +421,10 @@ export const addItem = (itemid, component, area, userid) => {
 /**
  *
  * @param {*} userid
- * @param {*} usecredit
- * @param {*} useinstallments
+ * @param {*} usecredit 1 = enable it, 0 = disable it, -1 = no change
+ * @param {*} useinstallments 1 = enable it, 0 = disable it, -1 = no change
  */
-export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments = false) => {
+export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0) => {
 
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
@@ -438,21 +441,27 @@ export const updateTotalPrice = (userid = 0, usecredit = true, useinstallments =
     // We must make sure the checkbox is only once visible on the site.
     const checkboxes = document.querySelectorAll(SELECTORS.PRICELABELCHECKBOX);
 
-    if (checkboxes.length == 1) {
-        checkboxes.forEach(checkbox => {
-            usecredit = checkbox.checked ? 1 : 0;
-        });
-    } else {
-        usecredit = usecredit ? 1 : 0;
+    // In the case that we need to get the price, we set usecredit to -1.
+    if (usecredit != -1) {
+        if (checkboxes.length == 1) {
+            checkboxes.forEach(checkbox => {
+                usecredit = checkbox.checked ? 1 : 0;
+            });
+        } else {
+            usecredit = usecredit ? 1 : 0;
+        }
     }
 
     const installmentcheckboxes = document.querySelectorAll(SELECTORS.INSTALLMENTSCHECKBOX);
-    if (installmentcheckboxes.length == 1) {
-        installmentcheckboxes.forEach(installmentcheckboxe => {
-            useinstallments = installmentcheckboxe.checked ? 1 : 0;
-        });
-    } else {
-        useinstallments = useinstallments ? 1 : 0;
+    // In the case that we need to get the price, we set useinstallments to -1.
+    if (useinstallments != -1) {
+        if (installmentcheckboxes.length == 1) {
+            installmentcheckboxes.forEach(installmentcheckboxe => {
+                useinstallments = installmentcheckboxe.checked ? 1 : 0;
+            });
+        } else {
+            useinstallments = useinstallments ? 1 : 0;
+        }
     }
 
     Ajax.call([{
@@ -974,15 +983,10 @@ export function initPriceLabel(userid) {
         checkbox.initialized = true;
         checkbox.addEventListener('change', event => {
 
-            var installementsvalue = false;
-            if (installmentscheckbox) {
-                installementsvalue = installmentscheckbox.checked;
-            }
-
             if (event.currentTarget.checked) {
-                updateTotalPrice(userid, true, installementsvalue);
+                updateTotalPrice(userid, 1, -1);
             } else {
-                updateTotalPrice(userid, false, installementsvalue);
+                updateTotalPrice(userid, 0, -1);
             }
         });
     }
@@ -999,13 +1003,11 @@ export function initPriceLabel(userid) {
 
             // eslint-disable-next-line no-console
             console.log(checkbox);
-
-            let checkboxchecked = null;
-            if (checkbox) {
-                checkboxchecked = checkbox.checked;
+            if (event.currentTarget.checked) {
+                updateTotalPrice(userid, -1, 1);
+            } else {
+                updateTotalPrice(userid, -1, 0);
             }
-
-            updateTotalPrice(userid, checkboxchecked, event.currentTarget.checked);
 
         });
     }
