@@ -101,7 +101,7 @@ shopping_cart::convert_prices_to_number_format($data);
 // Newest items should come first.
 if (!empty($data['historyitems'])) {
     usort($data['historyitems'], function ($a, $b) {
-        return $b['timestampmodified'] <=> $a['timestampmodified'];
+        return (int)($b['timemodified'] ?? 0) <=> (int)($a['timemodified'] ?? 0);
     });
 }
 
