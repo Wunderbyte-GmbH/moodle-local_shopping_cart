@@ -60,6 +60,9 @@ class cartstore {
     /** @var mixed */
     private $cachedata = null;
 
+    /** @var array */
+    protected $installmentsdownpayments = [];
+
     /**
      * Cartstore constructor.
      * @param int $userid
@@ -230,7 +233,13 @@ class cartstore {
             unset($item['discount']);
         }
         if ($downpayment >= 0) {
-            installments::set_downpayment_for_user_and_option($this->userid, $itemid, $downpayment);
+            installments::set_downpayment_for_user_and_option(
+                $this->userid,
+                $component,
+                $area,
+                $itemid,
+                $downpayment
+            );
         }
 
         $this->save_item($item);
@@ -1201,5 +1210,53 @@ class cartstore {
      */
     public static function reset() {
         self::$instance = [];
+    }
+
+    /**
+     * Sets (saves) down payment of installements into cart store instance.
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param array $data
+     * @return array
+     */
+    public function set_installment_downpayment(
+        string $component,
+        string $area,
+        int $itemid,
+        array $data
+    ): array {
+        // Get data from cache.
+        $cachedata = self::get_cache();
+        // Set new data.
+        $cachedata['installmentsdownpayments'][$component][$area][$itemid] = $data;
+        // Save to cache.
+        $this->set_cache($cachedata);
+
+        return $cachedata['installmentsdownpayments'];
+    }
+
+    /**
+     * Fetches the down payment of an installement from cart store instance and returns it.
+     * Returns null when nothing found.
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @return array|null
+     */
+    public function get_installment_downpayment(
+        string $component,
+        string $area,
+        int $itemid
+    ): array|null {
+        // Get data from cache.
+        $cachedata = self::get_cache();
+        // Check if requested down payment exists.
+        if (isset($cachedata['installmentsdownpayments'][$component][$area][$itemid])) {
+
+            return $cachedata['installmentsdownpayments'][$component][$area][$itemid];
+        }
+
+        return null;
     }
 }

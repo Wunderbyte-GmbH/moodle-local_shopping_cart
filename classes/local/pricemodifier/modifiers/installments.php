@@ -132,7 +132,12 @@ abstract class installments extends modifier_base {
                     $installmentslinkeditems = [];
                     $openamount = $originalprice;
 
-                    $downpaymentdata = self::get_downpayment_for_user_and_option($data['userid'], $record->itemid);
+                    $downpaymentdata = self::get_downpayment_for_user_and_option(
+                        $data['userid'],
+                        $itemdata['componentname'],
+                        $itemdata['area'],
+                        $record->itemid
+                    );
                     if (!empty($downpaymentdata)) {
                         $jsonobject->downpayment = $downpaymentdata['newdownpayment'];
                     }
@@ -313,12 +318,21 @@ abstract class installments extends modifier_base {
      * @return array
      *
      */
-    public static function get_downpayment_for_user_and_option(int $userid, int $optionid) {
+    public static function get_downpayment_for_user_and_option(
+        int $userid,
+        string $componentname,
+        string $area,
+        int $itemid
+    ) {
         global $USER;
 
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-        $cachekey = $userid . "_" . $optionid;
-        $data = $cache->get($cachekey);
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_installment_downpayment(
+            $componentname,
+            $area,
+            $itemid
+        );
+
         if (
             empty($data)
             || $data['expirationtime'] < time()
@@ -332,25 +346,41 @@ abstract class installments extends modifier_base {
      * Set downpayment for user for option.
      *
      * @param int $userid
+     * @param int $component
+     * @param int $area
      * @param int $optionid
      * @param float $newdownpayment
      *
      * @return array
      *
      */
-    public static function set_downpayment_for_user_and_option(int $userid, int $optionid, float $newdownpayment) {
-        global $USER;
-
-        $cache = \cache::make('local_shopping_cart', 'cashier');
-        $cachekey = (string) $userid . "_" . (string) $optionid;
-
+    public static function set_downpayment_for_user_and_option(
+        int $userid,
+        string $component,
+        string $area,
+        int $itemid,
+        float $newdownpayment
+    ) {
+        // Create a data array.
         $expirationtime = get_config('local_shopping_cart', 'expirationtime');
         $data = [
+            'component' => $component,
+            'area' => $area,
+            'userid' => $userid,
+            'itemid' => $itemid,
             'newdownpayment' => $newdownpayment,
             'expirationtime' => strtotime("+ $expirationtime minutes"),
         ];
 
-        $cache->set($cachekey, $data);
+        // Save it into cartitem instance.
+        $cartstore = cartstore::instance($userid);
+        $cartstore->set_installment_downpayment(
+            $component,
+            $area,
+            $itemid,
+            $data
+        );
+
         return $data;
     }
 }
