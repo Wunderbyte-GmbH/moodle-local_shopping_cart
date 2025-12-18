@@ -417,6 +417,41 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
             $expectedamounttopay = round(DESIREDDOWNPAYMENTFORITEM1 + DEFAULTDOWNPAYMENTFORITEM2, 2);
             $this->assertEquals($expectedamounttopay, $price['price']);
         }
+
+        // Now we disable the installments.
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, 0);
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user.
+            // - There shoulb be no installmenets.
+            // - The total amout to pay buy user should be item1 initial price + item2 initial price.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertCount(0, $items['installments']);
+             // Item 1 initial value + item 2 initial value.
+            $expectedamounttopay = round(12.12 + 12.12, 2);
+            $this->assertEquals($expectedamounttopay, $price['price']);
+        }
+
+        // Now we remove items.
+        shopping_cart::delete_item_from_cart($componentname, $area, $item1id, $student1->id);
+        shopping_cart::delete_item_from_cart($componentname, $area, $item2id, $student1->id);
+
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user.
+            // - There shoulb be no installmenets.
+            // - There shoulb be no items.
+            // - The total amout to pay is 0.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertCount(0, $items['items']);
+            $this->assertCount(0, $items['installments']);
+            $newdownpaymentexists = isset($items['newdownpayment']);
+            $this->assertFalse($newdownpaymentexists);
+            $this->assertEquals(0, $price['price']);
+        }
     }
 
     /**
