@@ -209,6 +209,10 @@ class cartstore {
                 $item['discount'],
                 $discountprecision
             );
+            // We keep the raw value provided by the user for each percentage type.
+            // We reuse it when setting the data for the add_discount form.
+            $item['discountpercentage'] = $percent;
+            $item['discountabsolute'] = 0;
 
             $item['price'] =
                     $initialprice - $item['discount'];
@@ -223,6 +227,11 @@ class cartstore {
                 $item['discount'],
                 $discountprecision
             );
+            // We keep the raw value provided by the user for each percentage type.
+            // We reuse it when setting the data for the add_discount form.
+            $item['discountpercentage'] = 0;
+            $item['discountabsolute'] = $absolute;
+
             $item['price'] =
                     $initialprice - $item['discount'];
         } else {
