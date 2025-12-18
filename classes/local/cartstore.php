@@ -141,6 +141,7 @@ class cartstore {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($data['items'][$cacheitemkey])) {
                 unset($data['items'][$cacheitemkey]);
+                unset($data['installmentsdownpayments'][$component][$area][$itemid]);
                 unset($data['openinstallments']);
 
                 if (empty($data['items'])) {
@@ -481,6 +482,7 @@ class cartstore {
             if (isset($data['items'])) {
                 $data['items'] = [];
                 unset($data['openinstallments']);
+                unset($data['installmentsdownpayments']);
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
