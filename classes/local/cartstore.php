@@ -60,9 +60,6 @@ class cartstore {
     /** @var mixed */
     private $cachedata = null;
 
-    /** @var array */
-    protected $installmentsdownpayments = [];
-
     /**
      * Cartstore constructor.
      * @param int $userid
@@ -141,7 +138,7 @@ class cartstore {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($data['items'][$cacheitemkey])) {
                 unset($data['items'][$cacheitemkey]);
-                unset($data['installmentsdownpayments'][$component][$area][$itemid]);
+                unset($data['newdownpayments'][$component][$area][$itemid]);
                 unset($data['openinstallments']);
 
                 if (empty($data['items'])) {
@@ -482,7 +479,7 @@ class cartstore {
             if (isset($data['items'])) {
                 $data['items'] = [];
                 unset($data['openinstallments']);
-                unset($data['installmentsdownpayments']);
+                unset($data['newdownpayments']);
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
@@ -1231,11 +1228,11 @@ class cartstore {
         // Get data from cache.
         $cachedata = self::get_cache();
         // Set new data.
-        $cachedata['installmentsdownpayments'][$component][$area][$itemid] = $data;
+        $cachedata['newdownpayments'][$component][$area][$itemid] = $data;
         // Save to cache.
         $this->set_cache($cachedata);
 
-        return $cachedata['installmentsdownpayments'];
+        return $cachedata['newdownpayments'];
     }
 
     /**
@@ -1254,8 +1251,8 @@ class cartstore {
         // Get data from cache.
         $cachedata = self::get_cache();
         // Check if requested down payment exists.
-        if (isset($cachedata['installmentsdownpayments'][$component][$area][$itemid])) {
-            return $cachedata['installmentsdownpayments'][$component][$area][$itemid];
+        if (isset($cachedata['newdownpayments'][$component][$area][$itemid])) {
+            return $cachedata['newdownpayments'][$component][$area][$itemid];
         }
 
         return null;
