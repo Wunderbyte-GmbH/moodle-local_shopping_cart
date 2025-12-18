@@ -107,9 +107,15 @@ class get_price extends external_api {
         }
 
         // Add the state to the cache.
-        shopping_cart::save_used_credit_state($userid, $usecredit);
+        if ($params['usecredit'] != -1) {
+            shopping_cart::save_used_credit_state($userid, $usecredit);
+        }
+
         $cartstore = cartstore::instance($userid);
-        $cartstore->save_useinstallments_state($params['useinstallments']);
+
+        if ($params['useinstallments'] != -1) {
+            $cartstore->save_useinstallments_state($params['useinstallments']);
+        }
 
         // The price is calculated from the cache, but there is a fallback to DB, if no cache is available.
         $cartstore = cartstore::instance($userid);

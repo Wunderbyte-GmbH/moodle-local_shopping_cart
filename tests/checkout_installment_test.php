@@ -26,11 +26,9 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\checkout_process\checkout_manager;
-use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\payment\service_provider;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\local\cartstore;
-use paygw_payone\external\get_config_for_js;
 use tool_mocktesttime\time_mock;
 
 defined('MOODLE_INTERNAL') || die();
@@ -252,6 +250,207 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
                     $this->$assertion($historyrecords, $cartstore, $student1->id);
                 }
             }
+        }
+    }
+
+    /**
+     * Test the installments and check the price to pay with perpective of admin and student.
+     * @covers \local_shopping_cart\local\pricemodifier\modifiers\installments
+     * @covers \local_shopping_cart\external\get_price
+     * @covers \local_shopping_cart\local\pricemodifier\modifiers\get_shopping_cart_items
+     * @return void
+     */
+    public function test_installment_downpayment(): void {
+        global $DB, $USER;
+
+        $componentname = 'local_shopping_cart';
+        $area = 'main';
+        $item1id = 101;
+        $item2id = 102;
+
+        $this->setAdminUser();
+
+        // Enabel installemnts.
+        set_config('enableinstallments', 1, 'local_shopping_cart');
+        $enabled = get_config('local_shopping_cart', 'enableinstallments');
+        $this->assertEquals("1", $enabled);
+
+        // We need to add installment record of item in local_shopping_cart_iteminfo table.
+        define('DEFAULTDOWNPAYMENTFORITEM1', 2);
+        $record = [
+            "itemid" => $item1id,
+            "componentname" => "local_shopping_cart",
+            "area" => "main",
+            "allowinstallment" => 1,
+            "json" => json_encode([
+                "allowinstallment" => "1",
+                "downpayment" => DEFAULTDOWNPAYMENTFORITEM1,
+                "numberofpayments" => "2",
+                "duedaysbeforecoursestart" => 0,
+                "duedatevariable" => 2,
+            ]),
+            "usermodified" => 2,
+        ];
+        $DB->insert_record('local_shopping_cart_iteminfo', $record);
+
+        // Create users.
+        $student1 = $this->getDataGenerator()->create_user();
+
+        // Add the items to the cart.
+        shopping_cart::add_item_to_cart($componentname, $area, $item1id, $student1->id);
+        shopping_cart::add_item_to_cart($componentname, $area, $item2id, $student1->id);
+
+        // Check if there is no records for down payments.
+        // To check that we need to make sure the newdownpayments key not exists in the array
+        // or it is emopty.
+        $data = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+        $condition = !array_key_exists('newdownpayments', $data) || empty($data['newdownpayments']);
+        $this->assertTrue($condition);
+
+        // Get the current (default) values of the useinstallement ans usecredit.
+        // -1 always means no change in current value.
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+        $useinstallmentdefault = $price['useinstallments'];
+        $usecreditdefault = $price['usecredit'];
+        // Normally the usecredit is enabled and useinstallment is disabled by default.
+        $this->assertEquals(0, $useinstallmentdefault);
+        $this->assertEquals(1, $usecreditdefault);
+
+        // Admin enables intallments payment. For this approach we need to call get_price external API.
+        // -1 always means no change in current value. So here, we enable useinstallments but we make no change in user credit.
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, 1);
+        $this->assertEquals(1, $price['useinstallments']);
+        $this->assertEquals($usecreditdefault, $price['usecredit']);
+
+        // We check the default value of down payment for item 1.
+        $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+        $this->assertCount(1, $items['installments']); // Only item1 is allowed for the installments.
+        $this->assertEquals(DEFAULTDOWNPAYMENTFORITEM1, $items['installments'][0]['initialpayment']);
+
+        // Check the price to pay before appliying new down payment.
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+        $expectedamounttopay = round(DEFAULTDOWNPAYMENTFORITEM1 + 12.12, 2); // Item 1 downpayment + item 2 price.
+        $this->assertEquals($expectedamounttopay, $price['price']);
+
+        // Now we set new down payment for item 1.
+        define('DESIREDDOWNPAYMENTFORITEM1', 6);
+        $cartstore = cartstore::instance((int)$student1->id);
+        $cartstore->add_discount_to_item(
+            $componentname,
+            $area,
+            $item1id,
+            0,
+            0,
+            DESIREDDOWNPAYMENTFORITEM1
+        );
+
+        $users = [
+            'admin' => $USER,
+            'student' => $student1,
+        ];
+
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user to make sure that we receive installments as well.
+            // 1 - Check the installment new down payments. It should have one record for item1.
+            // 2 - Check the new down payment value.
+            // 3 - Check installments. It should have only 1 item as we enabled installements only for item1.
+            // 4 - The amount of down payment sould be equal to new value of down payment.
+            // 5 - The total amout to pay buy user should be item1 down payment + initial price of item2.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertNotEmpty($items['newdownpayments'][$componentname][$area][$item1id]);
+            $this->assertEquals(
+                DESIREDDOWNPAYMENTFORITEM1,
+                $items['newdownpayments'][$componentname][$area][$item1id]['newdownpayment']
+            );
+            $this->assertCount(1, $items['installments']); // Only item1 is allowed for the installments.
+            $this->assertEquals(DESIREDDOWNPAYMENTFORITEM1, $items['installments'][0]['initialpayment']);
+            $expectedamounttopay = round(DESIREDDOWNPAYMENTFORITEM1 + 12.12, 2); // Item 1 downpayment + item 2 price.
+            $this->assertEquals($expectedamounttopay, $price['price']);
+        }
+
+        $this->setAdminUser();
+        // Now we enable the installment for item 2.
+        define('DEFAULTDOWNPAYMENTFORITEM2', 3);
+        $record = [
+            "itemid" => $item2id,
+            "componentname" => "local_shopping_cart",
+            "area" => "main",
+            "allowinstallment" => 1,
+            "json" => json_encode([
+                "allowinstallment" => "1",
+                "downpayment" => DEFAULTDOWNPAYMENTFORITEM2,
+                "numberofpayments" => "2",
+                "duedaysbeforecoursestart" => 0,
+                "duedatevariable" => 2,
+            ]),
+            "usermodified" => $USER->id,
+        ];
+        $DB->insert_record('local_shopping_cart_iteminfo', $record);
+
+        // Now we should be able to see 2 items in the installments.
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user to make sure that we receive installments as well.
+            // 1 - Check the installment new down payments. It should still have one record for item1.
+            // We did not applied new value for down payment of r item 2.
+            // 2 - Check the new down payment value.
+            // 3 - Check installments. It should have 2 item as we enabled installements for both items.
+            // 4 - The amount of down payment sould be equal to new value of down payment for item 1
+            // and the amount of dow payment for item 2 should be equal to defalut.
+            // 5 - The total amout to pay buy user should be item1 down payment + item2 down payment.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertNotEmpty($items['newdownpayments'][$componentname][$area][$item1id]);
+            // We did not applied a new desired down payment.
+            $item2hasrecordinnewdownpayments = isset($items['newdownpayments'][$componentname][$area][$item2id]);
+            $this->assertFalse($item2hasrecordinnewdownpayments);
+            $this->assertEquals(
+                DESIREDDOWNPAYMENTFORITEM1,
+                $items['newdownpayments'][$componentname][$area][$item1id]['newdownpayment']
+            );
+            $this->assertCount(2, $items['installments']); // Only item1 is allowed for the installments.
+            $this->assertEquals(DESIREDDOWNPAYMENTFORITEM1, $items['installments'][0]['initialpayment']);
+            $this->assertEquals(DEFAULTDOWNPAYMENTFORITEM2, $items['installments'][1]['initialpayment']);
+             // Item 1 downpayment + item 2 down payment.
+            $expectedamounttopay = round(DESIREDDOWNPAYMENTFORITEM1 + DEFAULTDOWNPAYMENTFORITEM2, 2);
+            $this->assertEquals($expectedamounttopay, $price['price']);
+        }
+
+        // Now we disable the installments.
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, 0);
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user.
+            // - There shoulb be no installmenets.
+            // - The total amout to pay buy user should be item1 initial price + item2 initial price.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertCount(0, $items['installments']);
+             // Item 1 initial value + item 2 initial value.
+            $expectedamounttopay = round(12.12 + 12.12, 2);
+            $this->assertEquals($expectedamounttopay, $price['price']);
+        }
+
+        // Now we remove items.
+        shopping_cart::delete_item_from_cart($componentname, $area, $item1id, $student1->id);
+        shopping_cart::delete_item_from_cart($componentname, $area, $item2id, $student1->id);
+
+        $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+        foreach ($users as $usertitle => $userobj) {
+            $this->setUser($userobj);
+            // Now we get shopping cart items from perspective of each user.
+            // - There shoulb be no installmenets.
+            // - There shoulb be no items.
+            // - The total amout to pay is 0.
+            $items = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
+            $price = \local_shopping_cart\external\get_price::execute($student1->id, -1, -1);
+            $this->assertCount(0, $items['items']);
+            $this->assertCount(0, $items['installments']);
+            $newdownpaymentexists = isset($items['newdownpayment']);
+            $this->assertFalse($newdownpaymentexists);
+            $this->assertEquals(0, $price['price']);
         }
     }
 

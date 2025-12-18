@@ -138,6 +138,7 @@ class cartstore {
             $cacheitemkey = $component . '-' . $area . '-' . $itemid;
             if (isset($data['items'][$cacheitemkey])) {
                 unset($data['items'][$cacheitemkey]);
+                unset($data['newdownpayments'][$component][$area][$itemid]);
                 unset($data['openinstallments']);
 
                 if (empty($data['items'])) {
@@ -230,7 +231,13 @@ class cartstore {
             unset($item['discount']);
         }
         if ($downpayment >= 0) {
-            installments::set_downpayment_for_user_and_option($this->userid, $itemid, $downpayment);
+            installments::set_downpayment_for_user_and_option(
+                $this->userid,
+                $component,
+                $area,
+                $itemid,
+                $downpayment
+            );
         }
 
         $this->save_item($item);
@@ -472,6 +479,7 @@ class cartstore {
             if (isset($data['items'])) {
                 $data['items'] = [];
                 unset($data['openinstallments']);
+                unset($data['newdownpayments']);
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
@@ -1201,5 +1209,52 @@ class cartstore {
      */
     public static function reset() {
         self::$instance = [];
+    }
+
+    /**
+     * Sets (saves) down payment of installements into cart store instance.
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param array $data
+     * @return array
+     */
+    public function set_installment_downpayment(
+        string $component,
+        string $area,
+        int $itemid,
+        array $data
+    ): array {
+        // Get data from cache.
+        $cachedata = self::get_cache();
+        // Set new data.
+        $cachedata['newdownpayments'][$component][$area][$itemid] = $data;
+        // Save to cache.
+        $this->set_cache($cachedata);
+
+        return $cachedata['newdownpayments'];
+    }
+
+    /**
+     * Fetches the down payment of an installement from cart store instance and returns it.
+     * Returns null when nothing found.
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @return array|null
+     */
+    public function get_installment_downpayment(
+        string $component,
+        string $area,
+        int $itemid
+    ): array|null {
+        // Get data from cache.
+        $cachedata = self::get_cache();
+        // Check if requested down payment exists.
+        if (isset($cachedata['newdownpayments'][$component][$area][$itemid])) {
+            return $cachedata['newdownpayments'][$component][$area][$itemid];
+        }
+
+        return null;
     }
 }
