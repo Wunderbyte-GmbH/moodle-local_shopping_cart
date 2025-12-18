@@ -1255,7 +1255,6 @@ class cartstore {
         $cachedata = self::get_cache();
         // Check if requested down payment exists.
         if (isset($cachedata['installmentsdownpayments'][$component][$area][$itemid])) {
-
             return $cachedata['installmentsdownpayments'][$component][$area][$itemid];
         }
 

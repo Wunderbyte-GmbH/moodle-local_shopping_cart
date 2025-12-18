@@ -313,19 +313,18 @@ abstract class installments extends modifier_base {
      * Get downpayment from cache for user and option.
      *
      * @param int $userid
-     * @param int $optionid
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
      *
-     * @return array
-     *
+     * @return array|null
      */
     public static function get_downpayment_for_user_and_option(
         int $userid,
         string $componentname,
         string $area,
         int $itemid
-    ) {
-        global $USER;
-
+    ): array|null {
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_installment_downpayment(
             $componentname,
@@ -346,9 +345,9 @@ abstract class installments extends modifier_base {
      * Set downpayment for user for option.
      *
      * @param int $userid
-     * @param int $component
-     * @param int $area
-     * @param int $optionid
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
      * @param float $newdownpayment
      *
      * @return array
@@ -360,7 +359,7 @@ abstract class installments extends modifier_base {
         string $area,
         int $itemid,
         float $newdownpayment
-    ) {
+    ): array {
         // Create a data array.
         $expirationtime = get_config('local_shopping_cart', 'expirationtime');
         $data = [
