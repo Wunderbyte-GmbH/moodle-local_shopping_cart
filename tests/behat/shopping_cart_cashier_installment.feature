@@ -83,6 +83,7 @@ Feature: Configure curtom installment settings (down payment, discount, etc).
     And I click on "#shopping_cart-cashiers-cart .shoppingcart-discount-icon" "css_element"
     And the field "Down payment" matches value "20"
     And I set the field "Down payment" to "13"
+    And I set the field "Percentage" to ""
     And I set the field "Amount" to "-5"
     And I press "Save changes"
     And I should see "Down payment for Test item 5:"
