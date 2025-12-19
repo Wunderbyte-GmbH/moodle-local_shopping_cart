@@ -175,6 +175,10 @@
     }
 }
 
+#shopping_cart-cashiers-section .shopping-cart-items .shopping-cart-item {
+    margin: 1rem;
+}
+
 #cashiertabs .nav-link {
     outline: 0;
     box-shadow: none;
