@@ -1,3 +1,11 @@
+## Version 2.0.2 (2026010700)
+* New feature: Make sure cashier and user have same cart store (cashier can set down payment for user).
+* Improvement: Fix incorrect values in the discount field when the cashier attempts to apply a new discount value.
+* Improvement: Better margin for shopping cart items in cashier view.
+* Bugfix: Never round the price when calculating the refund value.
+* Bugfix: Never round the displaying the refund priceto user.
+* Bugfix: Make sure sorting of history items does not produce warnings.
+
 ## Version 2.0.1 (2025121000)
 * Improvement: Display the target user's name on the button.
 * Improvement: Various adjustments for Bootstrap 5 readiness.
