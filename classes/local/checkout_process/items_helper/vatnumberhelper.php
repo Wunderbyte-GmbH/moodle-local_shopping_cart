@@ -91,8 +91,6 @@ class vatnumberhelper {
             'SE' => $stringman->get_string('se', 'local_shopping_cart'),
             'SI' => $stringman->get_string('si', 'local_shopping_cart'),
             'SK' => $stringman->get_string('sk', 'local_shopping_cart'),
-            'GB' => $stringman->get_string('gb', 'local_shopping_cart'),
-            'XI' => $stringman->get_string('xi', 'local_shopping_cart'),
         ];
     }
 
