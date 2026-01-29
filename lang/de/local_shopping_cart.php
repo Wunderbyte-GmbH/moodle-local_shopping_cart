@@ -213,7 +213,7 @@ $string['confirmcancelbodyuser'] = 'Möchten Sie den Kauf wirklich stornieren?
         Sie bekommen den Kaufpreis ({$a->price} {$a->currency}) abzüglich einer Bearbeitungsgebühr ({$a->cancelationfee} {$a->currency}) als Guthaben: ({$a->credit} {$a->currency})';
 $string['confirmcancelbodyuserconsumption'] = '<p><b>Möchten Sie den Kauf wirklich stornieren?</b></p>
 <p>
-Sie erhalten <b>{$a->credit} {$a->currency}</b> als Guthaben.<br>
+Sie erhalten <b>{$a->credit} {$a->currency} ({$a->rounded})</b> als Guthaben.<br>
 <table class="table table-light table-sm">
 <tbody>
     <tr>
@@ -230,7 +230,7 @@ Sie erhalten <b>{$a->credit} {$a->currency}</b> als Guthaben.<br>
     </tr>
     <tr>
       <th scope="row">Gutschrift</th>
-      <td align="right"> = {$a->credit} {$a->currency}</td>
+      <td align="right"> = {$a->credit} {$a->currency} ({$a->rounded})</td>
     </tr>
   </tbody>
 </table>
@@ -575,6 +575,7 @@ $string['restart'] = 'Nächste/r KundIn';
 $string['ro'] = "Rumänien";
 $string['rounddiscounts'] = 'Rabatte runden';
 $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch, ohne Nachkommastellen)';
+$string['rounded'] = 'Gerundet';
 $string['roundrefundamount'] = 'Rückerstattungsbetrag runden';
 $string['roundrefundamount_desc'] = 'Diese Option aktiviert das Runden des Rückerstattungsbetrags.';
 $string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';

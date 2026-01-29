@@ -448,6 +448,16 @@ export async function confirmCancelModal(button, cancelationFee) {
     params.cancelationfee = cancelationFee.toFixed(2);
     params.deducedvalue = deducedvalue.toFixed(2);
 
+    const roundrefundamount = button.dataset.roundrefundamount;
+    if (roundrefundamount) {
+        params.credit = Math.round(credit);
+        params.credit = params.credit.toFixed(2);
+        params.rounded = await getString('rounded', 'local_shopping_cart');
+    } else {
+        params.credit = credit.toFixed(2);
+        params.rounded = '';
+    }
+
     let bodystring = 'confirmcancelbodyuser';
     if (quotaconsumed > 0 && quotaconsumed < 1) {
         bodystring = 'confirmcancelbodyuserconsumption';

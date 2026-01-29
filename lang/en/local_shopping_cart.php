@@ -218,7 +218,7 @@ $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<
  You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
 $string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cancel this purchase?</b></p>
  <p>
- You will receive <b>{$a->credit} {$a->currency}</b> as credit.<br>
+ You will receive <b>{$a->credit} {$a->currency} ({$a->rounded})</b> as credit.<br>
  <table class="table table-light table-sm">
  <tbody>
      <tr>
@@ -235,7 +235,7 @@ $string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cance
      </tr>
      <tr>
        <th scope="row">Credit</th>
-       <td align="right"> = {$a->credit} {$a->currency}</td>
+       <td align="right"> = {$a->credit} {$a->currency} ({$a->rounded})</td>
      </tr>
    </tbody>
  </table>
@@ -646,6 +646,7 @@ $string['restart'] = 'Next customer';
 $string['ro'] = "Romania";
 $string['rounddiscounts'] = 'Round discounts';
 $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)';
+$string['rounded'] = 'Rounded';
 $string['roundrefundamount'] = 'Round the refund amount';
 $string['roundrefundamount_desc'] = 'This option enables rounding the refund amount.';
 $string['saveinvoicenumber'] = 'Just save invoice number';

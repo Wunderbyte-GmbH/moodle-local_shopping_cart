@@ -731,6 +731,10 @@ class shoppingcart_history_list implements renderable, templatable {
         if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
             $item->round = $round == 1 ? true : false;
         }
+
+        if ($roundrefund = get_config('local_shopping_cart', 'roundrefundamount')) {
+            $item->roundrefundamount = $roundrefund == 1 ? true : false;
+        }
     }
 
     /**
