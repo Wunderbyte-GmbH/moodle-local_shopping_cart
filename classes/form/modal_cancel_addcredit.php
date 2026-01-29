@@ -115,6 +115,16 @@ class modal_cancel_addcredit extends dynamic_form {
         }
 
         $mform->addElement('float', 'credittopayback', get_string('credittopayback', 'local_shopping_cart'));
+
+        if (get_config('local_shopping_cart', 'roundrefundamount')) {
+            $mform->addElement(
+                'static',
+                'roundrefundamount_hint',
+                '',
+                '<div class="alert alert-info">' . get_string('roundrefundamountenabledhint', 'local_shopping_cart') . '</div>'
+            );
+        }
+
         $mform->addElement('float', 'cancelationfee', get_string('cancelationfee', 'local_shopping_cart'));
 
         $mform->addElement(

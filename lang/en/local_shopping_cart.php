@@ -649,6 +649,7 @@ $string['rounddiscounts_desc'] = 'Round discounts to full numbers (no decimals)'
 $string['rounded'] = ' (Rounded)';
 $string['roundrefundamount'] = 'Round the refund amount';
 $string['roundrefundamount_desc'] = 'This option enables rounding the refund amount.';
+$string['roundrefundamountenabledhint'] = 'The rounding of the refund amount is enabled. The refund amount will be rounded to the nearest integer value.';
 $string['saveinvoicenumber'] = 'Just save invoice number';
 $string['sch_paymentaccountid'] = "Change the payment account";
 $string['schistorysections'] = 'Use collapsible sections in shopping cart history';

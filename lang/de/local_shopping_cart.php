@@ -578,6 +578,7 @@ $string['rounddiscounts_desc'] = 'Rabatte auf ganze Zahlen runden (mathematisch,
 $string['rounded'] = ' (Gerundet)';
 $string['roundrefundamount'] = 'Rückerstattungsbetrag runden';
 $string['roundrefundamount_desc'] = 'Diese Option aktiviert das Runden des Rückerstattungsbetrags.';
+$string['roundrefundamountenabledhint'] = 'Das Runden des Rückerstattungsbetrags ist aktiviert. Der Rückerstattungsbetrag wird auf die nächste ganze Zahl gerundet.';
 $string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
 $string['schistorysections'] = 'Buchungshistorie (Shopping Cart History) in Bereiche gliedern';
