@@ -178,6 +178,16 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/roundrefundamount',
+            new lang_string('roundrefundamount', 'local_shopping_cart'),
+            new lang_string('roundrefundamount_desc', 'local_shopping_cart'),
+            1
+        )
+    );
+
     // Setting to enable address processing during checkout.
     $settings->add(
         new admin_setting_configmulticheckbox(

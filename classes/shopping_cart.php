@@ -1191,6 +1191,14 @@ class shopping_cart {
                 }
             }
 
+            // Check if round the refund amount is enabled.
+            if (get_config('local_shopping_cart', 'roundrefundamount')) {
+                // Apply rounding to refund value.
+                // If setting to round refund amount is turned on, we round to full int.
+                $refundamountprecision = get_config('local_shopping_cart', 'roundrefundamount') ? 0 : 2;
+                $customcredit = round($customcredit, $refundamountprecision);
+            }
+
             // Make sure customcredit is never negative due to cancelation fee.
             // For cashier as well as for self booking users.
             if ($customcredit < 0) {
