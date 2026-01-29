@@ -28,14 +28,14 @@ Feature: Cashier actions in shopping cart with consumption enabled
       | Account1 | paypal  | 1       | {"brandname":"Test paypal","clientid":"Test","secret":"Test","environment":"sandbox"} |
 
   @javascript
-  Scenario: Cashier cancel purchase when rounding of discounts disabled but consumption enabled
+  Scenario: Cashier cancel purchase when rounding of discounts & refund are disabled but consumption enabled
     Given I log in as "admin"
     ## Credit on cancelation minus already consumed value = 1
     ## Cancelation fee = 0
     ## Round discounts = ""
     And the following "local_shopping_cart > plugin setup" exist:
-      | account  | cancelationfee | calculateconsumation | rounddiscounts |
-      | Account1 | 0              | 1                    |                |
+      | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
+      | Account1 | 0              | 1                    | 0              | 0                 |
     And the following "local_shopping_cart > user purchases" exist:
       | user  | testitemid |
       | user1 | 1          |
@@ -127,20 +127,22 @@ Feature: Cashier actions in shopping cart with consumption enabled
     And the field "Credits (before cancelation fee)" matches value "3.3"
     And the field "Cancelation fee" matches value "0"
     And I press "Save changes"
-    And I should see "3.3" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should see "3" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should not see "3.3" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"0\"]" "css_element"
     And I wait "1" seconds
     And the field "Credits (before cancelation fee)" matches value "20.30"
     And the field "Cancelation fee" matches value "0"
     And I press "Save changes"
-    And I should see "23.6" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should see "23" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should not see "23.6" in the "ul.cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"1\"]" "css_element"
     And I wait "1" seconds
     And I should see "The user has already consumed the whole article" in the ".modal-content" "css_element"
     And the field "Credits (before cancelation fee)" matches value "0"
     And the field "Cancelation fee" matches value "0"
     And I press "Save changes"
-    And I should see "23.6" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should see "23" in the "ul.cashier-history-items span.credit_total" "css_element"
     ## Verify records in the ledger table.
     And I follow "Cash report"
     And I wait until the page is ready
@@ -156,7 +158,7 @@ Feature: Cashier actions in shopping cart with consumption enabled
     And I should see "Test item 3" in the "#cash_report_table_r4" "css_element"
     And I should see "Cashier (Cash)" in the "#cash_report_table_r4" "css_element"
     And I should see "Success" in the "#cash_report_table_r4" "css_element"
-    And I should see "3.30" in the "#cash_report_table_r3" "css_element"
+    And I should see "3.00" in the "#cash_report_table_r3" "css_element"
     And I should see "Canceled - Test item 1" in the "#cash_report_table_r3" "css_element"
     And I should see "Credits" in the "#cash_report_table_r3" "css_element"
     And I should see "Canceled" in the "#cash_report_table_r3" "css_element"

@@ -32,8 +32,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## Cancelation fee = 0
     ## Round discounts = 1
     Given the following "local_shopping_cart > plugin setup" exist:
-      | account  | cancelationfee | calculateconsumation | rounddiscounts |
-      | Account1 | 1              | 1                    | 1              |
+      | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
+      | Account1 | 1              | 1                    | 1              | 0                 |
     And the following "local_shopping_cart > user purchases" exist:
       | user  | testitemid |
       | user1 | 1          |
@@ -66,8 +66,7 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I should see "as credit (19.30 EUR) for your next purchase" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
-    And I wait "1" seconds
-    And I should see "21.6" in the ".cashier-history-items span.credit_total" "css_element"
+    And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"1\"]" "css_element"
     And I wait "1" seconds
     And I should see "You have already consumed the whole article and won't get any refund of the price paid: 13.80 EUR" in the ".show .modal-content" "css_element"
@@ -94,8 +93,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
     ## Cancelation fee = 0
     ## Round discounts = ""
     Given the following "local_shopping_cart > plugin setup" exist:
-      | account  | cancelationfee | calculateconsumation | rounddiscounts |
-      | Account1 | 1              | 1                    |                |
+      | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
+      | Account1 | 1              | 1                    |                | 0                 |
     And the following "local_shopping_cart > user purchases" exist:
       | user  | testitemid |
       | user1 | 1          |
@@ -120,7 +119,8 @@ Feature: User cancellation after cash payment with consumption and discount roun
     And I should see "= 2.30 EUR" in the ".show .modal-content" "css_element"
     ## And I press "Cancel purchase"
     And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
-    Then I should see "2.3" in the ".cashier-history-items span.credit_total" "css_element"
+    And I wait "1" seconds
+    Then I should see "2.30" in the ".cashier-history-items span.credit_total" "css_element"
     And I click on "[data-quotaconsumed=\"0\"]" "css_element"
     And I wait "1" seconds
     And I should see "the costs of your purchase (20.30 EUR)" in the ".show .modal-content" "css_element"
@@ -149,3 +149,67 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
       | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
     And I log out
+
+  @javascript
+  Scenario: User buys items and cancel purchase when rounding of discounts disabled but consumption & round refund amount are enabled and cancellation fee given
+    ## Credit on cancelation minus already consumed value = 1
+    ## Cancelation fee = 0
+    ## Round discounts = ""
+    Given the following "local_shopping_cart > plugin setup" exist:
+      | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
+      | Account1 | 1              | 1                    | 0              | 1                 |
+    And the following "local_shopping_cart > user purchases" exist:
+      | user  | testitemid |
+      | user1 | 1          |
+      | user1 | 2          |
+      | user1 | 3          |
+    When I log in as "user1"
+    And I visit "/local/shopping_cart/demo.php"
+    And I wait until the page is ready
+    And I should see "Test item 1" in the ".cashier-history-items" "css_element"
+    And I should see "10.00 EUR" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 2" in the ".cashier-history-items" "css_element"
+    And I should see "20.30 EUR" in the ".cashier-history-items" "css_element"
+    And I should see "Test item 3" in the ".cashier-history-items" "css_element"
+    And I should see "13.80 EUR" in the ".cashier-history-items" "css_element"
+    And I click on "[data-quotaconsumed=\"0.67\"]" "css_element"
+    And I wait "1" seconds
+    And I should see "67%" in the ".modal-dialog .progress-bar" "css_element"
+    And I should see "You will receive 2.00 EUR (Rounded) as credit" in the ".show .modal-content" "css_element"
+    And I should see "10.00 EUR" in the ".show .modal-content" "css_element"
+    And I should see "- 6.70 EUR" in the ".show .modal-content" "css_element"
+    And I should see "- 1.00 EUR" in the ".show .modal-content" "css_element"
+    And I should see "= 2.00 EUR" in the ".show .modal-content" "css_element"
+    ## And I press "Cancel purchase"
+    And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
+    And I wait "1" seconds
+    Then I should see "2.00" in the ".cashier-history-items span.credit_total" "css_element"
+    And I click on "[data-quotaconsumed=\"0\"]" "css_element"
+    And I wait "1" seconds
+    And I should see "the costs of your purchase (20.30 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "minus a cancelation fee (1.00 EUR)" in the ".show .modal-content" "css_element"
+    And I should see "as credit (19.00 EUR) for your next purchase" in the ".show .modal-content" "css_element"
+    ## And I press "Cancel purchase"
+    And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
+    And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
+    And I click on "[data-quotaconsumed=\"1\"]" "css_element"
+    And I wait "1" seconds
+    And I should see "You have already consumed the whole article and won't get any refund of the price paid: 13.80 EUR" in the ".show .modal-content" "css_element"
+    ## And I press "Cancel purchase"
+    And I click on ".show .modal-dialog .modal-footer .btn-primary" "css_element"
+    And I should see "21" in the ".cashier-history-items span.credit_total" "css_element"
+    And I log out
+    ## Verify records in the ledger table.
+    And I log in as "admin"
+    And I visit "/local/shopping_cart/report.php"
+    ##And I wait "30" seconds
+    And the following should exist in the "cash_report_table" table:
+      | Paid  | Credit: | Cancelation fee | Item name              | E-Mail                     | Payment method | Status   |
+      | 0.00  | 0.00    | -1.00           | Canceled - Test item 3 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 19.00   | 0.00            | Canceled - Test item 2 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 0.00  | 2.00   | 0.00            | Canceled - Test item 1 | toolgenerator1@example.com | Credits	       | Canceled |
+      | 13.80 |         |                 | Test item 3            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+      | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
+    And I log out
+
