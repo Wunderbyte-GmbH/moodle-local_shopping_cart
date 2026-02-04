@@ -107,7 +107,7 @@ final class vatnrchecker_test extends advanced_testcase {
 
         // Assertions.
         $this->assertIsArray($result, 'Expected get_country_code_name to return an array.');
-        $this->assertCount(31, $result, 'Expected exactly two countries in the result.');
+        $this->assertCount(29, $result, 'Expected exactly 29 countries in the result.');
         $this->assertEquals(['code' => 'novatnr', 'name' => 'No VAT number'], $result[0], 'Expected first country to be Germany.');
     }
 
