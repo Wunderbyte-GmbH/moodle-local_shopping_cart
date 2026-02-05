@@ -1,3 +1,8 @@
+## Version 2.0.3 (2026020500)
+* Bugfix: Remove GB & Northern Ireland from list of European countries.
+* Bugfix: Increase wunderbyte table dependency (for security hotfix).
+* Bugfix: Fix unit test.
+
 ## Version 2.0.2 (2026010700)
 * New feature: Make sure cashier and user have same cart store (cashier can set down payment for user).
 * Improvement: Fix incorrect values in the discount field when the cashier attempts to apply a new discount value.
