@@ -295,6 +295,55 @@ class cartstore {
     }
 
     /**
+     * Remove applied coupon and reset discounts on items.
+     *
+     * @return void
+     */
+    public function clear_coupon(): void {
+        $data = $this->get_cache();
+
+        if (!$data) {
+            return;
+        }
+
+        if (!empty($data['items'])) {
+            $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
+
+            foreach ($data['items'] as $cacheitemkey => $item) {
+                if (isset($item['discount'])) {
+                    $discount = round($item['discount'], $discountprecision);
+                    $item['price'] = $item['price'] + $discount;
+                    unset($item['discount']);
+                    unset($item['discountpercentage']);
+                    unset($item['discountabsolute']);
+                    $data['items'][$cacheitemkey] = $item;
+                }
+            }
+        }
+
+        unset($data['coupon']);
+        unset($data['coupondiscount']);
+        $this->set_cache($data);
+    }
+
+    /**
+     * Store coupon discount amount in cache.
+     *
+     * @param float $amount
+     * @return void
+     */
+    public function set_coupon_discount(float $amount): void {
+        $data = $this->get_cache();
+
+        if (!$data) {
+            return;
+        }
+
+        $data['coupondiscount'] = $amount;
+        $this->set_cache($data);
+    }
+
+    /**
      * Returns one specific item.
      * @param string $component
      * @param string $area
@@ -533,6 +582,7 @@ class cartstore {
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
                 unset($data['coupon']);
+                unset($data['coupondiscount']);
                 $this->set_cache($data);
                 $this->delete_saved_items_from_db();
             }

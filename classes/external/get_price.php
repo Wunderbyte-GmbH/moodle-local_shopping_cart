@@ -79,7 +79,7 @@ class get_price extends external_api {
         int $userid,
         int $usecredit,
         int $useinstallments,
-        string $couponvalue,
+        string $couponvalue = '',
         bool $couponenabled = false
     ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -140,12 +140,16 @@ class get_price extends external_api {
         // For the webservice, we must make sure that the keys exist.
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
+        $data['coupondiscount'] = $data['coupondiscount'] ?? 0;
         $data['lang'] = current_language() ?? 'en';
 
-        // If there is a coupon message, we disable the couponenabled flag.
+        $appliedcoupon = $cartstore->get_applied_coupon();
+
+        // Coupon UI state.
         $data['couponmessage'] = $couponmessage;
-        $data['couponenabled'] = $success ? false : $couponenabled;
-        $data['coupon'] = $couponvalue;
+        $data['couponenabled'] = (bool) get_config('local_shopping_cart', 'couponenabled');
+        $data['couponapplied'] = $cartstore->coupon_applied();
+        $data['coupon'] = $appliedcoupon !== '' ? $appliedcoupon : $couponvalue;
 
         return $data;
     }
@@ -172,7 +176,14 @@ class get_price extends external_api {
                         ),
                         'coupon' => new external_value(PARAM_TEXT, 'The applied coupon code', VALUE_DEFAULT, ''),
                         'couponenabled' => new external_value(PARAM_BOOL, 'If coupons are enabled', VALUE_DEFAULT, false),
+                        'couponapplied' => new external_value(PARAM_BOOL, 'If a coupon is applied', VALUE_DEFAULT, false),
                         'couponmessage' => new external_value(PARAM_TEXT, 'Message about the coupon', VALUE_DEFAULT, ''),
+                        'coupondiscount' => new external_value(
+                            PARAM_FLOAT,
+                            'Discount amount from coupon codes.',
+                            VALUE_DEFAULT,
+                            0
+                        ),
                         'remainingcredit' => new external_value(PARAM_FLOAT, 'Credits after reduction', VALUE_REQUIRED),
                         'deductible' => new external_value(PARAM_FLOAT, 'Deductible amount', VALUE_REQUIRED),
                         'lang' => new external_value(PARAM_TEXT, 'Language', VALUE_REQUIRED),

@@ -1,0 +1,57 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/component_coupon
+
+    TODO describe template component_coupon
+
+    Example context (json):
+    {
+    "couponenabled": false,
+    "couponmessage": "Gutschein erfolgreich angewendet."
+    }
+}}
+
+{{#couponenabled}}
+    <div class="form-group sc_coupon">
+        <label for="couponcode">
+            {{#str}} coupon:entercode, local_shopping_cart {{/str}}
+        </label>
+        <input type="text"
+            class="form-control"
+            data-id="couponcode"
+            name="couponcode"
+            placeholder="{{#str}} coupon:entercode, local_shopping_cart {{/str}}"
+            value="{{coupon}}">
+    </div>
+    <div class="text-right mr-3 sc_couponmessage">
+        {{#couponmessage}}
+            {{#couponapplied}}
+                <span class="alert alert-success" role="alert">{{couponmessage}}</span>
+            {{/couponapplied}}
+            {{^couponapplied}}
+                <span class="alert alert-danger" role="alert">{{couponmessage}}</span>
+            {{/couponapplied}}
+        {{/couponmessage}}
+    </div>
+    {{#coupondiscount}}
+        <div class="text-right mr-3 sc_coupondiscount">
+            <strong>{{#str}} coupondiscount, local_shopping_cart {{/str}}:</strong>
+            -{{coupondiscount}} {{currency}}
+        </div>
+    {{/coupondiscount}}
+{{/couponenabled}}

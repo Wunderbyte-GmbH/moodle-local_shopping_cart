@@ -83,9 +83,6 @@
     {{/installmentscheckboxid}}
     {{#credit}}
         <div class="text-end me-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
-        {{#discount}}
-            <div class="text-end me-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
-        {{/discount}}
         <div class="text-end me-3 sc_credit">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" {{#usecredit}} checked {{/usecredit}}>
@@ -125,31 +122,7 @@
             <span class="sc_totalprice text-success"><b>{{price}} {{currency}}</b></span>
         </div>
     {{/taxesenabled}}
-    {{#couponenabled}}
-        <div class="form-group sc_coupon">
-            <label for="couponcode">
-                {{#str}} coupon:entercode, local_shopping_cart {{/str}}
-            </label>
-            <input type="text"
-                class="form-control"
-                data-id="couponcode"
-                name="couponcode"
-                placeholder="{{#str}} coupon:entercode, local_shopping_cart {{/str}}"
-                value="{{coupon}}">
-        </div>
-        <div class="text-right mr-3 sc_couponmessage">
-            {{#couponmessage}}
-                <span class="alert alert-danger" role="alert">{{couponmessage}}</span>
-            {{/couponmessage}}
-        </div>
-    {{/couponenabled}}
-    {{^couponenabled}}
-        <div class="text-right mr-3 sc_couponmessage">
-            {{#couponmessage}}
-                <span class="alert alert-success" role="alert">{{couponmessage}}</span>
-            {{/couponmessage}}
-        </div>
-    {{/couponenabled}}
+    {{> local_shopping_cart/component_coupon }}
 </div>
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {

@@ -1106,7 +1106,7 @@ function convertPricesToNumberFormat(data) {
     if (data.remainingcredit) {
         data.remainingcredit = formatNumber(data.remainingcredit);
     }
-    if (data.price_net) {
+    if (data.price) {
         data.price_net = formatNumber(data.price_net);
     }
     if (data.price_gross) {
@@ -1115,6 +1115,12 @@ function convertPricesToNumberFormat(data) {
     if (data.items) {
         for (var i = 0; i < data.items.length; i++) {
             if (data.items[i].price) {
+    if (data.discount !== undefined && data.discount !== null) {
+        data.discount = formatNumber(data.discount);
+    }
+    if (data.coupondiscount !== undefined && data.coupondiscount !== null) {
+        data.coupondiscount = formatNumber(data.coupondiscount);
+    }
                 data.items[i].price = formatNumber(data.items[i].price);
             }
             if (data.items[i].price_gross) {

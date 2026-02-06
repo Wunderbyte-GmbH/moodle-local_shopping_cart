@@ -68,15 +68,26 @@ class coupon {
             return [false, ''];
         }
 
-        // If the coupon code is empty, it might already be applied.
+        $cartstore = cartstore::instance((int)$this->userid);
+
+        // If the coupon code is empty, remove any existing coupon.
         if (empty($couponcode)) {
-            $cartstore = cartstore::instance((int)$this->userid);
             if ($cartstore->coupon_applied()) {
                 $coupon = $cartstore->get_applied_coupon();
-                return [true, get_string('couponappliedsuccessfully', 'local_shopping_cart', $coupon)];
-            } else {
-                return [false, ''];
+                $cartstore->clear_coupon();
+                return [true, get_string('couponremovedsuccessfully', 'local_shopping_cart', $coupon)];
             }
+            return [false, ''];
+        }
+
+        // If the same coupon is already applied, do nothing.
+        if ($cartstore->coupon_applied()) {
+            $appliedcoupon = $cartstore->get_applied_coupon();
+            if ($appliedcoupon === $couponcode) {
+                return [true, get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode)];
+            }
+            // Switch coupon: remove existing one before applying a new code.
+            $cartstore->clear_coupon();
         }
 
         $message = '';
@@ -96,7 +107,7 @@ class coupon {
             return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode)];
         }
 
-        $cartstore = cartstore::instance((int)$this->userid);
+        $discountbefore = $this->get_total_discount($cartstore->get_items());
         $items = $cartstore->get_items();
 
         foreach ($items as $item) {
@@ -135,7 +146,29 @@ class coupon {
             $message = get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode);
         }
 
+        $discountafter = $this->get_total_discount($cartstore->get_items());
+        $coupondiscount = max(0, $discountafter - $discountbefore);
+        $cartstore->set_coupon_discount($coupondiscount);
+
         return [true, $message];
+    }
+
+    /**
+     * Get total discount amount from items.
+     *
+     * @param array $items
+     * @return float
+     */
+    private function get_total_discount(array $items): float {
+        $total = 0.0;
+
+        foreach ($items as $item) {
+            if (isset($item['discount'])) {
+                $total += (float) $item['discount'];
+            }
+        }
+
+        return $total;
     }
 
     /**
