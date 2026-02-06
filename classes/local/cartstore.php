@@ -188,11 +188,13 @@ class cartstore {
             $data = $this->get_cache();
 
             // If a coupon code is already applied, we do not allow to apply another one.
-            if (!empty($data['coupon'])) {
+            if (!empty($data['coupon']) && $data['coupon'] !== $couponcode) {
                 return ['success' => 0];
             }
-            $data['coupon'] = $couponcode;
-            $this->set_cache($data);
+            if (empty($data['coupon'])) {
+                $data['coupon'] = $couponcode;
+                $this->set_cache($data);
+            }
         }
 
         $item = $this->get_item($component, $area, $itemid);

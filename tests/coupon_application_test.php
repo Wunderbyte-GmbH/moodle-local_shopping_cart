@@ -82,6 +82,8 @@ final class coupon_application_test extends advanced_testcase {
         set_config('couponenabled', 1, 'local_shopping_cart');
         set_config('bookingfee', 0, 'local_shopping_cart');
         set_config('bookingfeevariable', 0, 'local_shopping_cart');
+        // Ensure discounts are not rounded to full integers.
+        set_config('rounddiscounts', 0, 'local_shopping_cart');
 
         if ($enabletax) {
             set_config('enabletax', '1', 'local_shopping_cart');
