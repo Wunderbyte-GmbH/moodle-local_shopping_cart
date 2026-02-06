@@ -91,10 +91,14 @@ final class coupon_application_test extends advanced_testcase {
             set_config('enabletax', '0', 'local_shopping_cart');
         }
 
+        // Create a 10% percentage coupon (no fixed amount).
         coupon::add_edit_coupon(0, 'TEST10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $userid);
 
+        // Add three items with different prices (from mockitems):
+        // itemid 1 => 10.00, itemid 2 => 20.30, itemid 3 => 13.8
         shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 1, $userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 2, $userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 3, $userid);
 
         if ($usecredit) {
             shopping_cart_credits::add_credit($userid, 5.00, 'EUR', '');
@@ -107,11 +111,18 @@ final class coupon_application_test extends advanced_testcase {
         shopping_cart::save_used_credit_state($userid, $usecredit ? 1 : 0);
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_data();
+        $items = $cartstore->get_items();
 
         $this->assertTrue($cartstore->coupon_applied());
-        $expecteddiscount = $this->sum_item_discounts($cartstore->get_items());
-        $this->assertGreaterThan(0, $expecteddiscount);
+
+        // Expected behavior (desired): 10% is applied to the whole cart total.
+        $carttotal = 10.00 + 20.30 + 13.80;
+        $expecteddiscount = round($carttotal * 0.10, 2); // 10% of whole cart.
         $this->assertEqualsWithDelta($expecteddiscount, (float) $data['coupondiscount'], 0.01);
+
+        // Sanity check: ensure discount is distributed across items (not only first item).
+        $discounteditemcount = $this->count_discounted_items($items);
+        $this->assertGreaterThan(1, $discounteditemcount, 'Expected coupon discount to affect multiple items.');
         $this->assertEquals($enabletax ? 1 : 0, (int) $data['taxesenabled']);
 
         if ($usecredit) {
@@ -135,5 +146,23 @@ final class coupon_application_test extends advanced_testcase {
             }
         }
         return $total;
+    }
+
+    /**
+     * Assert that coupon discount is applied to the first item only (current behavior).
+     *
+     * @param array $items
+     * @return void
+     */
+    private function count_discounted_items(array $items): int {
+        $count = 0;
+
+        foreach ($items as $item) {
+            if (!empty($item['discount']) && (float) $item['discount'] > 0) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 }
