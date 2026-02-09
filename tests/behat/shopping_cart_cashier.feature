@@ -206,7 +206,8 @@ Feature: Cashier actions in shopping cart.
     Given I log in as "admin"
     And I visit "/admin/category.php?category=local_shopping_cart"
     And I set the following fields to these values:
-      | s_local_shopping_cart_rounddiscounts | 0 |
+      | s_local_shopping_cart_rounddiscounts    | 0 |
+      | s_local_shopping_cart_roundrefundamount | 0 |
     And I press "Save changes"
     And I visit "/local/shopping_cart/cashier.php"
     And I set the field "Select a user..." to "Username1"
