@@ -105,8 +105,8 @@ Feature: Cashier actions in shopping cart with consumption enabled
     ## Cancelation fee = 0
     ## Round discounts = 1
     And the following "local_shopping_cart > plugin setup" exist:
-      | account  | cancelationfee | calculateconsumation | rounddiscounts |
-      | Account1 | 0              | 1                    | 1              |
+      | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
+      | Account1 | 0              | 1                    | 1              | 0                 |
     And the following "local_shopping_cart > user purchases" exist:
       | user  | testitemid |
       | user1 | 1          |
