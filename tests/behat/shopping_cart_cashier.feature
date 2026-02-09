@@ -245,7 +245,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Cashier (Cash)" in the "#cash_report_table_r2 .payment" "css_element"
     And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
 
-    @javascript
+  @javascript
   Scenario: Cashier buys discounted item for user and cancel purchase with cancellation fee (with rounding refund value)
     Given I log in as "user1"
     And I visit "/local/shopping_cart/demo.php"

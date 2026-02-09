@@ -212,4 +212,3 @@ Feature: User cancellation after cash payment with consumption and discount roun
       | 20.30 |         |                 | Test item 2            | toolgenerator1@example.com | Cashier (Cash) | Success  |
       | 10.00 |         |                 | Test item 1            | toolgenerator1@example.com | Cashier (Cash) | Success  |
     And I log out
-
