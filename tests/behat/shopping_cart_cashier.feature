@@ -244,3 +244,38 @@ Feature: Cashier actions in shopping cart.
     And I should see "Test item 1" in the "#cash_report_table_r2" "css_element"
     And I should see "Cashier (Cash)" in the "#cash_report_table_r2 .payment" "css_element"
     And I should see "Success" in the "#cash_report_table_r2 .paymentstatus" "css_element"
+
+    @javascript
+  Scenario: Cashier buys discounted item for user and cancel purchase with cancellation fee (with rounding refund value)
+    Given I log in as "user1"
+    And I visit "/local/shopping_cart/demo.php"
+    And I wait until the page is ready
+    And I click on "#btn-local_shopping_cart-main-1" "css_element"
+    Given I log in as "admin"
+    And I visit "/admin/category.php?category=local_shopping_cart"
+    And I set the following fields to these values:
+      | s_local_shopping_cart_rounddiscounts    | 0 |
+      | s_local_shopping_cart_roundrefundamount | 1 |
+    And I press "Save changes"
+    And I visit "/local/shopping_cart/cashier.php"
+    And I set the field "Select a user..." to "Username1"
+    And I should see "Username1 Test"
+    And I click on "Continue" "button"
+    Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I set the following fields to these values:
+      | discountabsolute | 2.5 |
+    And I press "Save changes"
+    And I click on "#shopping_cart-cashiers-section #checkout-btn" "css_element"
+    Then I should see "7.50 EUR" in the "#shopping_cart-cashiers-section .sc_totalprice" "css_element"
+    And I click on "#shopping_cart-cashiers-section .btn_cashpayment" "css_element"
+    Then I should see "Payment successful" in the "div.payment_message_result" "css_element"
+    And I reload the page
+    And I wait until the page is ready
+    And I press "Cancel purchase"
+    And I set the following fields to these values:
+      | cancelationfee | 2 |
+    And I press "Save changes"
+    Then I should see "6" in the "ul.cashier-history-items span.credit_total" "css_element"
+    And I should see "Test item 1" in the "ul.cashier-history-items" "css_element"
+    And I should see "Canceled" in the "ul.cashier-history-items" "css_element"
