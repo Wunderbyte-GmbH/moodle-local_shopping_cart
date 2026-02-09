@@ -21,6 +21,7 @@ use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\mock\mockitems;
 use moodle_exception;
+use stdClass;
 
 /**
  * Shopping_cart subsystem callback implementation for local_shopping_cart, for testing, does not have any use for production.
@@ -301,7 +302,7 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                 "duedatevariable" => 10,
             ];
 
-            $iteminfo = new \stdClass();
+            $iteminfo = new stdClass();
             $iteminfo->itemid = $itemid;
             $iteminfo->area = $area;
             $iteminfo->componentname = 'local_shopping_cart';
@@ -309,7 +310,17 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
             $iteminfo->usermodified = $USER->id;
             $iteminfo->allowinstallment = 1;
             // Force record into local_shopping_cart_iteminfo table.
-            if ($iteminfo->id = $DB->get_field('local_shopping_cart_iteminfo', 'id', ['itemid' => $itemid, 'area' => $area], IGNORE_MISSING)) {
+            if (
+                $iteminfo->id = $DB->get_field(
+                    'local_shopping_cart_iteminfo',
+                    'id',
+                    [
+                        'itemid' => $itemid,
+                        'area' => $area,
+                    ],
+                    IGNORE_MISSING
+                )
+            ) {
                 $DB->update_record('local_shopping_cart_iteminfo', $iteminfo);
             } else {
                 $DB->insert_record('local_shopping_cart_iteminfo', $iteminfo);
