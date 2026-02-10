@@ -1,3 +1,12 @@
+## Version 2.0.4 (2026021000)
+* Improvement: The new option 'Round the refund values' has been added to the settings.
+* Improvement: Show if final value to refund is rounded based on 'roundrefundamount' settings.
+* Improvement: Add a hint which makes user aware when rounding the refund amount is enabled.
+* Improvement: Put the interface names in alphabetical order.
+* Bugfix: Add area to the query condition to prevent fetching multiple records.
+* Test: Fixed Behat test based on new logic.
+* Test: Update the Behat tests to reflect the changes related to rounding the refund value.
+
 ## Version 2.0.3 (2026020500)
 * Bugfix: Remove GB & Northern Ireland from list of European countries.
 * Bugfix: Increase wunderbyte table dependency (for security hotfix).
