@@ -106,7 +106,7 @@ Feature: Cashier actions in shopping cart with consumption enabled
     ## Round discounts = 1
     And the following "local_shopping_cart > plugin setup" exist:
       | account  | cancelationfee | calculateconsumation | rounddiscounts | roundrefundamount |
-      | Account1 | 0              | 1                    | 1              | 0                 |
+      | Account1 | 0              | 1                    | 1              | 1                 |
     And the following "local_shopping_cart > user purchases" exist:
       | user  | testitemid |
       | user1 | 1          |
@@ -162,7 +162,7 @@ Feature: Cashier actions in shopping cart with consumption enabled
     And I should see "Canceled - Test item 1" in the "#cash_report_table_r3" "css_element"
     And I should see "Credits" in the "#cash_report_table_r3" "css_element"
     And I should see "Canceled" in the "#cash_report_table_r3" "css_element"
-    And I should see "20.30" in the "#cash_report_table_r2" "css_element"
+    And I should see "20.00" in the "#cash_report_table_r2" "css_element"
     And I should see "Canceled - Test item 2" in the "#cash_report_table_r2" "css_element"
     And I should see "Credits" in the "#cash_report_table_r2" "css_element"
     And I should see "Canceled" in the "#cash_report_table_r2" "css_element"
