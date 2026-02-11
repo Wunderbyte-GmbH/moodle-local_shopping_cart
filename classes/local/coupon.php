@@ -107,68 +107,15 @@ class coupon {
             return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode)];
         }
 
-        $discountbefore = $this->get_total_discount($cartstore->get_items());
-        $items = $cartstore->get_items();
+        $cartstore->set_coupon_data(
+            $couponcode,
+            (float) $coupon->discountpercentage,
+            (float) $coupon->discountabsolute,
+            (string) $coupon->currency
+        );
 
-        foreach ($items as $item) {
-            // Discount absolute can only be applied if the item price is higher than the discount.
-            if (
-                empty($coupon->discountpercentage)
-                && $coupon->discountabsolute > 0
-                && $item->price < $coupon->discountabsolute
-            ) {
-                $remainingdiscount = $coupon->discountabsolute - $item->price;
-                $coupon->discountabsolute = $item->price;
-            } else if (!empty($remainingdiscount)) {
-                if ($item->price >= $remainingdiscount) {
-                    $coupon->discountabsolute = $remainingdiscount;
-                    $remainingdiscount = 0;
-                } else {
-                    $coupon->discountabsolute = $item->price;
-                    $remainingdiscount -= $item->price;
-                }
-            }
-
-            $result = $cartstore->add_discount_to_item(
-                $item['componentname'],
-                $item['area'],
-                $item['itemid'],
-                $coupon->discountpercentage,
-                $coupon->discountabsolute,
-                $item['downpayment'] ?? -1,
-                $couponcode
-            );
-        }
-
-        if (!empty($result['success'])) {
-            $message = get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode);
-        } else {
-            $message = get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode);
-        }
-
-        $discountafter = $this->get_total_discount($cartstore->get_items());
-        $coupondiscount = max(0, $discountafter - $discountbefore);
-        $cartstore->set_coupon_discount($coupondiscount);
-
+        $message = get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode);
         return [true, $message];
-    }
-
-    /**
-     * Get total discount amount from items.
-     *
-     * @param array $items
-     * @return float
-     */
-    private function get_total_discount(array $items): float {
-        $total = 0.0;
-
-        foreach ($items as $item) {
-            if (isset($item['discount'])) {
-                $total += (float) $item['discount'];
-            }
-        }
-
-        return $total;
     }
 
     /**

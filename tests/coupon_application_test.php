@@ -151,16 +151,16 @@ final class coupon_application_test extends advanced_testcase {
     }
 
     /**
-     * Assert that coupon discount is applied to the first item only (current behavior).
+     * Count items that received a coupon discount.
      *
      * @param array $items
-     * @return void
+     * @return int
      */
     private function count_discounted_items(array $items): int {
         $count = 0;
 
         foreach ($items as $item) {
-            if (!empty($item['discount']) && (float) $item['discount'] > 0) {
+            if (!empty($item['coupondiscount']) && (float) $item['coupondiscount'] > 0) {
                 $count++;
             }
         }

@@ -318,12 +318,19 @@ class cartstore {
                     unset($item['discount']);
                     unset($item['discountpercentage']);
                     unset($item['discountabsolute']);
-                    $data['items'][$cacheitemkey] = $item;
                 }
+                if (isset($item['coupondiscount'])) {
+                    $item['price'] = $item['price'] + (float) $item['coupondiscount'];
+                    unset($item['coupondiscount']);
+                }
+                $data['items'][$cacheitemkey] = $item;
             }
         }
 
         unset($data['coupon']);
+        unset($data['couponpercent']);
+        unset($data['couponabsolute']);
+        unset($data['couponcurrency']);
         unset($data['coupondiscount']);
         $this->set_cache($data);
     }
@@ -342,6 +349,29 @@ class cartstore {
         }
 
         $data['coupondiscount'] = $amount;
+        $this->set_cache($data);
+    }
+
+    /**
+     * Store coupon data in cache.
+     *
+     * @param string $coupon
+     * @param float $percent
+     * @param float $absolute
+     * @param string $currency
+     * @return void
+     */
+    public function set_coupon_data(string $coupon, float $percent, float $absolute, string $currency): void {
+        $data = $this->get_cache();
+
+        if (!$data) {
+            return;
+        }
+
+        $data['coupon'] = $coupon;
+        $data['couponpercent'] = $percent;
+        $data['couponabsolute'] = $absolute;
+        $data['couponcurrency'] = $currency;
         $this->set_cache($data);
     }
 
