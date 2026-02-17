@@ -33,6 +33,7 @@ use external_value;
 use external_single_structure;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\shopping_cart;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -73,21 +74,44 @@ class decrease_number_of_item extends external_api {
      * @return array
      */
     public static function execute(string $component, string $area, int $itemid, int $userid): array {
+        global $USER;
+
+        $params = self::validate_parameters(self::execute_parameters(), [
+            'component' => $component,
+            'area' => $area,
+            'itemid' => $itemid,
+            'userid' => $userid,
+        ]);
 
         require_login();
         $context = context_system::instance();
 
         self::validate_context($context);
 
-        $providerclass = shopping_cart::get_service_provider_classname($component);
-        $cartstore = cartstore::instance($userid);
-        $nritems = $cartstore->get_number_of_items_for_item($component, $area, $itemid);
-        // We increase them.
+        if (!has_capability('local/shopping_cart:canbuy', $context)) {
+            throw new moodle_exception('nopermissions', 'core');
+        }
+
+        // Security: If modifying cart for another user, must be cashier.
+        if ($params['userid'] != 0 && $params['userid'] != $USER->id) {
+            if (!has_capability('local/shopping_cart:cashier', $context)) {
+                throw new moodle_exception('nopermissions', 'core');
+            }
+        }
+
+        $providerclass = shopping_cart::get_service_provider_classname($params['component']);
+        $cartstore = cartstore::instance($params['userid']);
+        $nritems = $cartstore->get_number_of_items_for_item($params['component'], $params['area'], $params['itemid']);
+        // We decrease them.
         $nritems--;
-        $allowed = component_class_callback($providerclass, 'adjust_number_of_items', [$area, $itemid, $nritems, $userid]);
+        $allowed = component_class_callback(
+            $providerclass,
+            'adjust_number_of_items',
+            [$params['area'], $params['itemid'], $nritems, $params['userid']]
+        );
 
         if ($allowed) {
-            return $cartstore->decrease_number_of_item($component, $area, $itemid);
+            return $cartstore->decrease_number_of_item($params['component'], $params['area'], $params['itemid']);
         }
         return ['success' => 0];
     }
