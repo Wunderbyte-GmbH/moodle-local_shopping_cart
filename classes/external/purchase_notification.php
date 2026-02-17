@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace local_shopping_cart\external;
 
 use context_system;
+use core_component;
 use core_payment\helper;
 use external_api;
 use external_function_parameters;
@@ -59,10 +60,25 @@ class purchase_notification extends external_api {
         return new external_function_parameters([
             'identifier'  => new external_value(PARAM_INT, 'identifier', VALUE_DEFAULT, 0),
             'tid'  => new external_value(PARAM_TEXT, 'tid', VALUE_DEFAULT, ''),
-            'paymentgateway'  => new external_value(PARAM_TEXT, 'paymentgateway', VALUE_DEFAULT, ''),
+            'paymentgateway'  => new external_value(PARAM_PLUGIN, 'paymentgateway', VALUE_DEFAULT, ''),
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
             'justcheck'  => new external_value(PARAM_BOOL, 'userid', VALUE_DEFAULT, false),
             ]);
+    }
+
+    /**
+     * Validates if the given payment gateway is installed and enabled.
+     *
+     * @param string $gateway The payment gateway name to validate
+     * @return bool True if valid, false otherwise
+     */
+    private static function is_valid_payment_gateway(string $gateway): bool {
+        if (empty($gateway)) {
+            return false;
+        }
+        // Get list of installed payment gateway plugins.
+        $paymentgateways = core_component::get_plugin_list('paygw');
+        return isset($paymentgateways[$gateway]);
     }
 
     /**
@@ -92,6 +108,12 @@ class purchase_notification extends external_api {
         $context = context_system::instance();
 
         self::validate_context($context);
+
+        // Security: Validate payment gateway against whitelist.
+        if (!empty($params['paymentgateway']) && !self::is_valid_payment_gateway($params['paymentgateway'])) {
+            throw new moodle_exception('invaliddata', 'error');
+        }
+
         $successurl = '';
         $success = self::return_checkout_status($params['identifier'], $params['paymentgateway']);
         if ($justcheck) {
@@ -105,15 +127,23 @@ class purchase_notification extends external_api {
         }
         if (($success !== 3 || $success !== 2) && !empty($params['paymentgateway'])) {
             if ((!empty($params['tid']) || $params['tid'] == '') && !empty($params['identifier'])) {
-                $dbrec = $DB->get_record(
-                    'paygw_' . $params['paymentgateway'] . '_openorders',
-                    ['itemid' => $params['identifier']]
-                );
-                if ($dbrec) {
-                    $params['tid'] = $dbrec->customorderid;
+                // Security: Build table name safely (already validated above).
+                $tablename = 'paygw_' . $params['paymentgateway'] . '_openorders';
+
+                // Security: Check table exists before querying.
+                $dbman = $DB->get_manager();
+                if ($dbman->table_exists($tablename)) {
+                    $dbrec = $DB->get_record(
+                        $tablename,
+                        ['itemid' => $params['identifier']]
+                    );
+                    if ($dbrec) {
+                        $params['tid'] = $dbrec->customorderid;
+                    }
                 }
             }
             // If the payment is not successful yet, we can call transaction complete with the data we have here.
+            // Security: Build class name safely (already validated above).
             $transactioncompletestring = 'paygw_' . $params['paymentgateway'] . '\external\transaction_complete';
             if (class_exists($transactioncompletestring)) {
                 try {
@@ -161,7 +191,25 @@ class purchase_notification extends external_api {
     public static function return_checkout_status($itemid, $provider) {
         global $DB;
         $success = 0;
-        $records = $DB->get_records('paygw_' . $provider . '_openorders', ['itemid' => $itemid]);
+
+        // Security: Empty provider is invalid.
+        if (empty($provider)) {
+            return 0;
+        }
+
+        // Security: Validate provider is a real payment gateway (defense in depth).
+        if (!self::is_valid_payment_gateway($provider)) {
+            return 0;
+        }
+
+        // Security: Build table name safely and check existence.
+        $tablename = 'paygw_' . $provider . '_openorders';
+        $dbman = $DB->get_manager();
+        if (!$dbman->table_exists($tablename)) {
+            return 0;
+        }
+
+        $records = $DB->get_records($tablename, ['itemid' => $itemid]);
         if ($records) {
             foreach ($records as $record) {
                 if ($record->status == 3) {
