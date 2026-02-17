@@ -25,6 +25,7 @@ use external_single_structure;
 use external_multiple_structure;
 use local_shopping_cart\shopping_cart;
 use context_system;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,9 +65,16 @@ class search_users extends external_api {
             'query' => $query,
         ]);
 
+        require_login();
+
         $context = context_system::instance();
 
         self::validate_context($context);
+
+        // Security: Only cashiers can search for users.
+        if (!has_capability('local/shopping_cart:cashier', $context)) {
+            throw new moodle_exception('nopermissions', 'core');
+        }
 
         return shopping_cart::load_users($params['query']);
     }
