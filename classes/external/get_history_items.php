@@ -78,7 +78,7 @@ class get_history_items extends external_api {
 
         self::validate_context($context);
 
-        if (!has_capability('local/shopping_cart:cashier', $context)) {
+        if (has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $params['userid'] == 0 ? (int)$USER->id : $params['userid'];
         } else {
             $userid = (int)$USER->id;
