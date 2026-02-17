@@ -65,6 +65,8 @@ class delete_user_address extends external_api {
      * @return array
      */
     public static function execute(int $addressid) {
+        global $USER, $DB;
+
         $params = self::validate_parameters(self::execute_parameters(), [
             'addressid' => $addressid,
         ]);
@@ -73,6 +75,15 @@ class delete_user_address extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
+
+        // Security: Check that the address belongs to the current user.
+        $address = $DB->get_record('local_shopping_cart_address', ['id' => $params['addressid']], '*', MUST_EXIST);
+
+        // Only allow deletion if the address belongs to the user or user is a cashier.
+        if ($address->userid != $USER->id && !has_capability('local/shopping_cart:cashier', $context)) {
+            throw new \moodle_exception('nopermissions', 'core');
+        }
+
         return ['success' => address_operations::delete_user_address($params['addressid'])];
     }
 
