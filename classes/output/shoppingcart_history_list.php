@@ -705,7 +705,13 @@ class shoppingcart_history_list implements renderable, templatable {
         $returnarray['structuredhistoryitems'] = array_reverse($returnarray['structuredhistoryitems']);
 
         // Now, let's mark the first one, so we can always expand it.
-        $returnarray['structuredhistoryitems'][0]['firstsection'] = true;
+        // We explicitly set firstsection=false on all other items to prevent Mustache context
+        // inheritance: the accordion is wrapped in {{#structuredhistoryitems.0}}, which puts
+        // the first item (firstsection=true) on the context stack. Without an explicit false,
+        // Mustache falls back to that parent context for every iteration, making all items show.
+        foreach ($returnarray['structuredhistoryitems'] as $key => $value) {
+            $returnarray['structuredhistoryitems'][$key]['firstsection'] = ($key === 0);
+        }
     }
 
     /**
