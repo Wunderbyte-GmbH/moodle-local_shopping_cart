@@ -438,6 +438,7 @@ if ($debug != 2) {
         'itemname',
         'gateway',
         'orderid',
+        'usermodified',
         'annotation',
     ];
 
