@@ -80,7 +80,7 @@ class confirm_cash_payment extends external_api {
         self::validate_context($context);
 
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
-            throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+            throw new moodle_exception('nopermissions', 'core');
         }
         return shopping_cart::confirm_payment(
             $params['userid'],
