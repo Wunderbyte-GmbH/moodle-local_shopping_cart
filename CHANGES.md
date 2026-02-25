@@ -1,3 +1,14 @@
+## Version 2.0.5 (2026022500)
+* Improvement: Add security to increase and decrease items.
+* Improvement: Only cashiers can search_users.
+* Improvement: Fix wrong language string.
+* Improvement: Add cashier to fulltextsearch.
+* Bugfix: Fix problem with collapsible sections in shopping cart history shortcode [shoppingcarthistory].
+* Bugfix: Don't allow deleting of other addresses.
+* Bugfix: Fix logic problem when fetching history items.
+* Bugfix: Verify paymentgateway string.
+* Bugfix: Make sure we use component and area in combination with itemid.
+
 ## Version 2.0.4 (2026021000)
 * Improvement: The new option 'Round the refund values' has been added to the settings.
 * Improvement: Show if final value to refund is rounded based on 'roundrefundamount' settings.
