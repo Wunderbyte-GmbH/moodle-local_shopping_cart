@@ -963,7 +963,7 @@ class shopping_cart_history {
                    AND itemid = :itemid
                    AND userid = :userid
                    AND paymentstatus = :paymentstatus
-                 ORDER BY timecreated DESC";
+              ORDER BY timecreated DESC";
 
         $records = $DB->get_records_sql($sql, [
             'componentname' => $componentname,
