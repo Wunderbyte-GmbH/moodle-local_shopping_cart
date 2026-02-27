@@ -865,9 +865,19 @@ class shopping_cart_history {
             isset($shoppingcart['identifier'])
             && $shoppingcart['identifier'] != $identifier
         ) {
-            $shoppingcart = reservations::get_json_from_db_via_identifier($identifier);
-            $shoppingcart['storedinhistory'] = true;
-            self::store_in_schistory_cache($shoppingcart);
+            $dbshoppingcart = reservations::get_json_from_db_via_identifier($identifier);
+            // If we get a cart, we replace it.
+            if ($dbshoppingcart) {
+                $shoppingcart = $dbshoppingcart;
+                $shoppingcart['storedinhistory'] = true;
+                self::store_in_schistory_cache($shoppingcart);
+            } else {
+                // In this case, we come probably with an old identifier, but we still want users to be able to checkout.
+                // So we just save the current cart with this old identifier.
+                // We never initiated a successsful checkout with this identifier, so this should not be a problem.
+                $shoppingcart['identifier'] = $identifier;
+                self::store_in_schistory_cache($shoppingcart);
+            }
         } else if (reservations::different_cart_with_same_identifier($shoppingcart, $identifier, true)) {
             // The cart must still correspond to the identifier we first used.
             // If there is nothing stored, we add it here.
