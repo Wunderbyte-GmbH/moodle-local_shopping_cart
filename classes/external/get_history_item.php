@@ -140,8 +140,8 @@ class get_history_item extends external_api {
             'price' => $item->price,
             'currency' => $item->currency,
             'quotaconsumed' => $item->quotaconsumed,
-            'round' => $item->round ? 1 : 0,
-            'roundrefundamount' => $item->roundrefundamount ? 1 : 0,
+            'round' => $item->round ?? 0,
+            'roundrefundamount' => $item->roundrefundamount ?? 0,
             'cancelationfee' => get_config('local_shopping_cart', 'cancelationfee') < 1
                 ? 0 : get_config('local_shopping_cart', 'cancelationfee'),
         ];
@@ -159,8 +159,9 @@ class get_history_item extends external_api {
             'price' => new external_value(PARAM_FLOAT, 'Price'),
             'currency' => new external_value(PARAM_ALPHA, 'Currency'),
             'quotaconsumed' => new external_value(PARAM_FLOAT, 'Quotaconsumed'),
-            'round' => new external_value(PARAM_FLOAT, 'Round'),
+            'round' => new external_value(PARAM_INT, 'Round'),
+            'roundrefundamount' => new external_value(PARAM_INT, 'Round refund amount'),
             'cancelationfee' => new external_value(PARAM_FLOAT, 'Cancelationfee'),
-            ]);
+        ]);
     }
 }
