@@ -726,17 +726,21 @@ class shoppingcart_history_list implements renderable, templatable {
     }
 
     /**
-     * Add round config.
-     * Round and roundrefundamount properties of $item
-     * are set to int values.
+     * Add round config
      *
      * @param stdClass $item
      *
      * @return void
      */
     public static function add_round_config(stdClass &$item): void {
-        $item->round = (int) get_config('local_shopping_cart', 'rounddiscounts');
-        $item->roundrefundamount = (int) get_config('local_shopping_cart', 'roundrefundamount');
+
+        if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
+            $item->round = $round == 1 ? true : false;
+        }
+
+        if ($roundrefund = get_config('local_shopping_cart', 'roundrefundamount')) {
+            $item->roundrefundamount = $roundrefund == 1 ? true : false;
+        }
     }
 
     /**

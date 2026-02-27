@@ -140,8 +140,8 @@ class get_history_item extends external_api {
             'price' => $item->price,
             'currency' => $item->currency,
             'quotaconsumed' => $item->quotaconsumed,
-            'round' => $item->round ?? 0,
-            'roundrefundamount' => $item->roundrefundamount ?? 0,
+            'round' => $item->round ? 1 : 0,
+            'roundrefundamount' => $item->roundrefundamount ? 1 : 0,
             'cancelationfee' => get_config('local_shopping_cart', 'cancelationfee') < 1
                 ? 0 : get_config('local_shopping_cart', 'cancelationfee'),
         ];
