@@ -24,6 +24,7 @@
 
 namespace local_shopping_cart;
 
+use html_writer;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\reservations;
 
@@ -97,7 +98,7 @@ class shopping_cart_history {
      */
     public static function get_history_list_for_user(int $userid): array {
 
-        global $CFG, $DB;
+        global $CFG, $DB, $PAGE, $OUTPUT;
 
         $dbman = $DB->get_manager();
 
@@ -111,12 +112,33 @@ class shopping_cart_history {
         if (!empty($accountid)) {
             $account = new \core_payment\account($accountid);
         } else {
-            // If we have no payment accounts then print static text instead.
+            // If we have no payment accounts then print a proper Moodle page.
+
+            require_login();
+
+            $context = context_system::instance();
+            $PAGE->set_context($context);
+            $PAGE->set_url(new moodle_url('/local/shopping_cart/checkout.php'));
+            $PAGE->set_pagelayout('standard');
+            $PAGE->set_title(get_string('checkout', 'local_shopping_cart'));
+            $PAGE->set_heading(get_string('checkout', 'local_shopping_cart'));
+
+            // Build your existing message exactly as before.
             $urlobject = new stdClass();
             $urlobject->link = (new moodle_url('/payment/accounts.php'))->out(false);
+
             $errmsg = get_string('nopaymentaccounts', 'local_shopping_cart');
             $errmsg .= ' ' . get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject);
-            echo $errmsg;
+
+            echo $OUTPUT->header();
+
+            // Show your SAME message, but styled.
+            echo html_writer::div(
+                $OUTPUT->notification($errmsg, 'notifyproblem'),
+                'mt-3'
+            );
+
+            echo $OUTPUT->footer();
             exit();
         }
 
