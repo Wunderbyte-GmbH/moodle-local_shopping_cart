@@ -934,16 +934,24 @@ class shopping_cart_history {
     public static function get_most_recent_historyitem(string $componentname, string $area, int $itemid, int $userid) {
         global $DB;
 
-        $record = $DB->get_record(
-            'local_shopping_cart_history',
-            [
-                'componentname' => $componentname,
-                'area' => $area,
-                'itemid' => $itemid,
-                'userid' => $userid,
-                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-            ]
-        );
+        $sql = "SELECT *
+                  FROM {local_shopping_cart_history}
+                 WHERE componentname = :componentname
+                   AND area = :area
+                   AND itemid = :itemid
+                   AND userid = :userid
+                   AND paymentstatus = :paymentstatus
+                 ORDER BY timecreated DESC";
+
+        $records = $DB->get_records_sql($sql, [
+            'componentname' => $componentname,
+            'area' => $area,
+            'itemid' => $itemid,
+            'userid' => $userid,
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ], 0, 1);
+
+        $record = !empty($records) ? reset($records) : false;
 
         if (!empty($record)) {
             return $record;
