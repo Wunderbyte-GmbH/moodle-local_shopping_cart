@@ -1,3 +1,8 @@
+## Version 2.0.6 (2026030200)
+* Bugfix: Make sure most recent history item actually returns most recent history item.
+* Improvement: Better error message when no account is present.
+* Bugfix: Blank paymentprovider list.
+
 ## Version 2.0.5 (2026022500)
 * Improvement: Add security to increase and decrease items.
 * Improvement: Only cashiers can search_users.
