@@ -1541,12 +1541,14 @@ class shopping_cart {
             'u.email',
             '\' \''
         );
+        // We do not load any deleted, suspended or unconfirmed users.
         $sql = "SELECT * FROM (
                     SELECT u.id, u.firstname, u.lastname, u.email, $fullsql AS fulltextstring
-                    FROM {user} u
-                    WHERE u.deleted = 0
+                      FROM {user} u
+                     WHERE u.deleted = 0
+                       AND u.suspended = 0
+                       AND u.confirmed = 1
                 ) AS fulltexttable";
-                // Check for u.deleted = 0 is important, so we do not load any deleted users!
 
         if (!empty($query)) {
             // We search for every word extra to get better results.
