@@ -1203,6 +1203,9 @@ class shopping_cart {
             // For cashier as well as for self booking users.
             if ($customcredit < 0) {
                 $cancelationfee = $cancelationfee + $customcredit; // We reduce cancelationfee by the negative customcredit.
+
+                // Hier wird cancelationfee negativ!
+
                 $customcredit = 0;
             }
             $costcenter = $record->costcenter ?? "";

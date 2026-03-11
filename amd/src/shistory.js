@@ -436,6 +436,12 @@ export async function confirmCancelModal(button, cancelationFee) {
     // We always round percentages.
     const percentage = Math.round(quotaconsumed * 100);
 
+    // Make sure cancelation fee is not higher than the paid price.
+    // We must not get negative values.
+    if (price - cancelationFee < 0) {
+        cancelationFee = price;
+    }
+
     const params = {
         quotaconsumed: quotaconsumed.toFixed(2),
         percentage: percentage + '%',

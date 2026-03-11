@@ -167,7 +167,7 @@ class modal_cancel_addcredit extends dynamic_form {
         $credittopayback = $data->credittopayback ?? 0;
 
         if ($data->cancelationfee < 0) {
-                $cancelationfee = 0;
+            $cancelationfee = 0;
         }
 
         if ($data->credittopayback < 0) {
