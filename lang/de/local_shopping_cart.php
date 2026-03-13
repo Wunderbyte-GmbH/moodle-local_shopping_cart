@@ -206,7 +206,14 @@ $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Kä
 $string['confirmcancelbody'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
  Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich der Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
 $string['confirmcancelbodyconsumption'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.
- Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich des bereits verbrauchten Anteils von {$a->percentage} und einer Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben.';
+ Der/die Käufer bekommt den Kaufpreis {$a->price} {$a->currency} abzüglich des bereits verbrauchten Anteils von {$a->percentage} und einer
+ Stornierungsgebühr von {$a->cancelationfee} {$a->currency} gutgeschrieben: <b>{$a->credit} {$a->currency}</b>
+ <br><br>
+ <div class="progress">
+  <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+  style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+  aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+ </div>';
 $string['confirmcancelbodynocredit'] = 'Möchten Sie diesen Kauf wirklich stornieren? Das lässt sich nicht rückgängig machen.<br>
  Der/die Käufer/in hat den Artikel bereits vollständig konsumiert, der ursprüngliche Preis war {$a->price} {$a->currency}';
 $string['confirmcancelbodyuser'] = 'Möchten Sie den Kauf wirklich stornieren?

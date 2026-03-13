@@ -205,12 +205,13 @@ $string['confirmcancelallbody'] = 'Do you really want to cancel this purchase fo
 $string['confirmcancelbody'] = 'Do you really want to cancel this purchase? It can\'t be undone.
  The user who purchased will get his money back of which the cancellation fee will be subtracted.';
 $string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this purchase? It can\'t be undone.
- The user who purchased will get the costs of {$a->price} {$a->currency} minus the already consumed share of {$a->percentage} minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.
+ The user who purchased will get the costs of {$a->price} {$a->currency} minus the already consumed share of {$a->percentage} minus a cancelation fee ({$a->cancelationfee} {$a->currency})
+ as credit for your next purchase: <b>{$a->credit} {$a->currency}</b>
  <br><br>
  <div class="progress">
- <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
- style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
- aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
+  <div class="progress-bar progress-bar-striped bg-$bootrapstyle" role="progressbar"
+  style="width: {$a->percentage}" aria-valuenow="{$a->percentage}"
+  aria-valuemin="0" aria-valuemax="100">{$a->percentage}</div>
  </div>';
 $string['confirmcancelbodynocredit'] = 'Do you really want to cancel this purchase?<br>
  The user has already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
