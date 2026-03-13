@@ -215,7 +215,7 @@ $string['confirmcancelbodyconsumption'] = 'Do you really want to cancel this pur
 $string['confirmcancelbodynocredit'] = 'Do you really want to cancel this purchase?<br>
  The user has already consumed the whole article and won\'t get any refund of the price paid: {$a->price} {$a->currency}';
 $string['confirmcancelbodyuser'] = 'Do you really want to cancel this purchase?<br>
- You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit ({$a->credit} {$a->currency}) for your next purchase.';
+ You\'ll get the costs of your purchase ({$a->price} {$a->currency}) minus a cancelation fee ({$a->cancelationfee} {$a->currency}) as credit for your next purchase: <b>{$a->credit} {$a->currency}{$a->rounded}</b>';
 $string['confirmcancelbodyuserconsumption'] = '<p><b>Do you really want to cancel this purchase?</b></p>
  <p>
  You will receive <b>{$a->credit} {$a->currency}{$a->rounded}</b> as credit.<br>

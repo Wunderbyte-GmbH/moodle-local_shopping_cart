@@ -395,6 +395,7 @@ export async function confirmCancelModal(button, cancelationFee) {
                     button.dataset.currency = data.currency;
                     button.dataset.quotaconsumed = data.quotaconsumed;
                     button.dataset.round = data.round;
+                    button.dataset.roundrefundamount = data.roundrefundamount;
                     cancelationFee = data.cancelationfee;
                     button.dataset.buttontonull = true;
 

@@ -1157,10 +1157,10 @@ class shopping_cart {
             we deduce the standard fee from the credit. */
             if ($userid == $USER->id) {
                 if (
-                    ($cancelationfeesettings = get_config('local_shopping_cart', 'cancelationfee'))
-                    && $cancelationfeesettings > 0
+                    ($cancelationfee = get_config('local_shopping_cart', 'cancelationfee'))
+                    && $cancelationfee > 0
                 ) {
-                    $customcredit -= $cancelationfeesettings;
+                    $customcredit -= $cancelationfee;
                 }
 
                 if (
@@ -1196,16 +1196,20 @@ class shopping_cart {
                 // Apply rounding to refund value.
                 // We round to full int as we already know that roundrefundamount is turned on.
                 $refundamountprecision = 0;
-                $customcredit = round($customcredit, $refundamountprecision);
+                if ($customcredit > 0) {
+                    // We do not round if it's negative.
+                    $customcredit = round($customcredit, $refundamountprecision);
+                }
             }
 
             // Make sure customcredit is never negative due to cancelation fee.
             // For cashier as well as for self booking users.
             if ($customcredit < 0) {
-                $cancelationfee = $cancelationfee + $customcredit; // We reduce cancelationfee by the negative customcredit.
-
-                // Hier wird cancelationfee negativ!
-
+                /* Example: Price was 2 EUR, but cancelation fee is 3 EUR.
+                This would lead to a customcredit of -1 EUR.
+                We then reduce the cancelation fee by this 1 EUR, so the user gets 0 credit
+                and the cancelation fee is only 2 EUR. */
+                $cancelationfee = $cancelationfee + $customcredit;
                 $customcredit = 0;
             }
             $costcenter = $record->costcenter ?? "";
@@ -1218,7 +1222,7 @@ class shopping_cart {
             $record->itemname = get_string('canceled', 'local_shopping_cart') . " - " . $record->itemname;
             $record->annotation = get_string('canceled', 'local_shopping_cart');
             $record->credits = $customcredit;
-            $record->fee = $cancelationfee;
+            $record->fee = $cancelationfee > 0 ? $cancelationfee : 0;
             $record->schistoryid = $historyid;
             self::add_record_to_ledger_table($record);
 
