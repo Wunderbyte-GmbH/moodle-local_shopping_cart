@@ -92,6 +92,12 @@ class shoppingcart_history_list implements renderable, templatable {
     private $canpayback = false;
 
     /**
+     * Bool showcanceluntil.
+     * @var bool
+     */
+    private $showcanceluntil = false;
+
+    /**
      * Bool showserviceperiod.
      * @var bool
      */
@@ -167,6 +173,9 @@ class shoppingcart_history_list implements renderable, templatable {
             $this->canpayback = true;
         }
 
+        if (get_config('local_shopping_cart', 'schistoryshowcanceluntil')) {
+            $this->showcanceluntil = true;
+        }
         if (get_config('local_shopping_cart', 'schistoryshowserviceperiod')) {
             $this->showserviceperiod = true;
         }
@@ -203,6 +212,8 @@ class shoppingcart_history_list implements renderable, templatable {
                     userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->timemodifiedrendered = !empty($item->timemodified) ?
                     userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+                $item->canceluntilrendered = !empty($item->canceluntil) ?
+                    userdate($item->canceluntil, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
                     userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
                 $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
@@ -401,6 +412,8 @@ class shoppingcart_history_list implements renderable, templatable {
                 userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
             $item->timemodifiedrendered = !empty($item->timemodified) ?
                 userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+            $item->canceluntilrendered = !empty($item->canceluntil) ?
+                userdate($item->canceluntil, get_string('strftimedatetime', 'langconfig')) : null;
             $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
                 userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
             $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
@@ -463,6 +476,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if (isset($historyarray['canpayback'])) {
             $data['canpayback'] = $historyarray['canpayback'];
+        }
+
+        if (isset($historyarray['showcanceluntil'])) {
+            $data['showcanceluntil'] = $historyarray['showcanceluntil'];
         }
 
         if (isset($historyarray['showserviceperiod'])) {
@@ -546,6 +563,10 @@ class shoppingcart_history_list implements renderable, templatable {
 
         if ($this->canpayback) {
             $returnarray['canpayback'] = true;
+        }
+
+        if ($this->showcanceluntil) {
+            $returnarray['showcanceluntil'] = true;
         }
 
         if ($this->showserviceperiod) {

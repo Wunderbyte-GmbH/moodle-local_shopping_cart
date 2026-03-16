@@ -148,6 +148,7 @@ $string['canceled'] = 'Storniert';
 $string['cancellationsettings'] = 'Stornierungseinstellungen';
 $string['cancelpurchase'] = 'Kauf stornieren';
 $string['cancelsuccess'] = 'Erfolgreich storniert';
+$string['canceluntil'] = 'Stornierbar bis';
 $string['cart'] = 'Warenkorb';
 $string['cartisempty'] = 'Ihr Warenkorb ist leer.';
 $string['cartisfull'] = 'Ihr Warenkorb ist voll.';
@@ -605,6 +606,8 @@ $string['schistorysectionssortbybookingcoursestarttime_desc'] = 'Sie haben das B
 Daher können Sie für die Sortierung anstatt dem Datum des Kaufs auch den Beginn der tatsächlichen Buchungsoption verwenden.
 Das macht zum Beispiel dann Sinn, wenn Sie Ihre Kurse in Semestern organisiert haben.';
 $string['schistorysectionsstartingmonth'] = 'Startmonat';
+$string['schistoryshowcanceluntil'] = '"Stornierbar bis"-Datum anzeigen';
+$string['schistoryshowcanceluntil_desc'] = 'Wenn aktiviert, wird das "Stornierbar bis"-Datum in der Buchungshistorie angezeigt.';
 $string['schistoryshowserviceperiod'] = 'Serviceperiode anzeigen';
 $string['schistoryshowserviceperiod_desc'] = 'Wenn aktiviert, wird die Serviceperiode in der Buchungshistorie angezeigt.';
 $string['se'] = "Schweden";

@@ -47,6 +47,7 @@
       "timecreatedrendered":"22 October 2025, 12:25 PM",
       "timemodifiedrendered":"22 October 2025, 12:25 PM",
       "canceluntil":"1669238377",
+      "canceluntilrendered":"23 October 2025, 12:25 PM",
       "serviceperiodstartrendered":"22 October 2025, 12:25 PM",
       "serviceperiodendrendered":"22 October 2025, 12:25 PM",
       "gateway":null,
@@ -70,6 +71,11 @@
             {{#canceled}}
                 | {{#str}} canceled, local_shopping_cart {{/str}}:&nbsp;{{timemodifiedrendered}}
             {{/canceled}}
+            {{#showcanceluntil}}
+                {{#canceluntilrendered}}
+                    <br>{{#str}} canceluntil, local_shopping_cart {{/str}}:&nbsp;{{canceluntilrendered}}
+                {{/canceluntilrendered}}
+            {{/showcanceluntil}}
             {{#showserviceperiod}}{{#canpayback}}
                 {{#serviceperiodstartrendered}}
                     <br>{{#str}} serviceperiodstart, local_shopping_cart {{/str}}:&nbsp;{{serviceperiodstartrendered}}

@@ -148,6 +148,7 @@ $string['canceled'] = 'Canceled';
 $string['cancellationsettings'] = 'Cancellation settings';
 $string['cancelpurchase'] = 'Cancel purchase';
 $string['cancelsuccess'] = 'Successfully canceled';
+$string['canceluntil'] = 'Cancellable until';
 $string['cart'] = 'Shopping cart';
 $string['cartisempty'] = 'Your shopping cart is empty.';
 $string['cartisfull'] = 'Your shopping cart is full.';
@@ -669,6 +670,8 @@ $string['schistorysectionssortbybookingcoursestarttime_desc'] = 'As you have ins
 you can make the sorting dependent on the actual start of booking options instead of the time when the item was booked.
 This makes sense - for example - if you have structured your courses into semesters.';
 $string['schistorysectionsstartingmonth'] = 'Starting month';
+$string['schistoryshowcanceluntil'] = 'Show "cancel until" date';
+$string['schistoryshowcanceluntil_desc'] = 'If enabled, the "cancel until" date will be displayed.';
 $string['schistoryshowserviceperiod'] = 'Show service period in history';
 $string['schistoryshowserviceperiod_desc'] = 'If enabled, the service period will be displayed.';
 $string['se'] = "Sweden";
