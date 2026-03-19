@@ -352,4 +352,36 @@ class cash_report_table extends wunderbyte_table {
 
         return $rendereddate;
     }
+
+    /**
+     * Override query_db to apply the download row limit AFTER filters.
+     *
+     * @param int $pagesize
+     * @param bool $useinitialsbar
+     * @return void
+     */
+    public function query_db($pagesize, $useinitialsbar = true) {
+        global $DB;
+
+        if ($this->is_downloading()) {
+            $limit = (int) get_config('local_shopping_cart', 'downloadcashreportlimit');
+            if ($limit > 0) {
+                // Build SQL the same way as parent, but pass the limit to get_records_sql
+                // so it applies AFTER the WHERE filters.
+                $sort = $this->get_sql_sort();
+                if ($sort) {
+                    $sort = "ORDER BY $sort";
+                }
+                $sql = "SELECT
+                        {$this->sql->fields}
+                        FROM {$this->sql->from}
+                        WHERE {$this->sql->where}
+                        {$sort}";
+                $this->rawdata = $DB->get_records_sql($sql, $this->sql->params, 0, $limit);
+                return;
+            }
+        }
+
+        parent::query_db($pagesize, $useinitialsbar);
+    }
 }
