@@ -212,6 +212,7 @@ $params = [];
 $fileandsheetname = "cash_report";
 
 $table = new cash_report_table('cash_report_table');
+$table->showcountlabel = true;
 
 if ($debug != 2) {
     if ($debug == 3) {
