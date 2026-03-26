@@ -1,3 +1,11 @@
+## Version 2.0.7 (2026032600)
+* New feature: Show canceluntil in shopping cart history.
+* Improvement: Get rid of legacy code for moodleversionminfourtwo CSS stylings.
+* Improvement: Show count label so we can reset filters in cash report.
+* Bugfix: Do not load any deleted, suspended or unconfirmed users.
+* Bugfix: Fix several bugs with cancelation fee (also fixed rounding issues).
+* Bugfix: Fix broken export of filtered cash report if setting 'downloadcashreportlimit' is applied.
+
 ## Version 2.0.6 (2026030200)
 * Bugfix: Make sure most recent history item actually returns most recent history item.
 * Improvement: Better error message when no account is present.
