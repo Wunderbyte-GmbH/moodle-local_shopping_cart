@@ -100,7 +100,7 @@ final class vatnumberhelper_test extends advanced_testcase {
      * Test the validate_with_hmrc method.
      */
     public function test_validate_with_hmrc(): void {
-        $result = vatnumberhelper::validate_with_hmrc('123456789');
+        $result = vatnumberhelper::validate_gb_format('GB731331179');
         $this->assertIsArray($result, 'Expected validate_with_hmrc to return an array.');
         $this->assertArrayHasKey('valid', $result, 'Expected array to have key "valid".');
     }
