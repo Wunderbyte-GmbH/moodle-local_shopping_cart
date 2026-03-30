@@ -104,4 +104,13 @@ final class vatnumberhelper_test extends advanced_testcase {
         $this->assertIsArray($result, 'Expected validate_with_hmrc to return an array.');
         $this->assertArrayHasKey('valid', $result, 'Expected array to have key "valid".');
     }
+
+    /**
+     * Test the validate_with_hmrc method.
+     */
+    public function test_own_country_vatnumber(): void {
+        set_config('ownvatnumber', 'GB731331179', 'local_shopping_cart');
+        $result = vatnumberhelper::is_vatnr_valid('GB', 'GB731331179');
+        $this->assertFalse($result, 'Expected is_vatnr_valid to return false for own country VAT number.');
+    }
 }
