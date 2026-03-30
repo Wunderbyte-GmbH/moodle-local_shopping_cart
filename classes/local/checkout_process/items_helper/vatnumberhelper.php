@@ -112,9 +112,11 @@ class vatnumberhelper {
             }
         }
 
+        $ownvatnrnumber = get_config('local_shopping_cart', 'ownvatnumber');
         if (
             empty($countrycode) ||
-            empty($vatnrnumber)
+            empty($vatnrnumber) ||
+            str_contains($ownvatnrnumber, $vatnrnumber)
         ) {
             return false;
         }
