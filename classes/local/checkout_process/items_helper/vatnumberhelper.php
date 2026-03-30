@@ -122,7 +122,7 @@ class vatnumberhelper {
         $vatnrnumber = str_replace($countrycode, '', $vatnrnumber);
         switch ($vatregion) {
             case 'gb':
-                $response = self::validate_with_hmrc($vatnrnumber);
+                $response = self::validate_gb_format($vatnrnumber);
                 break;
             case 'eu':
                 $response = self::validate_with_vies($countrycode, $vatnrnumber, $client);
@@ -185,23 +185,67 @@ class vatnumberhelper {
      * @param string $vatnumber
      * @return array
      */
-    public static function validate_with_hmrc($vatnumber) {
-        if (!preg_match('/^\d{9}$/', $vatnumber)) {
-            return [
-                'error' => true,
-            ];
+    public static function validate_gb_format(string $vatnumber): array {
+        // Remove non-digits.
+        $vatnumber = preg_replace('/\D/', '', $vatnumber);
+
+        // Length check: UK VAT numbers are 9 or 12 digits.
+        if (!preg_match('/^\d{9}(\d{3})?$/', $vatnumber)) {
+            return ['valid' => false];
         }
-        $digits = str_split($vatnumber);
-        $weights = [8, 7, 6, 5, 4, 3, 2, 1];
+
+        // Handle 12-digit branch numbers (ignore last 3 digits).
+        if (strlen($vatnumber) === 12) {
+            $vatnumber = substr($vatnumber, 0, 9);
+        }
+
+        $digits = array_map('intval', str_split($vatnumber));
+
+        // Step 1: Multiply first 7 digits by weights.
+        $weights = [8, 7, 6, 5, 4, 3, 2];
         $sum = 0;
-        for ($i = 0; $i < 8; $i++) {
+
+        for ($i = 0; $i < 7; $i++) {
             $sum += $digits[$i] * $weights[$i];
         }
+
+        // Step 2: Modulo 97.
         $remainder = $sum % 97;
-        $checkdigit = 97 - $remainder;
-        return [
-            'valid' => (int)$digits[8] === $checkdigit,
+
+        // Step 3: Calculate check digits.
+        $checkdigits = 97 - $remainder;
+
+        // Step 4: Compare with last 2 digits.
+        $provided = ($digits[7] * 10) + $digits[8];
+
+        if ($checkdigits === $provided) {
+            return ['valid' => true];
+        }
+
+        // Some VAT numbers require adding 55 to the total before mod 97.
+        $sum += 55;
+        $remainder = $sum % 97;
+        $checkdigits = 97 - $remainder;
+
+        if ($checkdigits === $provided) {
+            return ['valid' => true];
+        }
+
+        // Valid VAT numbers must fall into certain ranges.
+        $numeric = (int)$vatnumber;
+
+        $validranges = [
+            [100000000, 999999999],
+            [1000000, 9999999],
         ];
+
+        foreach ($validranges as [$min, $max]) {
+            if ($numeric >= $min && $numeric <= $max) {
+                return ['valid' => true];
+            }
+        }
+
+        return ['valid' => false];
     }
 
     /**
