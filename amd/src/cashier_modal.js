@@ -21,7 +21,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import ModalFactory from 'core/modal_factory';
 import Templates from 'core/templates';
 import {get_string as getString} from 'core/str';
 import {getAvailableGateways} from './repository';
@@ -57,8 +56,7 @@ const registerEventListeners = () => {
 const show = async(rootNode, {
     focusOnClose = null,
 } = {}) => {
-    const modal = await ModalFactory.create({
-        type: ModalGateways.TYPE,
+    const modal = await ModalGateways.create({
         title: await getString('selectpaymenttype', 'core_payment'),
         body: await Templates.render('core_payment/gateways_modal', {}),
     });

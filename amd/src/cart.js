@@ -23,7 +23,7 @@
 import Ajax from 'core/ajax';
 import Templates from 'core/templates';
 
-import ModalFactory from 'core/modal_factory';
+import ModalSaveCancel from 'core/modal_save_cancel';
 import ModalEvents from 'core/modal_events';
 
 import {confirmPayment} from 'local_shopping_cart/cashier';
@@ -623,9 +623,10 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setBody(strings[0]);
-                    modal.setSaveButtonText(strings[1]);
+                ModalSaveCancel.create({
+                    body: strings[0],
+                    buttons: {save: strings[1]},
+                }).then(modal => {
                     modal.show();
                     return modal;
                 }).catch(e => {
@@ -645,10 +646,11 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setTitle(strings[0]);
-                    modal.setBody(strings[1]);
-                    modal.setSaveButtonText(strings[2]);
+                ModalSaveCancel.create({
+                    title: strings[0],
+                    body: strings[1],
+                    buttons: {save: strings[2]},
+                }).then(modal => {
                     modal.show();
                     return modal;
                 }).catch(e => {
@@ -668,11 +670,11 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setTitle(strings[0]);
-                    modal.setBody(strings[1]);
-                    modal.setSaveButtonText(strings[2]);
-
+                ModalSaveCancel.create({
+                    title: strings[0],
+                    body: strings[1],
+                    buttons: {save: strings[2]},
+                }).then(modal => {
                     // Reload when OK button is clicked.
                     modal.getRoot().on(ModalEvents.save, function() {
                         window.location.reload();
@@ -697,11 +699,11 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setTitle(strings[0]);
-                    modal.setBody(strings[1]);
-                    modal.setSaveButtonText(strings[2]);
-
+                ModalSaveCancel.create({
+                    title: strings[0],
+                    body: strings[1],
+                    buttons: {save: strings[2]},
+                }).then(modal => {
                     // Reload when OK button is clicked.
                     modal.getRoot().on(ModalEvents.save, function() {
                         window.location.reload();
@@ -726,10 +728,11 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setTitle(strings[0]);
-                    modal.setBody(strings[1]);
-                    modal.setSaveButtonText(strings[2]);
+                ModalSaveCancel.create({
+                    title: strings[0],
+                    body: strings[1],
+                    buttons: {save: strings[2]},
+                }).then(modal => {
                     modal.show();
                     return modal;
                 }).catch(e => {
@@ -748,9 +751,10 @@ export function addItemShowNotification(data) {
                 {key: 'ok', component: 'core'},
             ]).then(strings => {
                 // eslint-disable-next-line promise/no-nesting
-                ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-                    modal.setBody(strings[0]);
-                    modal.setSaveButtonText(strings[1]);
+                ModalSaveCancel.create({
+                    body: strings[0],
+                    buttons: {save: strings[1]},
+                }).then(modal => {
                     modal.show();
                     return modal;
                 }).catch(e => {
@@ -860,11 +864,11 @@ function confirmZeroPriceCheckoutModal(element) {
     ]
     ).then(strings => {
         // eslint-disable-next-line promise/no-nesting
-        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-
-            modal.setTitle(strings[0]);
-            modal.setBody(strings[1]);
-            modal.setSaveButtonText(strings[2]);
+        ModalSaveCancel.create({
+            title: strings[0],
+            body: strings[1],
+            buttons: {save: strings[2]},
+        }).then(modal => {
             modal.getRoot().on(ModalEvents.save, function() {
 
                 const userid = element.dataset.userid;

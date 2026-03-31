@@ -18,7 +18,7 @@
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import ModalFactory from 'core/modal_factory';
+import ModalCancel from 'core/modal_cancel';
 import {get_string as getString} from 'core/str';
 
 import {reinit} from 'local_shopping_cart/cart';
@@ -110,9 +110,10 @@ function vatNumberVerifyCallback() {
     const vatNumber = document.getElementById(IDS.VATNUMBER)?.value;
 
     if (!countryCode || !vatNumber) {
-        ModalFactory.create({type: ModalFactory.types.CANCEL}).then(modal => {
-            modal.setTitle(getString('errorinvalidvatdatatitle', 'local_shopping_cart'));
-            modal.setBody(getString('errorinvalidvatdatadescription', 'local_shopping_cart'));
+        ModalCancel.create({
+            title: getString('errorinvalidvatdatatitle', 'local_shopping_cart'),
+            body: getString('errorinvalidvatdatadescription', 'local_shopping_cart'),
+        }).then(modal => {
             modal.show();
             return modal;
         }).catch(e => {
