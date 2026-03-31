@@ -26,7 +26,7 @@ import {updateTotalPrice, buttoninit, reinit} from 'local_shopping_cart/cart';
 
 import {get_string as getString, get_strings as getStrings} from 'core/str';
 import {showNotification} from 'local_shopping_cart/notifications';
-import ModalFactory from 'core/modal_factory';
+import ModalSaveCancel from 'core/modal_save_cancel';
 import ModalEvents from 'core/modal_events';
 import ModalForm from 'core_form/modalform';
 // As there is a dependency, we can load it like this.
@@ -488,11 +488,11 @@ export async function confirmCancelModal(button, cancelationFee) {
         ]
     ).then(strings => {
         // eslint-disable-next-line promise/no-nesting
-        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-
-            modal.setTitle(strings[0]);
-            modal.setBody(strings[1]);
-            modal.setSaveButtonText(strings[2]);
+        ModalSaveCancel.create({
+            title: strings[0],
+            body: strings[1],
+            buttons: {save: strings[2]},
+        }).then(modal => {
             modal.getRoot().on(ModalEvents.save, function() {
 
                 const historyid = button.dataset.historyid;
@@ -583,12 +583,12 @@ function confirmPaidBackModal(element) {
     ]
     ).then(strings => {
         // eslint-disable-next-line promise/no-nesting
-        ModalFactory.create({type: ModalFactory.types.SAVE_CANCEL}).then(modal => {
-
-            modal.setTitle(strings[0]);
-                modal.setBody(strings[1]);
-                modal.setSaveButtonText(strings[2]);
-                modal.getRoot().on(ModalEvents.save, function() {
+        ModalSaveCancel.create({
+            title: strings[0],
+            body: strings[1],
+            buttons: {save: strings[2]},
+        }).then(modal => {
+            modal.getRoot().on(ModalEvents.save, function() {
 
                     confirmPaidBack(element);
                 });

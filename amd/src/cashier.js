@@ -27,7 +27,7 @@ import Ajax from 'core/ajax';
 import Url from 'core/url';
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
-import ModalFactory from 'core/modal_factory';
+import ModalAlert from 'core/local/modal/alert';
 import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
@@ -301,8 +301,7 @@ function displayErrorModal(data) {
     }
 
     let modaltitle = getString('checkouterrormodaltitle', 'local_shopping_cart');
-    ModalFactory.create({
-        type: ModalFactory.types.ALERT,
+    ModalAlert.create({
         title: modaltitle,
         body: data.error,
         removeOnClose: true,
