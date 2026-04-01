@@ -54,13 +54,9 @@ final class vatnrchecker_test extends advanced_testcase {
             $builder->disableOriginalConstructor();
         }
 
-        // PHPUnit 9/10+: onlyMethods / addMethods.
-        if (method_exists($builder, 'onlyMethods')) {
-            $builder->onlyMethods(['checkVat']);
-        } else {
-            // Older PHPUnit.
-            $builder->setMethods(['checkVat']);
-        }
+        // PHPUnit compatibility: use onlyMethods when available, otherwise fallback.
+        $mockmethod = method_exists($builder, 'onlyMethods') ? 'onlyMethods' : 'setMethods';
+        $builder->{$mockmethod}(['checkVat']);
 
         $this->soapmock = $builder->getMock();
     }
@@ -114,10 +110,9 @@ final class vatnrchecker_test extends advanced_testcase {
      */
     public function test_invalid_gb_vat_number(): void {
         $countrycode = 'GB';
-        $vatnrnumber = '123456789';
+        $vatnrnumber = '12345678';
 
         $checkvatnr = vatnumberhelper::is_vatnr_valid($countrycode, $vatnrnumber);
-
         $this->assertFalse($checkvatnr);
     }
 

@@ -47,6 +47,7 @@ final class vatnumberhelper_test extends advanced_testcase {
      */
     public function setUp(): void {
         parent::setUp();
+        $this->resetAfterTest(true);
         // Mock SoapClient.
         $builder = $this->getMockBuilder(SoapClientMock::class);
 
@@ -55,13 +56,9 @@ final class vatnumberhelper_test extends advanced_testcase {
             $builder->disableOriginalConstructor();
         }
 
-        // PHPUnit 9/10+: onlyMethods / addMethods.
-        if (method_exists($builder, 'onlyMethods')) {
-            $builder->onlyMethods(['checkVat']);
-        } else {
-            // Older PHPUnit.
-            $builder->setMethods(['checkVat']);
-        }
+        // PHPUnit compatibility: use onlyMethods when available, otherwise fallback.
+        $mockmethod = method_exists($builder, 'onlyMethods') ? 'onlyMethods' : 'setMethods';
+        $builder->{$mockmethod}(['checkVat']);
 
         $this->soapmock = $builder->getMock();
     }
