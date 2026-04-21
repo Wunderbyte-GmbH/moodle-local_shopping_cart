@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\guestcheckout;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -81,6 +82,21 @@ class add_item_to_cart extends external_api {
             'itemid' => $itemid,
             'userid' => $userid,
         ]);
+
+        // Guest checkout: if the feature is enabled and the current visitor is not
+        // logged in (or is a Moodle guest), create a temporary user and log them in
+        // before proceeding.  This must happen before require_login() is called.
+        if (
+            !isloggedin()
+            || isguestuser()
+        ) {
+            if (get_config('local_shopping_cart', 'guestoncheckout')) {
+                guestcheckout::create_guest_user();
+            } else {
+                // Feature disabled – fall through to the normal require_login() below
+                // which will produce an authentication error.
+            }
+        }
 
         require_login();
 

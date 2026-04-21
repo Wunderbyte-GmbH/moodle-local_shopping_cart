@@ -26,6 +26,8 @@ namespace local_shopping_cart;
 
 use local_shopping_cart\interfaces\invoice;
 use local_shopping_cart\invoice\invoicenumber;
+use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\guestcheckout;
 
 /**
  * Event observer for local_shopping_cart.
@@ -100,5 +102,47 @@ class observer {
             throw new \coding_exception("$invoiceproviderclass was not found by class_exists.");
         }
         $invoiceproviderclass::create_invoice_task($event);
+    }
+
+    /**
+     * Triggered when a checkout is completed successfully.
+     *
+     * If the purchasing user is a guest checkout user (created automatically when
+     * they first added an item to the cart), this observer converts that temporary
+     * account into a permanent Moodle user using the registration data they entered
+     * in the addresses/registration checkout step.
+     *
+     * @param \core\event\base $event
+     * @return void
+     */
+    public static function checkout_completed(\core\event\base $event): void {
+        if (!get_config('local_shopping_cart', 'guestoncheckout')) {
+            return;
+        }
+
+        $userid = (int) $event->relateduserid;
+        if ($userid < 1) {
+            return;
+        }
+
+        if (!guestcheckout::is_guest_checkout_user($userid)) {
+            return;
+        }
+
+        // Retrieve the cached registration data saved by the addresses checkout step.
+        $cachedata = checkout_manager::get_cache($userid);
+        $stepdata  = $cachedata['steps']['addresses']['data'] ?? [];
+
+        $firstname = trim($stepdata['guest_firstname'] ?? '');
+        $lastname  = trim($stepdata['guest_lastname'] ?? '');
+        $email     = trim($stepdata['guest_email'] ?? '');
+
+        if (empty($firstname) || empty($lastname) || empty($email)) {
+            // Registration data is missing – cannot convert. Leave the guest user
+            // in place; the 24-hour cleanup task will remove it eventually.
+            return;
+        }
+
+        guestcheckout::convert_guest_to_real_user($userid, $firstname, $lastname, $email);
     }
 }
