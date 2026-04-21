@@ -293,6 +293,37 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to enable guest checkout (auto-create temporary user).
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/guestoncheckout',
+            get_string('guestoncheckout', 'local_shopping_cart'),
+            get_string('guestoncheckout:description', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/guestautocreateenabled',
+            get_string('guestautocreateenabled', 'local_shopping_cart'),
+            get_string('guestautocreateenabled:description', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtextarea(
+            'local_shopping_cart/guestautocreatepatterns',
+            get_string('guestautocreatepatterns', 'local_shopping_cart'),
+            get_string('guestautocreatepatterns:description', 'local_shopping_cart'),
+            '',
+            PARAM_TEXT,
+            60,
+            4
+        )
+    );
+
     $settings->add(
         new admin_setting_configtextarea(
             'local_shopping_cart/termsandconditions',

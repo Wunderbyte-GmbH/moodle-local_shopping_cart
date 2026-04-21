@@ -52,17 +52,6 @@ class modal_new_address extends dynamic_form {
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
 
-        // Name.
-        $attributes = ["placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart')];
-        $mform->addElement(
-            'text',
-            'name',
-            get_string('addresses:newaddress:name:label', 'local_shopping_cart'),
-            $attributes,
-            $this->_ajaxformdata["name"] ?? ''
-        );
-        $mform->setType('name', PARAM_TEXT);
-
         // Company Name.
         $attributes = ["placeholder" => get_string('addresses:newaddress:company:label', 'local_shopping_cart')];
         $mform->addElement(
@@ -136,6 +125,11 @@ class modal_new_address extends dynamic_form {
             $options,
             $this->_ajaxformdata["zip"] ?? ''
         );
+
+        $submitlabel = !empty($this->_ajaxformdata['id'])
+            ? get_string('addresses:saveaddress:submit', 'local_shopping_cart')
+            : get_string('addresses:newaddress:submit', 'local_shopping_cart');
+        $this->add_action_buttons(false, $submitlabel);
     }
 
     /**
@@ -172,7 +166,7 @@ class modal_new_address extends dynamic_form {
             // New address mode: Use defaults.
             $data = new stdClass();
             global $USER;
-            $data->name = fullname($USER);
+            $data->company = '';
             $data->state = $USER->country ?? '';
             $data->address = $USER->address ?? '';
             $data->address2 = $USER->address2 ?? '';
@@ -227,7 +221,7 @@ class modal_new_address extends dynamic_form {
      */
     public function validation($data, $files) {
         $errors = [];
-        $requiredfields = ["name", "state", "address", "city", "zip"];
+        $requiredfields = ["company", "state", "address", "city", "zip"];
 
         foreach ($requiredfields as $requiredfield) {
             if (empty(trim($data[$requiredfield]))) {
