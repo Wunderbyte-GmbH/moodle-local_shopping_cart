@@ -221,20 +221,24 @@ class guestcheckout {
         // Generate a nonce for the password-reset URL.
         set_user_preference('auth_forcepasswordchange', 0, $user);
         $resetrecord = new stdClass();
-        $resetrecord->userid    = $user->id;
+        $resetrecord->userid        = $user->id;
         $resetrecord->timerequested = time();
-        $resetrecord->timererequested = 0;
-        $resetrecord->token     = random_string(32);
+        $resetrecord->token         = random_string(32);
         global $DB;
         $DB->insert_record('user_password_resets', $resetrecord);
+
+        // Build the password-reset URL including the token so the user lands directly
+        // on the reset form rather than having to request another token.
+        $reseturl = (new \moodle_url('/login/forgot_password.php', [
+            'token' => $resetrecord->token,
+        ]))->out(false);
 
         // Send e-mail using Moodle's built-in mechanism.
         $supportuser = \core_user::get_support_user();
         $emailmessage = get_string('guestcheckout:passwordresetemail', 'local_shopping_cart',
             (object)[
                 'firstname' => $user->firstname,
-                'wwwroot'   => (new \moodle_url('/'))->out(false),
-                'token'     => $resetrecord->token,
+                'reseturl'  => $reseturl,
             ]
         );
         email_to_user(

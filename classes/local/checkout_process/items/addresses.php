@@ -241,10 +241,8 @@ class addresses extends checkout_base_item {
 
         $data = $managercachestep['data'] ?? [];
         $requiredaddresskeys = self::get_required_address_keys();
-        $validationdata = json_decode($validationdata);
-        if (!is_array($validationdata)) {
-            $validationdata = [];
-        }
+        $decoded = json_decode($validationdata);
+        $validationdata = is_array($decoded) ? $decoded : [];
 
         // Collect standard address fields.
         foreach ($requiredaddresskeys as $requiredaddresskey) {
@@ -312,8 +310,8 @@ class addresses extends checkout_base_item {
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @param mixed $requiredaddresskeys
-     * @param mixed $data
+     * @param array $data     The cached step data (key-value pairs for selected addresses / guest fields).
+     * @param array $requiredaddresskeys The address-type keys that must be present (e.g. ['billing', 'shipping']).
      *
      * @return bool
      *

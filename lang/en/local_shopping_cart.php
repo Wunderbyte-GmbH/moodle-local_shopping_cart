@@ -414,7 +414,7 @@ $string['guestcheckout:passwordresetemail'] = 'Hello {$a->firstname},
  Your purchase was completed successfully.  We have created a Moodle account for you.
 
  To set your password and log in for the first time, please follow the link below:
- {$a->wwwroot}/login/forgot_password.php
+ {$a->reseturl}
 
  Your username is the e-mail address you provided during checkout.';
 $string['guestcheckout:passwordresetemailsubject'] = 'Your new account';
