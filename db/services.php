@@ -51,6 +51,7 @@ $functions = [
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1,
+                'loginrequired' => false,
         ],
         'local_shopping_cart_delete_item' => [
                 'classname' => 'local_shopping_cart\external\delete_item_from_cart',
