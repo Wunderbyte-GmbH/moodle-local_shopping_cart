@@ -396,6 +396,31 @@ $string['generalsettingspagetitle'] = 'General Shopping Cart Settings';
 $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['globalcurrency'] = 'Currency';
 $string['globalcurrencydesc'] = 'Choose the currency for prices.';
+$string['guestoncheckout'] = 'Enable guest checkout';
+$string['guestoncheckout:description'] = 'When enabled, unauthenticated visitors can add items to the cart without logging in.
+ A temporary user account is created automatically.  If the visitor completes the purchase, their real name and e-mail are
+ collected during checkout and the account is converted into a permanent one.  If no purchase is made, the temporary account
+ is automatically deleted after 24 hours.';
+$string['guestcheckout:email'] = 'E-mail address';
+$string['guestcheckout:emailexists'] = 'An account with this e-mail address already exists.
+ Please <a href="{$a->loginurl}">log in</a> to continue.';
+$string['guestcheckout:emailplaceholder'] = 'your@email.com';
+$string['guestcheckout:firstname'] = 'First name';
+$string['guestcheckout:firstnameplaceholder'] = 'First name';
+$string['guestcheckout:lastname'] = 'Last name';
+$string['guestcheckout:lastnameplaceholder'] = 'Last name';
+$string['guestcheckout:passwordresetemail'] = 'Hello {$a->firstname},
+
+ Your purchase was completed successfully.  We have created a Moodle account for you.
+
+ To set your password and log in for the first time, please follow the link below:
+ {$a->wwwroot}/login/forgot_password.php
+
+ Your username is the e-mail address you provided during checkout.';
+$string['guestcheckout:passwordresetemailsubject'] = 'Your new account';
+$string['guestcheckout:registrationdesc'] = 'Please enter your name and e-mail address to complete your registration.
+ After purchase you will receive an e-mail to set your password.';
+$string['guestcheckout:registrationtitle'] = 'Your contact details';
 $string['history'] = "Purchases";
 $string['hr'] = "Croatia";
 $string['hu'] = "Hungary";
@@ -581,6 +606,9 @@ $string['privacy:metadata:local_shopping_cart_invoices'] = 'Table for issued inv
 $string['privacy:metadata:local_shopping_cart_invoices:identifier'] = 'Reference to local_shopping_cart_ledger';
 $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID from the invoicing platform';
 $string['privacy:metadata:local_shopping_cart_invoices:timecreated'] = 'Timestamp when the record was created';
+$string['privacy:metadata:local_shopping_cart_guestusers'] = 'Tracks temporary guest checkout users until they are converted or deleted';
+$string['privacy:metadata:local_shopping_cart_guestusers:userid'] = 'The ID of the temporary guest user';
+$string['privacy:metadata:local_shopping_cart_guestusers:timecreated'] = 'Timestamp when the guest user was created';
 $string['privacy:metadata:local_shopping_cart_ledger'] = 'This ledger only supports insert and works as a reliable record of all payments.';
 $string['privacy:metadata:local_shopping_cart_ledger:accountid'] = 'Id of the moodle payment account used.';
 $string['privacy:metadata:local_shopping_cart_ledger:annotation'] = 'Annotation or OrderID.';
@@ -709,6 +737,7 @@ $string['startinvoicingdatedesc'] = 'In order to prevent invoice creation from i
  enter a UNIX timestamp for starting date to issue invoices. Get it from there: https://www.unixtimestamp.com/';
 $string['success'] = 'Success';
 $string['task:createinvoice'] = 'Create invoice Task';
+$string['task:deleteguestuser'] = 'Delete unconverted guest checkout user';
 $string['task:deleteitem'] = 'Delete item from cart Task';
 $string['taxcategories'] = 'Tax categories and their tax percentage';
 $string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';

@@ -1,0 +1,103 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/guest_registration_form
+
+    Inline registration form shown to guest checkout users inside the
+    addresses checkout step.  The input names are prefixed with `guest_`
+    so they are collected by the checkout-manager JS alongside any address
+    radio buttons.
+
+    Context variables required for this template:
+    * guest_firstname  - pre-filled firstname value (string, may be empty)
+    * guest_lastname   - pre-filled lastname value (string, may be empty)
+    * guest_email      - pre-filled e-mail value (string, may be empty)
+    * guest_email_error - optional validation error string
+
+    Example context (json):
+    {
+        "guest_firstname": "",
+        "guest_lastname": "",
+        "guest_email": "",
+        "guest_email_error": ""
+    }
+}}
+
+<div class="local-shopping_cart-guest-registration mb-4">
+    <h4>{{#str}} guestcheckout:registrationtitle, local_shopping_cart {{/str}}</h4>
+    <p class="text-muted small">{{#str}} guestcheckout:registrationdesc, local_shopping_cart {{/str}}</p>
+
+    <div class="form-group row mb-2">
+        <label for="guest_firstname" class="col-sm-3 col-form-label">
+            {{#str}} guestcheckout:firstname, local_shopping_cart {{/str}}
+            <span class="text-danger">*</span>
+        </label>
+        <div class="col-sm-9">
+            <input
+                type="text"
+                class="form-control"
+                id="guest_firstname"
+                name="guest_firstname"
+                value="{{guest_firstname}}"
+                placeholder="{{#str}} guestcheckout:firstnameplaceholder, local_shopping_cart {{/str}}"
+                data-shopping-cart-process-data="true"
+                autocomplete="given-name"
+            />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label for="guest_lastname" class="col-sm-3 col-form-label">
+            {{#str}} guestcheckout:lastname, local_shopping_cart {{/str}}
+            <span class="text-danger">*</span>
+        </label>
+        <div class="col-sm-9">
+            <input
+                type="text"
+                class="form-control"
+                id="guest_lastname"
+                name="guest_lastname"
+                value="{{guest_lastname}}"
+                placeholder="{{#str}} guestcheckout:lastnameplaceholder, local_shopping_cart {{/str}}"
+                data-shopping-cart-process-data="true"
+                autocomplete="family-name"
+            />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label for="guest_email" class="col-sm-3 col-form-label">
+            {{#str}} guestcheckout:email, local_shopping_cart {{/str}}
+            <span class="text-danger">*</span>
+        </label>
+        <div class="col-sm-9">
+            <input
+                type="email"
+                class="form-control {{#guest_email_error}}is-invalid{{/guest_email_error}}"
+                id="guest_email"
+                name="guest_email"
+                value="{{guest_email}}"
+                placeholder="{{#str}} guestcheckout:emailplaceholder, local_shopping_cart {{/str}}"
+                data-shopping-cart-process-data="true"
+                autocomplete="email"
+            />
+            {{#guest_email_error}}
+                <div class="invalid-feedback">{{guest_email_error}}</div>
+            {{/guest_email_error}}
+        </div>
+    </div>
+</div>
