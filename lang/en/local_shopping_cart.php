@@ -107,6 +107,8 @@ if (s)he cancels an item within the cancelation period and books another item.';
 $string['alreadyincart'] = 'The item is already in your cart.';
 $string['alwaysanswerwithsuccessinverifypurchase'] = 'Always answer with success in verify purchase webservice.';
 $string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'This feature can normally be ignored, as it\'s only used by some payment providers.';
+$string['enablesubscriptioncancelobserver'] = 'Enable processing of subscription_cancelled payment events';
+$string['enablesubscriptioncancelobserver_desc'] = 'When enabled, shopping cart listens to payment-provider events named "subscription_cancelled" and cancels matching shopping cart purchases. Disabled by default.';
 $string['amount'] = 'Amount';
 $string['annotation'] = 'Annotation';
 $string['annotation_rebook_desc'] = 'Enter an annotation or the OrderID of the payment transaction you want to rebook.';
