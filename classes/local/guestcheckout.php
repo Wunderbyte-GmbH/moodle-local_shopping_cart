@@ -128,6 +128,10 @@ class guestcheckout {
         }
 
         self::create_guest_user();
+
+        // Reload the exact URL (including query params) so the new login state
+        // is reflected in a fresh request cycle immediately.
+        redirect((new \moodle_url($url->out(false)))->out(false));
         return true;
     }
 
