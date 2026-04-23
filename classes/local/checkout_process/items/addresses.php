@@ -414,6 +414,7 @@ class addresses extends checkout_base_item {
      * Returns the required-address keys as specified in the plugin config.
      *
      * @param array $requiredaddresskeys
+     * @param array $data
      *
      * @return bool
      *
@@ -435,6 +436,7 @@ class addresses extends checkout_base_item {
     /**
      * Build data for compact login + SSO options in guest checkout.
      *
+     * @param string $wantsurl
      * @return array
      */
     private static function get_login_options_data(string $wantsurl = ''): array {

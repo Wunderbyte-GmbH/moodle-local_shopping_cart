@@ -40,7 +40,6 @@ use local_shopping_cart\local\guestcheckout;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete_guest_user_task extends adhoc_task {
-
     /**
      * Returns the localised task name shown in the admin task list.
      *

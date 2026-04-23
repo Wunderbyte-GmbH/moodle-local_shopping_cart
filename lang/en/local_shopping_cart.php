@@ -67,8 +67,8 @@ $string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
 $string['addresses:newaddress:city:error'] = 'Please enter your city';
 $string['addresses:newaddress:city:label'] = 'City';
 $string['addresses:newaddress:city:placeholder'] = 'City';
-$string['addresses:newaddress:company:label'] = 'Company Name';
 $string['addresses:newaddress:company:error'] = 'Please enter your company name';
+$string['addresses:newaddress:company:label'] = 'Company Name';
 $string['addresses:newaddress:name:error'] = 'Please enter your name';
 $string['addresses:newaddress:name:label'] = 'Name';
 $string['addresses:newaddress:name:placeholder'] = 'Full Name (First- and Lastname)';
@@ -401,11 +401,7 @@ $string['guestautocreateenabled'] = 'Auto-create guest checkout users on matchin
 $string['guestautocreateenabled:description'] = 'If enabled, a temporary guest checkout user is created automatically when an anonymous visitor opens a page matching one of the patterns below.';
 $string['guestautocreatepatterns'] = 'Auto-create page patterns';
 $string['guestautocreatepatterns:description'] = 'One local path per line, e.g. /, /my, /course/view.php. Use * as suffix for prefix matching, e.g. /course/*.';
-$string['guestoncheckout'] = 'Enable guest checkout';
-$string['guestoncheckout:description'] = 'When enabled, unauthenticated visitors can add items to the cart without logging in.
- A temporary user account is created automatically.  If the visitor completes the purchase, their real name and e-mail are
- collected during checkout and the account is converted into a permanent one.  If no purchase is made, the temporary account
- is automatically deleted after 24 hours.';
+$string['guestcheckout:alreadyregistered'] = 'Already registered? Log in';
 $string['guestcheckout:email'] = 'E-mail address';
 $string['guestcheckout:emailexists'] = 'An account with this e-mail address already exists.
  Please <a href="{$a->loginurl}">log in</a> to continue.';
@@ -426,7 +422,11 @@ $string['guestcheckout:passwordresetemailsubject'] = 'Your new account';
 $string['guestcheckout:registrationdesc'] = 'Please enter your name and e-mail address to complete your registration.
  After purchase you will receive an e-mail to set your password.';
 $string['guestcheckout:registrationtitle'] = 'Your contact details';
-$string['guestcheckout:alreadyregistered'] = 'Already registered? Log in';
+$string['guestoncheckout'] = 'Enable guest checkout';
+$string['guestoncheckout:description'] = 'When enabled, unauthenticated visitors can add items to the cart without logging in.
+ A temporary user account is created automatically.  If the visitor completes the purchase, their real name and e-mail are
+ collected during checkout and the account is converted into a permanent one.  If no purchase is made, the temporary account
+ is automatically deleted after 24 hours.';
 $string['history'] = "Purchases";
 $string['hr'] = "Croatia";
 $string['hu'] = "Hungary";
@@ -608,13 +608,13 @@ $string['privacy:metadata:local_shopping_cart_history:timemodified'] = 'Time thi
 $string['privacy:metadata:local_shopping_cart_history:usecredit'] = 'Store if credits have been used for the payment of this item.';
 $string['privacy:metadata:local_shopping_cart_history:userid'] = 'Userid of the user who optained something.';
 $string['privacy:metadata:local_shopping_cart_history:usermodified'] = 'The user who effected the transaction.';
+$string['privacy:metadata:local_shopping_cart_guestusers'] = 'Tracks temporary guest checkout users until they are converted or deleted';
+$string['privacy:metadata:local_shopping_cart_guestusers:timecreated'] = 'Timestamp when the guest user was created';
+$string['privacy:metadata:local_shopping_cart_guestusers:userid'] = 'The ID of the temporary guest user';
 $string['privacy:metadata:local_shopping_cart_invoices'] = 'Table for issued invoices';
 $string['privacy:metadata:local_shopping_cart_invoices:identifier'] = 'Reference to local_shopping_cart_ledger';
 $string['privacy:metadata:local_shopping_cart_invoices:invoiceid'] = 'Invoice ID from the invoicing platform';
 $string['privacy:metadata:local_shopping_cart_invoices:timecreated'] = 'Timestamp when the record was created';
-$string['privacy:metadata:local_shopping_cart_guestusers'] = 'Tracks temporary guest checkout users until they are converted or deleted';
-$string['privacy:metadata:local_shopping_cart_guestusers:userid'] = 'The ID of the temporary guest user';
-$string['privacy:metadata:local_shopping_cart_guestusers:timecreated'] = 'Timestamp when the guest user was created';
 $string['privacy:metadata:local_shopping_cart_ledger'] = 'This ledger only supports insert and works as a reliable record of all payments.';
 $string['privacy:metadata:local_shopping_cart_ledger:accountid'] = 'Id of the moodle payment account used.';
 $string['privacy:metadata:local_shopping_cart_ledger:annotation'] = 'Annotation or OrderID.';

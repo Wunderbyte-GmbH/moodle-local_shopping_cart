@@ -28,10 +28,7 @@ use cache;
 use core\task\manager as taskmanager;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\task\delete_guest_user_task;
-use moodle_exception;
 use stdClass;
-
-require_once($CFG->dirroot . '/user/lib.php');
 
 /**
  * Class guestcheckout
@@ -48,7 +45,6 @@ require_once($CFG->dirroot . '/user/lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class guestcheckout {
-
     /** Seconds until a guest user that has not purchased anything is deleted (24 h). */
     const GUEST_USER_TTL = 86400;
 
@@ -56,10 +52,10 @@ class guestcheckout {
      * Creates a temporary guest checkout user and logs that user in for the
      * current request.
      *
-    * The user record is created with:
-    * - auth = 'manual'   →  treated as active by Moodle internals during login side-effects
-    * - confirmed = 1     →  avoids confirm-email flows that block activity
-    * - suspended = 0     →  must be active so the session works
+     * The user record is created with:
+     * - auth = 'manual'   →  treated as active by Moodle internals during login side-effects
+     * - confirmed = 1     →  avoids confirm-email flows that block activity
+     * - suspended = 0     →  must be active so the session works
      *
      * A row is inserted into `local_shopping_cart_guestusers` and an adhoc task
      * is queued to delete the user after {@see GUEST_USER_TTL} seconds.
@@ -68,6 +64,8 @@ class guestcheckout {
      */
     public static function create_guest_user(): stdClass {
         global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/user/lib.php');
 
         $uniqid = md5(uniqid('guestcheckout_', true));
 
@@ -239,7 +237,9 @@ class guestcheckout {
         string $lastname,
         string $email
     ): bool {
-        global $DB;
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/user/lib.php');
 
         if (!self::is_guest_checkout_user($userid)) {
             return false;
@@ -339,7 +339,9 @@ class guestcheckout {
 
         // Send e-mail using Moodle's built-in mechanism.
         $supportuser = \core_user::get_support_user();
-        $emailmessage = get_string('guestcheckout:passwordresetemail', 'local_shopping_cart',
+        $emailmessage = get_string(
+            'guestcheckout:passwordresetemail',
+            'local_shopping_cart',
             (object)[
                 'firstname' => $user->firstname,
                 'reseturl'  => $reseturl,
