@@ -120,6 +120,7 @@ class get_history_item extends external_api {
                 'currency' => '',
                 'quotaconsumed' => 0,
                 'round' => 0,
+                'roundrefundamount' => 0,
                 'cancelationfee' => 0,
             ];
         }
