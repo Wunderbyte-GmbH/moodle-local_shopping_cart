@@ -1,3 +1,10 @@
+## Version 2.0.8 (2026043000)
+* Improvement: Improved vat gb checker.
+* Improvement: Disallow buying with system vat number.
+* Improvement: replaced modal factory with core modal (for Moodle 5.2 compatibility).
+* Improvement: add UK back to the VAT Number helper.
+* Bugfix: Add missing default for roundrefundamount.
+
 ## Version 2.0.7 (2026032600)
 * New feature: Show canceluntil in shopping cart history.
 * Improvement: Get rid of legacy code for moodleversionminfourtwo CSS stylings.
