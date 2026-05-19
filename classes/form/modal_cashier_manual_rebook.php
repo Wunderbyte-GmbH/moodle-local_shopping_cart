@@ -61,6 +61,8 @@ class modal_cashier_manual_rebook extends dynamic_form {
             "EP" => get_string('paidby:eps', 'local_shopping_cart'),
             "DC" => get_string('paidby:dinersclub', 'local_shopping_cart'),
             "AX" => get_string('paidby:americanexpress', 'local_shopping_cart'),
+            "AP" => get_string('paidby:applepay', 'local_shopping_cart'),
+            "GP" => get_string('paidby:googlepay', 'local_shopping_cart'),
             "UK" => get_string('paidby:unknown', 'local_shopping_cart'),
         ];
 
