@@ -886,6 +886,14 @@ class shopping_cart_history {
             self::store_in_schistory_cache($shoppingcart);
         }
 
+        // If the cart has an identifier but no corresponding DB record, force a write.
+        if (!empty($shoppingcart['identifier'])) {
+            $existing = self::return_data_via_identifier($shoppingcart['identifier']);
+            if (empty($existing)) {
+                unset($shoppingcart['storedinhistory']);
+            }
+        }
+
         // This should, in every case, only happen once.
         if (isset($shoppingcart['identifier']) && !isset($shoppingcart['storedinhistory'])) {
             self::write_to_db((object)$shoppingcart);
