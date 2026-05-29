@@ -379,3 +379,18 @@ function callZeroPriceListener() {
         reinit();
     }
 }
+
+/**
+ * Prevents browsers from serving the checkout page from the back/forward cache (bfcache).
+ * This is important to avoid users pressing "back" after a successful checkout and re-triggering
+ * the payment with stale form data, which would lead to double bookings.
+ * See https://web.dev/articles/bfcache for details.
+ */
+export function preventBFCache() {
+    window.addEventListener('pageshow', function(event) {
+        // True only when loaded from back/forward cache memory.
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+}

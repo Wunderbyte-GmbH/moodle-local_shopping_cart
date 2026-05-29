@@ -47,6 +47,11 @@ if (!headers_sent()) {
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
     header('Pragma: no-cache');
 }
+$PAGE->requires->js_call_amd(
+    'local_shopping_cart/checkout_manager',
+    'preventBFCache',
+    []
+);
 
 $PAGE->requires->css('/local/shopping_cart/styles.css');
 
