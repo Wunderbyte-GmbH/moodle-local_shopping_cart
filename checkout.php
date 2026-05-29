@@ -38,6 +38,16 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
 require_login();
 
 global $USER, $PAGE, $OUTPUT, $CFG, $ME;
+
+/* Prevent browsers from serving this page from the back/forward cache (bfcache).
+Otherwise the user could press "back" after a successful checkout and re-trigger
+the payment with stale form data, which would lead to double bookings.
+See https://web.dev/articles/bfcache for details. */
+if (!headers_sent()) {
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+}
+
 $PAGE->requires->css('/local/shopping_cart/styles.css');
 
 // Get the id of the page to be displayed.
