@@ -81,13 +81,15 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
             $student1->id
         );
 
-        $cartstore = cartstore::instance($student1->id);
-        $data = $cartstore->get_localized_data();
-        $cartstore->get_expanded_checkout_data($data);
-
         foreach ($config as $key => $value) {
             set_config($key, $value, 'local_shopping_cart');
         }
+
+        $cartstore = cartstore::instance($student1->id);
+        $cartstore->reset_instance($student1->id);
+        $cartstore = cartstore::instance($student1->id);
+        $data = $cartstore->get_localized_data();
+        $cartstore->get_expanded_checkout_data($data);
 
         $addresids = $this->generate_fake_addresses($student1);
         $managercache = [];
@@ -117,6 +119,24 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                 $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
                 $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
             }
+        }
+
+        $cartstore->reset_instance($student1->id);
+        $cartstore = cartstore::instance($student1->id);
+        $refresheddata = $cartstore->get_localized_data();
+        // Merge fresh tax/price data without creating a new identifier.
+        if (!empty($refresheddata['items'])) {
+            $refresheditems = array_values($refresheddata['items']);
+            foreach ($refresheditems as $rkey => $ritem) {
+                $ritem['identifier'] = $data['identifier'];
+                $ritem['payment'] = $data['items'][$rkey]['payment'] ?? LOCAL_SHOPPING_CART_PAYMENT_METHOD_ONLINE;
+                $ritem['paymentstatus'] = $data['items'][$rkey]['paymentstatus'] ?? LOCAL_SHOPPING_CART_PAYMENT_PENDING;
+                $ritem['usermodified'] = $data['items'][$rkey]['usermodified'] ?? $student1->id;
+                $refresheditems[$rkey] = $ritem;
+            }
+            $data['items'] = $refresheditems;
+            $data['price'] = $refresheddata['price'] ?? $data['price'] ?? 0;
+            $data['price_net'] = $refresheddata['price_net'] ?? $data['price_net'] ?? 0;
         }
 
         $data['items']["local_shopping_cart-testitem-1"] = $data['items'][0];
