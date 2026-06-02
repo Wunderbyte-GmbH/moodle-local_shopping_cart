@@ -25,9 +25,11 @@
 
 namespace local_shopping_cart\local\checkout_process\items;
 
+use core_auth\output\login as login_renderable;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
+use local_shopping_cart\local\guestcheckout;
 
 /**
  * Class checkout
@@ -37,6 +39,24 @@ use local_shopping_cart\local\checkout_process\items_helper\address_operations;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class addresses extends checkout_base_item {
+    /**
+     * Returns the post-login redirect target preserving current GET params.
+     *
+     * @return string
+     */
+    private static function get_post_login_wantsurl(): string {
+        global $PAGE;
+
+        $wantsurl = new \moodle_url($PAGE->url->out(false));
+
+        // Keep the seamless checkout resume marker when the login form is shown in checkout.
+        if ($wantsurl->get_path() === '/local/shopping_cart/checkout.php') {
+            $wantsurl->param('checkoutresume', 1);
+        }
+
+        return $wantsurl->out(false);
+    }
+
     /**
      * Returns order number of form.
      * @return int
@@ -52,8 +72,17 @@ class addresses extends checkout_base_item {
      * @return bool
      */
     public static function is_active($changedinput, $managercache): bool {
-        if (get_config('local_shopping_cart', 'addresses_required')) {
+        if (!empty(self::get_required_address_keys())) {
             return true;
+        }
+        // Also show this step when a guest checkout user needs to register.
+        if (
+            get_config('local_shopping_cart', 'guestoncheckout')
+        ) {
+            global $USER;
+            if (guestcheckout::is_guest_checkout_user($USER->id)) {
+                return true;
+            }
         }
         return false;
     }
@@ -72,14 +101,53 @@ class addresses extends checkout_base_item {
      * @return array
      */
     public static function render_body($cachedata): array {
-        global $PAGE;
-        $data = self::get_template_render_data();
-        $data['required_addresses'] = self::set_data_from_cache(
-            $data['required_addresses'],
-            $cachedata['data'] ?? []
+        global $PAGE, $USER, $SESSION;
+        $renderer = $PAGE->get_renderer('local_shopping_cart');
+        $requiredaddresskeys = self::get_required_address_keys();
+        $isguestcheckoutuser = (
+            get_config('local_shopping_cart', 'guestoncheckout')
+            && guestcheckout::is_guest_checkout_user($USER->id)
         );
-        $template = $PAGE->get_renderer('local_shopping_cart')
-            ->render_from_template("local_shopping_cart/address", $data);
+
+        $template = '';
+
+        // When the current user is a guest checkout user, prepend the registration form.
+        if ($isguestcheckoutuser) {
+            $wantsurl = self::get_post_login_wantsurl();
+
+            $SESSION->local_shopping_cart_guest_login_context = [
+                'guestuserid' => (int)$USER->id,
+                'timecreated' => time(),
+                'source' => 'checkout',
+            ];
+            $SESSION->wantsurl = $wantsurl;
+
+            $cacheddata = $cachedata['data'] ?? [];
+            $guestdata = [
+                'guest_firstname'   => $cacheddata['guest_firstname'] ?? '',
+                'guest_lastname'    => $cacheddata['guest_lastname'] ?? '',
+                'guest_email'       => $cacheddata['guest_email'] ?? '',
+                'guest_email_error' => $cacheddata['guest_email_error'] ?? '',
+                'loginoptions'      => self::get_login_options_data($wantsurl),
+                'showaddresspanel'  => !empty($requiredaddresskeys),
+            ];
+            $template .= $renderer->render_from_template(
+                'local_shopping_cart/guest_registration_form',
+                $guestdata
+            );
+        }
+
+        // Render the address selection section only when addresses are configured.
+        if (!empty($requiredaddresskeys)) {
+            $data = self::get_template_render_data();
+            $data['required_addresses'] = self::set_data_from_cache(
+                $data['required_addresses'],
+                $cachedata['data'] ?? []
+            );
+            $data['is_guest_checkout_user'] = $isguestcheckoutuser;
+            $template .= $renderer->render_from_template("local_shopping_cart/address", $data);
+        }
+
         return [
             'template' => $template,
         ];
@@ -127,14 +195,20 @@ class addresses extends checkout_base_item {
 
         $requiredaddresseslocalized = self::get_required_address_data();
         $data['required_addresses'] = array_values($requiredaddresseslocalized);
+        $isfirst = true;
         foreach ($data['required_addresses'] as &$requiredaddress) {
             $requiredaddress['saved_addresses'] = $savedaddresses;
+            $requiredaddress['has_saved_addresses'] = !empty($savedaddresses);
+            $requiredaddress['isactive'] = $isfirst;
+            $isfirst = false;
         }
         $data['required_addresses_keys'] = array_reduce($requiredaddresseslocalized, function ($keys, $addressdata) {
             $keys[] = $addressdata['addresskey'];
             return $keys;
         }, []);
         $data['required_addresses_multiple'] = count($requiredaddresseslocalized) > 1;
+        $data['has_saved_addresses'] = !empty($savedaddresses);
+        $data['default_address_key'] = $data['required_addresses'][0]['addresskey'] ?? 'billing';
         return $data;
     }
 
@@ -184,9 +258,40 @@ class addresses extends checkout_base_item {
      * @return array list of all required address keys
      */
     public static function get_required_address_keys(): array {
+        global $USER;
+
         $addressesrequired = get_config('local_shopping_cart', 'addresses_required');
-        $requiredaddresskeys = array_filter(explode(',', $addressesrequired));
-        return $requiredaddresskeys;
+        $requiredaddresskeys = array_map(
+            fn(string $key): string => preg_replace('/^selectedaddress_/', '', trim($key)),
+            array_filter(explode(',', (string)$addressesrequired))
+        );
+
+        // Checkout UX is intentionally billing-centric.
+        if (in_array('billing', $requiredaddresskeys, true)) {
+            return ['billing'];
+        }
+
+        // Guest checkout always requires at least one billing address.
+        if (
+            get_config('local_shopping_cart', 'guestoncheckout')
+            && guestcheckout::is_guest_checkout_user((int)($USER->id ?? 0))
+        ) {
+            return ['billing'];
+        }
+
+        if (!empty($requiredaddresskeys)) {
+            return [reset($requiredaddresskeys)];
+        }
+
+        // Keep the billing step visible after guest->user migration when a
+        // selected address is already present in the checkout cache.
+        $checkoutcache = \local_shopping_cart\local\checkout_process\checkout_manager::get_cache((int)($USER->id ?? 0));
+        $stepdata = $checkoutcache['steps']['addresses']['data'] ?? [];
+        if (!empty($stepdata['selectedaddress_billing']) || !empty($stepdata['selectedaddress_shipping'])) {
+            return ['billing'];
+        }
+
+        return [];
     }
 
     /**
@@ -202,79 +307,183 @@ class addresses extends checkout_base_item {
         $managercachestep,
         $validationdata
     ): array {
+        global $USER;
+
         $data = $managercachestep['data'] ?? [];
         $requiredaddresskeys = self::get_required_address_keys();
-        $validationdata = json_decode($validationdata);
+        $decoded = json_decode($validationdata);
+        $validationdata = is_array($decoded) ? $decoded : [];
+
+        // Collect selected address fields.
         foreach ($requiredaddresskeys as $requiredaddresskey) {
+            $requiredinputname = 'selectedaddress_' . $requiredaddresskey;
             foreach ($validationdata as $address) {
                 if (
                     isset($address->name) &&
-                    mb_strpos($address->name, $requiredaddresskey) !== false
+                    $address->name === $requiredinputname
                 ) {
                     $data[$address->name] = $address->value;
                 }
             }
         }
+
+        // Collect and validate guest registration fields.
+        $guestvalid = true;
+        if (
+            get_config('local_shopping_cart', 'guestoncheckout')
+            && guestcheckout::is_guest_checkout_user($USER->id)
+        ) {
+            foreach ($validationdata as $input) {
+                if (isset($input->name) && in_array($input->name, ['guest_firstname', 'guest_lastname', 'guest_email'])) {
+                    $data[$input->name] = clean_param($input->value ?? '', PARAM_TEXT);
+                }
+            }
+            $guestvalid = self::is_guest_registration_valid($data);
+        }
+
         return [
-            'data' => $data,
+            'data'      => $data,
             'mandatory' => self::is_mandatory(),
-            'valid' => self::is_valid($data, $requiredaddresskeys),
+            'valid'     => self::is_valid($data, $requiredaddresskeys) && $guestvalid,
         ];
+    }
+
+    /**
+     * Validates the guest-registration fields stored in the step data.
+     *
+     * @param array $data The cached step data containing guest_firstname, guest_lastname, guest_email.
+     * @return bool
+     */
+    public static function is_guest_registration_valid(array $data): bool {
+        global $DB;
+
+        $firstname = trim($data['guest_firstname'] ?? '');
+        $lastname  = trim($data['guest_lastname'] ?? '');
+        $email     = trim($data['guest_email'] ?? '');
+
+        if (empty($firstname) || empty($lastname) || empty($email)) {
+            return false;
+        }
+
+        if (!validate_email($email)) {
+            return false;
+        }
+
+        // Reject if the e-mail is already registered to a different, non-guest account.
+        $existing = $DB->get_record('user', ['email' => $email, 'deleted' => 0]);
+        if ($existing && !guestcheckout::is_guest_checkout_user($existing->id)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
-     * @param mixed $requiredaddresskeys
-     * @param mixed $data
+     * @param array $data     The cached step data (key-value pairs for selected addresses / guest fields).
+     * @param array $requiredaddresskeys The address-type keys that must be present (e.g. ['billing', 'shipping']).
      *
      * @return bool
      *
      */
     public function is_valid(
-        $requiredaddresskeys,
-        $data
+        $data,
+        $requiredaddresskeys
     ): bool {
-        $requiredkeys = $requiredaddresskeys ? count($requiredaddresskeys) : null;
-        $currentkeys = count($data);
-        if (
-            $requiredkeys === $currentkeys &&
-            $this->is_address_valid($requiredaddresskeys)
-        ) {
-            $cartstore = cartstore::instance(self::$identifier);
-
-            $cartstoredata = [];
-            if (!empty($requiredaddresskeys["selectedaddress_billing"])) {
-                $cartstoredata['billing'] = $requiredaddresskeys["selectedaddress_billing"];
+        // When addresses are required, validate them normally.
+        if (!empty($requiredaddresskeys)) {
+            foreach ($requiredaddresskeys as $requiredaddresskey) {
+                if (empty($data['selectedaddress_' . $requiredaddresskey])) {
+                    return false;
+                }
             }
-            if (!empty($requiredaddresskeys["selectedaddress_shipping"])) {
-                $cartstoredata['shipping'] = $requiredaddresskeys["selectedaddress_shipping"];
+
+            if (!$this->is_address_valid($requiredaddresskeys, $data)) {
+                return false;
+            }
+
+            $cartstore = cartstore::instance(self::$identifier);
+            $cartstoredata = [];
+            if (!empty($data["selectedaddress_billing"])) {
+                $cartstoredata['billing'] = $data["selectedaddress_billing"];
+            }
+            if (!empty($data["selectedaddress_shipping"])) {
+                $cartstoredata['shipping'] = $data["selectedaddress_shipping"];
             }
             $cartstore->local_shopping_cart_save_address_in_cache($cartstoredata);
-
-            return true;
         }
-        return false;
+        // When the step is shown only for guest registration (no addresses required),
+        // we consider address validation passed if there are no required keys.
+        return true;
     }
 
     /**
      * Returns the required-address keys as specified in the plugin config.
      *
      * @param array $requiredaddresskeys
+     * @param array $data
      *
      * @return bool
      *
      */
     private static function is_address_valid(
-        $requiredaddresskeys
+        $requiredaddresskeys,
+        $data
     ): bool {
         $addressesfromdb = address_operations::get_all_user_addresses(self::$identifier);
         foreach ($requiredaddresskeys as $requiredaddresskey) {
-            if (!isset($addressesfromdb[$requiredaddresskey])) {
+            $selectedid = (int)($data['selectedaddress_' . $requiredaddresskey] ?? 0);
+            if (empty($selectedid) || !isset($addressesfromdb[$selectedid])) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Build data for compact login + SSO options in guest checkout.
+     *
+     * @param string $wantsurl
+     * @return array
+     */
+    private static function get_login_options_data(string $wantsurl = ''): array {
+        global $PAGE, $CFG;
+
+        // Core auth login renderable relies on auth_plugin_base and helpers from authlib.
+        if (!class_exists('auth_plugin_base')) {
+            require_once($CFG->libdir . '/authlib.php');
+        }
+
+        if (!class_exists('auth_plugin_base')) {
+            return [
+                'loginurl' => '',
+                'logintoken' => '',
+                'canloginbyemail' => false,
+                'forgotpasswordurl' => '',
+                'hasidentityproviders' => false,
+                'identityproviders' => [],
+                'cansignup' => false,
+                'signupurl' => '',
+            ];
+        }
+
+        $corerenderer = $PAGE->get_renderer('core');
+        $authsequence = get_enabled_auth_plugins();
+        $loginform = new login_renderable($authsequence);
+        $logindata = (array)$loginform->export_for_template($corerenderer);
+
+        return [
+            'loginurl' => (new \moodle_url('/login/index.php'))->out(false),
+            'logintoken' => $logindata['logintoken'] ?? '',
+            'wantsurl' => $wantsurl ?: self::get_post_login_wantsurl(),
+            'canloginbyemail' => $logindata['canloginbyemail'] ?? false,
+            'forgotpasswordurl' => $logindata['forgotpasswordurl'] ?? '',
+            'hasidentityproviders' => $logindata['hasidentityproviders'] ?? false,
+            'identityproviders' => $logindata['identityproviders'] ?? [],
+            'cansignup' => $logindata['cansignup'] ?? false,
+            'signupurl' => $logindata['signupurl'] ?? '',
+        ];
     }
 
     /**

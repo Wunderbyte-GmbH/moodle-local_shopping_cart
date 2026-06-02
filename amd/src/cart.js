@@ -615,6 +615,12 @@ export function addItemShowNotification(data) {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
+
+            if (Number(data.guestusercreated || 0) === 1) {
+                window.location.reload();
+                return;
+            }
+
             reinit(data.userid);
             return;
         case CARTPARAM_CARTISFULL:
@@ -950,6 +956,11 @@ function toggleActiveButtonState(button = null) {
 
     if (!shoppingcart) {
         shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
+    }
+
+    // In some checkout/prepage states there is no visible cart container yet.
+    if (!shoppingcart) {
+        return;
     }
 
     buttons.forEach(addtocartbutton => {

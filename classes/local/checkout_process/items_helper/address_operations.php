@@ -43,8 +43,8 @@ class address_operations {
      */
     public static function add_address_for_user(object $address): int {
         global $DB, $USER;
-        $address->address2 = $record->address2 ?? '';
-        $address->phone = $record->phone ?? '';
+        $address->address2 = $address->address2 ?? '';
+        $address->phone = $address->phone ?? '';
         $address->userid = $USER->id;
         return $DB->insert_record('local_shopping_cart_address', $address, true);
     }
