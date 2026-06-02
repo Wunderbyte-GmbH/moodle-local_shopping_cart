@@ -78,7 +78,8 @@ class vatnrchecker extends checkout_base_item {
             return false;
         }
         if (!is_string($changedinputs)) {
-            return false;
+            // No new input (e.g. page reload) – fall back to cached state.
+            return $managercache['vatnumbervoluntarily'] ?? false;
         }
         $changedinputs = json_decode($changedinputs);
 
