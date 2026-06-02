@@ -50,7 +50,12 @@ const IDS = {
     VATNUMBER: 'shopping-cart-checkout-manager-vat-number',
     VERIFYVAT: 'shopping-cart-checkout-manager-verify-vat',
     COUNTRYSELECT: 'shopping-cart-checkout-manager-country-select',
+    VERIFYSTATUS: 'shopping-cart-checkout-manager-verify-vat-status',
 };
+
+let vatverificationinprogress = false;
+let vatverificationloadingtext = null;
+let vatverificationloadingtextpromise = null;
 
 /**
  * Initializes the checkout manager functionality.
@@ -105,6 +110,10 @@ function initVatNumberVerifyListener() {
  * Initializes the change listener for the form body.
  */
 function vatNumberVerifyCallback() {
+    if (vatverificationinprogress) {
+        return;
+    }
+
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
     const countryCode = document.getElementById(IDS.COUNTRYSELECT)?.value;
     const vatNumber = document.getElementById(IDS.VATNUMBER)?.value;
@@ -122,6 +131,9 @@ function vatNumberVerifyCallback() {
         });
         return;
     }
+
+    setVatVerificationState(true);
+
     triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
         action: getDatasetValue(formBody, 'action'),
         currentstep: getDatasetValue(formBody, 'currentstep'),
@@ -129,7 +141,111 @@ function vatNumberVerifyCallback() {
         changedinput: JSON.stringify({
             'vatCodeCountry': `${countryCode},${vatNumber}`,
         }),
+    }).finally(function() {
+        setVatVerificationState(false);
     });
+}
+
+/**
+ * Toggles loading state for VAT verification controls.
+ *
+ * @param {boolean} loading
+ */
+function setVatVerificationState(loading) {
+    vatverificationinprogress = loading;
+
+    const verifyButton = document.getElementById(IDS.VERIFYVAT);
+    const statusElement = getVatVerificationStatusElement(verifyButton);
+    if (verifyButton) {
+        const originalLabel = verifyButton.dataset.originalLabel || verifyButton.innerHTML;
+        verifyButton.dataset.originalLabel = originalLabel;
+        verifyButton.setAttribute('aria-busy', loading ? 'true' : 'false');
+
+        if (loading) {
+            verifyButton.innerHTML =
+                '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>' +
+                originalLabel;
+        } else {
+            verifyButton.innerHTML = originalLabel;
+        }
+    }
+
+    if (statusElement) {
+        if (loading) {
+            getVatVerificationLoadingText().then(function(localizedtext) {
+                // Guard against async race: request may have finished already.
+                if (!vatverificationinprogress) {
+                    return;
+                }
+                statusElement.textContent = localizedtext;
+                statusElement.classList.remove('hidden');
+            }).catch(function() {
+                statusElement.classList.add('hidden');
+                statusElement.textContent = '';
+            });
+        } else {
+            statusElement.classList.add('hidden');
+            statusElement.textContent = '';
+        }
+    }
+
+    const disableSelectors = [
+        SELECTORS.BUTTONS,
+        SELECTORS.PROGRESSBUTTONS,
+        SELECTORS.PAYMENTREGIONBUTTON,
+        `#${IDS.VERIFYVAT}`,
+        `#${IDS.COUNTRYSELECT}`,
+        `#${IDS.VATNUMBER}`,
+    ];
+
+    document.querySelectorAll(disableSelectors.join(', ')).forEach(element => {
+        element.disabled = loading;
+    });
+}
+
+/**
+ * Returns localized loading text for VAT verification and caches it.
+ *
+ * @returns {Promise<string>}
+ */
+function getVatVerificationLoadingText() {
+    if (vatverificationloadingtext !== null) {
+        return Promise.resolve(vatverificationloadingtext);
+    }
+
+    if (!vatverificationloadingtextpromise) {
+        vatverificationloadingtextpromise = getString('vatnrverificationinprogress', 'local_shopping_cart')
+            .then(function(localizedtext) {
+                vatverificationloadingtext = localizedtext;
+                return localizedtext;
+            });
+    }
+
+    return vatverificationloadingtextpromise;
+}
+
+/**
+ * Returns or creates status element for VAT verification.
+ *
+ * @param {HTMLElement|null} verifyButton
+ * @returns {HTMLElement|null}
+ */
+function getVatVerificationStatusElement(verifyButton) {
+    if (!verifyButton) {
+        return null;
+    }
+
+    let statuselement = document.getElementById(IDS.VERIFYSTATUS);
+    if (statuselement) {
+        return statuselement;
+    }
+
+    statuselement = document.createElement('div');
+    statuselement.id = IDS.VERIFYSTATUS;
+    statuselement.className = 'small text-muted mt-1 hidden';
+    verifyButton.insertAdjacentElement('afterend', statuselement);
+
+    return statuselement;
 }
 
 /**
@@ -223,17 +339,20 @@ function getChangedInputs() {
  * @param {Object} params - The parameters for the web service call.
  */
 function triggerButtonControlWebService(serviceName, params) {
-    require(['core/ajax'], function(Ajax) {
-        const requests = Ajax.call([{
-            methodname: serviceName,
-            args: params,
-        }]);
-        requests[0].done(function(response) {
-            updateCheckoutManagerPartials(response);
-        }).fail(function(err) {
-            // eslint-disable-next-line no-console
-            console.error('fail button trigger', err);
-            return;
+    return new Promise(function(resolve, reject) {
+        require(['core/ajax'], function(Ajax) {
+            const requests = Ajax.call([{
+                methodname: serviceName,
+                args: params,
+            }]);
+            requests[0].done(function(response) {
+                updateCheckoutManagerPartials(response);
+                resolve(response);
+            }).fail(function(err) {
+                // eslint-disable-next-line no-console
+                console.error('fail button trigger', err);
+                reject(err);
+            });
         });
     });
 }

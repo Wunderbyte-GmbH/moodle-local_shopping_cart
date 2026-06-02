@@ -55,6 +55,20 @@ class vatnumberhelper {
     const WSDL = "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
 
     /**
+     * ISO country codes treated as EU VAT region for VIES checks.
+     *
+     * @var array
+     */
+    const EUROPEANVATCOUNTRYCODES = [
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI', 'FR',
+        'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO',
+        'SE', 'SI', 'SK',
+    ];
+
+    /** @var string|null Last validation error language key for user feedback. */
+    protected static $lastvalidationerrorkey = null;
+
+    /**
      * Function to return an array of localized country codes.
      *
      * @return array
@@ -103,6 +117,8 @@ class vatnumberhelper {
      * @return bool
      */
     public static function is_vatnr_valid(string $countrycode, string $vatnrnumber, ?object $client = null): bool {
+        self::$lastvalidationerrorkey = null;
+
         // Special treatment for the Behat and PHPUnit tests.
         if ((defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) || (defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
             $key = 'mockvat_' . strtolower($countrycode) . '_' . strtolower($vatnrnumber);
@@ -121,6 +137,8 @@ class vatnumberhelper {
         ) {
             return false;
         }
+
+        $response = [];
         $vatregion = self::get_vat_region($countrycode);
         $vatnrnumber = str_replace($countrycode, '', $vatnrnumber);
         switch ($vatregion) {
@@ -134,10 +152,36 @@ class vatnumberhelper {
                 $response = self::validate_with_vatcomply($vatnrnumber);
                 break;
         }
+
+        if (!is_array($response)) {
+            self::$lastvalidationerrorkey = 'errorvatnrserviceunavailable';
+            return false;
+        }
+
+        // Any non-boolean, non-error response is treated as technical issue.
+        if (!array_key_exists('valid', $response) && empty($response['error'])) {
+            self::$lastvalidationerrorkey = 'errorvatnrserviceunavailable';
+            return false;
+        }
+
+        if (!empty($response['error'])) {
+            self::$lastvalidationerrorkey = $response['errorcode'] ?? 'errorvatnrserviceunavailable';
+            return false;
+        }
+
         if (isset($response['valid']) && $response['valid']) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return the language key for the last VAT validation technical error.
+     *
+     * @return string|null
+     */
+    public static function get_last_validation_error_key(): ?string {
+        return self::$lastvalidationerrorkey;
     }
 
     /**
@@ -161,26 +205,7 @@ class vatnumberhelper {
      * @return bool
      */
     public static function is_european_region($countrycode) {
-        $url = self::RESTCOUNTRIESURL . urlencode($countrycode);
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            echo "Error: " . curl_error($ch);
-            return false;
-        }
-        curl_close($ch);
-
-        $data = json_decode($response, true);
-        if (
-            isset($data[0]['region']) &&
-            $data[0]['region'] === 'Europe'
-        ) {
-            return true;
-        }
-        return false;
+        return in_array(strtoupper((string)$countrycode), self::EUROPEANVATCOUNTRYCODES, true);
     }
 
     /**
@@ -256,9 +281,25 @@ class vatnumberhelper {
      * @param string $vatnumber
      * @return string
      */
-    public static function validate_with_vatcomply($vatnumber) {
+    public static function validate_with_vatcomply($vatnumber): array {
         $url = self::VATCOMPLYCHECKERURL . urlencode($vatnumber);
-        return file_get_contents($url);
+        $response = @file_get_contents($url);
+        if ($response === false) {
+            return [
+                'error' => true,
+                'errorcode' => 'errorvatnrserviceunavailable',
+            ];
+        }
+
+        $decoded = json_decode($response, true);
+        if (!is_array($decoded)) {
+            return [
+                'error' => true,
+                'errorcode' => 'errorvatnrserviceunavailable',
+            ];
+        }
+
+        return $decoded;
     }
 
     /**
@@ -276,11 +317,38 @@ class vatnumberhelper {
                 'countryCode' => $countrycode,
                 'vatNumber' => $vatnumber,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'error' => true,
                 'message' => $e->getMessage(),
+                'errorcode' => self::map_vies_error_to_string_key($e->getMessage()),
             ];
         }
+    }
+
+    /**
+     * Map VIES/SOAP errors to user-facing language keys.
+     *
+     * @param string $message
+     * @return string
+     */
+    protected static function map_vies_error_to_string_key(string $message): string {
+        $messagelc = strtolower($message);
+        $limitmarkers = [
+            'ms_max_concurrent_req',
+            'global_max_concurrent_req',
+            'max concurrent',
+            'too many requests',
+            'rate limit',
+            'throttle',
+            'request limit',
+        ];
+        foreach ($limitmarkers as $marker) {
+            if (str_contains($messagelc, $marker)) {
+                return 'errorvatnrrequestlimit';
+            }
+        }
+
+        return 'errorvatnrserviceunavailable';
     }
 }

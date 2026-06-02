@@ -262,6 +262,10 @@ class vatnrchecker extends checkout_base_item {
      * @return string
      */
     public static function get_error_feedback(): string {
+        $lasterrorkey = vatnumberhelper::get_last_validation_error_key();
+        if (!empty($lasterrorkey)) {
+            return get_string($lasterrorkey, 'local_shopping_cart');
+        }
         return get_string('vatnrerrorfeedback', 'local_shopping_cart');
     }
 

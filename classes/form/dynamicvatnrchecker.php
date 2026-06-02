@@ -234,8 +234,13 @@ class dynamicvatnrchecker extends dynamic_form {
                 );
 
                 if (!$validvat) {
-                    $a = $data['checkvatnrcountrycode'] . $data['checkvatnrnumber'];
-                    $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
+                    $lasterrorkey = vatnumberhelper::get_last_validation_error_key();
+                    if (!empty($lasterrorkey)) {
+                        $errors['checkvatnrnumber'] = get_string($lasterrorkey, 'local_shopping_cart');
+                    } else {
+                        $a = $data['checkvatnrcountrycode'] . $data['checkvatnrnumber'];
+                        $errors['checkvatnrnumber'] = get_string('errorinvalidvatnr', 'local_shopping_cart', $a);
+                    }
                 } else {
                     vatnrchecker::$vatnrdataset = (object)[
                             'vatNumber' => $data['checkvatnrcountrycode'],
