@@ -1,3 +1,11 @@
+## Version 2.0.9 (2026060300)
+* Improvement: Add Apple Pay (AP) and Google Pay (GP).
+* Improvement: Detailed user feedback for vat checker.
+* Bugfix: Persists checkbox of voluntarily vat number.
+* Bugfix: Prevent usage of bfcache to avoid doublebookings.
+* Bugfix: Also prevent bfcache with JS.
+* Bugfix: Before checkout, make sure identifier has items in shopping cart history.
+
 ## Version 2.0.8 (2026043000)
 * Improvement: Improved vat gb checker.
 * Improvement: Disallow buying with system vat number.
