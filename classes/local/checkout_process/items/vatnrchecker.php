@@ -179,6 +179,13 @@ class vatnrchecker extends checkout_base_item {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
             return true;
         }
+        if (!empty(self::$identifier)) {
+            $cache = \cache::make('local_shopping_cart', 'cachebookingpreprocess');
+            $managercache = $cache->get(self::$identifier);
+            if (!empty($managercache['vatnumbervoluntarily'])) {
+                return true;
+            }
+        }
         return false;
     }
 
