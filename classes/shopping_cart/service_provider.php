@@ -74,6 +74,17 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
                     }
                 }
 
+                // Item-specific fee (stored via shopping_cart_handler, e.g. per
+                // booking option) overrides costcenter and global fee. With
+                // several items in the cart the highest item-specific fee wins,
+                // independent of item order.
+                if (!empty(get_config('local_shopping_cart', 'allowcustombookingfee'))) {
+                    $customfee = self::get_max_custom_bookingfee_for_cart($userid);
+                    if ($customfee !== null) {
+                        $price = $customfee;
+                    }
+                }
+
                 $imageurl = new \moodle_url('/local/shopping_cart/pix/coins.png');
                 $cartitem = new cartitem(
                     $itemid,
@@ -329,6 +340,61 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
         }
 
         return ['cartitem' => $cartitem];
+    }
+
+    /**
+     * Return the highest item-specific booking fee of all current cart items, or null.
+     *
+     * Item-specific fees are stored by shopping_cart_handler in the json of
+     * local_shopping_cart_iteminfo (key 'bookingfee'). 0 is a valid value
+     * (explicitly no fee); a missing or non-numeric key means the item carries
+     * no own fee and does not take part in the resolution.
+     *
+     * @param int $userid
+     * @return float|null null when no cart item carries an own fee
+     */
+    private static function get_max_custom_bookingfee_for_cart(int $userid): ?float {
+        global $DB;
+
+        $cartstore = cartstore::instance($userid);
+        $maxfee = null;
+        // Cart-internal fee/credit areas never carry an own fee.
+        $skipareas = ['bookingfee', 'rebookingfee', 'rebookingcredit', 'rebookitem', 'installments'];
+
+        foreach ($cartstore->get_all_items() as $item) {
+            $componentname = (string)($item['componentname'] ?? '');
+            $itemid = (int)($item['itemid'] ?? 0);
+            if ($componentname === '' || $itemid <= 0) {
+                continue;
+            }
+
+            // Cart areas can carry suffixes ("subbooking-1"); iteminfo stores the stem.
+            [$area] = explode('-', (string)($item['area'] ?? ''));
+            if ($area === '' || in_array($area, $skipareas, true)) {
+                continue;
+            }
+
+            $record = $DB->get_record('local_shopping_cart_iteminfo', [
+                'itemid' => $itemid,
+                'componentname' => $componentname,
+                'area' => $area,
+            ], 'id, json', IGNORE_MISSING);
+            if (!$record) {
+                continue;
+            }
+
+            $json = json_decode((string)$record->json);
+            if (!isset($json->bookingfee) || !is_numeric($json->bookingfee)) {
+                continue;
+            }
+
+            $fee = (float)$json->bookingfee;
+            if ($maxfee === null || $fee > $maxfee) {
+                $maxfee = $fee;
+            }
+        }
+
+        return $maxfee;
     }
 
     /**
