@@ -200,8 +200,8 @@ class erpnext_invoice implements invoice {
         }
 
         $this->billingaddress = address_operations::get_specific_user_address($this->addressid);
-        if (!empty($this->billingaddress->company)) {
-            $this->customername = address_operations::get_specific_user_address($this->addressid)->company;
+        if (!empty($this->billingaddress) && !empty($this->billingaddress->company)) {
+            $this->customername = $this->billingaddress->company;
             $this->customercompany = $this->customername;
         } else {
             $this->customername = fullname($this->user) . ' - ' . $this->user->id;

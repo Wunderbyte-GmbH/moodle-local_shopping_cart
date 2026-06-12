@@ -169,7 +169,7 @@ class modal_new_address extends dynamic_form {
      * Load in existing data as form defaults
      */
     public function set_data_for_dynamic_submission(): void {
-        if (!empty($this->_ajaxformdata['id'])) {
+        if (!empty($this->_ajaxformdata['id']) && address_operations::get_specific_user_address($this->_ajaxformdata['id'])) {
             // Edit mode: Load existing address data.
             $address = address_operations::get_specific_user_address($this->_ajaxformdata['id']);
             $this->set_data($address);
