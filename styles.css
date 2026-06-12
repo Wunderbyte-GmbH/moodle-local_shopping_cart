@@ -543,7 +543,11 @@ div.shopping-cart-items-container div.item-description {
 
 .shopping-cart-checkout-manager-buttons {
     margin-top: 20px;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 .shopping-cart-checkout-manager-status-bar {
     display: flex;
