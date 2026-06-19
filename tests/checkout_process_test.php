@@ -323,6 +323,32 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                     'assertcartstoretax',
                 ],
             ],
+            'Tax processing disabled, no tax on any item' => [
+                [
+                    // Tax categories are configured, but tax processing is turned off
+                    // globally, so no tax must be applied to any history record.
+                    'addresses_required' => 'shipping',
+                    'taxcategories' => 'default A:20 B:20 C:10
+                        AT A:20 B:10 C:0
+                        DE A:19 B:10 C:0',
+                    'defaulttaxcategory' => 'A',
+                    'enabletax' => '0',
+                ],
+                [
+                    [
+                        'changedinput' => '[{"name":"selectedaddress_shipping","value":"REPLACE_WITH_ADDRESSID"}]',
+                        'controlparameter' => [
+                            "currentstep" => 0,
+                            "action" => null,
+                        ],
+                    ],
+                ],
+                [
+                    'assertvalidcheckout',
+                    'assertcartstorevatnumberempty',
+                    'assertcartstoretaxnull',
+                ],
+            ],
             'Both addresses mandatory' => [
                 [
                     'addresses_required' => 'billing,shipping',

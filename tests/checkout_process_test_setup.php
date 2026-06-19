@@ -336,8 +336,29 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
         );
         $row = 0;
         foreach ($historyrecords as $historyrecord) {
-            $arrdiff = array_diff($expectedtax[$row], (array) $historyrecord); // For debugging.
-            $this->assertEmpty($arrdiff);
+            $record = (array) $historyrecord;
+            foreach ($expectedtax[$row] as $key => $expectedvalue) {
+                // Assert each history-record column by key (not key-blind like the old
+                // array_diff). Input-only markers (e.g. useinstallment/useinstallments)
+                // are not persisted to the history record and are therefore skipped.
+                if (!array_key_exists($key, $record)) {
+                    continue;
+                }
+                if (is_numeric($expectedvalue)) {
+                    $this->assertEqualsWithDelta(
+                        (float) $expectedvalue,
+                        (float) $record[$key],
+                        0.001,
+                        "assertcartstoreexacttax: row $row, field '$key' mismatch."
+                    );
+                } else {
+                    $this->assertEquals(
+                        (string) $expectedvalue,
+                        (string) $record[$key],
+                        "assertcartstoreexacttax: row $row, field '$key' mismatch."
+                    );
+                }
+            }
             $row++;
         }
     }
@@ -350,8 +371,10 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
     public function assertcartstoretaxnull($managercache, $historyrecords): void {
         $this->assertNotEmpty($historyrecords, 'assertcartstoretaxnull: no history records were created.');
         foreach ($historyrecords as $historyrecord) {
-            $this->assertEquals((int)$historyrecord->taxpercentage, 0, 'assertcartstoretaxnull_taxpercentage');
-            $this->assertEquals((int)$historyrecord->tax, 0, 'assertcartstoretaxnull_tax');
+            // Reverse charge: tax must be exactly 0 - a float-delta check so that a residual
+            // sub-1.0 tax (which an (int) cast would silently swallow) makes the test fail.
+            $this->assertEqualsWithDelta(0.0, (float)$historyrecord->taxpercentage, 0.001, 'assertcartstoretaxnull_taxpercentage');
+            $this->assertEqualsWithDelta(0.0, (float)$historyrecord->tax, 0.001, 'assertcartstoretaxnull_tax');
         }
     }
 }
