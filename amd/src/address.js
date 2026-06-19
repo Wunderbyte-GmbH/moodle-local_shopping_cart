@@ -253,6 +253,26 @@ function mountInlineAddressForm(container, id = 0, addressKey = 'billing') {
  * @param {String|null} preferredAddressKey preferred key to auto-select (e.g. billing)
  */
 function redrawRenderedAddresses(data, newAddressId = null, preferredAddressKey = null) {
+    // On the checkout page the addresses step is a dynamic form: reload it
+    // instead of re-rendering the legacy template (address.php still uses it).
+    const stepformcontainer = document.querySelector('[data-stepkey="addresses"]');
+    if (stepformcontainer) {
+        // Replace the inline-form containers with fresh clones: the legacy
+        // redraw recreated them (dropping the DynamicForm listeners), the
+        // form reload does not - without this, remounting stacks a second
+        // DynamicForm on the same container.
+        document.querySelectorAll(SELECTORS.INLINEFORMCONTAINER).forEach(container => {
+            container.parentNode.replaceChild(container.cloneNode(false), container);
+        });
+        inlineAddressForms = {};
+        document.dispatchEvent(new CustomEvent('local_shopping_cart/reloadAddressStep', {
+            detail: {
+                newaddressid: newAddressId,
+                addresskey: preferredAddressKey || 'billing',
+            },
+        }));
+        return;
+    }
     Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
         // The rendered template root is the container itself, so replace the
         // whole node to avoid nesting duplicate ids on every redraw.

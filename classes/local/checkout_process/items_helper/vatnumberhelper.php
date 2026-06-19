@@ -43,16 +43,23 @@ class vatnumberhelper {
     /**
      * @var string
      */
-    const RESTCOUNTRIESURL = "https://restcountries.com/v3.1/alpha/";
-    /**
-     * @var string
-     */
     const VATCOMPLYCHECKERURL = 'https://api.vatcomply.com/vat?vat_number=';
 
     /**
      * @var string
      */
     const WSDL = "https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl";
+
+    /**
+     * ISO country codes treated as EU VAT region for VIES checks.
+     *
+     * @var array
+     */
+    const EUROPEANVATCOUNTRYCODES = [
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI', 'FR',
+        'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO',
+        'SE', 'SI', 'SK',
+    ];
 
     /**
      * Function to return an array of localized country codes.
@@ -115,6 +122,13 @@ class vatnumberhelper {
     private static $lastfailureownvat = false;
 
     /**
+     * Language key for the last VAT validation technical error (rate limit,
+     * service unavailable), for detailed user feedback.
+     * @var string|null
+     */
+    protected static $lastvalidationerrorkey = null;
+
+    /**
      * Records a diagnostic trace line for the last VAT check.
      *
      * @param string $line
@@ -149,6 +163,7 @@ class vatnumberhelper {
     public static function is_vatnr_valid(string $countrycode, string $vatnrnumber, ?object $client = null): bool {
         self::$lasttrace = [];
         self::$lastfailureownvat = false;
+        self::$lastvalidationerrorkey = null;
         self::add_trace("input: country={$countrycode} vatnr={$vatnrnumber}");
 
         // Special treatment for the Behat and PHPUnit tests.
@@ -189,10 +204,62 @@ class vatnumberhelper {
                 self::add_trace('validator: vatcomply, response: ' . json_encode($response));
                 break;
         }
+
+        // A technical error (service unavailable, rate limit) is not the same as
+        // an invalid VAT number: remember the error key for detailed feedback.
+        if (!is_array($response)) {
+            self::$lastvalidationerrorkey = 'errorvatnrserviceunavailable';
+            return false;
+        }
+        if (!array_key_exists('valid', $response) && empty($response['error'])) {
+            self::$lastvalidationerrorkey = 'errorvatnrserviceunavailable';
+            return false;
+        }
+        if (!empty($response['error'])) {
+            self::$lastvalidationerrorkey = $response['errorcode'] ?? 'errorvatnrserviceunavailable';
+            return false;
+        }
+
         if (isset($response['valid']) && $response['valid']) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return the language key for the last VAT validation technical error,
+     * or null if the last check had no technical error.
+     *
+     * @return string|null
+     */
+    public static function get_last_validation_error_key(): ?string {
+        return self::$lastvalidationerrorkey;
+    }
+
+    /**
+     * Map VIES/SOAP error messages to user-facing language keys, so a rate
+     * limit is reported differently from a general service outage.
+     *
+     * @param string $message
+     * @return string
+     */
+    protected static function map_vies_error_to_string_key(string $message): string {
+        $messagelc = strtolower($message);
+        $limitmarkers = [
+            'ms_max_concurrent_req',
+            'global_max_concurrent_req',
+            'max concurrent',
+            'too many requests',
+            'rate limit',
+            'throttle',
+            'request limit',
+        ];
+        foreach ($limitmarkers as $marker) {
+            if (str_contains($messagelc, $marker)) {
+                return 'errorvatnrrequestlimit';
+            }
+        }
+        return 'errorvatnrserviceunavailable';
     }
 
     /**
@@ -216,43 +283,10 @@ class vatnumberhelper {
      * @return bool
      */
     public static function is_european_region($countrycode) {
-        global $CFG;
-
-        // Request-scoped cache: the region of a country does not change.
-        static $regioncache = [];
-        if (isset($regioncache[$countrycode])) {
-            return $regioncache[$countrycode];
-        }
-
-        require_once($CFG->libdir . '/filelib.php');
-
-        $url = self::RESTCOUNTRIESURL . urlencode($countrycode);
-        // The service answers with redirects (cloudflare), so follow them.
-        $curl = new \curl();
-        $response = $curl->get($url, [], [
-            'CURLOPT_FOLLOWLOCATION' => true,
-            'CURLOPT_MAXREDIRS' => 3,
-            'CURLOPT_TIMEOUT' => 10,
-        ]);
-
-        $data = json_decode($response, true);
-        if (isset($data[0]['region'])) {
-            self::add_trace("restcountries region for {$countrycode}: " . $data[0]['region']);
-            $regioncache[$countrycode] = ($data[0]['region'] === 'Europe');
-            return $regioncache[$countrycode];
-        }
-
-        // The region service failed (network, redirect, format change):
-        // fall back to the well-known EU country list instead of silently
-        // routing EU numbers to the wrong validator.
-        self::add_trace(
-            "restcountries lookup failed for {$countrycode}"
-            . ' (error: ' . ($curl->error ?: 'unexpected response ' . substr((string)$response, 0, 80)) . ')'
-            . ', using static EU country list as fallback'
-        );
-        $eucountries = array_keys(self::get_countrycodes_array());
-        $regioncache[$countrycode] = in_array($countrycode, $eucountries, true);
-        return $regioncache[$countrycode];
+        // Use a fixed EU country list instead of an external geo API: the
+        // VAT region of a country is stable and an external call here was a
+        // reliability risk (the previously used restcountries API was retired).
+        return in_array(strtoupper((string)$countrycode), self::EUROPEANVATCOUNTRYCODES, true);
     }
 
     /**
@@ -328,7 +362,7 @@ class vatnumberhelper {
      * @param string $vatnumber
      * @return string
      */
-    public static function validate_with_vatcomply($vatnumber) {
+    public static function validate_with_vatcomply($vatnumber): array {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
 
@@ -344,7 +378,7 @@ class vatnumberhelper {
         if (!is_array($decoded)) {
             return [
                 'error' => true,
-                'message' => $curl->error ?: 'unexpected response: ' . substr((string)$response, 0, 80),
+                'errorcode' => 'errorvatnrserviceunavailable',
             ];
         }
         return $decoded;
@@ -365,10 +399,11 @@ class vatnumberhelper {
                 'countryCode' => $countrycode,
                 'vatNumber' => $vatnumber,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'error' => true,
                 'message' => $e->getMessage(),
+                'errorcode' => self::map_vies_error_to_string_key($e->getMessage()),
             ];
         }
     }

@@ -213,11 +213,11 @@ unverändert weiter, und ein Rollback ist pro Step trivial (Klasse zurücktausch
 
 | Phase | Inhalt | Aufwand | Risiko | Releasebar |
 |---|---|---|---|---|
-| **0** | **Behat-Sicherheitsnetz**: Szenarien für (a) Checkout nur Billing-Adresse, (b) + Terms, (c) + VAT freiwillig/pflicht, (d) Gast-Checkout happy path, (e) Gast mit existierender E-Mail → Fehler sichtbar, (f) Credits/Zero-Price. Generator-Support für Cart-Items prüfen/ergänzen. | 2 Tage | — | ja (reiner Testcode) |
-| **1** | Hybrid-Contract im Manager + Basisklasse `checkout_step_form` + **Pilot: Terms-Step** (eine Checkbox — minimale Fläche, validiert den ganzen Mechanismus inkl. Progress/Buttons/JS) | 1,5–2 Tage | niedrig | ja |
-| **2** | **VAT-Step** (VIES in `validation()`, voluntarily-Toggle entkoppeln) | 1–1,5 Tage | mittel | ja |
-| **3** | **Addresses-/Gast-Step** (Form + Element-Template für Karten + `modal_new_address`-Anbindung via `set_data`-Reload) | 2–3 Tage | mittel-hoch | ja |
-| **4** | **Aufräumen**: Legacy-Pfad raus (`check_status`-Contract, `getChangedInputs`, `data-shopping-cart-process-data`, Alert-Fädelung, `viewed`-Zähler), `control_checkout_process` reduzieren/entfernen, `checkout_base_item` deprecaten, Doku | 1–2 Tage | niedrig (Netz aus Phase 0) | ja |
+| **0** ✅ 2026-06-11 | **Behat-Sicherheitsnetz**: Szenarien für (a) Checkout nur Billing-Adresse, (b) + Terms, (c) + VAT freiwillig/pflicht, (d) Gast-Checkout happy path, (e) Gast mit existierender E-Mail → Fehler sichtbar, (f) Credits/Zero-Price. Generator-Support für Cart-Items prüfen/ergänzen. *Ergebnis: `shopping_cart_guest_checkout.feature` (d/e + Reload-Persistenz) neu; (b/c/f) waren vorhanden; dabei `name`/`company`-Regression der Adress-Form gefixt (Edit-Szenario wieder grün).* | 2 Tage | — | ja (reiner Testcode) |
+| **1** ✅ 2026-06-11 | Hybrid-Contract im Manager + Basisklasse `checkout_step_form` + **Pilot: Terms-Step** (eine Checkbox — minimale Fläche, validiert den ganzen Mechanismus inkl. Progress/Buttons/JS). *Umgesetzt: `get_form_classname()`-Contract, `store_form_step_result()`/`apply_form_step_result()`, Container-Template, `initStepForms()` mit Auto-Submit (O1); Terms-Behat unverändert grün.* | 1,5–2 Tage | niedrig | ja |
+| **2** ✅ 2026-06-11 | **VAT-Step** (VIES in `validation()`, voluntarily-Toggle entkoppeln) — *Umgesetzt: `vatnrchecker_form` mit explizitem Verify-Submit (neuer `is_autosubmit()`-Contract-Flag, Default false; Terms = true); VIES + Cartstore-Seiteneffekte in `build_step_result()`; Cache-Shape bleibt Legacy-JSON für `return_stored_vatnuber_country_code()`. Voluntarily-Toggle blieb unangetastet (Manager-Ebene, kein Teil des Steps). Dabei Live-Bug gefunden+gefixt: restcountries.com v3.1 abgeschaltet → alle VAT-Checks fielen auf den kaputten vatcomply-Validator → immer „invalid"; Fix: EU-Länderlisten-Fallback, vatcomply-Decode, `ownvatnrnumber`-Key-Typo, Debug-Trace im Error-Feedback bei DEBUG_DEVELOPER. Suite 55/55 grün + manueller Test Georg positiv.* | 1–1,5 Tage | mittel | ja |
+| **3** ✅ 2026-06-11 (Commit 9514d69, Suite 55/55) | **Addresses-/Gast-Step** — *Umgesetzt: `addresses_form` (Gast-Felder + Adress-Karten via Custom-Element `local_shopping_cart_addresscard_element`); Surroundings-Contract (`render_form_surroundings()`: before/after/wrapperclass) für Login-Panel (`guest_login_panel.mustache`) und Adress-Aktionen (`address_actions.mustache`) — nested forms wären invalide; gemeinsamer Validierungskern `addresses::evaluate_step()` für Form- UND Legacy-Pfad; `modal_new_address`-Anbindung via `reloadAddressStep`-Event → `form.load()` + Auto-Select. Drei Stolpersteine dokumentiert in §9 (5-7).* | 2–3 Tage | mittel-hoch | ja |
+| **4** ✅ 2026-06-12 (Gate läuft) | **Aufräumen**: toten Code der 3 migrierten Steps entfernt — `render_body`/`check_status`/`is_valid`/`set_data_from_cache`/`set_cached_selected_country`/`get_country_code_name` aus terms/vat/addresses (Helper, die noch leben, blieben: `get_template_render_data`, `get_input_data`, `evaluate_step`, `get_info_feedback`, `get_*_feedback`); tote JS-Funktionen (`getNewAddress`, `vatNumberVerifyCallback` + IDS/Imports); tote Templates (`termsandconditions`/`vatnrchecker`/`guest_registration_form.mustache`); WS-Capability `mod/booking:readresponses`→`''` + Description-Fix. **WICHTIG — Scope-Korrektur ggü. Urplan**: der Legacy-MECHANISMUS bleibt (NICHT abbaubar): `control_checkout_process` + `getChangedInputs`/`changeCallback` + Hybrid-Contract werden weiter gebraucht für (1) Step-Navigation Weiter/Zurück, (2) `vatnumbervoluntarily`-Toggle (Manager-Ebene), (3) Head-Item `shopping_cart_credits` (`render_body`). `address.mustache` bleibt (von `address.php`-Standalone genutzt). `checkout_base_item` bleibt aktiver Contract (Default-Methoden + Head-Items). | 1–2 Tage | niedrig (Netz aus Phase 0) | ja |
 
 **Summe: ~7,5–10,5 Entwicklertage.** Zwischen den Phasen darf beliebig viel Zeit liegen —
 der Hybrid-Modus ist ein stabiler Zwischenzustand.
@@ -261,11 +261,52 @@ der Hybrid-Modus ist ein stabiler Zwischenzustand.
 
 ## 8. Offene Fragen (vor Phase 1 mit Georg klären)
 
-- **O1 — Submit-UX:** Ein-Step-Konfiguration: Checkout-Button submittet Step-Form implizit
-  (Vorschlag) — oder expliziter „Weiter"-Klick auch bei nur einem Step?
-- **O2 — Adress-Karten:** Investition in mform-Element-Templates für die Karten-Radio-Optik,
-  oder Standard-Radio-Liste akzeptieren?
+- **O1 — Submit-UX:** ENTSCHIEDEN (Phase 1, 2026-06-11): **Auto-Submit on change** —
+  der Form-Container submittet bei jeder Feldänderung via `submitFormAjax()`. Damit bleibt
+  die Live-Button-Aktivierung der Legacy-Steps 1:1 erhalten, kein zusätzlicher Klick.
+  Konsequenz: `validation()` darf nur echte Feldfehler werfen; die Step-Gültigkeit
+  (Checkbox nicht gesetzt etc.) entscheidet `build_step_result()` — sonst würde ein
+  fehlgeschlagener Submit den Cache-Zustand nicht aktualisieren (Uncheck-Falle, §9).
+- **O2 — Adress-Karten:** SPIKE ERFOLGREICH (2026-06-11): Custom-Element
+  `local_shopping_cart_addresscard_element` (extends MoodleQuickForm_radio,
+  `classes/local/checkout_process/form_elements/addresscard.php`). Eigener
+  `_type` ohne core_form-Template → Renderer fällt auf `toHtml()` zurück →
+  exakt das Legacy-Karten-Markup (`label.sc-address-item` >
+  `input[name="selectedaddress_*"]` + `address_singleline`-Partial). Volle
+  mform-Semantik: `setDefault`/`set_data` setzt `checked`, Submission liefert
+  die Adress-ID. CSS und Behat-Selektoren bleiben unverändert gültig.
+  → Entscheidung Georg ausstehend: diesen Ansatz für Phase 3 übernehmen?
 - **O3 — `control_checkout_process`:** Gibt es externe Konsumenten (Apps, Kunden-Plugins)?
   Falls ja: Deprecation-Pfad statt Entfernung in Phase 4.
 - **O4 — Zeitfenster:** Der Umbau sollte nicht parallel zu laufenden Gast-Checkout-Iterationen
   passieren; Start frühestens, wenn GH-187 stabil/released ist.
+
+---
+
+## 9. Implementierungsnotizen aus Phase 1 (für Phase 2/3 beachten)
+
+1. **Uncheck-Falle:** Schlägt `validation()` fehl, läuft `process_dynamic_submission()` nie —
+   der Cache behält dann den ALTEN `valid`-Zustand. Deshalb: `validation()` nur für echte
+   Feldfehler (z. B. E-Mail-Format), die Step-Gültigkeit (Checkbox nicht gesetzt, keine
+   Adresse gewählt) entscheidet `build_step_result()` bei IMMER erfolgreichem Submit.
+2. **`FORM_SUBMITTED` braucht `e.preventDefault()`:** Der Core-Default-Handler von
+   `core_form/dynamicform` leert sonst den Container nach jedem erfolgreichen Submit
+   (`onSubmitSuccess`). Beim Auto-Submit-Modell muss die Form gemountet bleiben.
+3. **Legacy-Listener abschirmen:** Der `change`-Listener des Legacy-Pfads muss Events aus
+   `[data-shopping-cart-step-form]`-Containern ignorieren. Sonst schickt er ein leeres
+   `changedinput='[]'` an `control_checkout_process`, und z. B.
+   `termsandconditions::is_valid([])` liefert fälschlich `true` (leere foreach-Schleife).
+   Aus demselben Grund überspringt `check_preprocess()` Form-Steps komplett.
+4. **Behat-Mechanik:** Neue Feature-Files brauchen `behat/cli/init.php`; neue Step-Methoden
+   in bestehenden Context-Klassen nicht. Faildump-HTML unter `/var/www/behatfaildumps` zeigt
+   den DOM-Zustand im Fehlermoment (so wurde die `name`/`company`-Regression gefunden).
+   Keine Behat-Läufe parallel zu Code-Edits — geteilte Test-Site.
+5. **DynamicForm-Container nie wiederverwenden:** Wird ein Container-Element am Leben
+   gehalten und erneut gemountet, stapeln sich DynamicForm-Instanzen (Doppel-Submit,
+   `dispatchEvent on null` aus der Stale-Instanz). Vor dem Remount den Container per
+   `cloneNode(false)` ersetzen (gleiche Attribute, keine Listener/Kinder).
+6. **`get_data()` liefert null bei leerer valider Submission** (nur sesskey + qf-Marker,
+   z. B. Radio deselektiert, keine weiteren Wert-Elemente) — in
+   `checkout_step_form::process_dynamic_submission()` mit `?? new stdClass()` abgefangen.
+7. **Step-Form vs. Begleit-UI:** Alles mit eigenem `<form>` (Login-Panel, Inline-Adress-Form)
+   muss in die Surroundings (`render_form_surroundings()`), nie in die mform.

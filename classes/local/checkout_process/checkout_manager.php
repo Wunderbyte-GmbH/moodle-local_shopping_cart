@@ -81,7 +81,41 @@ class checkout_manager {
         $this->controlparameter = $controlparameter;
         $this->managercache = self::get_cache($data['userid']);
         $this->itemlist = self::get_itemlist_preprocess();
+        self::apply_voluntarily_vat_toggle();
         self::set_body_mandatory_count();
+    }
+
+    /**
+     * Persists a change of the voluntarily-VAT checkbox into the manager cache
+     * before the mandatory count is computed.
+     *
+     * Ticking the checkbox makes the VAT step mandatory (vatnrchecker::is_mandatory
+     * reads this cached flag), so a change must also invalidate the cached
+     * mandatory count so it is recomputed for this request.
+     *
+     * @return void
+     */
+    public function apply_voluntarily_vat_toggle(): void {
+        $changedinput = $this->controlparameter['changedinput'] ?? null;
+        if (!is_string($changedinput)) {
+            return;
+        }
+        $parsed = json_decode($changedinput);
+        if (empty($parsed)) {
+            return;
+        }
+        foreach ($parsed as $input) {
+            if (isset($input->name) && $input->name === 'vatnumbervoluntarily') {
+                $newvalue = !empty($input->value);
+                $oldvalue = !empty($this->managercache['vatnumbervoluntarily']);
+                if ($newvalue !== $oldvalue) {
+                    $this->managercache['vatnumbervoluntarily'] = $newvalue;
+                    unset($this->managercache['body_mandatory_count']);
+                    self::set_cache();
+                }
+                break;
+            }
+        }
     }
 
     /**
@@ -276,8 +310,12 @@ class checkout_manager {
                 self::class_exists_is_active($classname)
             ) {
                 $iteminstance = new $classname($this->identifier);
+                // Steps migrated to dynamic forms write their own validity via
+                // process_dynamic_submission() - never overwrite it here.
+                $isformstep = !empty($classname::get_form_classname());
                 if (
-                    $bodycounter === ($this->controlparameter['currentstep'] ?? null)
+                    !$isformstep
+                    && $bodycounter === ($this->controlparameter['currentstep'] ?? null)
                 ) {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
                         $this->managercache['steps'][$filename] ?? [],
@@ -295,13 +333,69 @@ class checkout_manager {
                 }
                 if ($iteminstance->is_head() === false) {
                     $bodycounter += 1;
-                } else {
+                } else if (!$isformstep) {
                     $this->managercache['steps'][$filename] = $iteminstance->check_status(
                         $this->managercache['steps'][$filename] ?? [],
                         $changedinput
                     );
                 }
             }
+        }
+        self::get_checkout_validation();
+        self::set_cache();
+        return $this->managercache;
+    }
+
+    /**
+     * Programmatically submit the current checkout step with raw step input.
+     *
+     * Mirrors what a dynamic-form submission does for a form step (validate +
+     * persist + update the checkout cache via the item's evaluate_step()), and
+     * falls back to the legacy check_status() for non-migrated steps. Driven by
+     * a changedinput string so it can be used by integration tests and any
+     * non-JS submission path. The current step is taken from the control
+     * parameter's currentstep (body index).
+     *
+     * @param string $changedinput
+     * @return array the updated manager cache
+     */
+    public function submit_step($changedinput): array {
+        $bodycounter = 0;
+        foreach ($this->itemlist as $item) {
+            $filename = basename($item, '.php');
+            $classname = self::NAMESPACE_PREFIX . $filename;
+            if (!self::class_exists_is_active($classname)) {
+                continue;
+            }
+            $iteminstance = new $classname($this->identifier);
+            if ($iteminstance->is_head()) {
+                // Head items (e.g. credits) have no interactive submission.
+                continue;
+            }
+            if ($bodycounter === ($this->controlparameter['currentstep'] ?? null)) {
+                if (!empty($classname::get_form_classname())) {
+                    // Migrated step: validate via the shared item core.
+                    $parsed = $iteminstance->parse_changed_input($changedinput);
+                    $this->managercache['steps'][$filename] = $iteminstance->evaluate_step($parsed);
+                } else {
+                    // Legacy step.
+                    $this->managercache['steps'][$filename] = $iteminstance->check_status(
+                        $this->managercache['steps'][$filename] ?? [],
+                        $changedinput
+                    );
+                }
+                if ($this->managercache['steps'][$filename]['valid']) {
+                    $this->managercache['feedback'] = [
+                        'validationmessage' => $iteminstance->get_validation_feedback(),
+                    ];
+                } else {
+                    $this->managercache['feedback'] = [
+                        'errormessage' => $iteminstance->get_error_feedback(),
+                    ];
+                }
+                break;
+            }
+            $bodycounter += 1;
         }
         self::get_checkout_validation();
         self::set_cache();
@@ -486,6 +580,29 @@ class checkout_manager {
                     $this->managercache['viewed'][$classname] = true;
                     self::get_checkout_validation();
                     self::set_cache();
+                    $formclass = $item['classname']::get_form_classname();
+                    if (!empty($formclass)) {
+                        // Dynamic-form step: pre-render the form server-side and let
+                        // the JS hydrate it (Moodle dynamic-forms pattern), avoiding
+                        // an extra load() roundtrip and a flash of empty content.
+                        global $PAGE;
+                        $surroundings = $item['classname']::render_form_surroundings();
+                        $form = new $formclass(null, null, 'post', '', [], true, null, false);
+                        $form->set_data_for_dynamic_submission();
+                        $template = $PAGE->get_renderer('local_shopping_cart')->render_from_template(
+                            'local_shopping_cart/checkout_step_form_container',
+                            [
+                                'formclass' => $formclass,
+                                'stepkey' => $classname,
+                                'autosubmit' => $formclass::is_autosubmit(),
+                                'formhtml' => $form->render(),
+                                'beforeform' => $surroundings['before'] ?? '',
+                                'afterform' => $surroundings['after'] ?? '',
+                                'wrapperclass' => $surroundings['wrapperclass'] ?? '',
+                            ]
+                        );
+                        return ['template' => $template];
+                    }
                     return $iteminstance->render_body($this->managercache['steps'][$classname] ?? []);
                 }
             }
@@ -599,6 +716,92 @@ class checkout_manager {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns the body-step index of the given step key (for the active-page marker).
+     *
+     * @param string $stepkey Short classname of the step item.
+     * @return int
+     */
+    public function get_body_index_for_step(string $stepkey): int {
+        $bodycounter = 0;
+        foreach ($this->itemlist as $item) {
+            $filename = basename($item, '.php');
+            $classname = self::NAMESPACE_PREFIX . $filename;
+            if (self::class_exists_is_active($classname)) {
+                $iteminstance = new $classname($this->identifier);
+                if ($iteminstance->is_head() === false) {
+                    if ($filename === $stepkey) {
+                        return $bodycounter;
+                    }
+                    $bodycounter += 1;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Persists the result of a dynamic-form step submission and returns the
+     * partial-update payload in the same shape as control_checkout_process,
+     * so the existing checkout_manager JS can re-render buttons/progress.
+     *
+     * @param int $userid
+     * @param string $stepkey Short classname of the step item.
+     * @param array $stepresult ['data' => array, 'valid' => bool, 'mandatory' => bool]
+     * @return array
+     */
+    public static function store_form_step_result(int $userid, string $stepkey, array $stepresult): array {
+        $cartstore = \local_shopping_cart\local\cartstore::instance($userid);
+        $data = $cartstore->get_localized_data();
+
+        $manager = new self($data, []);
+        $manager = new self($data, [
+            'currentstep' => $manager->get_body_index_for_step($stepkey),
+            'action' => '',
+        ]);
+        $manager->apply_form_step_result($stepkey, $stepresult);
+
+        $checkoutmanagerdata = $manager->render_overview();
+        $data = array_merge($data, $checkoutmanagerdata);
+        $data['area'] = 'main';
+
+        return [
+            'data' => json_encode($data),
+            'jsscript' => '',
+            'reloadbody' => false,
+            'managerdata' => json_encode($manager->managercache),
+        ];
+    }
+
+    /**
+     * Writes a form-step result into the manager cache and recomputes the
+     * checkout validation (mirrors the bookkeeping of check_preprocess).
+     *
+     * @param string $stepkey
+     * @param array $stepresult ['data' => array, 'valid' => bool, 'mandatory' => bool]
+     * @return void
+     */
+    public function apply_form_step_result(string $stepkey, array $stepresult): void {
+        $this->managercache['steps'][$stepkey] = $stepresult;
+
+        $classname = self::NAMESPACE_PREFIX . $stepkey;
+        if (class_exists($classname)) {
+            $iteminstance = new $classname($this->identifier);
+            if ($stepresult['valid']) {
+                $this->managercache['feedback'] = [
+                    'validationmessage' => $iteminstance->get_validation_feedback(),
+                ];
+            } else {
+                $this->managercache['feedback'] = [
+                    'errormessage' => $iteminstance->get_error_feedback(),
+                ];
+            }
+        }
+
+        self::get_checkout_validation();
+        self::set_cache();
     }
 
     /**
