@@ -242,7 +242,9 @@ class create_invoice {
         $payment = $items[array_key_first($items)]->payment;
 
         // Check if there as a separate HTML template for special rows without identifier.
-        if (in_array($payment, [8, 9])) {
+        // 8/9 = credits paid back / credits correction, 11 = partial refund (e.g. slot downgrade).
+        // All of these reuse the extra-receipt template; no dedicated document setting is needed.
+        if (in_array($payment, [8, 9, LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND])) {
             if (!empty(trim(strip_tags($extrareceiptshtml)))) {
                 // If it's not empty, we use it instead of the default HTML template.
                 $cfghtml = $extrareceiptshtml;
