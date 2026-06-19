@@ -15,25 +15,31 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_shopping_cart/guest_registration_form
+    @template local_shopping_cart/guest_login_panel
 
-    Inline registration form shown to guest checkout users inside the
-    addresses checkout step.  The input names are prefixed with `guest_`
-    so they are collected by the checkout-manager JS alongside any address
-    radio buttons.
+    Guest checkout panel shown above the addresses step form: registration
+    title, register/login tabs and the compact login form (incl. SSO).
+    The registration input fields themselves live in the step form
+    (addresses_form), this panel only carries the static parts and the
+    login alternative - it contains a real <form> and therefore cannot be
+    part of the mform.
 
     Context variables required for this template:
-    * guest_firstname  - pre-filled firstname value (string, may be empty)
-    * guest_lastname   - pre-filled lastname value (string, may be empty)
-    * guest_email      - pre-filled e-mail value (string, may be empty)
-    * guest_email_error - optional validation error string
+    * loginoptions - see addresses::get_login_options_data()
 
     Example context (json):
     {
-        "guest_firstname": "",
-        "guest_lastname": "",
-        "guest_email": "",
-        "guest_email_error": ""
+        "loginoptions": {
+            "loginurl": "https://example.com/login/index.php",
+            "logintoken": "abc",
+            "wantsurl": "https://example.com/local/shopping_cart/checkout.php",
+            "canloginbyemail": false,
+            "forgotpasswordurl": "https://example.com/login/forgot_password.php",
+            "hasidentityproviders": false,
+            "identityproviders": [],
+            "cansignup": false,
+            "signupurl": ""
+        }
     }
 }}
 
@@ -85,14 +91,6 @@
                                     </div>
                                 </div>
                             </form>
-                            <script>
-                                (function() {
-                                    var anchor = document.getElementById('checkout_login_anchor');
-                                    if (anchor) {
-                                        anchor.value = window.location.hash || '';
-                                    }
-                                })();
-                            </script>
                             <p class="mb-2"><a href="{{forgotpasswordurl}}">{{#str}} forgotaccount {{/str}}</a></p>
 
                             {{#hasidentityproviders}}
@@ -113,57 +111,14 @@
                     </div>
                 </div>
             {{/loginoptions}}
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="guest_firstname" class="form-label">
-                        {{#str}} guestcheckout:firstname, local_shopping_cart {{/str}} <span class="text-danger">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="guest_firstname"
-                        name="guest_firstname"
-                        value="{{guest_firstname}}"
-                        placeholder="{{#str}} guestcheckout:firstnameplaceholder, local_shopping_cart {{/str}}"
-                        data-shopping-cart-process-data="true"
-                        autocomplete="given-name"
-                    />
-                </div>
-                <div class="col-md-6">
-                    <label for="guest_lastname" class="form-label">
-                        {{#str}} guestcheckout:lastname, local_shopping_cart {{/str}} <span class="text-danger">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="guest_lastname"
-                        name="guest_lastname"
-                        value="{{guest_lastname}}"
-                        placeholder="{{#str}} guestcheckout:lastnameplaceholder, local_shopping_cart {{/str}}"
-                        data-shopping-cart-process-data="true"
-                        autocomplete="family-name"
-                    />
-                </div>
-                <div class="col-12">
-                    <label for="guest_email" class="form-label">
-                        {{#str}} guestcheckout:email, local_shopping_cart {{/str}} <span class="text-danger">*</span>
-                    </label>
-                    <input
-                        type="email"
-                        class="form-control {{#guest_email_error}}is-invalid{{/guest_email_error}}"
-                        id="guest_email"
-                        name="guest_email"
-                        value="{{guest_email}}"
-                        placeholder="{{#str}} guestcheckout:emailplaceholder, local_shopping_cart {{/str}}"
-                        data-shopping-cart-process-data="true"
-                        autocomplete="email"
-                    />
-                    {{#guest_email_error}}
-                        <div class="invalid-feedback">{{guest_email_error}}</div>
-                    {{/guest_email_error}}
-                </div>
-            </div>
         </div>
     </div>
 </section>
+{{#js}}
+    (function() {
+    var anchor = document.getElementById('checkout_login_anchor');
+    if (anchor) {
+    anchor.value = window.location.hash || '';
+    }
+    })();
+{{/js}}

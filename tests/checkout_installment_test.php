@@ -111,7 +111,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
             }
             $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
             $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
-            $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
+            $managercache = $checkoutmanager->submit_step($stepdata['changedinput']);
 
             $balance = shopping_cart_credits::add_credit($student1->id, $stepdata['generatedcredits'], 'EUR', '');
             shopping_cart::save_used_credit_state($student1->id, $stepdata['usecredit']);

@@ -109,7 +109,7 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
             }
             $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
             $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
-            $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
+            $managercache = $checkoutmanager->submit_step($stepdata['changedinput']);
         }
         unset($stepdata);
 
@@ -292,6 +292,34 @@ final class checkout_process_test extends \local_shopping_cart\checkout_process_
                 [
                     'assertinvalidcheckout',
                     'assertcartstorevatnumberempty',
+                    'assertcartstoretax',
+                ],
+            ],
+            'Valid vatnumber but from own country, tax still applies' => [
+                [
+                    'showvatnrchecker' => '1',
+                    // Own country is AT, the same country as the entered VAT number,
+                    // so EU reverse charge does NOT apply and tax is still charged.
+                    'owncountrycode' => 'AT',
+                    'onlywithvatnrnumber' => '1',
+                    'taxcategories' => 'default A:20 B:20 C:10
+                        AT A:20 B:10 C:0
+                        DE A:19 B:10 C:0',
+                    'enabletax' => '1',
+                ],
+                [
+                    [
+                        'changedinput' => '{"vatCodeCountry":"AT,ATU74259768"}',
+                        'controlparameter' => [
+                            "currentstep" => 0,
+                            "action" => null,
+                        ],
+                        'vatresponse' => '{"valid": true, "name": "Valid company", "address": "Valid Address"}',
+                    ],
+                ],
+                [
+                    'assertvalidcheckout',
+                    'assertcartstorevatnumber',
                     'assertcartstoretax',
                 ],
             ],

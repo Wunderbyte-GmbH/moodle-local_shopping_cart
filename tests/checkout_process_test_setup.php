@@ -266,9 +266,10 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param object $historyrecords
      */
     public function assertcartstorevatnumber($managercache, $historyrecords): void {
+        $this->assertNotEmpty($historyrecords, 'assertcartstorevatnumber: no history records were created.');
         foreach ($historyrecords as $historyrecord) {
-            $this->assertNotNull($historyrecord->taxcountrycode, 'assertcartstorevatnumber_taxcountrycode');
-            $this->assertNotNull($historyrecord->vatnumber, 'assertcartstorevatnumber_vatnumber');
+            $this->assertNotEmpty($historyrecord->taxcountrycode, 'assertcartstorevatnumber_taxcountrycode');
+            $this->assertNotEmpty($historyrecord->vatnumber, 'assertcartstorevatnumber_vatnumber');
         }
     }
 
@@ -278,6 +279,7 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param object $historyrecords
      */
     public function assertcartstorevatnumberempty($managercache, $historyrecords): void {
+        $this->assertNotEmpty($historyrecords, 'assertcartstorevatnumberempty: no history records were created.');
         foreach ($historyrecords as $historyrecord) {
             $this->assertEmpty($historyrecord->taxcountrycode, 'assertcartstorevatnumberempty_taxcountrycode');
             $this->assertEmpty($historyrecord->vatnumber, 'assertcartstorevatnumberempty_vatnumber');
@@ -308,10 +310,15 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param object $historyrecords
      */
     public function assertcartstoretax($managercache, $historyrecords): void {
+        $this->assertNotEmpty($historyrecords, 'assertcartstoretax: no history records were created.');
+        $totaltax = 0;
         foreach ($historyrecords as $historyrecord) {
             $this->assertNotNull($historyrecord->taxpercentage, 'assertcartstoretax_taxpercentage');
             $this->assertNotNull($historyrecord->tax, 'assertcartstoretax_tax');
+            $totaltax += (float)$historyrecord->tax;
         }
+        // Without a valid foreign VAT number, tax must actually be applied.
+        $this->assertGreaterThan(0, $totaltax, 'assertcartstoretax: expected tax to be applied but total tax is 0.');
     }
 
     /**
@@ -321,6 +328,12 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param array $expectedtax
      */
     public function assertcartstoreexacttax($managercache, $historyrecords, $expectedtax): void {
+        $this->assertNotEmpty($historyrecords, 'assertcartstoreexacttax: no history records were created.');
+        $this->assertCount(
+            count($expectedtax),
+            $historyrecords,
+            'assertcartstoreexacttax: number of history records does not match the expected tax rows.'
+        );
         $row = 0;
         foreach ($historyrecords as $historyrecord) {
             $arrdiff = array_diff($expectedtax[$row], (array) $historyrecord); // For debugging.
@@ -335,6 +348,7 @@ abstract class checkout_process_test_setup extends \advanced_testcase {
      * @param object $historyrecords
      */
     public function assertcartstoretaxnull($managercache, $historyrecords): void {
+        $this->assertNotEmpty($historyrecords, 'assertcartstoretaxnull: no history records were created.');
         foreach ($historyrecords as $historyrecord) {
             $this->assertEquals((int)$historyrecord->taxpercentage, 0, 'assertcartstoretaxnull_taxpercentage');
             $this->assertEquals((int)$historyrecord->tax, 0, 'assertcartstoretaxnull_tax');

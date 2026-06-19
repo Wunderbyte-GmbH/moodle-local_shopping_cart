@@ -94,33 +94,34 @@ class addresses extends checkout_base_item {
     }
 
     /**
-     * Renders checkout item.
+     * This step is implemented as dynamic form (phase 3 of the forms migration).
+     * Remove this override to roll back to the legacy render_body/check_status path.
+     *
      * @return string
      */
-    public static function get_icon_progress_bar(): string {
-        return 'fa-solid fa-address-book';
+    public static function get_form_classname(): string {
+        return \local_shopping_cart\local\checkout_process\steps\addresses_form::class;
     }
 
     /**
-     * Renders checkout item.
-     * @param array $cachedata
+     * Markup around the addresses form: the guest login/registration panel
+     * (contains a real login <form>) before it, the add/edit/delete address
+     * actions (contain another dynamic form) after it.
+     *
      * @return array
      */
-    public static function render_body($cachedata): array {
+    public static function render_form_surroundings(): array {
         global $PAGE, $USER, $SESSION;
+
         $renderer = $PAGE->get_renderer('local_shopping_cart');
-        $requiredaddresskeys = self::get_required_address_keys();
         $isguestcheckoutuser = (
             get_config('local_shopping_cart', 'guestoncheckout')
             && guestcheckout::is_guest_checkout_user($USER->id)
         );
 
-        $template = '';
-
-        // When the current user is a guest checkout user, prepend the registration form.
+        $before = '';
         if ($isguestcheckoutuser) {
             $wantsurl = self::get_post_login_wantsurl();
-
             $SESSION->local_shopping_cart_guest_login_context = [
                 'guestuserid' => (int)$USER->id,
                 'timecreated' => time(),
@@ -128,58 +129,34 @@ class addresses extends checkout_base_item {
             ];
             $SESSION->wantsurl = $wantsurl;
 
-            $cacheddata = $cachedata['data'] ?? [];
-            $guestdata = [
-                'guest_firstname'   => $cacheddata['guest_firstname'] ?? '',
-                'guest_lastname'    => $cacheddata['guest_lastname'] ?? '',
-                'guest_email'       => $cacheddata['guest_email'] ?? '',
-                'guest_email_error' => $cacheddata['guest_email_error'] ?? '',
-                'loginoptions'      => self::get_login_options_data($wantsurl),
-                'showaddresspanel'  => !empty($requiredaddresskeys),
-            ];
-            $template .= $renderer->render_from_template(
-                'local_shopping_cart/guest_registration_form',
-                $guestdata
-            );
+            $before = $renderer->render_from_template('local_shopping_cart/guest_login_panel', [
+                'loginoptions' => self::get_login_options_data($wantsurl),
+            ]);
         }
 
-        // Render the address selection section only when addresses are configured.
-        if (!empty($requiredaddresskeys)) {
-            $data = self::get_template_render_data();
-            $data['required_addresses'] = self::set_data_from_cache(
-                $data['required_addresses'],
-                $cachedata['data'] ?? []
-            );
-            $template .= $renderer->render_from_template("local_shopping_cart/address", $data);
+        $after = '';
+        $requiredaddresses = array_values(self::get_required_address_data());
+        if (!empty($requiredaddresses)) {
+            $after = $renderer->render_from_template('local_shopping_cart/address_actions', [
+                'required_addresses' => $requiredaddresses,
+                'is_guest_checkout_user' => $isguestcheckoutuser,
+                'has_saved_addresses' => !empty(address_operations::get_all_user_addresses((int)$USER->id)),
+            ]);
         }
 
         return [
-            'template' => $template,
+            'before' => $before,
+            'after' => $after,
+            'wrapperclass' => 'local-shopping_cart-addressselection mb-4',
         ];
     }
 
     /**
-     * Generates the data for rendering the templates/address.mustache template.
-     * @param array $requiredaddresses
-     * @param array $cachedata
+     * Renders checkout item.
+     * @return string
      */
-    public static function set_data_from_cache(&$requiredaddresses, $cachedata) {
-        foreach ($requiredaddresses as &$requiredaddress) {
-            $newsavedaddresses = [];
-            foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
-                $savedaddresscopy = clone $savedaddress;
-                if (
-                    $savedaddresscopy->id == ($cachedata['selectedaddress_' . $requiredaddress['addresskey']] ?? 0)
-                ) {
-                    $savedaddresscopy->selected = true;
-                } else {
-                    unset($savedaddresscopy->selected);
-                }
-                $newsavedaddresses[] = $savedaddresscopy;
-            }
-            $requiredaddress['saved_addresses'] = $newsavedaddresses;
-        }
-        return $requiredaddresses;
+    public static function get_icon_progress_bar(): string {
+        return 'fa-solid fa-address-book';
     }
 
     /**
@@ -305,50 +282,24 @@ class addresses extends checkout_base_item {
     }
 
     /**
-     * Returns the required-address keys as specified in the plugin config.
+     * Validation core for the dynamic-form step (addresses_form): validates
+     * guest registration and address selection, fills the error feedback store
+     * and persists selected addresses to the cartstore.
      *
-     * @param mixed $managercachestep
-     * @param mixed $validationdata
-     *
-     * @return array list of all required address keys
-     *
+     * @param array $data Merged step data (selectedaddress_*, guest_*).
+     * @return array ['data' => array, 'mandatory' => bool, 'valid' => bool]
      */
-    public function check_status(
-        $managercachestep,
-        $validationdata
-    ): array {
+    public function evaluate_step(array $data): array {
         global $USER;
 
-        $data = $managercachestep['data'] ?? [];
-        $requiredaddresskeys = self::get_required_address_keys();
-        $decoded = json_decode($validationdata);
-        $validationdata = is_array($decoded) ? $decoded : [];
-
-        // Collect selected address fields.
-        foreach ($requiredaddresskeys as $requiredaddresskey) {
-            $requiredinputname = 'selectedaddress_' . $requiredaddresskey;
-            foreach ($validationdata as $address) {
-                if (
-                    isset($address->name) &&
-                    $address->name === $requiredinputname
-                ) {
-                    $data[$address->name] = $address->value;
-                }
-            }
-        }
-
-        // Collect and validate guest registration fields.
         self::$lasterrors = [];
+        $requiredaddresskeys = self::get_required_address_keys();
+
         $guestvalid = true;
         if (
             get_config('local_shopping_cart', 'guestoncheckout')
             && guestcheckout::is_guest_checkout_user($USER->id)
         ) {
-            foreach ($validationdata as $input) {
-                if (isset($input->name) && in_array($input->name, ['guest_firstname', 'guest_lastname', 'guest_email'])) {
-                    $data[$input->name] = clean_param($input->value ?? '', PARAM_TEXT);
-                }
-            }
             $guesterror = self::get_guest_registration_error($data);
             $guestvalid = ($guesterror === '');
             if (!$guestvalid) {
@@ -378,6 +329,51 @@ class addresses extends checkout_base_item {
             'mandatory' => self::is_mandatory(),
             'valid'     => $addressesvalid && $guestvalid,
         ];
+    }
+
+    /**
+     * Adapts the legacy changedinput (JSON array of {name,value}) to the data
+     * shape expected by evaluate_step(). Starts from the already cached step
+     * data so that several submissions (e.g. billing, then shipping) accumulate.
+     *
+     * @param mixed $changedinput
+     * @return array
+     */
+    public function parse_changed_input($changedinput): array {
+        global $USER;
+
+        $cache = \local_shopping_cart\local\checkout_process\checkout_manager::get_cache((int)self::$identifier);
+        $data = $cache['steps']['addresses']['data'] ?? [];
+        if (!is_array($data)) {
+            $data = [];
+        }
+
+        $decoded = json_decode($changedinput);
+        $validationdata = is_array($decoded) ? $decoded : [];
+
+        // Collect selected address fields.
+        foreach (self::get_required_address_keys() as $requiredaddresskey) {
+            $requiredinputname = 'selectedaddress_' . $requiredaddresskey;
+            foreach ($validationdata as $address) {
+                if (isset($address->name) && $address->name === $requiredinputname) {
+                    $data[$address->name] = $address->value;
+                }
+            }
+        }
+
+        // Collect guest registration fields.
+        if (
+            get_config('local_shopping_cart', 'guestoncheckout')
+            && guestcheckout::is_guest_checkout_user($USER->id)
+        ) {
+            foreach ($validationdata as $input) {
+                if (isset($input->name) && in_array($input->name, ['guest_firstname', 'guest_lastname', 'guest_email'])) {
+                    $data[$input->name] = clean_param($input->value ?? '', PARAM_TEXT);
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**
