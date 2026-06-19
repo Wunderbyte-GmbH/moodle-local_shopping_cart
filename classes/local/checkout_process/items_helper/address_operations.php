@@ -43,8 +43,10 @@ class address_operations {
      */
     public static function add_address_for_user(object $address): int {
         global $DB, $USER;
-        $address->address2 = $record->address2 ?? '';
-        $address->phone = $record->phone ?? '';
+        $address->address2 = $address->address2 ?? '';
+        $address->phone = $address->phone ?? '';
+        $address->company = $address->company ?? '';
+        $address->name = $address->name ?? '';
         $address->userid = $USER->id;
         return $DB->insert_record('local_shopping_cart_address', $address, true);
     }
@@ -71,6 +73,7 @@ class address_operations {
         // Handle optional fields with default values if not provided.
         $address->address2 = $address->address2 ?? '';
         $address->phone = $address->phone ?? '';
+        $address->company = $address->company ?? '';
 
         // Update the record in the database.
         return $DB->update_record('local_shopping_cart_address', $address);

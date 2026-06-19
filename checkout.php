@@ -58,6 +58,8 @@ $PAGE->requires->css('/local/shopping_cart/styles.css');
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
 $jsononly = optional_param('jsononly', null, PARAM_INT);
+$checkoutresume = optional_param('checkoutresume', 0, PARAM_INT);
+$checkoutstep = optional_param('checkoutstep', null, PARAM_INT);
 
 // As we might get a malformed URL, we have to jump through a few loops.
 if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
@@ -183,6 +185,25 @@ if ($hasallrequiredaddresses) {
 // phpcs:ignore
 //$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 $checkoutmanager = new checkout_manager($data);
+
+if (
+    $checkoutstep === null
+    && !empty($checkoutresume)
+    && !empty($SESSION->local_shopping_cart_checkout_resume)
+) {
+    $resumedata = $SESSION->local_shopping_cart_checkout_resume;
+    if ((int)($resumedata['userid'] ?? 0) === (int)$USER->id) {
+        $checkoutstep = max(0, (int)($resumedata['step'] ?? 0));
+    }
+    unset($SESSION->local_shopping_cart_checkout_resume);
+}
+
+if ($checkoutstep !== null) {
+    $checkoutmanager = new checkout_manager($data, [
+        'currentstep' => max(0, (int)$checkoutstep),
+        'action' => 'resume',
+    ]);
+}
 
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);

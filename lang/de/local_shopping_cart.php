@@ -68,6 +68,7 @@ $string['addresses:newaddress:checkasdefault'] = 'Als meine standard Adresse set
 $string['addresses:newaddress:city:error'] = 'Bitte gib eine Stadt ein';
 $string['addresses:newaddress:city:label'] = 'Stadt';
 $string['addresses:newaddress:city:placeholder'] = 'Stadt';
+$string['addresses:newaddress:company:error'] = 'Bitte gib einen Firmennamen ein';
 $string['addresses:newaddress:company:label'] = 'Company Name';
 $string['addresses:newaddress:name:error'] = 'Bitte gib einen Namen ein';
 $string['addresses:newaddress:name:label'] = 'Name';
@@ -397,6 +398,40 @@ $string['generalsettingspagetitle'] = 'Allgemeine Shopping Cart Einstellungen';
 $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';
 $string['globalcurrency'] = 'Währung';
 $string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';
+$string['guestautocreateenabled'] = 'Gast-Checkout-Benutzer auf passenden Seiten automatisch erstellen';
+$string['guestautocreateenabled:description'] = 'Wenn aktiviert, wird automatisch ein temporärer Gast-Checkout-Benutzer erstellt, sobald ein anonymer Besucher eine Seite öffnet, die zu einem der unten konfigurierten Muster passt.';
+$string['guestautocreatepatterns'] = 'Seitenmuster für automatische Erstellung';
+$string['guestautocreatepatterns:description'] = 'Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*.';
+$string['guestcheckout:alreadyregistered'] = 'Bereits registriert? Einloggen';
+$string['guestcheckout:email'] = 'E-Mail-Adresse';
+$string['guestcheckout:emailexists'] = 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.
+ Bitte <a href="{$a->loginurl}">melden Sie sich an</a>, um fortzufahren.';
+$string['guestcheckout:emailplaceholder'] = 'ihre@email.com';
+$string['guestcheckout:errorinvalidemail'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+$string['guestcheckout:errormissingfields'] = 'Bitte füllen Sie Vorname, Nachname und E-Mail-Adresse aus.';
+$string['guestcheckout:feedbackregister'] = 'Bitte vervollständigen Sie die Registrierung oder melden Sie sich mit Ihrem bestehenden Konto an.';
+$string['guestcheckout:firstname'] = 'Vorname';
+$string['guestcheckout:firstnameplaceholder'] = 'Vorname';
+$string['guestcheckout:lastname'] = 'Nachname';
+$string['guestcheckout:lastnameplaceholder'] = 'Nachname';
+$string['guestcheckout:passwordresetemail'] = 'Hallo {$a->firstname},
+
+ Ihr Kauf wurde erfolgreich abgeschlossen. Wir haben ein Moodle-Konto für Sie erstellt.
+
+ Um Ihr Passwort zu setzen und sich zum ersten Mal anzumelden, folgen Sie bitte diesem Link:
+ {$a->reseturl}
+
+ Ihr Anmeldename ist die E-Mail-Adresse, die Sie beim Checkout angegeben haben.';
+$string['guestcheckout:passwordresetemailsubject'] = 'Ihr neues Konto';
+$string['guestcheckout:registertab'] = 'Registrieren & zur Kasse';
+$string['guestcheckout:registrationdesc'] = 'Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an, um die Registrierung abzuschließen.
+ Nach dem Kauf erhalten Sie eine E-Mail, um Ihr Passwort zu setzen.';
+$string['guestcheckout:registrationtitle'] = 'Ihre Kontaktdaten';
+$string['guestoncheckout'] = 'Gast-Checkout aktivieren';
+$string['guestoncheckout:description'] = 'Wenn aktiviert, können nicht eingeloggte Besucher Elemente zum Warenkorb hinzufügen.
+ Dafür wird automatisch ein temporäres Benutzerkonto erstellt. Wenn der Kauf abgeschlossen wird, werden Name und E-Mail
+ im Checkout erfasst und das Konto in ein dauerhaftes Konto umgewandelt. Ohne Kauf wird das temporäre Konto nach 24 Stunden
+ automatisch gelöscht.';
 $string['history'] = "Käufe";
 $string['hr'] = "Kroatien";
 $string['hu'] = "Ungarn";

@@ -52,7 +52,7 @@ class modal_new_address extends dynamic_form {
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
 
-        // Name.
+        // Recipient name (required by the address table schema).
         $attributes = ["placeholder" => get_string('addresses:newaddress:name:placeholder', 'local_shopping_cart')];
         $mform->addElement(
             'text',
@@ -61,9 +61,8 @@ class modal_new_address extends dynamic_form {
             $attributes,
             $this->_ajaxformdata["name"] ?? ''
         );
-        $mform->setType('name', PARAM_TEXT);
 
-        // Company Name.
+        // Company Name (optional).
         $attributes = ["placeholder" => get_string('addresses:newaddress:company:label', 'local_shopping_cart')];
         $mform->addElement(
             'text',
@@ -136,6 +135,11 @@ class modal_new_address extends dynamic_form {
             $options,
             $this->_ajaxformdata["zip"] ?? ''
         );
+
+        $submitlabel = !empty($this->_ajaxformdata['id'])
+            ? get_string('addresses:saveaddress:submit', 'local_shopping_cart')
+            : get_string('addresses:newaddress:submit', 'local_shopping_cart');
+        $this->add_action_buttons(false, $submitlabel);
     }
 
     /**
@@ -150,13 +154,14 @@ class modal_new_address extends dynamic_form {
             // Update existing address.
             address_operations::update_address_for_user($data->id, $data);
             $result->isnew = false;
+            $newaddressid = (int)$data->id;
         } else {
             // Add new address.
             $result->isnew = true;
             $newaddressid = address_operations::add_address_for_user($data);
         }
         $result->templatedata = addresses::get_template_render_data();
-        $result->newaddressid = $data->id ?? $newaddressid;
+        $result->newaddressid = $newaddressid;
         return $result;
     }
 
@@ -172,7 +177,8 @@ class modal_new_address extends dynamic_form {
             // New address mode: Use defaults.
             $data = new stdClass();
             global $USER;
-            $data->name = fullname($USER);
+            $data->name = trim(($USER->firstname ?? '') . ' ' . ($USER->lastname ?? ''));
+            $data->company = '';
             $data->state = $USER->country ?? '';
             $data->address = $USER->address ?? '';
             $data->address2 = $USER->address2 ?? '';
@@ -227,6 +233,7 @@ class modal_new_address extends dynamic_form {
      */
     public function validation($data, $files) {
         $errors = [];
+        // The name is required (NOTNULL in the address table), company is optional.
         $requiredfields = ["name", "state", "address", "city", "zip"];
 
         foreach ($requiredfields as $requiredfield) {

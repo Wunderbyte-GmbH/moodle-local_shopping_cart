@@ -22,6 +22,7 @@
  */
 
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\guestcheckout;
 use local_shopping_cart\local\modechecker;
 use local_shopping_cart\shopping_cart;
 
@@ -107,6 +108,10 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
  */
 function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     global $USER, $CFG, $PAGE;
+
+    if (!modechecker::is_ajax_or_webservice_request()) {
+        guestcheckout::maybe_auto_create_guest_user_for_url($PAGE->url);
+    }
 
     // Early bail out conditions.
     if (!isloggedin() || isguestuser()) {

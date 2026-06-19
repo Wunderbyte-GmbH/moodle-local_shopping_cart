@@ -86,12 +86,14 @@ function getNewAddress() {
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
     const currentstep = getDatasetValue(formBody, 'currentstep');
     const identifier = getDatasetValue(formBody, 'identifier');
+    const changedInputs = getChangedInputs();
 
     if (currentstep !== null) {
         triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
             action: '',
             currentstep: currentstep,
             identifier: identifier,
+            changedinput: JSON.stringify(changedInputs),
         });
     }
 }
