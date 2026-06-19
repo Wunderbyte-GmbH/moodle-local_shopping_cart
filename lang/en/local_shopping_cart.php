@@ -758,6 +758,7 @@ $string['usevatnr'] = "Enter VAT number";
 $string['vatnrcheckerheading'] = "Check VAT number";
 $string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
 $string['vatnrerrorfeedback'] = 'VAT number is invalid!';
+$string['vatnrerrorownvatnr'] = 'You cannot use the VAT number of this site\'s operator.';
 $string['vatnrfeedbackmandatory'] = 'VAT number is mandatory!';
 $string['vatnrfeedbackoptional'] = 'VAT number is optional';
 $string['vatnrvalidationfeedback'] = 'VAT number was successfully validated';
