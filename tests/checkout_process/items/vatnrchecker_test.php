@@ -62,12 +62,26 @@ final class vatnrchecker_test extends advanced_testcase {
         set_config('showvatnrchecker', 1, 'local_shopping_cart');
         set_config('owncountrycode', 'DE', 'local_shopping_cart');
 
-        // Assert that the method returns true when conditions are met.
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return true when configuration is valid.');
+        // Not active: the checker is shown, but neither "only with vat number" nor the
+        // voluntarily flag is set, so show_vat_nr() falls back to false.
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when the step is neither forced nor voluntarily confirmed.'
+        );
 
-        // Remove configurations and test again.
+        // Active (TRUE path): "only with vat number" forces the step and a home country is set.
+        set_config('onlywithvatnrnumber', 1, 'local_shopping_cart');
+        $this->assertTrue(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be true when onlywithvatnrnumber is set and a country code is configured.'
+        );
+
+        // Not active: even when forced, a missing home country code disables the step.
         unset_config('owncountrycode', 'local_shopping_cart');
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return false when country code is missing.');
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when the country code is missing.'
+        );
     }
 
     /**
