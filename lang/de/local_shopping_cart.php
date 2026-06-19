@@ -694,6 +694,7 @@ $string['usevatnr'] = "Umsatzsteuer-ID (UID) eingeben";
 $string['vatnrcheckerheading'] = "Umsatzsteuer-ID (UID) überprüfen";
 $string['vatnrcheckerheadingdescription'] = "Vor dem Zahlen kann eine Umsatzsteuer-ID (UID) eingegeben und überprüft werden";
 $string['vatnrerrorfeedback'] = 'UID ist nicht gültig!';
+$string['vatnrerrorownvatnr'] = 'Die UID des Seitenbetreibers kann nicht verwendet werden.';
 $string['vatnrfeedbackmandatory'] = 'Die Angabe der UID ist verpflichtend!';
 $string['vatnrfeedbackoptional'] = 'Die Angabe der UID ist optional';
 $string['vatnrvalidationfeedback'] = 'Gültige UID erkannt';

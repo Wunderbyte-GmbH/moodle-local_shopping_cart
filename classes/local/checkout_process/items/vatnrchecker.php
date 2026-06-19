@@ -78,8 +78,7 @@ class vatnrchecker extends checkout_base_item {
             return false;
         }
         if (!is_string($changedinputs)) {
-            // No new input (e.g. page reload) – fall back to cached state.
-            return $managercache['vatnumbervoluntarily'] ?? false;
+            return false;
         }
         $changedinputs = json_decode($changedinputs);
 
@@ -260,14 +259,25 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Validation feedback.
+     *
+     * With developer debugging enabled, the diagnostic trace of the last VAT
+     * check (region detection, validator used, raw response) is appended.
+     *
      * @return string
      */
     public static function get_error_feedback(): string {
-        $lasterrorkey = vatnumberhelper::get_last_validation_error_key();
-        if (!empty($lasterrorkey)) {
-            return get_string($lasterrorkey, 'local_shopping_cart');
+        global $CFG;
+
+        if (vatnumberhelper::last_failure_was_own_vatnr()) {
+            $feedback = get_string('vatnrerrorownvatnr', 'local_shopping_cart');
+        } else {
+            $feedback = get_string('vatnrerrorfeedback', 'local_shopping_cart');
         }
-        return get_string('vatnrerrorfeedback', 'local_shopping_cart');
+
+        if (!empty($CFG->debugdeveloper)) {
+            $feedback .= vatnumberhelper::get_last_trace_html();
+        }
+        return $feedback;
     }
 
     /**

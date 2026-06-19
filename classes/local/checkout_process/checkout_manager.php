@@ -259,6 +259,15 @@ class checkout_manager {
      *
      */
     public function check_preprocess($changedinput): array {
+        $changedinputsparsed = json_decode($changedinput ?? '[]');
+        if (!empty($changedinputsparsed)) {
+            foreach ($changedinputsparsed as $input) {
+                if (isset($input->name) && $input->name === 'vatnumbervoluntarily') {
+                    $this->managercache['vatnumbervoluntarily'] = $input->value;
+                    break;
+                }
+            }
+        }
         $bodycounter = 0;
         foreach ($this->itemlist as $item) {
             $filename = basename($item, '.php');
