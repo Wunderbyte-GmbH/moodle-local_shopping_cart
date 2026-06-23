@@ -34,6 +34,8 @@ $string['accountid'] = 'Payment account';
 $string['accountid:description'] = 'Choose your preferred payment account.';
 $string['action'] = 'Action';
 $string['addcoupon'] = 'Add coupon code';
+$string['editcoupon'] = 'Edit coupon';
+$string['managecoupons'] = 'Manage coupons';
 $string['adddiscounttoitem'] = 'You can reduce the price of this item either by a fixed sum or a percentage of the initial price.
     You can\'t apply both at the same time. If you enter a negative amount, this amout will added to the price that will therefore increase.';
 $string['addedtocart'] = '{$a} was added to your cart.';
@@ -278,6 +280,8 @@ $string['couponcouldnotbeapplied'] = 'Coupon code "{$a}" could not be applied.';
 $string['coupondiscount'] = 'Coupon discount';
 $string['couponenabled'] = 'Coupon code enabled';
 $string['couponenableddescription'] = 'You can give out coupon codes to reduce prices.';
+$string['couponexpired'] = 'Coupon code expired';
+$string['couponnotvalidyet'] = 'Coupon code not valid yet';
 $string['couponremovedsuccessfully'] = 'Coupon code "{$a}" removed successfully.';
 $string['couponsheading'] = 'Coupons settings';
 $string['couponsheadingdescription'] = 'Coupon codes can be managed at /local/shopping_cart/coupons.php.';

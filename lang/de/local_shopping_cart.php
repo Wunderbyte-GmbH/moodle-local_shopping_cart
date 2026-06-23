@@ -35,6 +35,8 @@ $string['accountid:description'] =
         'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['action'] = 'Aktion';
 $string['addcoupon'] = 'Gutscheincode hinzufügen';
+$string['editcoupon'] = 'Gutschein bearbeiten';
+$string['managecoupons'] = 'Gutscheine verwalten';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides. Wenn Sie einen negativen Wert als Betrag wählen, wird der Preis um diesen Betrag erhöht.';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
@@ -279,6 +281,8 @@ $string['couponcouldnotbeapplied'] = 'Gutscheincode "{$a}" konnte nicht angewend
 $string['coupondiscount'] = 'Gutscheinrabatt';
 $string['couponenabled'] = 'Gutscheincode aktiviert';
 $string['couponenableddescription'] = 'Sie können Gutscheincodes ausgeben, um Preise zu reduzieren.';
+$string['couponexpired'] = 'Gutscheincode abgelaufen';
+$string['couponnotvalidyet'] = 'Gutscheincode noch nicht gültig';
 $string['couponremovedsuccessfully'] = 'Gutscheincode "{$a}" erfolgreich entfernt.';
 $string['couponsheading'] = 'Gutscheineinstellungen';
 $string['couponsheadingdescription'] = 'Gutscheincodes können auf /local/shopping_cart/coupons.php verwaltet werden.';

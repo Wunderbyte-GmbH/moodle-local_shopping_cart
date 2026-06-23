@@ -169,23 +169,21 @@ class coupons_table extends wunderbyte_table {
         global $OUTPUT;
 
         $actionbuttons[] = [
-            'label' => get_string('addcoupon', 'local_shopping_cart'),
+            'label' => get_string('editcoupon', 'local_shopping_cart'),
             'class' => 'btn btn-primary',
             'href' => '#',
-            // 'methodname' => 'deleteitem',
-            'formname' => 'local_shopping_cart\\form\\addedit_coupon', // To include a dynamic form to open and edit entry in modal.
+            'formname' => 'local_shopping_cart\\form\\addedit_coupon',
             'nomodal' => false,
             'selectionmandatory' => false,
             'id' => $values->id,
             'data' => [
-                // 'title' => get_string('title'), Localized title to be displayed as title in dynamic form (formname).
                 'id' => $values->id,
-                'titlestring' => 'coupon:entercode',
-                'bodystring' => 'coupon:entercode',
-                'submitbuttonstring' => 'coupon:entercode',
+                'titlestring' => 'editcoupon',
+                'bodystring' => 'editcoupon',
+                'submitbuttonstring' => 'editcoupon',
                 'component' => 'local_shopping_cart',
                 'labelcolumn' => 'coupon',
-                'noselectionbodystring' => 'specialbody',
+                'noselectionbodystring' => 'editcoupon',
             ],
         ];
 

@@ -885,8 +885,37 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025081901, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2025120700) {
+    if ($oldversion < 2026042100) {
+        // Create the local_shopping_cart_guestusers table to track temporary guest
+        // checkout accounts that have not yet been converted to real Moodle users.
+        $table = new xmldb_table('local_shopping_cart_guestusers');
 
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2026042100, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2026070303) {
+        // The separate "auto-create guest users" toggle has been merged into the single
+        // guestoncheckout master switch. Front-loading guest users on specific pages is now driven
+        // purely by the presence of URL patterns, so the obsolete flag can be removed.
+        unset_config('guestautocreateenabled', 'local_shopping_cart');
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2026070303, 'local', 'shopping_cart');
+    }
+
+    if ($oldversion < 2026070304) {
         // Define table local_shopping_cart_coupons to be created.
         $table = new xmldb_table('local_shopping_cart_coupons');
 
@@ -916,11 +945,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2025120700, 'local', 'shopping_cart');
-    }
-
-    if ($oldversion < 2025120704) {
         // Define field coupon to be added to local_shopping_cart_history.
         $table = new xmldb_table('local_shopping_cart_history');
         $field = new xmldb_field('coupon', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'multipliable');
@@ -940,37 +964,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         }
 
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2025120704, 'local', 'shopping_cart');
-    }
-
-    if ($oldversion < 2026042100) {
-        // Create the local_shopping_cart_guestusers table to track temporary guest
-        // checkout accounts that have not yet been converted to real Moodle users.
-        $table = new xmldb_table('local_shopping_cart_guestusers');
-
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
-
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2026042100, 'local', 'shopping_cart');
-    }
-
-    if ($oldversion < 2026070303) {
-        // The separate "auto-create guest users" toggle has been merged into the single
-        // guestoncheckout master switch. Front-loading guest users on specific pages is now driven
-        // purely by the presence of URL patterns, so the obsolete flag can be removed.
-        unset_config('guestautocreateenabled', 'local_shopping_cart');
-
-        // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2026070303, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2026070304, 'local', 'shopping_cart');
     }
 
     if ($oldversion < 2026070306) {

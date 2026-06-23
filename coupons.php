@@ -23,13 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_shopping_cart\form\daily_sums_date_selector_form;
-use local_shopping_cart\shopping_cart;
-use local_shopping_cart\table\cash_report_table;
 use local_shopping_cart\table\coupons_table;
-use local_wunderbyte_table\filters\types\standardfilter;
-use local_wunderbyte_table\filters\types\intrange;
-use local_wunderbyte_table\filters\types\datepicker;
 
 require_once(__DIR__ . '/../../config.php');
 
@@ -86,25 +80,6 @@ $columns = [
 $table->define_columns(array_keys($columns));
 $table->define_headers(array_values($columns));
 
-$table->actionbuttons[] = [
-    'label' => get_string('addcoupon', 'local_shopping_cart'),
-    'class' => 'btn btn-primary',
-    'href' => '#',
-    // 'methodname' => 'deleteitem',
-    'formname' => 'local_shopping_cart\\form\\addedit_coupon', // To include a dynamic form to open and edit entry in modal.
-    'nomodal' => false,
-    'selectionmandatory' => false,
-    'data' => [
-        // 'title' => get_string('title'), Localized title to be displayed as title in dynamic form (formname).
-        'id' => 'id',
-        'titlestring' => 'coupon:entercode',
-        'bodystring' => 'coupon:entercode',
-        'submitbuttonstring' => 'coupon:entercode',
-        'component' => 'local_shopping_cart',
-        'labelcolumn' => 'coupon',
-        'noselectionbodystring' => 'specialbody',
-    ],
-];
 
 $table->is_downloading($download, $fileandsheetname, $fileandsheetname);
 
@@ -128,7 +103,33 @@ $table->pageable(true);
 
 // Table will be shown normally.
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('cashreport', 'local_shopping_cart'));
+echo $OUTPUT->heading(get_string('managecoupons', 'local_shopping_cart'));
+
+// Render standalone "Add coupon" button — visible even when the table is empty.
+$addcouponbutton = [
+    'showactionbuttons' => [
+        [
+            'label' => get_string('addcoupon', 'local_shopping_cart'),
+            'class' => 'btn btn-primary mb-3',
+            'href' => '#',
+            'formname' => 'local_shopping_cart\\form\\addedit_coupon',
+            'nomodal' => false,
+            'selectionmandatory' => false,
+            'id' => 0,
+            'data' => [
+                ['key' => 'id', 'value' => 0],
+                ['key' => 'titlestring', 'value' => 'addcoupon'],
+                ['key' => 'bodystring', 'value' => 'addcoupon'],
+                ['key' => 'submitbuttonstring', 'value' => 'addcoupon'],
+                ['key' => 'component', 'value' => 'local_shopping_cart'],
+                ['key' => 'labelcolumn', 'value' => 'coupon'],
+                ['key' => 'noselectionbodystring', 'value' => 'addcoupon'],
+            ],
+        ],
+    ],
+];
+echo $OUTPUT->render_from_template('local_wunderbyte_table/component_actionbutton', $addcouponbutton);
+$PAGE->requires->js_call_amd('local_wunderbyte_table/actionbutton', 'initializeActionButton', ['body', '', '']);
 
 $table->out(30, false);
 

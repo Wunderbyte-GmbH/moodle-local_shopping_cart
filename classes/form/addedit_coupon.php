@@ -169,6 +169,7 @@ class addedit_coupon extends dynamic_form {
             $USER->id
         );
 
+        $data->reload = true;
         return $data;
     }
 
@@ -190,7 +191,7 @@ class addedit_coupon extends dynamic_form {
      * Where the form submits to.
      */
     protected function get_page_url(): moodle_url {
-        return new moodle_url('/local/shopping_cart/manage_coupons.php');
+        return new moodle_url('/local/shopping_cart/coupons.php');
     }
 
     /**
