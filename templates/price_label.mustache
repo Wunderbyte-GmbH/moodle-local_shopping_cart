@@ -102,6 +102,13 @@
         {{/discount}}
     {{/credit}}
 
+    {{#coupondiscount}}
+        <div class="text-end me-3 sc_coupondiscount">
+            <strong>{{#str}} coupondiscount, local_shopping_cart {{/str}}:</strong>
+            -{{coupondiscount}} {{currency}}
+        </div>
+    {{/coupondiscount}}
+
     {{! prices have tax info}}
     {{#taxesenabled}}
         <div class="text-end me-3">

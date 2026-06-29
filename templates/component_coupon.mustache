@@ -31,27 +31,26 @@
         <label for="couponcode">
             {{#str}} coupon:entercode, local_shopping_cart {{/str}}
         </label>
-        <input type="text"
-            class="form-control"
-            data-id="couponcode"
-            name="couponcode"
-            placeholder="{{#str}} coupon:entercode, local_shopping_cart {{/str}}"
-            value="{{coupon}}">
+        <div class="input-group">
+            <input type="text"
+                class="form-control"
+                data-id="couponcode"
+                name="couponcode"
+                placeholder="{{#str}} coupon:entercode, local_shopping_cart {{/str}}"
+                value="{{coupon}}">
+            <button type="button" class="btn btn-secondary" data-id="applycoupon">
+                {{#str}} coupon:apply, local_shopping_cart {{/str}}
+            </button>
+        </div>
     </div>
-    <div class="text-right mr-3 sc_couponmessage">
+    <div class="sc_couponmessage">
         {{#couponmessage}}
             {{#couponapplied}}
-                <span class="alert alert-success" role="alert">{{couponmessage}}</span>
+                <span class="alert alert-success d-block mt-2" role="alert">{{couponmessage}}</span>
             {{/couponapplied}}
             {{^couponapplied}}
-                <span class="alert alert-danger" role="alert">{{couponmessage}}</span>
+                <span class="alert alert-danger d-block mt-2" role="alert">{{couponmessage}}</span>
             {{/couponapplied}}
         {{/couponmessage}}
     </div>
-    {{#coupondiscount}}
-        <div class="text-right mr-3 sc_coupondiscount">
-            <strong>{{#str}} coupondiscount, local_shopping_cart {{/str}}:</strong>
-            -{{coupondiscount}} {{currency}}
-        </div>
-    {{/coupondiscount}}
 {{/couponenabled}}
