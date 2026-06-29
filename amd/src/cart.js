@@ -71,6 +71,7 @@ const SELECTORS = {
     DECREASEBUTTON: 'decrease',
     SHOPPINGCARTITEM: '[data-itemid]',
     COUPONINPUT: 'input[data-id="couponcode"]',
+    COUPONAPPLY: 'button[data-id="applycoupon"]',
 };
 /**
  *
@@ -310,9 +311,11 @@ export const reinit = (userid = 0) => {
                 toggleActiveButtonState();
                 // eslint-disable-next-line no-console
                 console.log('reinit -> updateTotalPrice');
-                // We don’t want to set the useinstallment and usecredit values; we just want to get the price information.
+                // We don't want to set the useinstallment and usecredit values; we just want to get the price information.
                 // To achieve this, we pass -1 for both usecredit and useinstallment.
-                updateTotalPrice(userid, -1, -1);
+                // Read the current coupon input value so an already-applied coupon is not cleared by the reinit call.
+                const existingcoupon = document.querySelector(SELECTORS.COUPONINPUT);
+                updateTotalPrice(userid, -1, -1, existingcoupon ? existingcoupon.value : '');
 
                 return;
             }).catch(e => {
@@ -425,12 +428,14 @@ export const addItem = (itemid, component, area, userid) => {
  * @param {*} usecredit 1 = enable it, 0 = disable it, -1 = no change
  * @param {*} useinstallments 1 = enable it, 0 = disable it, -1 = no change
  * @param {*} couponvalue
+ * @param {boolean} refreshItemsAfter When true, reinit cart items after price label renders (used after explicit coupon apply).
  */
 export const updateTotalPrice = (
     userid = 0,
     usecredit = true,
     useinstallments = false,
-    couponvalue = ''
+    couponvalue = '',
+    refreshItemsAfter = false
 ) => {
 
     // On cashier, update price must always be for cashier user.
@@ -513,6 +518,10 @@ export const updateTotalPrice = (
                         addZeroPriceListener(data);
                     }
                 });
+
+                if (refreshItemsAfter) {
+                    reinit(userid);
+                }
 
                 return true;
             }).catch((e => {
@@ -1003,7 +1012,33 @@ export function initPriceLabel(userid) {
 
     initChangeListener(document.querySelector(SELECTORS.PRICELABELCHECKBOX), userid);
     initChangeListener(document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX), userid);
-    initChangeListener(document.querySelector(SELECTORS.COUPONINPUT), userid, true);
+
+    const triggerCouponApply = () => {
+        const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+        const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
+        const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+        const checkboxchecked = checkbox ? checkbox.checked : null;
+        const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
+        const couponvalue = couponinput ? couponinput.value : '';
+        updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue, true);
+    };
+
+    const applybtn = document.querySelector(SELECTORS.COUPONAPPLY);
+    if (applybtn && !applybtn.initialized) {
+        applybtn.initialized = true;
+        applybtn.addEventListener('click', triggerCouponApply);
+    }
+
+    const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+    if (couponinput && !couponinput.initialized) {
+        couponinput.initialized = true;
+        couponinput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                triggerCouponApply();
+            }
+        });
+    }
 }
 
 /**
@@ -1106,6 +1141,9 @@ function convertPricesToNumberFormat(data) {
     if (data.remainingcredit) {
         data.remainingcredit = formatNumber(data.remainingcredit);
     }
+    if (data.coupondiscount) {
+        data.coupondiscount = formatNumber(data.coupondiscount);
+    }
     if (data.price) {
         data.price_net = formatNumber(data.price_net);
     }
@@ -1128,6 +1166,9 @@ function convertPricesToNumberFormat(data) {
             }
             if (data.items[i].price_net) {
                 data.items[i].price_net = formatNumber(data.items[i].price_net);
+            }
+            if (data.items[i].originalprice) {
+                data.items[i].originalprice = formatNumber(data.items[i].originalprice);
             }
         }
     }
