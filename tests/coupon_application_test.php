@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use advanced_testcase;
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\coupon;
 
@@ -115,7 +116,8 @@ final class coupon_application_test extends advanced_testcase {
         $data = $cartstore->get_data();
         $items = $cartstore->get_items();
 
-        $this->assertTrue($cartstore->coupon_applied());
+        $couponmanager = new cart_coupon_manager($cartstore);
+        $this->assertTrue($couponmanager->coupon_applied());
 
         // Expected behavior (desired): 10% is applied to the whole cart total.
         $carttotal = 10.00 + 20.30 + 13.80;

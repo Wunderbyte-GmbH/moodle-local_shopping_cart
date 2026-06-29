@@ -69,25 +69,26 @@ class coupon {
         }
 
         $cartstore = cartstore::instance((int)$this->userid);
+        $couponmanager = new cart_coupon_manager($cartstore);
 
         // If the coupon code is empty, remove any existing coupon.
         if (empty($couponcode)) {
-            if ($cartstore->coupon_applied()) {
-                $coupon = $cartstore->get_applied_coupon();
-                $cartstore->clear_coupon();
+            if ($couponmanager->coupon_applied()) {
+                $coupon = $couponmanager->get_applied_coupon();
+                $couponmanager->clear_coupon();
                 return [true, get_string('couponremovedsuccessfully', 'local_shopping_cart', $coupon)];
             }
             return [false, ''];
         }
 
         // If the same coupon is already applied, do nothing.
-        if ($cartstore->coupon_applied()) {
-            $appliedcoupon = $cartstore->get_applied_coupon();
+        if ($couponmanager->coupon_applied()) {
+            $appliedcoupon = $couponmanager->get_applied_coupon();
             if ($appliedcoupon === $couponcode) {
                 return [true, get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode)];
             }
             // Switch coupon: remove existing one before applying a new code.
-            $cartstore->clear_coupon();
+            $couponmanager->clear_coupon();
         }
 
         $message = '';
@@ -107,7 +108,7 @@ class coupon {
             return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode)];
         }
 
-        $cartstore->set_coupon_data(
+        $couponmanager->set_coupon_data(
             $couponcode,
             (float) $coupon->discountpercentage,
             (float) $coupon->discountabsolute,

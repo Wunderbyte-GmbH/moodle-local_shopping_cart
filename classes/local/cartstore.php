@@ -271,111 +271,6 @@ class cartstore {
     }
 
     /**
-     * Check if a coupon is applied.
-     *
-     * @return bool
-     *
-     */
-    public function coupon_applied(): bool {
-        $data = $this->get_cache();
-        return !empty($data['coupon']);
-    }
-
-    /**
-     * Returns the applied coupon code.
-     *
-     * @return string
-     *
-     */
-    public function get_applied_coupon(): string {
-        $data = $this->get_cache();
-        if (!empty($data['coupon'])) {
-            return $data['coupon'];
-        } else {
-            return '';
-        }
-    }
-
-    /**
-     * Remove applied coupon and reset discounts on items.
-     *
-     * @return void
-     */
-    public function clear_coupon(): void {
-        $data = $this->get_cache();
-
-        if (!$data) {
-            return;
-        }
-
-        if (!empty($data['items'])) {
-            $discountprecision = get_config('local_shopping_cart', 'rounddiscounts') ? 0 : 2;
-
-            foreach ($data['items'] as $cacheitemkey => $item) {
-                if (isset($item['discount'])) {
-                    $discount = round($item['discount'], $discountprecision);
-                    $item['price'] = $item['price'] + $discount;
-                    unset($item['discount']);
-                    unset($item['discountpercentage']);
-                    unset($item['discountabsolute']);
-                }
-                if (isset($item['coupondiscount'])) {
-                    $item['price'] = $item['price'] + (float) $item['coupondiscount'];
-                    unset($item['coupondiscount']);
-                }
-                $data['items'][$cacheitemkey] = $item;
-            }
-        }
-
-        unset($data['coupon']);
-        unset($data['couponpercent']);
-        unset($data['couponabsolute']);
-        unset($data['couponcurrency']);
-        unset($data['coupondiscount']);
-        $this->set_cache($data);
-    }
-
-    /**
-     * Store coupon discount amount in cache.
-     *
-     * @param float $amount
-     * @return void
-     */
-    public function set_coupon_discount(float $amount): void {
-        $data = $this->get_cache();
-
-        if (!$data) {
-            return;
-        }
-
-        $data['coupondiscount'] = $amount;
-        $this->set_cache($data);
-    }
-
-    /**
-     * Store coupon data in cache.
-     *
-     * @param string $coupon
-     * @param float $percent
-     * @param float $absolute
-     * @param string $currency
-     * @return void
-     */
-    public function set_coupon_data(string $coupon, float $percent, float $absolute, string $currency): void {
-        $data = $this->get_cache();
-
-        if (!$data) {
-            return;
-        }
-
-        $data['coupon'] = $coupon;
-        $data['couponpercent'] = $percent;
-        $data['couponabsolute'] = $absolute;
-        $data['couponcurrency'] = $currency;
-        $this->set_cache($data);
-    }
-
-    /**
      * Returns one specific item.
      * @param string $component
      * @param string $area
@@ -1020,7 +915,7 @@ class cartstore {
      * @return mixed
      * @throws coding_exception
      */
-    private function get_cache() {
+    public function get_cache() {
 
         global $CFG;
 

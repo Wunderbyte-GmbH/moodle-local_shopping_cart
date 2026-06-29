@@ -32,6 +32,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\coupon;
 use local_shopping_cart\shopping_cart;
@@ -143,12 +144,13 @@ class get_price extends external_api {
         $data['coupondiscount'] = $data['coupondiscount'] ?? 0;
         $data['lang'] = current_language() ?? 'en';
 
-        $appliedcoupon = $cartstore->get_applied_coupon();
+        $couponmanager = new cart_coupon_manager($cartstore);
+        $appliedcoupon = $couponmanager->get_applied_coupon();
 
         // Coupon UI state.
         $data['couponmessage'] = $couponmessage;
         $data['couponenabled'] = (bool) get_config('local_shopping_cart', 'couponenabled');
-        $data['couponapplied'] = $cartstore->coupon_applied();
+        $data['couponapplied'] = $couponmanager->coupon_applied();
         $data['coupon'] = $appliedcoupon !== '' ? $appliedcoupon : $couponvalue;
 
         return $data;
