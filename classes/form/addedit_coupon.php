@@ -51,29 +51,42 @@ class addedit_coupon extends dynamic_form {
         $mform->setType('coupon', PARAM_RAW_TRIMMED);
         $mform->addRule('coupon', null, 'maxlength', 1333);
 
+        // Discount type selector.
+        $mform->addElement('select', 'discounttype', get_string('discounttype', 'local_shopping_cart'), [
+            'percentage' => get_string('discountpercent', 'local_shopping_cart') . ' (%)',
+            'absolute'   => get_string('discountabsolute', 'local_shopping_cart') .
+                ' (' . get_string('absolute', 'local_shopping_cart') . ')',
+        ]);
+        $mform->setType('discounttype', PARAM_ALPHA);
+        $mform->setDefault('discounttype', 'percentage');
+
         // Discount percentage.
         $mform->addElement(
             'float',
             'discountpercentage',
-            get_string('discountpercent', 'local_shopping_cart')
+            get_string('discountpercent', 'local_shopping_cart') . ' (%)'
         );
         $mform->setType('discountpercentage', PARAM_FLOAT);
         $mform->setDefault('discountpercentage', 0);
+        $mform->hideIf('discountpercentage', 'discounttype', 'neq', 'percentage');
 
         // Absolute discount.
         $mform->addElement(
             'float',
             'discountabsolute',
-            get_string('discountabsolute', 'local_shopping_cart')
+            get_string('discountabsolute', 'local_shopping_cart') .
+            ' (' . get_string('absolute', 'local_shopping_cart') . ')'
         );
         $mform->setType('discountabsolute', PARAM_FLOAT);
         $mform->setDefault('discountabsolute', 0);
+        $mform->hideIf('discountabsolute', 'discounttype', 'neq', 'absolute');
 
         // Currency (use Moodle core list).
         $currencies = get_string_manager()->get_list_of_currencies();
         $mform->addElement('select', 'currency', get_string('currency', 'moodle'), $currencies);
         $mform->setType('currency', PARAM_ALPHANUMEXT);
         $mform->setDefault('currency', 'EUR');
+        $mform->hideIf('currency', 'discounttype', 'neq', 'absolute');
 
         // Maximum use count.
         $mform->addElement('text', 'maxnumber', get_string('maxnumber', 'local_shopping_cart'));
@@ -97,7 +110,7 @@ class addedit_coupon extends dynamic_form {
         $mform->addElement(
             'date_time_selector',
             'starttime',
-            get_string('startdate', 'moodle'),
+            get_string('startdate', 'local_shopping_cart'),
             [
                 'optional' => true,
             ]
@@ -108,7 +121,7 @@ class addedit_coupon extends dynamic_form {
         $mform->addElement(
             'date_time_selector',
             'endtime',
-            get_string('enddate', 'moodle'),
+            get_string('enddate', 'local_shopping_cart'),
             [
                 'optional' => true,
             ]
@@ -122,12 +135,14 @@ class addedit_coupon extends dynamic_form {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        if ($data['discountpercentage'] < 0 || $data['discountpercentage'] > 100) {
-            $errors['discountpercentage'] = get_string('invalidpercentage', 'local_shopping_cart');
-        }
-
-        if ($data['discountabsolute'] < 0) {
-            $errors['discountabsolute'] = get_string('invalidabsolute', 'local_shopping_cart');
+        if ($data['discounttype'] === 'percentage') {
+            if ($data['discountpercentage'] < 0 || $data['discountpercentage'] > 100) {
+                $errors['discountpercentage'] = get_string('invalidpercentage', 'local_shopping_cart');
+            }
+        } else {
+            if ($data['discountabsolute'] < 0) {
+                $errors['discountabsolute'] = get_string('invalidabsolute', 'local_shopping_cart');
+            }
         }
 
         if (
@@ -156,6 +171,13 @@ class addedit_coupon extends dynamic_form {
 
         $data = $this->get_data();
 
+        if ($data->discounttype === 'percentage') {
+            $data->discountabsolute = 0;
+            $data->currency = '';
+        } else {
+            $data->discountpercentage = 0;
+        }
+
         coupon::add_edit_coupon(
             $data->id,
             $data->coupon,
@@ -183,6 +205,7 @@ class addedit_coupon extends dynamic_form {
         $id = $data['id'] ?? 0;
         if ($id) {
             $record = $DB->get_record('local_shopping_cart_coupons', ['id' => $id], '*', MUST_EXIST);
+            $record->discounttype = ($record->discountabsolute > 0) ? 'absolute' : 'percentage';
             $this->set_data($record);
         }
     }
