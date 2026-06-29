@@ -85,6 +85,7 @@ abstract class coupon extends modifier_base {
 
             if ($itemdiscount > 0) {
                 $item['coupondiscount'] = $itemdiscount;
+                $item['originalprice'] = $baseprice;
                 $item['price'] = $baseprice - $itemdiscount;
                 $coupondiscountsum += $itemdiscount;
             }
@@ -109,7 +110,7 @@ abstract class coupon extends modifier_base {
         foreach ($items as $key => $item) {
             if (!empty($item['coupondiscount'])) {
                 $item['price'] = $item['price'] + (float) $item['coupondiscount'];
-                unset($item['coupondiscount']);
+                unset($item['coupondiscount'], $item['originalprice']);
                 $items[$key] = $item;
             }
         }
