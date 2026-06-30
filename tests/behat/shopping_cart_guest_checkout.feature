@@ -52,6 +52,10 @@ Feature: Guest checkout with inline registration during checkout.
     Then I should see "Musterweg 1" in the ".local-shopping_cart-addressselection" "css_element"
     ## The new address is auto-selected and registration is valid: button activates.
     And the "Checkout" "button" should be enabled
+    ## the gateways modal must populate on the FIRST click.
+    When I press "Checkout"
+    And I wait until the page is ready
+    Then I should see "PayPal" in the ".modal" "css_element"
     ## The state survives a page reload (checkout cache).
     When I reload the page
     And I wait until the page is ready
