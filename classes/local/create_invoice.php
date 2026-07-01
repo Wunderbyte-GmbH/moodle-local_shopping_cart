@@ -55,7 +55,7 @@ class create_invoice {
      * @throws moodle_exception
      */
     public static function create_invoice_files_from_identifier(int $identifier, int $userid): void {
-        global $DB, $USER;
+        global $DB;
 
         // 1. Have a look if we have the invoice already.
         // 2. If not, get the content of the file.
@@ -293,6 +293,7 @@ class create_invoice {
                         <td style="text-align: left; width: 15%;"><b>Location</b></td>
                         <td style="text-align: left; width: 10%;"><b>Day & Time</b></td>
                         <td style="text-align: center; width: 10%;"><b>Total</b></td>
+                        [[#discount]]<td style="text-align: center; width: 10%;"><b>Discount</b></td>[[/discount]]
                         <td style="text-align: center; width: 10%;"><b>Outstanding</b></td>
                         <td style="text-align: center; width: 15%;"><b>Paid</b></td>
                     </tr>
@@ -303,6 +304,7 @@ class create_invoice {
                         <td style="text-align: left;">[[location]]</td>
                         <td style="text-align: left;">[[dayofweektime]]</td>
                         <td style="text-align: right;">[[originalprice]] EUR</td>
+                        [[#discount]]<td style="text-align: right;">[[discount]] EUR</td>[[/discount]]
                         <td style="text-align: right;">[[outstandingprice]] EUR</td>
                         <td style="text-align: right;">[[price]] EUR</td>
                     </tr>
@@ -316,6 +318,20 @@ class create_invoice {
                     </tr>
                 </table>';
         }
+
+        $hasdiscount = false;
+        foreach ($items as $item) {
+            if (!empty($item->discount)) {
+                $hasdiscount = true;
+                break;
+            }
+        }
+        if ($hasdiscount) {
+            $cfghtml = preg_replace('/\[\[#discount\]\](.*?)\[\[\/discount\]\]/s', '$1', $cfghtml);
+        } else {
+            $cfghtml = preg_replace('/\[\[#discount\]\].*?\[\[\/discount\]\]/s', '', $cfghtml);
+        }
+
 
         // Make sure items are sorted from the most expensive on top to a credit (negative).
         usort($items, function ($a, $b) {
@@ -458,7 +474,7 @@ class create_invoice {
                 );
                 $tmp = str_replace(
                     "[[originalprice]]",
-                    format_float((float)$price, 2),
+                    format_float((float)$price + (float)($item->discount ?? 0), 2),
                     $tmp
                 );
                 $tmp = str_replace(

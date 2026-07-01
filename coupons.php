@@ -69,6 +69,7 @@ $columns = [
     'currency' => get_string('currency', 'local_shopping_cart'),
     'maxnumber' => get_string('maxnumber', 'local_shopping_cart'),
     'active' => get_string('active', 'core'),
+    'coupontype' => get_string('coupontype', 'local_shopping_cart'),
     'starttime' => get_string('startdate', 'local_shopping_cart'),
     'endtime' => get_string('enddate', 'local_shopping_cart'),
     'usermodified' => get_string('usermodified', 'local_shopping_cart'),
@@ -128,6 +129,7 @@ $addcouponbutton = [
         ],
     ],
 ];
+
 echo $OUTPUT->render_from_template('local_wunderbyte_table/component_actionbutton', $addcouponbutton);
 $PAGE->requires->js_call_amd('local_wunderbyte_table/actionbutton', 'initializeActionButton', ['body', '', '']);
 

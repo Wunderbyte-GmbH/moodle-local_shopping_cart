@@ -229,6 +229,7 @@
                 <FIELD NAME="maxnumber" TYPE="int" LENGTH="8" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Max number of usages allowed. 0 is unlimited."/>
                 <FIELD NAME="json" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Store supplementary information"/>
                 <FIELD NAME="active" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="1 when active, 0 when inactive"/>
+                <FIELD NAME="coupontype" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of the coupon"/>
                 <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Unix timestamp for starttime"/>
                 <FIELD NAME="endtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Unix timestamp for endtime."/>
                 <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

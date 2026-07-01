@@ -35,8 +35,8 @@ $string['accountid:description'] =
         'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['action'] = 'Aktion';
 $string['addcoupon'] = 'Gutscheincode hinzufügen';
+$string['area'] = "Bereich";
 $string['editcoupon'] = 'Gutschein bearbeiten';
-$string['managecoupons'] = 'Gutscheine verwalten';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides. Wenn Sie einen negativen Wert als Betrag wählen, wird der Preis um diesen Betrag erhöht.';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
@@ -208,6 +208,7 @@ wenn die Kund/innen keine Angaben zur Rechnungsadresse machen.';
 $string['choosehighertimestamp'] = 'Wählen Sie einen späteren Zeitpunkt';
 $string['chooseplatform'] = 'Plattform wählen';
 $string['chooseplatformdesc'] = 'Wählen Sie Ihre Rechnungsplattform aus.';
+$string['component'] = 'Komponente';
 $string['completeshoppingcartprecheckout'] = 'Bitte bestätigen Sie noch folgende Felder: {$a}';
 $string['confirmadditionalconditions'] = "Zusätzliche Konditionen akzeptieren";
 $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Käufer:innen wirklich stornieren?
@@ -283,10 +284,13 @@ $string['coupondiscount'] = 'Gutscheinrabatt';
 $string['couponenabled'] = 'Gutscheincode aktiviert';
 $string['couponenableddescription'] = 'Sie können Gutscheincodes ausgeben, um Preise zu reduzieren.';
 $string['couponexpired'] = 'Gutscheincode abgelaufen';
+$string['couponmaxusesreached'] = 'Dieser Gutscheincode wurde bereits die maximale Anzahl an Malen verwendet.';
+$string['couponnotactive'] = 'Dieser Gutscheincode ist nicht aktiv.';
 $string['couponnotvalidyet'] = 'Gutscheincode noch nicht gültig';
 $string['couponremovedsuccessfully'] = 'Gutscheincode "{$a}" erfolgreich entfernt.';
 $string['couponsheading'] = 'Gutscheineinstellungen';
 $string['couponsheadingdescription'] = 'Gutscheincodes können auf /local/shopping_cart/coupons.php verwaltet werden.';
+$string['coupontype'] = 'Gutscheintyp';
 $string['credit'] = 'Guthaben:';
 $string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
 Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';
@@ -496,6 +500,7 @@ $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung N
 $string['lt'] = "Litauen";
 $string['lu'] = "Luxemburg";
 $string['lv'] = "Lettland";
+$string['managecoupons'] = 'Gutscheine verwalten';
 $string['manualrebookingisallowed'] = 'Manuelles Nachbuchen an der Kassa erlauben';
 $string['manualrebookingisallowed_desc'] = 'Mit dieser Einstellung kann die Kassierin Zahlungen nachbuchen,
  die bereits online bezahlt wurden, die aber im Kassajournal fehlen. (<span class="text-danger">Achtung:
@@ -518,11 +523,12 @@ $string['nocostcenter'] = 'Keine Kostenstelle';
 $string['nofixedpercentage'] = 'Kein fixer Prozentsatz';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
+$string['noitemsaffected'] = 'Keine Artikel betroffen';
 $string['nolimit'] = 'Kein Limit';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
 $string['nopaymentaccountsdesc'] =
         '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
-$string['nopermission'] = "No permission to cancel";
+$string['nopermission'] = "Keine Berechtigung zum Stornieren";
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
 $string['notenoughcredits'] = 'Nicht genügend Guthaben vorhanden.';
 $string['nouserselected'] = 'Noch niemand ausgewählt';
@@ -659,6 +665,8 @@ $string['saveinvoicenumber'] = 'Nur Rechnungsnummer speichern';
 $string['sch_bookingfee'] = 'Artikelspezifische Buchungsgebühr';
 $string['sch_bookingfee_error'] = 'Geben Sie eine Zahl größer oder gleich 0 ein oder lassen Sie das Feld leer.';
 $string['sch_bookingfee_help'] = 'Buchungsgebühr, die beim Kauf dieses Artikels eingehoben wird. Leer lassen, um die globalen Buchungsgebühr-Einstellungen zu verwenden. 0 eingeben, um für diesen Artikel keine Buchungsgebühr zu verlangen. Hinweis: Ist die Buchungsgebühr auf „nur einmal pro Nutzer:in“ eingestellt, zahlen Nutzer:innen, die bereits eine Buchungsgebühr bezahlt haben, keine weitere.';
+$string['sch_couponoptincodes'] = 'Opt-in Gutscheine';
+$string['sch_couponoptoutcodes'] = 'Opt-out Gutscheine';
 $string['sch_paymentaccountid'] = "Wechsle das Zahlungsanbieter-Konto";
 $string['schistorysections'] = 'Buchungshistorie (Shopping Cart History) in Bereiche gliedern';
 $string['schistorysections_desc'] = 'Mit dieser Einstellung können Sie die Buchungshistorie
@@ -706,6 +714,7 @@ $string['showdescription'] = 'Zeige Beschreibung';
 $string['showdisabledcheckoutbutton'] = 'Inaktiven Checkout-Button anzeigen';
 $string['showextrareceiptstousers'] = "Zeige Buchungsbestätigungen für Guthabenbuchungen in der Buchungsübersicht der Nutzer:innen";
 $string['showorderid'] = 'Order-ID anzeigen...';
+$string['showuseditems'] = "Zeige bereits gebuchte Artikel";
 $string['showvatnrchecker'] = "Umsatzsteuer-ID (UID) verwenden";
 $string['showvatnrcheckerdescription'] = "Aktiviert die Eingabe und Überprüfung einer Umsatzsteuer-ID (UID) vor dem Bezahlen.";
 $string['si'] = "Slowenien";

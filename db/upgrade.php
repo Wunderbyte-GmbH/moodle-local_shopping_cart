@@ -967,6 +967,20 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026070304, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2026070305) {
+        $table = new xmldb_table('local_shopping_cart_coupons');
+        // Position after 'active' to match install.xml. The previous field must exist in THIS table:
+        // 'taxcountrycode' only exists on the history/ledger tables, so "AFTER taxcountrycode" failed here.
+        $field = new xmldb_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'active');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2026070305, 'local', 'shopping_cart');
+    }
+
     if ($oldversion < 2026070306) {
         // The local_shopping_cart_guestusers table was originally created only inside the
         // "if ($oldversion < 2026042100)" block. That version number is below the deployed base

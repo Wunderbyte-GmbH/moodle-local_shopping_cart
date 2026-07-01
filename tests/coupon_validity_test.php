@@ -131,7 +131,7 @@ final class coupon_validity_test extends advanced_testcase {
         float $expectedprice
     ): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'PCTTEST', $percent, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'PCTTEST', $percent, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         [$success, $message] = $couponobj->apply_coupon_code('PCTTEST');
@@ -164,7 +164,7 @@ final class coupon_validity_test extends advanced_testcase {
         float $expectedprice
     ): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ABSTEST', 0.0, $absolute, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'ABSTEST', 0.0, $absolute, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         [$success, $message] = $couponobj->apply_coupon_code('ABSTEST');
@@ -205,7 +205,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_expired_coupon_fails(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'EXPIRED', 10.0, 0.0, 'EUR', 0, 1, 0, time() - 1, $this->userid);
+        coupon::add_edit_coupon(0, 'EXPIRED', 10.0, 0.0, 'EUR', 0, 1, 0, time() - 1, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         [$success, ] = $couponobj->apply_coupon_code('EXPIRED');
@@ -228,7 +228,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_coupon_not_yet_valid_fails(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'FUTURE', 10.0, 0.0, 'EUR', 0, 1, time() + 3600, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'FUTURE', 10.0, 0.0, 'EUR', 0, 1, time() + 3600, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         [$success, ] = $couponobj->apply_coupon_code('FUTURE');
@@ -251,7 +251,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_zero_discount_coupon_applies_no_discount(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ZERO', 0.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'ZERO', 0.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         (new coupon($this->userid))->apply_coupon_code('ZERO');
 
@@ -269,7 +269,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_applying_same_coupon_twice_is_idempotent(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'TWICE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'TWICE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('TWICE');
@@ -288,8 +288,8 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_switching_percentage_coupon_replaces_old_discount(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'FIRST', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
-        coupon::add_edit_coupon(0, 'SECOND', 20.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'FIRST', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'SECOND', 20.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('FIRST');
@@ -313,8 +313,8 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_switching_between_percentage_and_absolute_coupon(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'PCT', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
-        coupon::add_edit_coupon(0, 'ABS', 0.0, 15.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'PCT', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'ABS', 0.0, 15.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
 
@@ -346,7 +346,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_clearing_coupon_restores_original_prices(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'CLEAR', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'CLEAR', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('CLEAR');
@@ -371,7 +371,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_clearing_coupon_restores_per_item_prices(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ITEMCHECK', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid);
+        coupon::add_edit_coupon(0, 'ITEMCHECK', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('ITEMCHECK');
@@ -383,5 +383,150 @@ final class coupon_validity_test extends advanced_testcase {
         $this->assertEqualsWithDelta(10.00, (float) $prices[1], 0.001);
         $this->assertEqualsWithDelta(20.30, (float) $prices[2], 0.001);
         $this->assertEqualsWithDelta(13.80, (float) $prices[3], 0.001);
+    }
+
+    // -------------------------------------------------------------------------
+    // Active / inactive tests
+    // -------------------------------------------------------------------------
+
+    /**
+     * A coupon with active = 0 must be rejected regardless of other fields.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_inactive_coupon_fails(): void {
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'INACTIVE', 10.0, 0.0, 'EUR', 0, 0, 0, 0, $this->userid, 'couponoptin');
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('INACTIVE');
+
+        $this->assertFalse($success);
+        $this->assertFalse(
+            (new cart_coupon_manager(cartstore::instance($this->userid)))->coupon_applied()
+        );
+    }
+
+    /**
+     * A coupon with active = 1 must be accepted (sanity check for the active flag).
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_active_coupon_succeeds(): void {
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'ACTIVE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('ACTIVE');
+
+        $this->assertTrue($success);
+        $this->assertTrue(
+            (new cart_coupon_manager(cartstore::instance($this->userid)))->coupon_applied()
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Max-uses tests
+    // -------------------------------------------------------------------------
+
+    /**
+     * A coupon with maxnumber = 1 that has already been used once must be rejected.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_coupon_at_max_uses_fails(): void {
+        global $DB;
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'MAXONE', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptin');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'MAXONE']);
+
+        $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_SUCCESS);
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('MAXONE');
+
+        $this->assertFalse($success);
+        $this->assertFalse(
+            (new cart_coupon_manager(cartstore::instance($this->userid)))->coupon_applied()
+        );
+    }
+
+    /**
+     * A coupon with maxnumber = 2 used once must still be accepted.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_coupon_below_max_uses_succeeds(): void {
+        global $DB;
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'MAXTWO', 10.0, 0.0, 'EUR', 2, 1, 0, 0, $this->userid, 'couponoptin');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'MAXTWO']);
+
+        $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_SUCCESS);
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('MAXTWO');
+
+        $this->assertTrue($success);
+    }
+
+    /**
+     * A coupon with maxnumber = 0 (unlimited) must always be accepted regardless of
+     * how many successful history records reference it.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_unlimited_coupon_never_exhausted(): void {
+        global $DB;
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'UNLIMITED', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'UNLIMITED']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_SUCCESS);
+        }
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('UNLIMITED');
+
+        $this->assertTrue($success);
+    }
+
+    /**
+     * A PENDING history record must not count toward the usage limit.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_pending_history_record_does_not_count_toward_max_uses(): void {
+        global $DB;
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'PENDINGTEST', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptin');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'PENDINGTEST']);
+
+        $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_PENDING);
+
+        [$success, ] = (new coupon($this->userid))->apply_coupon_code('PENDINGTEST');
+
+        $this->assertTrue($success);
+    }
+
+    /**
+     * Insert a minimal history record for a given coupon id and payment status.
+     *
+     * @param string $couponid numeric coupon id stored in the coupon column
+     * @param int $paymentstatus
+     */
+    private function insert_history_usage(string $couponid, int $paymentstatus): void {
+        global $DB;
+
+        $record = new \stdClass();
+        $record->userid = $this->userid;
+        $record->itemid = 1;
+        $record->itemname = 'Test item';
+        $record->price = 10.00;
+        $record->currency = 'EUR';
+        $record->componentname = 'local_shopping_cart';
+        $record->paymentstatus = $paymentstatus;
+        $record->coupon = $couponid;
+        $record->usermodified = $this->userid;
+        $record->timecreated = time();
+        $record->timemodified = time();
+
+        $DB->insert_record('local_shopping_cart_history', $record);
     }
 }

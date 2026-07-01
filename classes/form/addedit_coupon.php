@@ -106,6 +106,22 @@ class addedit_coupon extends dynamic_form {
         $mform->setDefault('active', 1);
         $mform->setType('active', PARAM_INT);
 
+        // Coupon type.
+        $mform->addElement(
+            'select',
+            'coupontype',
+            get_string('coupontype', 'local_shopping_cart'),
+            [
+                'couponoptin' => get_string('couponoptin', 'local_shopping_cart'),
+                'couponoptout'   => get_string('couponoptout', 'local_shopping_cart'),
+            ]
+        );
+        $mform->setType('coupontype', PARAM_ALPHA);
+        $mform->setDefault('coupontype', 'couponoptin');
+
+        $mform->setDefault('active', 1);
+        $mform->setType('active', PARAM_INT);
+
         // Start time.
         $mform->addElement(
             'date_time_selector',
@@ -188,7 +204,8 @@ class addedit_coupon extends dynamic_form {
             $data->active,
             $data->starttime,
             $data->endtime,
-            $USER->id
+            $USER->id,
+            $data->coupontype
         );
 
         $data->reload = true;

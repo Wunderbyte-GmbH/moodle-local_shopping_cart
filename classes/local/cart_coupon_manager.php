@@ -107,6 +107,7 @@ class cart_coupon_manager {
         unset($data['couponabsolute']);
         unset($data['couponcurrency']);
         unset($data['coupondiscount']);
+        unset($data['coupontype']);
         $this->cartstore->set_cache($data);
     }
 
@@ -136,7 +137,13 @@ class cart_coupon_manager {
      * @param string $currency
      * @return void
      */
-    public function set_coupon_data(string $coupon, float $percent, float $absolute, string $currency): void {
+    public function set_coupon_data(
+        string $coupon,
+        float $percent,
+        float $absolute,
+        string $currency,
+        string $coupontype = ''
+    ): void {
         $data = $this->cartstore->get_cache();
 
         if (!$data) {
@@ -147,6 +154,7 @@ class cart_coupon_manager {
         $data['couponpercent'] = $percent;
         $data['couponabsolute'] = $absolute;
         $data['couponcurrency'] = $currency;
+        $data['coupontype'] = $coupontype;
         $this->cartstore->set_cache($data);
     }
 }

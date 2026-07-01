@@ -157,6 +157,26 @@ class coupons_table extends wunderbyte_table {
     }
 
     /**
+     * This function is called for each data row to allow processing of the
+     * 'coupontype' value.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string Rendered date.
+     * @throws dml_exception
+     */
+    public function col_coupontype(object $values): string {
+        if (empty($values->coupontype)) {
+            return '';
+        }
+        $key = $values->coupontype;
+        if (get_string($key, 'local_shopping_cart')) {
+            return get_string($key, 'local_shopping_cart');
+        }
+        return $key;
+    }
+
+
+    /**
      * Column with action buttons.
      *
      * @param stdClass $values
@@ -184,6 +204,22 @@ class coupons_table extends wunderbyte_table {
                 'component' => 'local_shopping_cart',
                 'labelcolumn' => 'coupon',
                 'noselectionbodystring' => 'editcoupon',
+            ],
+        ];
+
+        $actionbuttons[] = [
+            'label' => get_string('showwhereactive', 'local_shopping_cart'),
+            'class' => 'btn btn-secondary',
+            'href' => '#',
+            'formname' => 'local_shopping_cart\\form\\coupon_affected_items',
+            'nomodal' => false,
+            'selectionmandatory' => false,
+            'id' => $values->id,
+            'data' => [
+                'id' => $values->id,
+                'titlestring' => 'showwhereactive',
+                'component' => 'local_shopping_cart',
+                'labelcolumn' => 'coupon',
             ],
         ];
 

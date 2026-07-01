@@ -105,14 +105,15 @@ class coupon {
 
         if ($message !== '') {
             // Coupon is not valid, nothing to do.
-            return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode)];
+            return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode) . ' ' . $message];
         }
 
         $couponmanager->set_coupon_data(
             $couponcode,
             (float) $coupon->discountpercentage,
             (float) $coupon->discountabsolute,
-            (string) $coupon->currency
+            (string) $coupon->currency,
+            (string) ($coupon->coupontype ?? '')
         );
 
         $message = get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode);
@@ -149,23 +150,35 @@ class coupon {
      *
      */
     private function validate_coupon(stdClass $coupon, int $userid): string {
-        $message = '';
+        global $DB;
 
-        // Check if the coupon is valid for the user.
-        // This is not yet implemented.
+        // Check if the coupon is active.
+        if (empty($coupon->active)) {
+            return get_string('couponnotactive', 'local_shopping_cart');
+        }
 
         // Check if the coupon is expired.
         $now = time();
         if ($coupon->starttime > 0 && $now < $coupon->starttime) {
-            $message = get_string('couponnotvalidyet', 'local_shopping_cart');
-            return $message;
+            return get_string('couponnotvalidyet', 'local_shopping_cart');
         }
         if ($coupon->endtime > 0 && $now > $coupon->endtime) {
-            $message = get_string('couponexpired', 'local_shopping_cart');
-            return $message;
+            return get_string('couponexpired', 'local_shopping_cart');
         }
 
-        return $message;
+        // Check max number of uses (0 = unlimited).
+        if (!empty($coupon->maxnumber)) {
+            $timesused = $DB->count_records_select(
+                'local_shopping_cart_history',
+                "coupon = :couponid AND paymentstatus = :status",
+                ['couponid' => (string)$coupon->id, 'status' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]
+            );
+            if ($timesused >= $coupon->maxnumber) {
+                return get_string('couponmaxusesreached', 'local_shopping_cart');
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -181,7 +194,7 @@ class coupon {
      * @param int $starttime
      * @param int $endtime
      * @param int $usermodified
-     *
+     * @param string $coupontype
      * @return void
      *
      */
@@ -195,7 +208,8 @@ class coupon {
         int $active,
         int $starttime,
         int $endtime,
-        int $usermodified
+        int $usermodified,
+        string $coupontype
     ): void {
         global $DB;
 
@@ -207,6 +221,7 @@ class coupon {
         $record->currency = $currency;
         $record->maxnumber = $maxnumber;
         $record->active = $active;
+        $record->coupontype = $coupontype;
         $record->starttime = $starttime;
         $record->endtime = $endtime;
         $record->usermodified = $usermodified;

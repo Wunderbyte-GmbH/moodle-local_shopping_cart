@@ -45,6 +45,7 @@ abstract class coupon extends modifier_base {
      * @return array
      */
     public static function apply(array &$data): array {
+        global $DB;
         $items = $data['items'] ?? [];
 
         // Reset coupon discounts if coupon is not active or disabled.
@@ -69,7 +70,44 @@ abstract class coupon extends modifier_base {
         $remainingabsolute = $absolute;
         $coupondiscountsum = 0.0;
 
+        $coupontype = $data['coupontype'] ?? '';
+        $couponcode = $data['coupon'] ?? '';
+        $couponid = (!empty($coupontype) && !empty($couponcode))
+            ? $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => $couponcode])
+            : null;
+
+        // Preload iteminfo for coupon type filtering.
+        $iteminfos = [];
+        if (!empty($coupontype) && !empty($couponcode)) {
+            foreach ($items as $item) {
+                $ikey = ($item['componentname'] ?? '') . '-' . ($item['area'] ?? '') . '-' . ($item['itemid'] ?? '');
+                $record = $DB->get_record('local_shopping_cart_iteminfo', [
+                    'itemid'        => $item['itemid'] ?? 0,
+                    'componentname' => $item['componentname'] ?? '',
+                    'area'          => $item['area'] ?? '',
+                ], 'json', IGNORE_MISSING);
+                $iteminfos[$ikey] = $record ? json_decode($record->json) : null;
+            }
+        }
+
         foreach ($items as $key => $item) {
+            // Check coupon type eligibility.
+            $ikey = ($item['componentname'] ?? '') . '-' . ($item['area'] ?? '') . '-' . ($item['itemid'] ?? '');
+            $info = $iteminfos[$ikey] ?? null;
+            if ($coupontype === 'couponoptin') {
+                $optins = !empty($info->couponoptin) ? explode(',', $info->couponoptin) : [];
+                if (!in_array((string)$couponid, $optins)) {
+                    $items[$key] = $item;
+                    continue;
+                }
+            } else if ($coupontype === 'couponoptout') {
+                $optouts = !empty($info->couponoptout) ? explode(',', $info->couponoptout) : [];
+                if (in_array((string)$couponid, $optouts)) {
+                    $items[$key] = $item;
+                    continue;
+                }
+            }
+
             $baseprice = $item['price'] + ($item['coupondiscount'] ?? 0);
             $item['price'] = $baseprice;
             unset($item['coupondiscount']);
