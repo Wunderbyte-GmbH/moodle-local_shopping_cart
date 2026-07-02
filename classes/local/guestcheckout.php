@@ -82,23 +82,35 @@ class guestcheckout {
         $user->timecreated = time();
         $user->timemodified = time();
 
-        $userid = user_create_user($user, false, false);
-        $user->id = $userid;
+        // Create the user, assign its role and register it for cleanup atomically. If any step
+        // fails we must not leave an orphan mdl_user row behind: it would never be logged in and,
+        // having no local_shopping_cart_guestusers row, could never be cleaned up afterwards.
+        $transaction = $DB->start_delegated_transaction();
+        try {
+            $userid = user_create_user($user, false, false);
+            $user->id = $userid;
 
-        // Map the guest user to the configured system role. Defaults to the "Authenticated user"
-        // role, but an admin can point this at a purpose-built, more restricted role instead.
-        self::assign_guest_role($userid);
+            // Map the guest user to the configured system role. Defaults to the "Authenticated
+            // user" role, but an admin can point this at a purpose-built, more restricted role.
+            self::assign_guest_role($userid);
 
-        // Record the guest user so we can identify and clean it up later.
-        $guestrecord = new stdClass();
-        $guestrecord->userid      = $userid;
-        $guestrecord->timecreated = time();
-        $DB->insert_record('local_shopping_cart_guestusers', $guestrecord);
+            // Record the guest user so we can identify and clean it up later.
+            $guestrecord = new stdClass();
+            $guestrecord->userid      = $userid;
+            $guestrecord->timecreated = time();
+            $DB->insert_record('local_shopping_cart_guestusers', $guestrecord);
 
-        // Schedule cleanup.
-        self::schedule_guest_cleanup($userid);
+            // Schedule cleanup.
+            self::schedule_guest_cleanup($userid);
 
-        // Log the user in for the current request.
+            $transaction->allow_commit();
+        } catch (\Throwable $e) {
+            // The rollback() call re-throws, so nothing below runs on failure and no orphan remains.
+            $transaction->rollback($e);
+        }
+
+        // Log the user in for the current request. Session regeneration must stay OUTSIDE the
+        // transaction above.
         $fulluser = get_complete_user_data('id', $userid);
         complete_user_login($fulluser);
 
@@ -127,6 +139,32 @@ class guestcheckout {
     }
 
     /**
+     * Hook listener fired at the end of bootstrap, before any output.
+     *
+     * The guest user must be created and logged in here, not during page rendering:
+     * complete_user_login() regenerates the session id and emits a fresh session cookie, which is
+     * only honoured while no output has started. after_config runs at the end of setup.php with the
+     * session already started and before any output, so the cookie and the following redirect
+     * survive on every server setup. It also fails loudly on real errors instead of silently
+     * stranding a half-created guest, which is what the mid-render navbar approach did.
+     *
+     * @param \core\hook\after_config $hook
+     * @return void
+     */
+    public static function after_config(\core\hook\after_config $hook): void {
+        if (CLI_SCRIPT || during_initial_install() || modechecker::is_ajax_or_webservice_request()) {
+            return;
+        }
+
+        $fullme = qualified_me();
+        if ($fullme === false) {
+            return;
+        }
+
+        self::maybe_auto_create_guest_user_for_url(new \moodle_url($fullme));
+    }
+
+    /**
      * Optionally creates a guest checkout user for an anonymous visitor based on
      * configurable URL patterns.
      *
@@ -139,6 +177,12 @@ class guestcheckout {
      */
     public static function maybe_auto_create_guest_user_for_url(\moodle_url $url): bool {
         if (!get_config('local_shopping_cart', 'guestoncheckout')) {
+            return false;
+        }
+
+        // Never create a guest user while the site still needs an upgrade: during the
+        // deploy-before-upgrade window the plugin schema may not exist yet, which would fatal.
+        if (moodle_needs_upgrading()) {
             return false;
         }
 
