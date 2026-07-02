@@ -285,14 +285,14 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
         // Refund must be the paid price minus the cancelation fee.
         $expectedrefund = $price - $cancelationfee;
         $balance = shopping_cart_credits::get_balance($user->id);
-        $this->assertEqualsWithDelta($expectedrefund, (float) $balance[0], 0.001, 'Refund should be price minus the cancelation fee.');
+        $this->assertEqualsWithDelta($expectedrefund, (float) $balance[0], 0.001, 'Refund should be price minus cancelation fee.');
 
         // The cancelled ledger record documents both the net refund and the deducted fee.
         $ledger = $DB->get_record('local_shopping_cart_ledger', [
             'schistoryid' => $historyid,
             'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
         ]);
-        $this->assertEqualsWithDelta($expectedrefund, (float) $ledger->credits, 0.001, 'Ledger credits should equal the net refund.');
-        $this->assertEqualsWithDelta($cancelationfee, (float) $ledger->fee, 0.001, 'Ledger fee should equal the configured cancelation fee.');
+        $this->assertEqualsWithDelta($expectedrefund, (float) $ledger->credits, 0.001, 'Ledger credits should equal net refund.');
+        $this->assertEqualsWithDelta($cancelationfee, (float) $ledger->fee, 0.001, 'Ledger fee should equal cancelation fee.');
     }
 }

@@ -108,7 +108,7 @@ final class checkout_manager_test extends advanced_testcase {
 
         $this->assertArrayHasKey('checkout_manager_head', $checkoutmanagerdata);
         $this->assertArrayHasKey('checkout_manager_body', $checkoutmanagerdata);
-        // set_manager_data always writes the passed current step and the progress-line
+        // The set_manager_data() call always writes the passed current step and the progress-line
         // flag into the body, independent of which steps happen to be active.
         $this->assertSame(0, $checkoutmanagerdata['checkout_manager_body']['currentstep']);
         $this->assertArrayHasKey('show_progress_line', $checkoutmanagerdata['checkout_manager_body']);

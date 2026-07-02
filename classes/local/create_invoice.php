@@ -332,7 +332,6 @@ class create_invoice {
             $cfghtml = preg_replace('/\[\[#discount\]\].*?\[\[\/discount\]\]/s', '', $cfghtml);
         }
 
-
         // Make sure items are sorted from the most expensive on top to a credit (negative).
         usort($items, function ($a, $b) {
             return $b->price <=> $a->price; // Spaceship operator for comparison.

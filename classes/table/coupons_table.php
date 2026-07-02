@@ -225,7 +225,10 @@ class coupons_table extends wunderbyte_table {
 
         table::transform_actionbuttons_array($actionbuttons);
 
-        return $OUTPUT->render_from_template('local_wunderbyte_table/component_actionbutton', ['showactionbuttons' => $actionbuttons]);
+        return $OUTPUT->render_from_template(
+            'local_wunderbyte_table/component_actionbutton',
+            ['showactionbuttons' => $actionbuttons]
+        );
     }
 
     /**

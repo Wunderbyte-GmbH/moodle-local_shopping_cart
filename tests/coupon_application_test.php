@@ -98,7 +98,7 @@ final class coupon_application_test extends advanced_testcase {
         coupon::add_edit_coupon(0, 'TEST10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $userid);
 
         // Add three items with different prices (from mockitems):
-        // itemid 1 => 10.00, itemid 2 => 20.30, itemid 3 => 13.8
+        // itemid 1 => 10.00, itemid 2 => 20.30, itemid 3 => 13.8.
         shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 1, $userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 2, $userid);
         shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 3, $userid);
