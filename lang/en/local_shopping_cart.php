@@ -403,10 +403,8 @@ $string['generalsettingspagetitle'] = 'General Shopping Cart Settings';
 $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['globalcurrency'] = 'Currency';
 $string['globalcurrencydesc'] = 'Choose the currency for prices.';
-$string['guestautocreateenabled'] = 'Auto-create guest checkout users on matching pages';
-$string['guestautocreateenabled:description'] = 'If enabled, a temporary guest checkout user is created automatically when an anonymous visitor opens a page matching one of the patterns below.';
-$string['guestautocreatepatterns'] = 'Auto-create page patterns';
-$string['guestautocreatepatterns:description'] = 'One local path per line, e.g. /, /my, /course/view.php. Use * as suffix for prefix matching, e.g. /course/*.';
+$string['guestautocreatepatterns'] = 'Auto-create page patterns (optional)';
+$string['guestautocreatepatterns:description'] = 'Optional. One local path per line, e.g. /, /my, /course/view.php. Use * as a suffix for prefix matching, e.g. /course/*. When at least one pattern is set, a guest user is created as soon as an anonymous visitor opens a matching page — before they add anything to the cart. Leave empty to only create guest users when something is added to the cart.';
 $string['guestcheckout:alreadyregistered'] = 'Already registered? Log in';
 $string['guestcheckout:email'] = 'E-mail address';
 $string['guestcheckout:emailexists'] = 'An account with this e-mail address already exists.
@@ -432,11 +430,12 @@ $string['guestcheckout:registertab'] = 'Register & check out';
 $string['guestcheckout:registrationdesc'] = 'Please enter your name and e-mail address to complete your registration.
  After purchase you will receive an e-mail to set your password.';
 $string['guestcheckout:registrationtitle'] = 'Your contact details';
+$string['guestcheckoutrole'] = 'Role for guest checkout users';
+$string['guestcheckoutrole:description'] = 'The system role assigned to every temporary user created for guest checkout. The default is the built-in "Authenticated user" role, which gives a guest the same baseline permissions as any logged-in user. If that is too permissive, create a dedicated role (Site administration → Users → Define roles) that only grants what a guest needs to browse and buy — for example just local/shopping_cart:canbuy plus the capabilities required to reach the checkout — and select it here. The chosen role is assigned at system level while the temporary account exists and is carried over when the account is converted into a permanent user after purchase.';
 $string['guestoncheckout'] = 'Enable guest checkout';
-$string['guestoncheckout:description'] = 'When enabled, unauthenticated visitors can add items to the cart without logging in.
- A temporary user account is created automatically.  If the visitor completes the purchase, their real name and e-mail are
- collected during checkout and the account is converted into a permanent one.  If no purchase is made, the temporary account
- is automatically deleted after 24 hours.';
+$string['guestoncheckout:description'] = 'Master switch for guest checkout. When enabled, unauthenticated visitors can add items to the cart and go through checkout without logging in first — a single, unified behaviour (there is no separate "create guest user" switch).
+ Concretely, enabling this means: (1) when an anonymous visitor adds an item to the cart, a temporary Moodle user account is created automatically and the visitor is logged in as that user; (2) the temporary account is granted the role configured under "Role for guest checkout users"; (3) if the visitor completes the purchase, their real first name, last name and e-mail are collected during checkout, the account is converted into a permanent one and a "set your password" e-mail is sent; (4) if no purchase is made, the temporary account is deleted automatically after 24 hours.
+ Optionally, you can also have guest users created up front on specific pages via "Auto-create page patterns" below.';
 $string['history'] = "Purchases";
 $string['hr'] = "Croatia";
 $string['hu'] = "Hungary";

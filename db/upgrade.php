@@ -905,6 +905,16 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026042100, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2026070303) {
+        // The separate "auto-create guest users" toggle has been merged into the single
+        // guestoncheckout master switch. Front-loading guest users on specific pages is now driven
+        // purely by the presence of URL patterns, so the obsolete flag can be removed.
+        unset_config('guestautocreateenabled', 'local_shopping_cart');
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2026070303, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

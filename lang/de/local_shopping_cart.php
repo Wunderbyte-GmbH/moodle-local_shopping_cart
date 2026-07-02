@@ -402,10 +402,8 @@ $string['generalsettingspagetitle'] = 'Allgemeine Shopping Cart Einstellungen';
 $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';
 $string['globalcurrency'] = 'Währung';
 $string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';
-$string['guestautocreateenabled'] = 'Gast-Checkout-Benutzer auf passenden Seiten automatisch erstellen';
-$string['guestautocreateenabled:description'] = 'Wenn aktiviert, wird automatisch ein temporärer Gast-Checkout-Benutzer erstellt, sobald ein anonymer Besucher eine Seite öffnet, die zu einem der unten konfigurierten Muster passt.';
-$string['guestautocreatepatterns'] = 'Seitenmuster für automatische Erstellung';
-$string['guestautocreatepatterns:description'] = 'Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*.';
+$string['guestautocreatepatterns'] = 'Seitenmuster für automatische Erstellung (optional)';
+$string['guestautocreatepatterns:description'] = 'Optional. Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*. Ist mindestens ein Muster gesetzt, wird bereits ein Gast-Benutzer erstellt, sobald ein anonymer Besucher eine passende Seite öffnet – noch bevor etwas in den Warenkorb gelegt wird. Leer lassen, um Gast-Benutzer nur beim Hinzufügen zum Warenkorb zu erstellen.';
 $string['guestcheckout:alreadyregistered'] = 'Bereits registriert? Einloggen';
 $string['guestcheckout:email'] = 'E-Mail-Adresse';
 $string['guestcheckout:emailexists'] = 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.
@@ -431,11 +429,12 @@ $string['guestcheckout:registertab'] = 'Registrieren & zur Kasse';
 $string['guestcheckout:registrationdesc'] = 'Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an, um die Registrierung abzuschließen.
  Nach dem Kauf erhalten Sie eine E-Mail, um Ihr Passwort zu setzen.';
 $string['guestcheckout:registrationtitle'] = 'Ihre Kontaktdaten';
+$string['guestcheckoutrole'] = 'Rolle für Gast-Checkout-Benutzer';
+$string['guestcheckoutrole:description'] = 'Die Systemrolle, die jedem temporären Gast-Checkout-Benutzer zugewiesen wird. Voreingestellt ist die eingebaute Rolle „Authentifizierte:r Nutzer:in", die einem Gast dieselben Grundrechte wie jedem eingeloggten Benutzer gibt. Ist das zu weitreichend, legen Sie eine eigene Rolle an (Website-Administration → Nutzer/innen → Rollen definieren), die nur das Nötige zum Stöbern und Kaufen erlaubt – etwa nur local/shopping_cart:canbuy plus die für den Checkout benötigten Fähigkeiten – und wählen Sie diese hier aus. Die gewählte Rolle wird auf Systemebene zugewiesen, solange das temporäre Konto besteht, und bleibt erhalten, wenn das Konto nach dem Kauf in ein dauerhaftes Konto umgewandelt wird.';
 $string['guestoncheckout'] = 'Gast-Checkout aktivieren';
-$string['guestoncheckout:description'] = 'Wenn aktiviert, können nicht eingeloggte Besucher Elemente zum Warenkorb hinzufügen.
- Dafür wird automatisch ein temporäres Benutzerkonto erstellt. Wenn der Kauf abgeschlossen wird, werden Name und E-Mail
- im Checkout erfasst und das Konto in ein dauerhaftes Konto umgewandelt. Ohne Kauf wird das temporäre Konto nach 24 Stunden
- automatisch gelöscht.';
+$string['guestoncheckout:description'] = 'Hauptschalter für den Gast-Checkout. Wenn aktiviert, können nicht eingeloggte Besucher Elemente zum Warenkorb hinzufügen und den Checkout durchlaufen, ohne sich vorher anzumelden – als ein einziges, einheitliches Verhalten (es gibt keinen separaten Schalter „Gast-Benutzer erstellen").
+ Konkret bewirkt die Aktivierung: (1) Legt ein anonymer Besucher ein Element in den Warenkorb, wird automatisch ein temporäres Moodle-Benutzerkonto erstellt und der Besucher als dieser Benutzer eingeloggt; (2) das temporäre Konto erhält die unter „Rolle für Gast-Checkout-Benutzer" konfigurierte Rolle; (3) schließt der Besucher den Kauf ab, werden Vorname, Nachname und E-Mail im Checkout erfasst, das Konto wird in ein dauerhaftes umgewandelt und eine E-Mail zum Setzen des Passworts versendet; (4) ohne Kauf wird das temporäre Konto nach 24 Stunden automatisch gelöscht.
+ Optional können Sie über die „Seitenmuster für automatische Erstellung" unten Gast-Benutzer bereits beim Öffnen bestimmter Seiten erstellen lassen.';
 $string['history'] = "Käufe";
 $string['hr'] = "Kroatien";
 $string['hu'] = "Ungarn";

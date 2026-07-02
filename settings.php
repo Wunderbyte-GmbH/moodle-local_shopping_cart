@@ -311,7 +311,10 @@ if ($hassiteconfig) {
         )
     );
 
-    // Setting to enable guest checkout (auto-create temporary user).
+    // Single master switch for the whole guest checkout feature. Enabling it makes the plugin
+    // create a temporary Moodle account for unauthenticated visitors so they can fill a cart and
+    // check out; that account is either converted into a permanent user on purchase or deleted
+    // automatically after 24 hours. See the description string for the full behaviour.
     $settings->add(
         new admin_setting_configcheckbox(
             'local_shopping_cart/guestoncheckout',
@@ -321,15 +324,27 @@ if ($hassiteconfig) {
         )
     );
 
+    // Role that every auto-created guest checkout user is granted at system level. Defaults to the
+    // built-in "Authenticated user" role; admins may point this at a purpose-built, more restricted
+    // role instead (see description).
+    global $DB;
+    $guestroleoptions = [];
+    foreach (role_get_names(context_system::instance()) as $guestrole) {
+        $guestroleoptions[$guestrole->id] = $guestrole->localname;
+    }
+    $defaultguestrole = (int) ($DB->get_field('role', 'id', ['shortname' => 'user']) ?: 0);
     $settings->add(
-        new admin_setting_configcheckbox(
-            'local_shopping_cart/guestautocreateenabled',
-            get_string('guestautocreateenabled', 'local_shopping_cart'),
-            get_string('guestautocreateenabled:description', 'local_shopping_cart'),
-            0
+        new admin_setting_configselect(
+            'local_shopping_cart/guestcheckoutrole',
+            get_string('guestcheckoutrole', 'local_shopping_cart'),
+            get_string('guestcheckoutrole:description', 'local_shopping_cart'),
+            $defaultguestrole,
+            $guestroleoptions
         )
     );
 
+    // Optional: local URL patterns on which a guest user is created up front (before the visitor
+    // even adds something to the cart). Leave empty to only create guest users on add-to-cart.
     $settings->add(
         new admin_setting_configtextarea(
             'local_shopping_cart/guestautocreatepatterns',

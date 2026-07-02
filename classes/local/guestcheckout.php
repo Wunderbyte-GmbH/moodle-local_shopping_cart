@@ -85,6 +85,10 @@ class guestcheckout {
         $userid = user_create_user($user, false, false);
         $user->id = $userid;
 
+        // Map the guest user to the configured system role. Defaults to the "Authenticated user"
+        // role, but an admin can point this at a purpose-built, more restricted role instead.
+        self::assign_guest_role($userid);
+
         // Record the guest user so we can identify and clean it up later.
         $guestrecord = new stdClass();
         $guestrecord->userid      = $userid;
@@ -102,18 +106,39 @@ class guestcheckout {
     }
 
     /**
+     * Assigns the configured system role to a freshly created guest checkout user.
+     *
+     * The role id comes from the `guestcheckoutrole` admin setting (defaults to the
+     * "Authenticated user" role). When the setting is empty or points to a role that no
+     * longer exists the assignment is silently skipped.
+     *
+     * @param int $userid
+     * @return void
+     */
+    private static function assign_guest_role(int $userid): void {
+        global $DB;
+
+        $roleid = (int) get_config('local_shopping_cart', 'guestcheckoutrole');
+        if ($roleid <= 0 || !$DB->record_exists('role', ['id' => $roleid])) {
+            return;
+        }
+
+        role_assign($roleid, $userid, \context_system::instance()->id);
+    }
+
+    /**
      * Optionally creates a guest checkout user for an anonymous visitor based on
      * configurable URL patterns.
+     *
+     * Only runs when the guest checkout feature is enabled and at least one URL pattern
+     * is configured; the pattern match itself is handled by
+     * {@see url_matches_auto_create_patterns()}.
      *
      * @param \moodle_url $url
      * @return bool True if a guest user was created in this call.
      */
     public static function maybe_auto_create_guest_user_for_url(\moodle_url $url): bool {
         if (!get_config('local_shopping_cart', 'guestoncheckout')) {
-            return false;
-        }
-
-        if (!get_config('local_shopping_cart', 'guestautocreateenabled')) {
             return false;
         }
 
