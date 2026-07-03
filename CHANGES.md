@@ -1,3 +1,6 @@
+## Version 2.1.0 (2026070300)
+* Improvement: If optional VAT number is clicked it gets mandatory.
+
 ## Version 2.0.9 (2026060300)
 * Improvement: Add Apple Pay (AP) and Google Pay (GP).
 * Improvement: Detailed user feedback for vat checker.
