@@ -404,7 +404,7 @@ $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['globalcurrency'] = 'Currency';
 $string['globalcurrencydesc'] = 'Choose the currency for prices.';
 $string['guestautocreatepatterns'] = 'Auto-create page patterns (optional)';
-$string['guestautocreatepatterns:description'] = 'Optional. One local path per line, e.g. /, /my, /course/view.php. Use * as a suffix for prefix matching, e.g. /course/*. When at least one pattern is set, a guest user is created as soon as an anonymous visitor opens a matching page — before they add anything to the cart. Leave empty to only create guest users when something is added to the cart.';
+$string['guestautocreatepatterns:description'] = 'Optional. One local path per line, e.g. /, /my, /course/view.php. Use * as a suffix for prefix matching, e.g. /course/*. Append query parameters to target one concrete page, e.g. /mod/page/view.php?id=5. When at least one pattern is set, a guest user is created as soon as an anonymous visitor (including a site guest session) opens a matching page — before they add anything to the cart. Leave empty to only create guest users when something is added to the cart.';
 $string['guestcheckout:alreadyregistered'] = 'Already registered? Log in';
 $string['guestcheckout:email'] = 'E-mail address';
 $string['guestcheckout:emailexists'] = 'An account with this e-mail address already exists.

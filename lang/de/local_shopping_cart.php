@@ -403,7 +403,7 @@ $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf 
 $string['globalcurrency'] = 'Währung';
 $string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';
 $string['guestautocreatepatterns'] = 'Seitenmuster für automatische Erstellung (optional)';
-$string['guestautocreatepatterns:description'] = 'Optional. Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*. Ist mindestens ein Muster gesetzt, wird bereits ein Gast-Benutzer erstellt, sobald ein anonymer Besucher eine passende Seite öffnet – noch bevor etwas in den Warenkorb gelegt wird. Leer lassen, um Gast-Benutzer nur beim Hinzufügen zum Warenkorb zu erstellen.';
+$string['guestautocreatepatterns:description'] = 'Optional. Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*. Query-Parameter schränken auf eine konkrete Seite ein, z. B. /mod/page/view.php?id=5. Ist mindestens ein Muster gesetzt, wird bereits ein Gast-Benutzer erstellt, sobald ein anonymer Besucher (auch mit Site-Gast-Session) eine passende Seite öffnet – noch bevor etwas in den Warenkorb gelegt wird. Leer lassen, um Gast-Benutzer nur beim Hinzufügen zum Warenkorb zu erstellen.';
 $string['guestcheckout:alreadyregistered'] = 'Bereits registriert? Einloggen';
 $string['guestcheckout:email'] = 'E-Mail-Adresse';
 $string['guestcheckout:emailexists'] = 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.

@@ -186,7 +186,11 @@ class guestcheckout {
             return false;
         }
 
-        if (isloggedin() || isguestuser()) {
+        // Only a real, logged-in account must never be replaced. Anonymous visitors AND
+        // site-guest sessions (e.g. via autologinguests after visiting the front page first)
+        // are both converted: a site guest already carries a session cookie, so without this
+        // the auto-create would only ever work on the very first request of a visit.
+        if (isloggedin() && !isguestuser()) {
             return false;
         }
 
@@ -203,7 +207,10 @@ class guestcheckout {
     }
 
     /**
-     * Checks whether a URL path matches one of the configured auto-create patterns.
+     * Checks whether a URL matches one of the configured auto-create patterns.
+     *
+     * A pattern is a local path, optionally followed by a query string that pins it to
+     * specific parameters, e.g. /mod/page/view.php?id=5 only matches that page instance.
      *
      * @param \moodle_url $url
      * @return bool
@@ -214,37 +221,111 @@ class guestcheckout {
             return false;
         }
 
-        $path = self::normalize_path($url->get_path());
+        $path = self::normalize_path(self::strip_wwwroot_prefix($url->get_path()));
         $patterns = preg_split('/[\r\n,;]+/', $rawpatterns);
 
         foreach ($patterns as $pattern) {
-            $pattern = self::normalize_path(trim((string)$pattern));
+            $pattern = trim((string)$pattern);
             if ($pattern === '') {
                 continue;
             }
 
-            // Wildcard suffix supports prefix matching, e.g. /course/*.
-            if (substr($pattern, -1) === '*') {
-                $prefix = self::normalize_path(rtrim(substr($pattern, 0, -1)));
-                if ($prefix === '' || $prefix === '/') {
-                    return true;
-                }
-                if ($path === $prefix || strpos($path, $prefix . '/') === 0) {
-                    return true;
-                }
+            // An optional query part restricts the pattern to a concrete page,
+            // e.g. /mod/page/view.php?id=5. The path alone would match every instance.
+            $querypart = '';
+            $querypos = strpos($pattern, '?');
+            if ($querypos !== false) {
+                $querypart = substr($pattern, $querypos + 1);
+                $pattern = substr($pattern, 0, $querypos);
+            }
+
+            if (!self::path_matches_pattern($path, self::normalize_path($pattern))) {
                 continue;
             }
 
-            if ($pattern === '/' && $path === '/') {
-                return true;
+            if (!self::query_matches_pattern($url, $querypart)) {
+                continue;
             }
 
-            if ($path === $pattern || strpos($path, $pattern . '/') === 0) {
-                return true;
-            }
+            return true;
         }
 
         return false;
+    }
+
+    /**
+     * Strips the wwwroot subdirectory prefix from a URL path.
+     *
+     * Patterns are configured relative to the Moodle root (e.g. /course/view.php), so on
+     * installations living in a subdirectory (wwwroot https://host/moodle) the leading
+     * /moodle must not take part in the matching.
+     *
+     * @param string $path
+     * @return string
+     */
+    private static function strip_wwwroot_prefix(string $path): string {
+        global $CFG;
+
+        $rootpath = rtrim((string)parse_url($CFG->wwwroot, PHP_URL_PATH), '/');
+        if ($rootpath === '') {
+            return $path;
+        }
+
+        if ($path === $rootpath) {
+            return '/';
+        }
+
+        if (strpos($path, $rootpath . '/') === 0) {
+            return (string)substr($path, strlen($rootpath));
+        }
+
+        return $path;
+    }
+
+    /**
+     * Checks whether a normalized URL path matches a single normalized path pattern.
+     *
+     * @param string $path
+     * @param string $pattern
+     * @return bool
+     */
+    private static function path_matches_pattern(string $path, string $pattern): bool {
+        // Wildcard suffix supports prefix matching, e.g. /course/*.
+        if (substr($pattern, -1) === '*') {
+            $prefix = self::normalize_path(rtrim(substr($pattern, 0, -1)));
+            if ($prefix === '' || $prefix === '/') {
+                return true;
+            }
+            return $path === $prefix || strpos($path, $prefix . '/') === 0;
+        }
+
+        if ($pattern === '/') {
+            return $path === '/';
+        }
+
+        return $path === $pattern || strpos($path, $pattern . '/') === 0;
+    }
+
+    /**
+     * Checks whether a URL carries all parameters required by a pattern's query part.
+     *
+     * @param \moodle_url $url
+     * @param string $querypart Query string of the pattern, without the leading '?'.
+     * @return bool
+     */
+    private static function query_matches_pattern(\moodle_url $url, string $querypart): bool {
+        if ($querypart === '') {
+            return true;
+        }
+
+        parse_str($querypart, $requiredparams);
+        foreach ($requiredparams as $name => $value) {
+            if (!is_scalar($value) || (string)$url->param((string)$name) !== (string)$value) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

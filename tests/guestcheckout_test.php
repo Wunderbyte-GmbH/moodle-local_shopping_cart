@@ -128,4 +128,120 @@ final class guestcheckout_test extends advanced_testcase {
             'A non-guest user must not be convertible.'
         );
     }
+
+    /**
+     * Calls the private pattern matcher.
+     *
+     * @param string $url
+     * @param string $patterns
+     * @return bool
+     */
+    private function match_patterns(string $url, string $patterns): bool {
+        set_config('guestautocreatepatterns', $patterns, 'local_shopping_cart');
+        $method = new \ReflectionMethod(guestcheckout::class, 'url_matches_auto_create_patterns');
+        return (bool) $method->invoke(null, new \moodle_url($url));
+    }
+
+    /**
+     * Data provider for {@see test_url_matches_auto_create_patterns}.
+     *
+     * @return array
+     */
+    public static function url_pattern_provider(): array {
+        return [
+            'root matches front page only' => ['/', '/', true],
+            'root does not match subpage' => ['/mod/page/view.php?id=5', '/', false],
+            'exact path matches regardless of params' => ['/mod/page/view.php?id=6', '/mod/page/view.php', true],
+            'wildcard prefix matches' => ['/course/view.php?id=2', '/course/*', true],
+            'wildcard prefix mismatch' => ['/mod/page/view.php', '/course/*', false],
+            'query pattern matches same params' => ['/mod/page/view.php?id=5', '/mod/page/view.php?id=5', true],
+            'query pattern mismatching value' => ['/mod/page/view.php?id=6', '/mod/page/view.php?id=5', false],
+            'query pattern missing param' => ['/mod/page/view.php', '/mod/page/view.php?id=5', false],
+            'query pattern ignores extra request params' => [
+                '/mod/page/view.php?id=5&forceview=1',
+                '/mod/page/view.php?id=5',
+                true,
+            ],
+            'query pattern with multiple params' => [
+                '/course/view.php?id=2&section=3',
+                '/course/view.php?id=2&section=3',
+                true,
+            ],
+            'query pattern with one wrong of multiple params' => [
+                '/course/view.php?id=2&section=4',
+                '/course/view.php?id=2&section=3',
+                false,
+            ],
+            'query pattern on wrong path' => ['/mod/url/view.php?id=5', '/mod/page/view.php?id=5', false],
+            'second line matches' => ['/mod/page/view.php?id=5', "/my\n/mod/page/view.php?id=5", true],
+        ];
+    }
+
+    /**
+     * The configured auto-create patterns support paths, wildcards and query parameters.
+     *
+     * @dataProvider url_pattern_provider
+     * @param string $url
+     * @param string $patterns
+     * @param bool $expected
+     * @return void
+     */
+    public function test_url_matches_auto_create_patterns(string $url, string $patterns, bool $expected): void {
+        $this->assertSame($expected, $this->match_patterns($url, $patterns));
+    }
+
+    /**
+     * A site-guest session (e.g. autologinguests) is converted into a guest checkout
+     * user on a matching page, just like a visitor without any session.
+     *
+     * @return void
+     */
+    public function test_auto_create_converts_site_guest_session(): void {
+        global $DB, $USER;
+
+        set_config('guestoncheckout', 1, 'local_shopping_cart');
+        set_config('guestautocreatepatterns', '/mod/page/view.php?id=5', 'local_shopping_cart');
+
+        // The visitor already carries a site-guest session from a previous page view.
+        $this->setGuestUser();
+
+        try {
+            // The error suppression hides session header errors from complete_user_login,
+            // same as core's test_complete_user_login does.
+            @guestcheckout::maybe_auto_create_guest_user_for_url(
+                new \moodle_url('/mod/page/view.php', ['id' => 5])
+            );
+            $this->fail('The auto-create must end in a redirect to reload the page.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('redirecterrordetected', $e->errorcode);
+        }
+
+        $this->assertTrue(
+            guestcheckout::is_guest_checkout_user((int) $USER->id),
+            'The site guest session must have been replaced by a guest checkout user.'
+        );
+        $this->assertEquals(1, $DB->count_records('local_shopping_cart_guestusers'));
+    }
+
+    /**
+     * A real, logged-in user must never be replaced by a guest checkout user.
+     *
+     * @return void
+     */
+    public function test_auto_create_skips_real_users(): void {
+        global $DB;
+
+        set_config('guestoncheckout', 1, 'local_shopping_cart');
+        set_config('guestautocreatepatterns', '/mod/page/view.php?id=5', 'local_shopping_cart');
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $this->assertFalse(
+            guestcheckout::maybe_auto_create_guest_user_for_url(
+                new \moodle_url('/mod/page/view.php', ['id' => 5])
+            )
+        );
+        $this->assertEquals(0, $DB->count_records('local_shopping_cart_guestusers'));
+    }
 }
