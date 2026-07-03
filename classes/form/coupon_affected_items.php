@@ -44,10 +44,23 @@ class coupon_affected_items extends dynamic_form {
 
         $mform = $this->_form;
         $couponid = $this->optional_param('id', 0, PARAM_INT);
+        $coupon = $DB->get_record(
+            'local_shopping_cart_coupons',
+            ['id' => $couponid],
+            'id, coupontype',
+            MUST_EXIST
+        );
         $mform->addElement('html', '<style>.modal-footer [data-action="save"]{display:none!important}</style>');
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
+
+        if ($coupon->coupontype === 'couponoptout') {
+            $mform->addElement(
+                'html',
+                '<div class="alert alert-info">' . get_string('couponoptoutitemsnotice', 'local_shopping_cart') . '</div>'
+            );
+        }
 
         $records = $DB->get_records_select(
             'local_shopping_cart_iteminfo',
@@ -65,9 +78,15 @@ class coupon_affected_items extends dynamic_form {
             $optins  = !empty($json->couponoptin) ? explode(',', $json->couponoptin) : [];
             $optouts = !empty($json->couponoptout) ? explode(',', $json->couponoptout) : [];
 
-            if (in_array((string)$couponid, $optins)) {
+            if (
+                $coupon->coupontype === 'couponoptin' &&
+                in_array((string)$couponid, $optins)
+            ) {
                 $type = get_string('couponoptin', 'local_shopping_cart');
-            } else if (!in_array((string)$couponid, $optouts)) {
+            } else if (
+                $coupon->coupontype === 'couponoptout' &&
+                !in_array((string)$couponid, $optouts)
+            ) {
                 $type = get_string('couponoptout', 'local_shopping_cart');
             } else {
                 continue;

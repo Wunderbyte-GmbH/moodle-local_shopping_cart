@@ -285,6 +285,7 @@ $string['couponmaxusesreached'] = 'This coupon code has already been used the ma
 $string['couponnotactive'] = 'This coupon code is not active.';
 $string['couponnotvalidyet'] = 'Coupon code not valid yet';
 $string['couponoptin'] = 'Opt-in';
+$string['couponoptoutitemsnotice'] = 'Only items who have been saved after this feature will appear even though the coupon might be valid for other items.';
 $string['couponoptout'] = 'Opt-out';
 $string['couponremovedsuccessfully'] = 'Coupon code "{$a}" removed successfully.';
 $string['couponsheading'] = 'Coupons settings';
