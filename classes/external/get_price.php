@@ -121,8 +121,15 @@ class get_price extends external_api {
         }
 
         // Before appliying the credit, we have to apply the coupon if any.
-        $coupon = new coupon($userid);
-        [$success, $couponmessage] = $coupon->apply_coupon_code($couponvalue);
+        // This is only done when the request genuinely originates from a page that shows the
+        // coupon UI. Otherwise (e.g. cart.js refreshing the nav cart badge on a page without any
+        // coupon input, such as coupons.php) $couponvalue is always '', which would otherwise be
+        // misread as "the user cleared the coupon field" and silently remove an applied coupon.
+        $couponmessage = '';
+        if ($params['couponenabled']) {
+            $coupon = new coupon($userid);
+            [, $couponmessage] = $coupon->apply_coupon_code($couponvalue);
+        }
 
         // Add the state to the cache.
         if ($params['usecredit'] != -1) {

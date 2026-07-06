@@ -23,10 +23,10 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
-use local_shopping_cart\local\coupon;
 use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -157,12 +157,19 @@ if (isset($success) && isset($historylist)) {
 if (get_config('local_shopping_cart', 'couponenabled')) {
     $data['couponenabled'] = true;
 
-    $coupon = new coupon($userid);
-    [$success, $couponmessage] = $coupon->apply_coupon_code('');
-
-    if ($success) {
-        $data['couponenabled'] = false;
-        $data['couponmessage'] = $couponmessage;
+    // Only check for an already applied coupon; never apply/remove one here, as this
+    // code path also runs on plain page reloads (e.g. when a background tab regains
+    // focus), and calling apply_coupon_code('') would silently clear the applied coupon.
+    if (isset($cartstore)) {
+        $couponmanager = new cart_coupon_manager($cartstore);
+        if ($couponmanager->coupon_applied()) {
+            $data['couponenabled'] = false;
+            $data['couponmessage'] = get_string(
+                'couponappliedsuccessfully',
+                'local_shopping_cart',
+                $couponmanager->get_applied_coupon()
+            );
+        }
     }
 } else {
     $data['couponenabled'] = false;
