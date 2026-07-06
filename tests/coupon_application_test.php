@@ -94,8 +94,9 @@ final class coupon_application_test extends advanced_testcase {
             set_config('enabletax', '0', 'local_shopping_cart');
         }
 
-        // Create a 10% percentage coupon (no fixed amount).
-        coupon::add_edit_coupon(0, 'TEST10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $userid);
+        // Create a 10% percentage coupon (no fixed amount). Opt-out type, so it
+        // applies to the whole cart without per-item opt-in configuration.
+        coupon::add_edit_coupon(0, 'TEST10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $userid, 'couponoptout');
 
         // Add three items with different prices (from mockitems):
         // itemid 1 => 10.00, itemid 2 => 20.30, itemid 3 => 13.8.
@@ -114,7 +115,9 @@ final class coupon_application_test extends advanced_testcase {
         shopping_cart::save_used_credit_state($userid, $usecredit ? 1 : 0);
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_data();
-        $items = $cartstore->get_items();
+        // Per-item coupon discounts are computed transiently by the price modifier
+        // chain inside get_data(); the raw cached items (get_items()) never carry them.
+        $items = $data['items'];
 
         $couponmanager = new cart_coupon_manager($cartstore);
         $this->assertTrue($couponmanager->coupon_applied());

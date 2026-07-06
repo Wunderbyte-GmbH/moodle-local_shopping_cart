@@ -290,6 +290,7 @@ $string['couponremovedsuccessfully'] = 'Coupon code "{$a}" removed successfully.
 $string['couponsheading'] = 'Coupons settings';
 $string['couponsheadingdescription'] = 'Coupon codes can be managed at /local/shopping_cart/coupons.php.';
 $string['coupontype'] = 'Coupon type';
+$string['coupontype_help'] = 'Opt-out: the coupon applies to every item in the cart unless an item explicitly excludes it in its item configuration. Opt-in: the coupon only applies to items that explicitly enable it in their item configuration — without any assigned items it has no effect.';
 $string['credit'] = 'Credit:';
 $string['creditnotmatchbalance'] = 'Sum of credits in table local_shopping_cart_credits does not match with latest balance!
                                     There might be duplicate entries or corrupted records in the credits table for userid {$a}';

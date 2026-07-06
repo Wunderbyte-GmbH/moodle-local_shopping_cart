@@ -117,10 +117,10 @@ class addedit_coupon extends dynamic_form {
             ]
         );
         $mform->setType('coupontype', PARAM_ALPHA);
-        $mform->setDefault('coupontype', 'couponoptin');
-
-        $mform->setDefault('active', 1);
-        $mform->setType('active', PARAM_INT);
+        // Opt-out is the safe default: an opt-in coupon has no effect at all until
+        // items explicitly enable it in their item configuration.
+        $mform->setDefault('coupontype', 'couponoptout');
+        $mform->addHelpButton('coupontype', 'coupontype', 'local_shopping_cart');
 
         // Start time.
         $mform->addElement(

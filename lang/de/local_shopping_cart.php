@@ -284,10 +284,13 @@ $string['couponexpired'] = 'Gutscheincode abgelaufen';
 $string['couponmaxusesreached'] = 'Dieser Gutscheincode wurde bereits die maximale Anzahl an Malen verwendet.';
 $string['couponnotactive'] = 'Dieser Gutscheincode ist nicht aktiv.';
 $string['couponnotvalidyet'] = 'Gutscheincode noch nicht gültig';
+$string['couponoptin'] = 'Opt-in';
+$string['couponoptout'] = 'Opt-out';
 $string['couponremovedsuccessfully'] = 'Gutscheincode "{$a}" erfolgreich entfernt.';
 $string['couponsheading'] = 'Gutscheineinstellungen';
 $string['couponsheadingdescription'] = 'Gutscheincodes können auf /local/shopping_cart/coupons.php verwaltet werden.';
 $string['coupontype'] = 'Gutscheintyp';
+$string['coupontype_help'] = 'Opt-out: Der Gutschein gilt für alle Artikel im Warenkorb, außer ein Artikel schließt ihn in seiner Artikel-Konfiguration explizit aus. Opt-in: Der Gutschein gilt nur für Artikel, die ihn in ihrer Artikel-Konfiguration explizit aktivieren – ohne zugeordnete Artikel hat er keine Wirkung.';
 $string['credit'] = 'Guthaben:';
 $string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
 Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';

@@ -131,7 +131,7 @@ final class coupon_validity_test extends advanced_testcase {
         float $expectedprice
     ): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'PCTTEST', $percent, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'PCTTEST', $percent, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         [$success, $message] = $couponobj->apply_coupon_code('PCTTEST');
@@ -164,7 +164,7 @@ final class coupon_validity_test extends advanced_testcase {
         float $expectedprice
     ): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ABSTEST', 0.0, $absolute, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'ABSTEST', 0.0, $absolute, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         [$success, $message] = $couponobj->apply_coupon_code('ABSTEST');
@@ -205,7 +205,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_expired_coupon_fails(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'EXPIRED', 10.0, 0.0, 'EUR', 0, 1, 0, time() - 1, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'EXPIRED', 10.0, 0.0, 'EUR', 0, 1, 0, time() - 1, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         [$success, ] = $couponobj->apply_coupon_code('EXPIRED');
@@ -228,7 +228,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_coupon_not_yet_valid_fails(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'FUTURE', 10.0, 0.0, 'EUR', 0, 1, time() + 3600, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'FUTURE', 10.0, 0.0, 'EUR', 0, 1, time() + 3600, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         [$success, ] = $couponobj->apply_coupon_code('FUTURE');
@@ -251,7 +251,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_zero_discount_coupon_applies_no_discount(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ZERO', 0.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'ZERO', 0.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         (new coupon($this->userid))->apply_coupon_code('ZERO');
 
@@ -269,7 +269,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_applying_same_coupon_twice_is_idempotent(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'TWICE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'TWICE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('TWICE');
@@ -288,8 +288,8 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_switching_percentage_coupon_replaces_old_discount(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'FIRST', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
-        coupon::add_edit_coupon(0, 'SECOND', 20.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'FIRST', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
+        coupon::add_edit_coupon(0, 'SECOND', 20.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('FIRST');
@@ -313,8 +313,8 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_switching_between_percentage_and_absolute_coupon(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'PCT', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
-        coupon::add_edit_coupon(0, 'ABS', 0.0, 15.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'PCT', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
+        coupon::add_edit_coupon(0, 'ABS', 0.0, 15.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
 
@@ -346,7 +346,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_clearing_coupon_restores_original_prices(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'CLEAR', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'CLEAR', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('CLEAR');
@@ -371,7 +371,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_clearing_coupon_restores_per_item_prices(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ITEMCHECK', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'ITEMCHECK', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         $couponobj = new coupon($this->userid);
         $couponobj->apply_coupon_code('ITEMCHECK');
@@ -394,7 +394,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_inactive_coupon_fails(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'INACTIVE', 10.0, 0.0, 'EUR', 0, 0, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'INACTIVE', 10.0, 0.0, 'EUR', 0, 0, 0, 0, $this->userid, 'couponoptout');
 
         [$success, ] = (new coupon($this->userid))->apply_coupon_code('INACTIVE');
 
@@ -411,7 +411,7 @@ final class coupon_validity_test extends advanced_testcase {
      */
     public function test_active_coupon_succeeds(): void {
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'ACTIVE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'ACTIVE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
 
         [$success, ] = (new coupon($this->userid))->apply_coupon_code('ACTIVE');
 
@@ -431,7 +431,7 @@ final class coupon_validity_test extends advanced_testcase {
     public function test_coupon_at_max_uses_fails(): void {
         global $DB;
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'MAXONE', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'MAXONE', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptout');
         $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'MAXONE']);
 
         $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_SUCCESS);
@@ -452,7 +452,7 @@ final class coupon_validity_test extends advanced_testcase {
     public function test_coupon_below_max_uses_succeeds(): void {
         global $DB;
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'MAXTWO', 10.0, 0.0, 'EUR', 2, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'MAXTWO', 10.0, 0.0, 'EUR', 2, 1, 0, 0, $this->userid, 'couponoptout');
         $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'MAXTWO']);
 
         $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_SUCCESS);
@@ -471,7 +471,7 @@ final class coupon_validity_test extends advanced_testcase {
     public function test_unlimited_coupon_never_exhausted(): void {
         global $DB;
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'UNLIMITED', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'UNLIMITED', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
         $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'UNLIMITED']);
 
         for ($i = 0; $i < 5; $i++) {
@@ -491,7 +491,7 @@ final class coupon_validity_test extends advanced_testcase {
     public function test_pending_history_record_does_not_count_toward_max_uses(): void {
         global $DB;
         $this->fill_cart();
-        coupon::add_edit_coupon(0, 'PENDINGTEST', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptin');
+        coupon::add_edit_coupon(0, 'PENDINGTEST', 10.0, 0.0, 'EUR', 1, 1, 0, 0, $this->userid, 'couponoptout');
         $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'PENDINGTEST']);
 
         $this->insert_history_usage((string)$couponid, LOCAL_SHOPPING_CART_PAYMENT_PENDING);
@@ -499,6 +499,84 @@ final class coupon_validity_test extends advanced_testcase {
         [$success, ] = (new coupon($this->userid))->apply_coupon_code('PENDINGTEST');
 
         $this->assertTrue($success);
+    }
+
+    /**
+     * An opt-in coupon only discounts items that explicitly enable it in their
+     * item configuration; without any opted-in item it has no effect at all.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_optin_coupon_only_applies_to_opted_in_items(): void {
+        global $DB;
+
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'OPTIN10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptin');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'OPTIN10'], MUST_EXIST);
+
+        $couponobj = new coupon($this->userid);
+
+        // Without any opt-in the coupon is accepted but discounts nothing.
+        [$success, $message] = $couponobj->apply_coupon_code('OPTIN10');
+        $this->assertTrue($success, $message);
+        $data = cartstore::instance($this->userid)->get_data();
+        $this->assertEqualsWithDelta(0.0, (float) $data['coupondiscount'], 0.01);
+        $this->assertEqualsWithDelta(44.10, (float) $data['price'], 0.01);
+
+        // Item 1 opts in: only its 10.00 EUR get the 10% discount (1.00),
+        // items 2 and 3 keep their full price.
+        $this->set_iteminfo_json(1, ['couponoptin' => (string) $couponid]);
+        $couponobj->apply_coupon_code('OPTIN10');
+
+        $data = cartstore::instance($this->userid)->get_data();
+        $this->assertEqualsWithDelta(1.0, (float) $data['coupondiscount'], 0.01);
+        $this->assertEqualsWithDelta(43.10, (float) $data['price'], 0.01);
+    }
+
+    /**
+     * An opt-out coupon discounts every item except those that explicitly
+     * exclude it in their item configuration.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_optout_coupon_skips_excluded_items(): void {
+        global $DB;
+
+        $this->fill_cart();
+        coupon::add_edit_coupon(0, 'OPTOUT10', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
+        $couponid = $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'OPTOUT10'], MUST_EXIST);
+
+        // Item 2 (20.30 EUR) opts out: only items 1 and 3 are discounted
+        // (10% of 10.00 + 13.80 = 2.38).
+        $this->set_iteminfo_json(2, ['couponoptout' => (string) $couponid]);
+
+        [$success, $message] = (new coupon($this->userid))->apply_coupon_code('OPTOUT10');
+        $this->assertTrue($success, $message);
+
+        $data = cartstore::instance($this->userid)->get_data();
+        $this->assertEqualsWithDelta(2.38, (float) $data['coupondiscount'], 0.01);
+        $this->assertEqualsWithDelta(41.72, (float) $data['price'], 0.01);
+    }
+
+    /**
+     * Store an iteminfo json for one of the mock test items, the same shape the
+     * shopping_cart_handler persists for coupon opt-in/opt-out configuration.
+     *
+     * @param int $itemid
+     * @param array $json
+     */
+    private function set_iteminfo_json(int $itemid, array $json): void {
+        global $DB;
+
+        $DB->insert_record('local_shopping_cart_iteminfo', (object) [
+            'itemid' => $itemid,
+            'componentname' => 'local_shopping_cart',
+            'area' => 'testitem',
+            'json' => json_encode($json),
+            'usermodified' => $this->userid,
+            'timecreated' => time(),
+            'timemodified' => time(),
+        ]);
     }
 
     /**
