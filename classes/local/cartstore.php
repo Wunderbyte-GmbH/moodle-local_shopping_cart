@@ -165,6 +165,7 @@ class cartstore {
      * @param float $percent
      * @param float $absolute
      * @param float $downpayment
+     * @param string $couponcode
      * @return array
      */
     public function add_discount_to_item(
@@ -173,12 +174,27 @@ class cartstore {
         int $itemid,
         float $percent,
         float $absolute,
-        float $downpayment = -1
+        float $downpayment = -1,
+        string $couponcode = ''
     ): array {
 
         $context = context_system::instance();
         if (!has_capability('local/shopping_cart:cashier', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
+
+        if (!empty($couponcode)) {
+            // We store that we have already applied the coupon code in this cartstore.
+            $data = $this->get_cache();
+
+            // If a coupon code is already applied, we do not allow to apply another one.
+            if (!empty($data['coupon']) && $data['coupon'] !== $couponcode) {
+                return ['success' => 0];
+            }
+            if (empty($data['coupon'])) {
+                $data['coupon'] = $couponcode;
+                $this->set_cache($data);
+            }
         }
 
         $item = $this->get_item($component, $area, $itemid);
@@ -492,6 +508,8 @@ class cartstore {
                 // When there are no items anymore, there is no expiration date.
                 $data['expirationtime'] = 0;
                 unset($data['costcenter']);
+                unset($data['coupon']);
+                unset($data['coupondiscount']);
                 $this->set_cache($data);
                 $this->delete_saved_items_from_db();
             }
@@ -897,7 +915,7 @@ class cartstore {
      * @return mixed
      * @throws coding_exception
      */
-    private function get_cache() {
+    public function get_cache() {
 
         global $CFG;
 
@@ -1171,7 +1189,9 @@ class cartstore {
 
         if ($billingaddressid != null) {
             $billingaddress = address_operations::get_specific_user_address($billingaddressid);
-            $taxcountrycode = $billingaddress->state;
+            if ($billingaddress) {
+                $taxcountrycode = $billingaddress->state;
+            }
         }
         $data["taxcountrycode"] = $taxcountrycode;
 

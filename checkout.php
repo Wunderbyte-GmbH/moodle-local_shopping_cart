@@ -23,6 +23,7 @@
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
@@ -31,6 +32,7 @@ use local_shopping_cart\addresses;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\shopping_cart_history;
+use local_shopping_cart\utils\wb_payment;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
@@ -58,6 +60,8 @@ $PAGE->requires->css('/local/shopping_cart/styles.css');
 // Get the id of the page to be displayed.
 $success = optional_param('success', null, PARAM_INT);
 $jsononly = optional_param('jsononly', null, PARAM_INT);
+$checkoutresume = optional_param('checkoutresume', 0, PARAM_INT);
+$checkoutstep = optional_param('checkoutstep', null, PARAM_INT);
 
 // As we might get a malformed URL, we have to jump through a few loops.
 if (!$identifier = optional_param('identifier', null, PARAM_INT)) {
@@ -150,6 +154,59 @@ if (isset($success) && isset($historylist)) {
     $cartstore->get_expanded_checkout_data($data);
 }
 
+// Coupon handling.
+if (isset($cartstore)) {
+    // Still shopping: offer the input field, but only if coupons are enabled site-wide AND a
+    // valid PRO license is active (coupons are a PRO feature), and only if no coupon is already
+    // applied to the cart. We only check for an already applied coupon here; never apply/remove
+    // one, as this code path also runs on plain page reloads (e.g. when a background tab regains
+    // focus), and calling apply_coupon_code('') would silently clear the applied coupon.
+    $data['couponenabled'] = get_config('local_shopping_cart', 'couponenabled')
+        && wb_payment::pro_version_is_activated();
+
+    if ($data['couponenabled']) {
+        $couponmanager = new cart_coupon_manager($cartstore);
+        if ($couponmanager->coupon_applied()) {
+            $data['couponenabled'] = false;
+            $data['couponapplied'] = true;
+            $data['couponmessage'] = get_string(
+                'couponappliedsuccessfully',
+                'local_shopping_cart',
+                $couponmanager->get_applied_coupon()
+            );
+        }
+    }
+} else {
+    // Payment confirmation / receipt page: the cart is gone, so never offer the input again.
+    // Instead, hint that a coupon was used, if one was applied to this specific order. This is a
+    // historical fact about a completed order, so it is shown regardless of the current PRO
+    // status (e.g. even if the license has since expired).
+    $data['couponenabled'] = false;
+
+    if (get_config('local_shopping_cart', 'couponenabled')) {
+        // Note: the receipt items come from local_shopping_cart_ledger, which has no coupon
+        // column, so we look up the coupon from local_shopping_cart_history directly. That table
+        // stores the coupon's id (local_shopping_cart_coupons.id), not its code, so we need a
+        // second lookup to get the human-readable coupon code.
+        $usedcouponid = $DB->get_field_select(
+            'local_shopping_cart_history',
+            'coupon',
+            'identifier = :identifier AND ' . $DB->sql_isnotempty('local_shopping_cart_history', 'coupon', true, false),
+            ['identifier' => $identifier],
+            IGNORE_MULTIPLE
+        );
+
+        if (!empty($usedcouponid)) {
+            $usedcoupon = $DB->get_field('local_shopping_cart_coupons', 'coupon', ['id' => (int) $usedcouponid]);
+
+            if (!empty($usedcoupon)) {
+                $data['couponapplied'] = true;
+                $data['couponmessage'] = get_string('couponusedfororder', 'local_shopping_cart', $usedcoupon);
+            }
+        }
+    }
+}
+
 // Address handling.
 $requiredaddresskeys = addresses::get_required_address_keys();
 $requriedaddresses = addresses::get_required_address_data();
@@ -183,6 +240,25 @@ if ($hasallrequiredaddresses) {
 // phpcs:ignore
 //$data['address_selection_required'] = !empty($requiredaddresskeys) && !$hasallrequiredaddresses;
 $checkoutmanager = new checkout_manager($data);
+
+if (
+    $checkoutstep === null
+    && !empty($checkoutresume)
+    && !empty($SESSION->local_shopping_cart_checkout_resume)
+) {
+    $resumedata = $SESSION->local_shopping_cart_checkout_resume;
+    if ((int)($resumedata['userid'] ?? 0) === (int)$USER->id) {
+        $checkoutstep = max(0, (int)($resumedata['step'] ?? 0));
+    }
+    unset($SESSION->local_shopping_cart_checkout_resume);
+}
+
+if ($checkoutstep !== null) {
+    $checkoutmanager = new checkout_manager($data, [
+        'currentstep' => max(0, (int)$checkoutstep),
+        'action' => 'resume',
+    ]);
+}
 
 $checkoutmanagerdata = $checkoutmanager->render_overview();
 $data = array_merge($data, $checkoutmanagerdata);

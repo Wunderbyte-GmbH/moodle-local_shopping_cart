@@ -32,8 +32,11 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\coupon;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\utils\wb_payment;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -59,6 +62,8 @@ class get_price extends external_api {
                         'userid' => new external_value(PARAM_INT, 'userid', VALUE_DEFAULT, 0),
                         'usecredit' => new external_value(PARAM_INT, 'use credit', VALUE_DEFAULT, 0),
                         'useinstallments' => new external_value(PARAM_INT, 'use installments', VALUE_DEFAULT, 0),
+                        'couponvalue' => new external_value(PARAM_TEXT, 'coupon value', VALUE_DEFAULT, ''),
+                        'couponenabled' => new external_value(PARAM_BOOL, 'If coupons are enabled', VALUE_DEFAULT, false),
                 ]);
     }
 
@@ -68,14 +73,24 @@ class get_price extends external_api {
      * @param int $userid
      * @param int $usecredit
      * @param int $useinstallments
+     * @param string $couponvalue
+     * @param bool $couponenabled
      *
      * @return array
      */
-    public static function execute(int $userid, int $usecredit, int $useinstallments): array {
+    public static function execute(
+        int $userid,
+        int $usecredit,
+        int $useinstallments,
+        string $couponvalue = '',
+        bool $couponenabled = false
+    ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
                 'userid' => $userid,
                 'usecredit' => $usecredit,
                 'useinstallments' => $useinstallments,
+                'couponvalue' => $couponvalue,
+                'couponenabled' => $couponenabled,
         ]);
 
         global $USER;
@@ -106,6 +121,17 @@ class get_price extends external_api {
             }
         }
 
+        // Before appliying the credit, we have to apply the coupon if any.
+        // This is only done when the request genuinely originates from a page that shows the
+        // coupon UI. Otherwise (e.g. cart.js refreshing the nav cart badge on a page without any
+        // coupon input, such as coupons.php) $couponvalue is always '', which would otherwise be
+        // misread as "the user cleared the coupon field" and silently remove an applied coupon.
+        $couponmessage = '';
+        if ($params['couponenabled']) {
+            $coupon = new coupon($userid);
+            [, $couponmessage] = $coupon->apply_coupon_code($couponvalue);
+        }
+
         // Add the state to the cache.
         if ($params['usecredit'] != -1) {
             shopping_cart::save_used_credit_state($userid, $usecredit);
@@ -124,7 +150,19 @@ class get_price extends external_api {
         // For the webservice, we must make sure that the keys exist.
         $data['remainingcredit'] = $data['remainingcredit'] ?? 0;
         $data['deductible'] = $data['deductible'] ?? 0;
+        $data['coupondiscount'] = $data['coupondiscount'] ?? 0;
         $data['lang'] = current_language() ?? 'en';
+
+        $couponmanager = new cart_coupon_manager($cartstore);
+        $appliedcoupon = $couponmanager->get_applied_coupon();
+
+        // Coupon UI state. Coupons are a PRO feature, so the input is only ever offered when a
+        // valid license is active, on top of the site-wide "couponenabled" setting.
+        $data['couponmessage'] = $couponmessage;
+        $data['couponenabled'] = (bool) get_config('local_shopping_cart', 'couponenabled')
+            && wb_payment::pro_version_is_activated();
+        $data['couponapplied'] = $couponmanager->coupon_applied();
+        $data['coupon'] = $appliedcoupon !== '' ? $appliedcoupon : $couponvalue;
 
         return $data;
     }
@@ -146,6 +184,16 @@ class get_price extends external_api {
                         'initialtotal_net' => new external_value(
                             PARAM_FLOAT,
                             'Initial price before deduced credits net amount',
+                            VALUE_DEFAULT,
+                            0
+                        ),
+                        'coupon' => new external_value(PARAM_TEXT, 'The applied coupon code', VALUE_DEFAULT, ''),
+                        'couponenabled' => new external_value(PARAM_BOOL, 'If coupons are enabled', VALUE_DEFAULT, false),
+                        'couponapplied' => new external_value(PARAM_BOOL, 'If a coupon is applied', VALUE_DEFAULT, false),
+                        'couponmessage' => new external_value(PARAM_TEXT, 'Message about the coupon', VALUE_DEFAULT, ''),
+                        'coupondiscount' => new external_value(
+                            PARAM_FLOAT,
+                            'Discount amount from coupon codes.',
                             VALUE_DEFAULT,
                             0
                         ),

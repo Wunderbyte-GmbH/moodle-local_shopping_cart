@@ -51,6 +51,8 @@ define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER', 8);
 // Credits removed and paid back to user by (bank) transfer.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits removed and paid back to user by (bank) transfer.
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION', 10); // Credits payed back during rebooking.
+// Partial refund granted as credit without cancelling the purchase (e.g. slot move to a cheaper slot).
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND', 11);
 
 // Cart success params.
 define('LOCAL_SHOPPING_CART_CARTPARAM_ERROR', -1); // General error.
@@ -65,6 +67,7 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT', 6); // Item could not be 
 // Price modifiers.
 define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 10); // Apply Installments.
 define('LOCAL_SHOPPING_CART_PRICEMOD_STANDARD', 30); // Apply Standard calculation.
+define('LOCAL_SHOPPING_CART_PRICEMOD_COUPON', 40); // Apply Coupon discounts.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 50); // Apply Taxes on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 100); // Apply Credits on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS', 150); // Applies Terms and conditions, normally for checkout.
@@ -107,6 +110,10 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
  */
 function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     global $USER, $CFG, $PAGE;
+
+    // Note: guest checkout users are created in guestcheckout::after_config(), which runs at the end
+    // of bootstrap before any output, so the login session cookie is set reliably and errors surface
+    // loudly. Doing it during rendering set the cookie too late and hid failures.
 
     // Early bail out conditions.
     if (!isloggedin() || isguestuser()) {

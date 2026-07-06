@@ -51,6 +51,7 @@ $functions = [
                 'type' => 'write',
                 'capabilities' => '',
                 'ajax' => 1,
+                'loginrequired' => false,
         ],
         'local_shopping_cart_delete_item' => [
                 'classname' => 'local_shopping_cart\external\delete_item_from_cart',
@@ -159,9 +160,13 @@ $functions = [
         ],
         'local_shopping_cart_control_checkout_process' => [
             'classname'     => 'local_shopping_cart\external\control_checkout_process',
-            'description'   => 'Update the booking notes via AJAX',
+            'description'   => 'Advance the multi-step checkout process for the current user via AJAX',
             'type'          => 'write',
-            'capabilities'  => 'mod/booking:readresponses',
+            // No capability: the service only reads/writes the current user's own
+            // checkout cache and is protected by require_login(). The previous
+            // mod/booking:readresponses requirement was wrong and would block
+            // guest checkout users who do not hold that booking capability.
+            'capabilities'  => '',
             'ajax'          => 1,
         ],
         'local_shopping_cart_delete_address' => [

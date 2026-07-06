@@ -117,7 +117,7 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
                 }
                 $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
                 $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
-                $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
+                $managercache = $checkoutmanager->submit_step($stepdata['changedinput']);
             }
         }
 
@@ -137,6 +137,13 @@ final class checkout_manager_credits_persistant_cache_test extends checkout_proc
             $data['items'] = $refresheditems;
             $data['price'] = $refresheddata['price'] ?? $data['price'] ?? 0;
             $data['price_net'] = $refresheddata['price_net'] ?? $data['price_net'] ?? 0;
+            // Carry the VAT / tax-country data set during the checkout steps so
+            // it is recorded on the history items (e.g. for invoices).
+            foreach (['vatnrnumber', 'vatnrcountry', 'taxcountrycode', 'companyname'] as $vatkey) {
+                if (isset($refresheddata[$vatkey])) {
+                    $data[$vatkey] = $refresheddata[$vatkey];
+                }
+            }
         }
 
         $data['items']["local_shopping_cart-testitem-1"] = $data['items'][0];

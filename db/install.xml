@@ -41,6 +41,7 @@
                 <FIELD NAME="vatnumber" TYPE="char" LENGTH="24" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="nritems" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Number of items which were bought"/>
                 <FIELD NAME="multipliable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 if not multipliable, else 1"/>
+                <FIELD NAME="coupon" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Couponcode"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -114,6 +115,7 @@
                 <FIELD NAME="vatnumber" TYPE="char" LENGTH="24" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="nritems" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Number of items which were bought"/>
                 <FIELD NAME="multipliable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 if not multipliable, else 1"/>
+                <FIELD NAME="coupon" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Couponcode"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -201,6 +203,45 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+        </TABLE>
+
+		<TABLE NAME="local_shopping_cart_guestusers" COMMENT="Tracks temporary guest checkout accounts not yet converted to real Moodle users.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+			</FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid_idx" UNIQUE="true" FIELDS="userid"/>
+            </INDEXES>
+        </TABLE>
+
+        <TABLE NAME="local_shopping_cart_coupons" COMMENT="Stores all created coupons">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="coupon" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Couponcode"/>
+                <FIELD NAME="discountpercentage" TYPE="number" LENGTH="3" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="1" COMMENT="Discount as percentage of total."/>
+                <FIELD NAME="discountabsolute" TYPE="number" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="2" COMMENT="Reduce by absolute value. Needs to be combined with currency"/>
+                <FIELD NAME="currency" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="EUR" SEQUENCE="false" COMMENT="Currency of discountabsolute."/>
+                <FIELD NAME="maxnumber" TYPE="int" LENGTH="8" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Max number of usages allowed. 0 is unlimited."/>
+                <FIELD NAME="json" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Store supplementary information"/>
+                <FIELD NAME="active" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="1 when active, 0 when inactive"/>
+                <FIELD NAME="coupontype" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Type of the coupon"/>
+                <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Unix timestamp for starttime"/>
+                <FIELD NAME="endtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Unix timestamp for endtime."/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="coupon_idx" UNIQUE="true" FIELDS="coupon" COMMENT="Index for coupon"/>
+			</INDEXES>
         </TABLE>
     </TABLES>
 </XMLDB>

@@ -89,6 +89,8 @@ class shopping_cart_handler {
             get_config('local_shopping_cart', 'enableinstallments')
             || get_config('local_shopping_cart', 'allowrebooking')
             || get_config('local_shopping_cart', 'allowchooseaccount')
+            || get_config('local_shopping_cart', 'allowcustombookingfee')
+            || get_config('local_shopping_cart', 'couponenabled')
         ) {
             $mform->addElement(
                 'header',
@@ -96,6 +98,20 @@ class shopping_cart_handler {
                 '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;'
                 . get_string('pluginname', 'local_shopping_cart')
             );
+        }
+
+        if (get_config('local_shopping_cart', 'allowcustombookingfee')) {
+            // Item-specific booking fee. Empty = fall back to the global fee
+            // logic, 0 = explicitly no fee — so the raw value must survive,
+            // PARAM_FLOAT would coerce '' to 0.
+            $mform->addElement(
+                'text',
+                'sch_bookingfee',
+                get_string('sch_bookingfee', 'local_shopping_cart')
+            );
+            $mform->setType('sch_bookingfee', PARAM_RAW_TRIMMED);
+            $mform->setDefault('sch_bookingfee', '');
+            $mform->addHelpButton('sch_bookingfee', 'sch_bookingfee', 'local_shopping_cart');
         }
 
         if (has_capability('local/shopping_cart:changepaymentaccount', context_system::instance())) {
@@ -193,6 +209,38 @@ class shopping_cart_handler {
             $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
             $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
         }
+
+        if (get_config('local_shopping_cart', 'couponenabled')) {
+            global $DB;
+
+            $optincoupons = $DB->get_records_menu(
+                'local_shopping_cart_coupons',
+                ['coupontype' => 'couponoptin', 'active' => 1],
+                '',
+                'id, coupon'
+            );
+            $mform->addElement(
+                'autocomplete',
+                'sch_couponoptincodes',
+                get_string('sch_couponoptincodes', 'local_shopping_cart'),
+                $optincoupons,
+                ['multiple' => true]
+            );
+
+            $optoutcoupons = $DB->get_records_menu(
+                'local_shopping_cart_coupons',
+                ['coupontype' => 'couponoptout', 'active' => 1],
+                '',
+                'id, coupon'
+            );
+            $mform->addElement(
+                'autocomplete',
+                'sch_couponoptoutcodes',
+                get_string('sch_couponoptoutcodes', 'local_shopping_cart'),
+                $optoutcoupons,
+                ['multiple' => true]
+            );
+        }
     }
 
     /**
@@ -211,6 +259,23 @@ class shopping_cart_handler {
             $errors['sch_duedatevariable'] = get_string('onlyone', 'local_shopping_cart');
             $errors['sch_duedaysbeforecoursestart'] = get_string('onlyone', 'local_shopping_cart');
         }
+
+        if (isset($data['sch_bookingfee'])) {
+            $rawfee = self::normalize_custom_bookingfee($data['sch_bookingfee']);
+            if ($rawfee !== '' && (!is_numeric($rawfee) || (float)$rawfee < 0)) {
+                $errors['sch_bookingfee'] = get_string('sch_bookingfee_error', 'local_shopping_cart');
+            }
+        }
+    }
+
+    /**
+     * Normalize a raw custom booking fee form value (decimal comma tolerated).
+     *
+     * @param mixed $value
+     * @return string '' when no fee is set (= fall back to global fee logic)
+     */
+    public static function normalize_custom_bookingfee($value): string {
+        return str_replace(',', '.', trim((string)$value));
     }
 
     /**
@@ -258,6 +323,23 @@ class shopping_cart_handler {
             $this->add_key_to_jsonobject('allowrebooking', $formdata->sch_allowrebooking);
         }
 
+        if (
+            get_config('local_shopping_cart', 'allowcustombookingfee')
+            && property_exists($formdata, 'sch_bookingfee')
+        ) {
+            $rawfee = self::normalize_custom_bookingfee($formdata->sch_bookingfee);
+            // Empty = fall back to the global fee logic (stored as null),
+            // 0 = explicitly no fee, > 0 = this fee.
+            $this->add_key_to_jsonobject('bookingfee', is_numeric($rawfee) ? (float)$rawfee : null);
+        }
+
+        if (get_config('local_shopping_cart', 'couponenabled')) {
+            $optincodes = $formdata->sch_couponoptincodes ?? [];
+            $this->add_key_to_jsonobject('couponoptin', implode(',', (array)$optincodes));
+            $optoutcodes = $formdata->sch_couponoptoutcodes ?? [];
+            $this->add_key_to_jsonobject('couponoptout', implode(',', (array)$optoutcodes));
+        }
+
         $this->save_iteminfo();
     }
 
@@ -300,10 +382,19 @@ class shopping_cart_handler {
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments ?? 0;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable ?? 0;
         $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart ?? 0;
+        $formdata->sch_couponoptincodes = !empty($jsonobject->couponoptin)
+            ? explode(',', $jsonobject->couponoptin) : [];
+        $formdata->sch_couponoptoutcodes = !empty($jsonobject->couponoptout)
+            ? explode(',', $jsonobject->couponoptout) : [];
 
         // Rebooking.
         $formdata->sch_allowrebooking = $jsonobject->allowrebooking
             ?? get_config('local_shopping_cart', 'allowrebooking') ?: 0;
+
+        // Item-specific booking fee ('' = no own fee, global fee logic applies).
+        $formdata->sch_bookingfee = isset($jsonobject->bookingfee) && is_numeric($jsonobject->bookingfee)
+            ? $jsonobject->bookingfee
+            : '';
     }
 
     /**

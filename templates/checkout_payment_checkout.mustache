@@ -48,7 +48,7 @@
 
 }}
 {{#checkout_manager_body.buttons.checkout_button}}
-    <div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
+    <div class="shopping_cart_payment_region text-center clearfix">
     {{checkout_manager_body.buttons.hide_disabled_checkout_button}}
         {{#isguestuser}}
             <div class="mdl-align">
@@ -59,7 +59,7 @@
         {{/isguestuser}}
         {{^isguestuser}}
             <button
-                class="btn btn-primary pull-right me-3"
+                class="btn btn-primary"
                 type="button"
                 id="gateways-modal-trigger-33"
                 data-action="core_payment/triggerPayment"
@@ -83,10 +83,10 @@
     </div>
 {{/checkout_manager_body.buttons.checkout_button}}
 {{^checkout_manager_body.buttons.checkout_button}}
-    <div class="shopping_cart_payment_region text-center mt-5 mb-5 clearfix">
+    <div class="shopping_cart_payment_region text-center clearfix">
         {{^isguestuser}}
             <button
-                class="btn btn-primary pull-right me-3"
+                class="btn btn-primary"
                 type="button"
                 id="gateways-modal-trigger-33"
                 data-identifier="{{identifier}}"

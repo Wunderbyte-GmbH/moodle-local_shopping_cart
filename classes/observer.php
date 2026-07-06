@@ -26,11 +26,60 @@ namespace local_shopping_cart;
 
 use local_shopping_cart\interfaces\invoice;
 use local_shopping_cart\invoice\invoicenumber;
+use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\guestcheckout;
+use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
 
 /**
  * Event observer for local_shopping_cart.
  */
 class observer {
+    /**
+     * Triggered when a user logs in.
+     *
+     * If the login originated from guest checkout, migrate the guest cart and
+     * checkout cache to the logged-in account and remember the step to resume.
+     *
+     * @param \core\event\base $event
+     * @return void
+     */
+    public static function user_loggedin(\core\event\base $event): void {
+        global $SESSION;
+
+        if (!get_config('local_shopping_cart', 'guestoncheckout')) {
+            return;
+        }
+
+        $context = $SESSION->local_shopping_cart_guest_login_context ?? null;
+        if (empty($context) || empty($context['guestuserid'])) {
+            return;
+        }
+
+        $guestuserid = (int)$context['guestuserid'];
+        $targetuserid = (int)$event->userid;
+
+        unset($SESSION->local_shopping_cart_guest_login_context);
+
+        if ($guestuserid < 1 || $targetuserid < 1 || $guestuserid === $targetuserid) {
+            return;
+        }
+
+        if (!guestcheckout::is_guest_checkout_user($guestuserid)) {
+            return;
+        }
+
+        $resumestep = guestcheckout::migrate_guest_checkout_to_user($guestuserid, $targetuserid);
+
+        $SESSION->local_shopping_cart_checkout_resume = [
+            'userid' => $targetuserid,
+            'step' => max(0, (int)$resumestep),
+            'timecreated' => time(),
+        ];
+
+        guestcheckout::delete_guest_user($guestuserid);
+    }
+
     /**
      * Triggered via payment_error event from any payment provider
      * If we receive a payment error, check for the order id in our shopping cart history.
@@ -100,5 +149,115 @@ class observer {
             throw new \coding_exception("$invoiceproviderclass was not found by class_exists.");
         }
         $invoiceproviderclass::create_invoice_task($event);
+    }
+
+    /**
+     * Triggered when a checkout is completed successfully.
+     *
+     * If the purchasing user is a guest checkout user (created automatically when
+     * they first added an item to the cart), this observer converts that temporary
+     * account into a permanent Moodle user using the registration data they entered
+     * in the addresses/registration checkout step.
+     *
+     * @param \core\event\base $event
+     * @return void
+     */
+    public static function checkout_completed(\core\event\base $event): void {
+        if (!get_config('local_shopping_cart', 'guestoncheckout')) {
+            return;
+        }
+
+        $userid = (int) $event->relateduserid;
+        if ($userid < 1) {
+            return;
+        }
+
+        if (!guestcheckout::is_guest_checkout_user($userid)) {
+            return;
+        }
+
+        // Retrieve the cached registration data saved by the addresses checkout step.
+        $cachedata = checkout_manager::get_cache($userid);
+        $stepdata  = $cachedata['steps']['addresses']['data'] ?? [];
+
+        $firstname = trim($stepdata['guest_firstname'] ?? '');
+        $lastname  = trim($stepdata['guest_lastname'] ?? '');
+        $email     = trim($stepdata['guest_email'] ?? '');
+
+        if (empty($firstname) || empty($lastname) || empty($email)) {
+            // Registration data is missing – cannot convert. Leave the guest user
+            // in place; the 24-hour cleanup task will remove it eventually.
+            return;
+        }
+
+        guestcheckout::convert_guest_to_real_user($userid, $firstname, $lastname, $email);
+    }
+
+    /**
+     * Triggered for any provider event named "subscription_cancelled".
+     * Cancels each purchased item in shopping cart history and notifies the owning component.
+     *
+     * Expected payload in $event->other:
+     * - component (string)
+     * - itemid (int) as cart identifier
+     * - userid (int) optional, falls back to $event->userid
+     *
+     * @param \core\event\base $event
+     * @return void
+     */
+    public static function subscription_cancelled(\core\event\base $event): void {
+        if (empty(get_config('local_shopping_cart', 'enablesubscriptioncancelobserver'))) {
+            return;
+        }
+
+        $data = $event->get_data();
+        $stringarray = explode("\\", $data['eventname'] ?? '');
+        if (end($stringarray) !== 'subscription_cancelled') {
+            return;
+        }
+
+        $other = $data['other'] ?? [];
+
+        if (
+            empty($other['component']) ||
+            $other['component'] !== 'local_shopping_cart' ||
+            empty($other['itemid'])
+        ) {
+            return;
+        }
+
+        $identifier = (int) $other['itemid'];
+        $userid     = (int) ($other['userid'] ?? ($data['userid'] ?? 0));
+        if (empty($userid)) {
+            return;
+        }
+
+        // Get all items bought under this cart identifier.
+        $records = shopping_cart_history::return_data_via_identifier($identifier);
+        if (empty($records)) {
+            return;
+        }
+
+        foreach ($records as $record) {
+            // Mark as cancelled first; if this returns no success, skip callback to stay idempotent.
+            $result = shopping_cart_history::cancel_purchase(
+                $record->itemid,
+                $userid,
+                $record->componentname,
+                $record->area,
+                $record->id // History id.
+            );
+            if (empty($result[0])) {
+                continue;
+            }
+
+            // Notify the component (e.g. mod_booking) so it can unenrol / revoke access.
+            shopping_cart::cancel_purchase_for_component(
+                $record->componentname,
+                $record->area,
+                $record->itemid,
+                $userid
+            );
+        }
     }
 }

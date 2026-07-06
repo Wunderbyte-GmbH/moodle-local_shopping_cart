@@ -197,4 +197,102 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
         $this->assertArrayHasKey('success', $cancelresult);
         $this->assertEquals($cancelresult['success'], 1, 'Purchase was not successfully canceled.');
     }
+
+    /**
+     * Buys a cancellable ("main" area) item for the given user as cashier and returns
+     * the paid price and the history id, so the self-cancellation tests can build on it.
+     *
+     * @param \stdClass $user
+     * @param int $itemid
+     * @return array{0: float, 1: int} [paid price, history id]
+     */
+    private function buy_cancellable_item(\stdClass $user, int $itemid): array {
+        $account = helper::save_payment_account((object)['name' => 'Test 1', 'idnumber' => '']);
+        helper::save_payment_gateway(
+            (object)['accountid' => $account->get('id'), 'gateway' => 'paypal', 'config' => 'T1']
+        );
+
+        // The "main" area items are flagged cancellable by the service provider, which is
+        // what allows a non-cashier user to cancel her own purchase.
+        $this->setAdminUser();
+        $addresult = add_item_to_cart::execute('local_shopping_cart', 'main', $itemid, $user->id);
+        $this->assertEquals(1, $addresult['success'], 'Item was not added to cart.');
+        $price = (float) $addresult['price'];
+
+        $purchaseresult = confirm_cash_payment::execute($user->id, 3, 'cancel test purchase');
+        $this->assertEquals(1, $purchaseresult['status'], 'Purchase was not confirmed.');
+
+        $historyitem = get_history_item::execute('local_shopping_cart', 'main', $itemid, $user->id);
+        return [$price, (int) $historyitem['id']];
+    }
+
+    /**
+     * A self-cancellation without a cancelation fee refunds the full paid price as credit.
+     *
+     * @covers \local_shopping_cart\shopping_cart::cancel_purchase
+     * @runInSeparateProcess
+     * @return void
+     */
+    public function test_self_cancel_refunds_full_price(): void {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        [$price, $historyid] = $this->buy_cancellable_item($user, 1);
+
+        // No cancelation fee configured.
+        set_config('cancelationfee', 0, 'local_shopping_cart');
+
+        // Cancel as the user herself.
+        $this->setUser($user);
+        $cancelresult = shopping_cart::cancel_purchase(1, 'main', $user->id, 'local_shopping_cart', $historyid, 0.0);
+        $this->assertEquals(1, $cancelresult['success'], 'Self-cancellation did not succeed.');
+
+        // The full paid price must be refunded into the user's credit balance.
+        $balance = shopping_cart_credits::get_balance($user->id);
+        $this->assertEqualsWithDelta($price, (float) $balance[0], 0.001, 'Full paid price should be refunded as credit.');
+
+        // The cancelled ledger record documents the refund and a zero fee.
+        $ledger = $DB->get_record('local_shopping_cart_ledger', [
+            'schistoryid' => $historyid,
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+        ]);
+        $this->assertEqualsWithDelta($price, (float) $ledger->credits, 0.001, 'Ledger credits should equal the refund.');
+        $this->assertEqualsWithDelta(0.0, (float) $ledger->fee, 0.001, 'Ledger fee should be zero without a cancelation fee.');
+    }
+
+    /**
+     * A self-cancellation with a configured cancelation fee refunds price minus the fee.
+     *
+     * @covers \local_shopping_cart\shopping_cart::cancel_purchase
+     * @runInSeparateProcess
+     * @return void
+     */
+    public function test_self_cancel_with_fee_refunds_price_minus_fee(): void {
+        global $DB;
+
+        $cancelationfee = 3.0;
+
+        $user = $this->getDataGenerator()->create_user();
+        [$price, $historyid] = $this->buy_cancellable_item($user, 1);
+
+        // Activate a cancelation fee; it is deducted automatically on self-cancellation.
+        set_config('cancelationfee', $cancelationfee, 'local_shopping_cart');
+
+        $this->setUser($user);
+        $cancelresult = shopping_cart::cancel_purchase(1, 'main', $user->id, 'local_shopping_cart', $historyid, 0.0);
+        $this->assertEquals(1, $cancelresult['success'], 'Self-cancellation did not succeed.');
+
+        // Refund must be the paid price minus the cancelation fee.
+        $expectedrefund = $price - $cancelationfee;
+        $balance = shopping_cart_credits::get_balance($user->id);
+        $this->assertEqualsWithDelta($expectedrefund, (float) $balance[0], 0.001, 'Refund should be price minus cancelation fee.');
+
+        // The cancelled ledger record documents both the net refund and the deducted fee.
+        $ledger = $DB->get_record('local_shopping_cart_ledger', [
+            'schistoryid' => $historyid,
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+        ]);
+        $this->assertEqualsWithDelta($expectedrefund, (float) $ledger->credits, 0.001, 'Ledger credits should equal net refund.');
+        $this->assertEqualsWithDelta($cancelationfee, (float) $ledger->fee, 0.001, 'Ledger fee should equal cancelation fee.');
+    }
 }

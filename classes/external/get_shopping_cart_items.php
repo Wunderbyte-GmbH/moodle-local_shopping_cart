@@ -186,6 +186,8 @@ class get_shopping_cart_items extends external_api {
                             'nodelete' => new external_value(PARAM_INT, 'Marker for no delete', VALUE_OPTIONAL),
                             'nritemsstring' => new external_value(PARAM_TEXT, 'Number of one item', VALUE_OPTIONAL),
                             'multipliable' => new external_value(PARAM_TEXT, 'Is the item multipliable', VALUE_OPTIONAL),
+                            'coupondiscount' => new external_value(PARAM_FLOAT, 'Coupon discount for this item', VALUE_OPTIONAL),
+                            'originalprice' => new external_value(PARAM_FLOAT, 'Original price before discount', VALUE_OPTIONAL),
                         ]
                     )
                 ),

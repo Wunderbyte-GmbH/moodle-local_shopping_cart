@@ -55,7 +55,7 @@ class create_invoice {
      * @throws moodle_exception
      */
     public static function create_invoice_files_from_identifier(int $identifier, int $userid): void {
-        global $DB, $USER;
+        global $DB;
 
         // 1. Have a look if we have the invoice already.
         // 2. If not, get the content of the file.
@@ -242,7 +242,9 @@ class create_invoice {
         $payment = $items[array_key_first($items)]->payment;
 
         // Check if there as a separate HTML template for special rows without identifier.
-        if (in_array($payment, [8, 9])) {
+        // 8/9 = credits paid back / credits correction, 11 = partial refund (e.g. slot downgrade).
+        // All of these reuse the extra-receipt template; no dedicated document setting is needed.
+        if (in_array($payment, [8, 9, LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND])) {
             if (!empty(trim(strip_tags($extrareceiptshtml)))) {
                 // If it's not empty, we use it instead of the default HTML template.
                 $cfghtml = $extrareceiptshtml;
@@ -291,6 +293,7 @@ class create_invoice {
                         <td style="text-align: left; width: 15%;"><b>Location</b></td>
                         <td style="text-align: left; width: 10%;"><b>Day & Time</b></td>
                         <td style="text-align: center; width: 10%;"><b>Total</b></td>
+                        [[#discount]]<td style="text-align: center; width: 10%;"><b>Discount</b></td>[[/discount]]
                         <td style="text-align: center; width: 10%;"><b>Outstanding</b></td>
                         <td style="text-align: center; width: 15%;"><b>Paid</b></td>
                     </tr>
@@ -301,6 +304,7 @@ class create_invoice {
                         <td style="text-align: left;">[[location]]</td>
                         <td style="text-align: left;">[[dayofweektime]]</td>
                         <td style="text-align: right;">[[originalprice]] EUR</td>
+                        [[#discount]]<td style="text-align: right;">[[discount]] EUR</td>[[/discount]]
                         <td style="text-align: right;">[[outstandingprice]] EUR</td>
                         <td style="text-align: right;">[[price]] EUR</td>
                     </tr>
@@ -313,6 +317,19 @@ class create_invoice {
                         <td style="text-align: right;"><b>[[sum]] EUR</b></td>
                     </tr>
                 </table>';
+        }
+
+        $hasdiscount = false;
+        foreach ($items as $item) {
+            if (!empty($item->discount)) {
+                $hasdiscount = true;
+                break;
+            }
+        }
+        if ($hasdiscount) {
+            $cfghtml = preg_replace('/\[\[#discount\]\](.*?)\[\[\/discount\]\]/s', '$1', $cfghtml);
+        } else {
+            $cfghtml = preg_replace('/\[\[#discount\]\].*?\[\[\/discount\]\]/s', '', $cfghtml);
         }
 
         // Make sure items are sorted from the most expensive on top to a credit (negative).
@@ -439,6 +456,7 @@ class create_invoice {
 
         $pos = 1;
         $sum = 0.0;
+        $discount = 0.0;
         $itemhtml = '';
         foreach ($items as $item) {
             if (isset($item->schistoryid)) {
@@ -455,7 +473,7 @@ class create_invoice {
                 );
                 $tmp = str_replace(
                     "[[originalprice]]",
-                    format_float((float)$price, 2),
+                    format_float((float)$price + (float)($item->discount ?? 0), 2),
                     $tmp
                 );
                 $tmp = str_replace(
@@ -545,10 +563,13 @@ class create_invoice {
             $sum += $price;
             $itemhtml .= $tmp;
             $pos++;
+            $discount += $item->discount ?? 0.0;
         }
 
         $sumstring = format_float((float)$sum, 2);
+        $discountstring = format_float((float)$discount, 2);
         $posthtml = str_replace("[[sum]]", $sumstring, $posthtml);
+        $posthtml = str_replace("[[discount]]", $discountstring, $posthtml);
         $html = '
         <style>
             h1 {

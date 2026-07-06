@@ -70,6 +70,8 @@ const SELECTORS = {
     INCREASEBUTTON: 'increase',
     DECREASEBUTTON: 'decrease',
     SHOPPINGCARTITEM: '[data-itemid]',
+    COUPONINPUT: 'input[data-id="couponcode"]',
+    COUPONAPPLY: 'button[data-id="applycoupon"]',
 };
 /**
  *
@@ -309,9 +311,11 @@ export const reinit = (userid = 0) => {
                 toggleActiveButtonState();
                 // eslint-disable-next-line no-console
                 console.log('reinit -> updateTotalPrice');
-                // We don’t want to set the useinstallment and usecredit values; we just want to get the price information.
+                // We don't want to set the useinstallment and usecredit values; we just want to get the price information.
                 // To achieve this, we pass -1 for both usecredit and useinstallment.
-                updateTotalPrice(userid, -1, -1);
+                // Read the current coupon input value so an already-applied coupon is not cleared by the reinit call.
+                const existingcoupon = document.querySelector(SELECTORS.COUPONINPUT);
+                updateTotalPrice(userid, -1, -1, existingcoupon ? existingcoupon.value : '');
 
                 return;
             }).catch(e => {
@@ -423,8 +427,16 @@ export const addItem = (itemid, component, area, userid) => {
  * @param {*} userid
  * @param {*} usecredit 1 = enable it, 0 = disable it, -1 = no change
  * @param {*} useinstallments 1 = enable it, 0 = disable it, -1 = no change
+ * @param {*} couponvalue
+ * @param {boolean} refreshItemsAfter When true, reinit cart items after price label renders (used after explicit coupon apply).
  */
-export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0) => {
+export const updateTotalPrice = (
+    userid = 0,
+    usecredit = true,
+    useinstallments = false,
+    couponvalue = '',
+    refreshItemsAfter = false
+) => {
 
     // On cashier, update price must always be for cashier user.
     const oncashier = window.location.href.indexOf("cashier.php");
@@ -463,13 +475,16 @@ export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0)
             useinstallments = useinstallments ? 1 : 0;
         }
     }
+    const couponenabled = document.querySelector(SELECTORS.COUPONINPUT) !== null;
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
         args: {
             userid,
             usecredit,
-            useinstallments
+            useinstallments,
+            couponvalue,
+            couponenabled
         },
         done: function(data) {
 
@@ -503,6 +518,10 @@ export const updateTotalPrice = (userid = 0, usecredit = 1, useinstallments = 0)
                         addZeroPriceListener(data);
                     }
                 });
+
+                if (refreshItemsAfter) {
+                    reinit(userid);
+                }
 
                 return true;
             }).catch((e => {
@@ -615,6 +634,12 @@ export function addItemShowNotification(data) {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
+
+            if (Number(data.guestusercreated || 0) === 1) {
+                window.location.reload();
+                return;
+            }
+
             reinit(data.userid);
             return;
         case CARTPARAM_CARTISFULL:
@@ -952,6 +977,11 @@ function toggleActiveButtonState(button = null) {
         shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
     }
 
+    // In some checkout/prepage states there is no visible cart container yet.
+    if (!shoppingcart) {
+        return;
+    }
+
     buttons.forEach(addtocartbutton => {
 
         component = addtocartbutton.dataset.component;
@@ -980,40 +1010,92 @@ export function initPriceLabel(userid) {
         userid = 0;
     }
 
-    const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
-    const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
+    initChangeListener(document.querySelector(SELECTORS.PRICELABELCHECKBOX), userid);
+    initChangeListener(document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX), userid);
 
-    if (checkbox && !checkbox.initialized) {
-        checkbox.initialized = true;
-        checkbox.addEventListener('change', event => {
+    const triggerCouponApply = () => {
+        const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+        const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
+        const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+        const checkboxchecked = checkbox ? checkbox.checked : null;
+        const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
+        const couponvalue = couponinput ? couponinput.value : '';
+        updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue, true);
+    };
 
-            if (event.currentTarget.checked) {
-                updateTotalPrice(userid, 1, -1);
-            } else {
-                updateTotalPrice(userid, 0, -1);
+    const applybtn = document.querySelector(SELECTORS.COUPONAPPLY);
+    if (applybtn && !applybtn.initialized) {
+        applybtn.initialized = true;
+        applybtn.addEventListener('click', triggerCouponApply);
+    }
+
+    const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+    if (couponinput && !couponinput.initialized) {
+        couponinput.initialized = true;
+        couponinput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                triggerCouponApply();
             }
         });
     }
+}
 
-    if (installmentscheckbox && !installmentscheckbox.initialized) {
-        installmentscheckbox.initialized = true;
+/**
+ * Debounce function to limit the rate of function calls.
+ * @param {*} fn
+ * @param {*} delay
+ */
+function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
 
-        // eslint-disable-next-line no-console
-        console.log('add event listener to installment');
-        installmentscheckbox.addEventListener('change', event => {
+/**
+ * Handles the price recalculation on change of the price label options.
+ * @param {int} userid
+ */
+function handlePriceRecalc(userid) {
+    // eslint-disable-next-line no-console
+    console.log('triggered', userid);
+    const checkbox = document.querySelector(SELECTORS.PRICELABELCHECKBOX);
+    const installmentscheckbox = document.querySelector(SELECTORS.INSTALLMENTSCHECKBOX);
+    const couponinput = document.querySelector(SELECTORS.COUPONINPUT);
+    // eslint-disable-next-line no-console
+    console.log('values', checkbox, installmentscheckbox, couponinput);
 
-            // eslint-disable-next-line no-console
-            console.log(event.currentTarget, event.currentTarget.checked);
+    const checkboxchecked = checkbox ? checkbox.checked : null;
+    const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
+    const couponvalue = couponinput ? couponinput.value : '';
 
-            // eslint-disable-next-line no-console
-            console.log(checkbox);
-            if (event.currentTarget.checked) {
-                updateTotalPrice(userid, -1, 1);
-            } else {
-                updateTotalPrice(userid, -1, 0);
-            }
+    // Adapt this call if your updateTotalPrice supports coupon codes now
+    updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue);
+}
 
-        });
+/**
+ * Handles the price recalculation on change of the price label options.
+ * @param {*} el
+ * @param {int} userid
+ * @param {boolean} isCouponInput
+ */
+function initChangeListener(el, userid, isCouponInput = false) {
+    if (!el || el.initialized) {
+        return;
+    }
+    el.initialized = true;
+
+    if (isCouponInput) {
+        // React on every character, but debounce 500ms
+        el.addEventListener('input', debounce(() => {
+            handlePriceRecalc(userid);
+        }, 500));
+
+    } else {
+        // Checkboxes
+        el.addEventListener('change', () => handlePriceRecalc(userid));
     }
 }
 
@@ -1059,7 +1141,10 @@ function convertPricesToNumberFormat(data) {
     if (data.remainingcredit) {
         data.remainingcredit = formatNumber(data.remainingcredit);
     }
-    if (data.price_net) {
+    if (data.coupondiscount) {
+        data.coupondiscount = formatNumber(data.coupondiscount);
+    }
+    if (data.price) {
         data.price_net = formatNumber(data.price_net);
     }
     if (data.price_gross) {
@@ -1068,6 +1153,12 @@ function convertPricesToNumberFormat(data) {
     if (data.items) {
         for (var i = 0; i < data.items.length; i++) {
             if (data.items[i].price) {
+    if (data.discount !== undefined && data.discount !== null) {
+        data.discount = formatNumber(data.discount);
+    }
+    if (data.coupondiscount !== undefined && data.coupondiscount !== null) {
+        data.coupondiscount = formatNumber(data.coupondiscount);
+    }
                 data.items[i].price = formatNumber(data.items[i].price);
             }
             if (data.items[i].price_gross) {
@@ -1075,6 +1166,9 @@ function convertPricesToNumberFormat(data) {
             }
             if (data.items[i].price_net) {
                 data.items[i].price_net = formatNumber(data.items[i].price_net);
+            }
+            if (data.items[i].originalprice) {
+                data.items[i].originalprice = formatNumber(data.items[i].originalprice);
             }
         }
     }

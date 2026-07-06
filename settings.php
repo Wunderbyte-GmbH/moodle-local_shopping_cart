@@ -27,6 +27,7 @@ use core_payment\helper;
 use local_shopping_cart\admin_setting_taxcategories;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\utils\wb_payment;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -168,6 +169,15 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/allowcustombookingfee',
+            get_string('allowcustombookingfee', 'local_shopping_cart'),
+            get_string('allowcustombookingfee_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
     // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox(
@@ -264,6 +274,15 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/enablesubscriptioncancelobserver',
+            get_string('enablesubscriptioncancelobserver', 'local_shopping_cart'),
+            get_string('enablesubscriptioncancelobserver_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    $settings->add(
         new admin_setting_confightmleditor(
             'local_shopping_cart/additonalcashiersection',
             new lang_string('additonalcashiersection', 'local_shopping_cart'),
@@ -290,6 +309,52 @@ if ($hassiteconfig) {
             get_string('accepttermsandconditions', 'local_shopping_cart'),
             get_string('accepttermsandconditions:description', 'local_shopping_cart'),
             0
+        )
+    );
+
+    // Single master switch for the whole guest checkout feature. Enabling it makes the plugin
+    // create a temporary Moodle account for unauthenticated visitors so they can fill a cart and
+    // check out; that account is either converted into a permanent user on purchase or deleted
+    // automatically after 24 hours. See the description string for the full behaviour.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/guestoncheckout',
+            get_string('guestoncheckout', 'local_shopping_cart'),
+            get_string('guestoncheckout:description', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    // Role that every auto-created guest checkout user is granted at system level. Defaults to the
+    // built-in "Authenticated user" role; admins may point this at a purpose-built, more restricted
+    // role instead (see description).
+    global $DB;
+    $guestroleoptions = [];
+    foreach (role_get_names(context_system::instance()) as $guestrole) {
+        $guestroleoptions[$guestrole->id] = $guestrole->localname;
+    }
+    $defaultguestrole = (int) ($DB->get_field('role', 'id', ['shortname' => 'user']) ?: 0);
+    $settings->add(
+        new admin_setting_configselect(
+            'local_shopping_cart/guestcheckoutrole',
+            get_string('guestcheckoutrole', 'local_shopping_cart'),
+            get_string('guestcheckoutrole:description', 'local_shopping_cart'),
+            $defaultguestrole,
+            $guestroleoptions
+        )
+    );
+
+    // Optional: local URL patterns on which a guest user is created up front (before the visitor
+    // even adds something to the cart). Leave empty to only create guest users on add-to-cart.
+    $settings->add(
+        new admin_setting_configtextarea(
+            'local_shopping_cart/guestautocreatepatterns',
+            get_string('guestautocreatepatterns', 'local_shopping_cart'),
+            get_string('guestautocreatepatterns:description', 'local_shopping_cart'),
+            '',
+            PARAM_TEXT,
+            60,
+            4
         )
     );
 
@@ -970,6 +1035,65 @@ if ($hassiteconfig) {
             'local_shopping_cart/deleteledger',
             get_string('deleteledger', 'local_shopping_cart'),
             get_string('deleteledgerdescription', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    // Add a heading for the PRO license section.
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/licenseheading',
+        get_string('licenseheading', 'local_shopping_cart'),
+        get_string('licenseheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Dynamically change the license info text depending on the current key's status.
+    $licensekeydesc = get_string('licensekeydesc', 'local_shopping_cart');
+    $licenseinfo = wb_payment::get_license_info();
+    switch ($licenseinfo['reason']) {
+        case 'valid':
+            $licensekeydesc = "<p style='color: green; font-weight: bold'>"
+                . get_string('licenseactivated', 'local_shopping_cart', $licenseinfo['expirationdate'])
+                . "</p>";
+            break;
+        case 'expired':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licenseexpired', 'local_shopping_cart', $licenseinfo['expirationdate'])
+                . "</p>";
+            break;
+        case 'wrongproduct':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licensewrongproduct', 'local_shopping_cart')
+                . "</p>";
+            break;
+        case 'invalid':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licenseinvalid', 'local_shopping_cart')
+                . "</p>";
+            break;
+    }
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_shopping_cart/licensekey',
+            get_string('licensekey', 'local_shopping_cart'),
+            $licensekeydesc,
+            ''
+        )
+    );
+
+    // Add a heading for the section.
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/couponsheading',
+        get_string('couponsheading', 'local_shopping_cart'),
+        get_string('couponsheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Setting to round percentage discounts to full integers.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/couponenabled',
+            get_string('couponenabled', 'local_shopping_cart'),
+            get_string('couponenableddescription', 'local_shopping_cart'),
             0
         )
     );
