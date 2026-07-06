@@ -291,6 +291,7 @@ $string['couponsheading'] = 'Gutscheineinstellungen';
 $string['couponsheadingdescription'] = 'Gutscheincodes können auf /local/shopping_cart/coupons.php verwaltet werden.';
 $string['coupontype'] = 'Gutscheintyp';
 $string['coupontype_help'] = 'Opt-out: Der Gutschein gilt für alle Artikel im Warenkorb, außer ein Artikel schließt ihn in seiner Artikel-Konfiguration explizit aus. Opt-in: Der Gutschein gilt nur für Artikel, die ihn in ihrer Artikel-Konfiguration explizit aktivieren – ohne zugeordnete Artikel hat er keine Wirkung.';
+$string['couponusedfororder'] = 'Gutscheincode "{$a}" wurde für diese Bestellung verwendet.';
 $string['credit'] = 'Guthaben:';
 $string['creditnotmatchbalance'] = 'Summe der Guthaben in Tabelle local_shopping_cart_credits stimmt nicht mit dem letzten Saldo (balance) überein!
 Möglicherweise haben Sie doppelte oder fehlerhafte Einträge in der credits-Tabelle für den User mit userid {$a}.';

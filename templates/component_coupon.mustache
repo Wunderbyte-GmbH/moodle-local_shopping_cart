@@ -43,14 +43,14 @@
             </button>
         </div>
     </div>
-    <div class="sc_couponmessage">
-        {{#couponmessage}}
-            {{#couponapplied}}
-                <span class="alert alert-success d-block mt-2" role="alert">{{couponmessage}}</span>
-            {{/couponapplied}}
-            {{^couponapplied}}
-                <span class="alert alert-danger d-block mt-2" role="alert">{{couponmessage}}</span>
-            {{/couponapplied}}
-        {{/couponmessage}}
-    </div>
 {{/couponenabled}}
+{{#couponmessage}}
+    <div class="sc_couponmessage">
+        {{#couponapplied}}
+            <span class="alert alert-success d-block mt-2" role="alert">{{couponmessage}}</span>
+        {{/couponapplied}}
+        {{^couponapplied}}
+            <span class="alert alert-danger d-block mt-2" role="alert">{{couponmessage}}</span>
+        {{/couponapplied}}
+    </div>
+{{/couponmessage}}

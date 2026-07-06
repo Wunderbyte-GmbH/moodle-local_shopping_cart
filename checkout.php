@@ -155,20 +155,47 @@ if (isset($success) && isset($historylist)) {
 
 // Coupon handling.
 if (get_config('local_shopping_cart', 'couponenabled')) {
-    $data['couponenabled'] = true;
-
-    // Only check for an already applied coupon; never apply/remove one here, as this
-    // code path also runs on plain page reloads (e.g. when a background tab regains
-    // focus), and calling apply_coupon_code('') would silently clear the applied coupon.
     if (isset($cartstore)) {
+        // Still shopping: offer the input field, unless a coupon is already applied to the cart.
+        // We only check for an already applied coupon here; never apply/remove one, as this code
+        // path also runs on plain page reloads (e.g. when a background tab regains focus), and
+        // calling apply_coupon_code('') would silently clear the applied coupon.
+        $data['couponenabled'] = true;
+
         $couponmanager = new cart_coupon_manager($cartstore);
         if ($couponmanager->coupon_applied()) {
             $data['couponenabled'] = false;
+            $data['couponapplied'] = true;
             $data['couponmessage'] = get_string(
                 'couponappliedsuccessfully',
                 'local_shopping_cart',
                 $couponmanager->get_applied_coupon()
             );
+        }
+    } else {
+        // Payment confirmation / receipt page: the cart is gone, so never offer the input again.
+        // Instead, hint that a coupon was used, if one was applied to this specific order.
+        // Note: the receipt items come from local_shopping_cart_ledger, which has no coupon
+        // column, so we look up the coupon from local_shopping_cart_history directly. That table
+        // stores the coupon's id (local_shopping_cart_coupons.id), not its code, so we need a
+        // second lookup to get the human-readable coupon code.
+        $data['couponenabled'] = false;
+
+        $usedcouponid = $DB->get_field_select(
+            'local_shopping_cart_history',
+            'coupon',
+            'identifier = :identifier AND ' . $DB->sql_isnotempty('local_shopping_cart_history', 'coupon', true, false),
+            ['identifier' => $identifier],
+            IGNORE_MULTIPLE
+        );
+
+        if (!empty($usedcouponid)) {
+            $usedcoupon = $DB->get_field('local_shopping_cart_coupons', 'coupon', ['id' => (int) $usedcouponid]);
+
+            if (!empty($usedcoupon)) {
+                $data['couponapplied'] = true;
+                $data['couponmessage'] = get_string('couponusedfororder', 'local_shopping_cart', $usedcoupon);
+            }
         }
     }
 } else {
