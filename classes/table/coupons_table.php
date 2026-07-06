@@ -175,7 +175,6 @@ class coupons_table extends wunderbyte_table {
         return $key;
     }
 
-
     /**
      * Column with action buttons.
      *
@@ -239,7 +238,6 @@ class coupons_table extends wunderbyte_table {
      * @return array
      */
     public function action_addcoupon(int $id, string $data): array {
-
         return [
             'success' => 1,
             'message' => 'Did work',

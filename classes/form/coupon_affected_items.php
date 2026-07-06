@@ -25,7 +25,7 @@ use context;
 use context_system;
 use core_form\dynamic_form;
 use html_writer;
-use local_shopping_cart\local\item_name_resolver;
+use local_shopping_cart\shopping_cart;
 use moodle_url;
 
 /**
@@ -70,9 +70,9 @@ class coupon_affected_items extends dynamic_form {
             'id, itemid, componentname, area, json'
         );
 
-        // First pass: filter records and collect itemids grouped by component.
+        // First pass: filter records and collect itemids grouped by component and area.
         $filteredrows = [];
-        $bycomponent  = [];
+        $bycomponentarea = [];
         foreach ($records as $record) {
             $json    = json_decode($record->json ?? '');
             $optins  = !empty($json->couponoptin) ? explode(',', $json->couponoptin) : [];
@@ -98,30 +98,57 @@ class coupon_affected_items extends dynamic_form {
                 'itemid'        => $record->itemid,
                 'type'          => $type,
             ];
-            $bycomponent[$record->componentname][] = (int)$record->itemid;
+            if (empty($bycomponentarea[$record->componentname])) {
+                $bycomponentarea[$record->componentname] = [];
+            }
+            if (empty($bycomponentarea[$record->componentname][$record->area])) {
+                $bycomponentarea[$record->componentname][$record->area] = [];
+            }
+            $bycomponentarea[$record->componentname][$record->area][] = (int)$record->itemid;
         }
 
-        // Batch-fetch names: one query per unique component (mod_booking → {booking}).
+        // Resolve names and, optionally, links via component adapter callbacks.
         $names = [];
-        $dbman = $DB->get_manager();
-        foreach ($bycomponent as $componentname => $itemids) {
-            $tabledata = item_name_resolver::get_table_data($componentname);
-            if (empty($tabledata)) {
-                continue;
-            }
-            if (!$dbman->table_exists($tabledata['table'])) {
-                continue;
-            }
-            [$insql, $inparams] = $DB->get_in_or_equal(array_unique($itemids), SQL_PARAMS_NAMED);
-            $namerecords = $DB->get_records_select(
-                $tabledata['table'],
-                "id $insql",
-                $inparams,
-                '',
-                'id, ' . $tabledata['namefield']
-            );
-            foreach ($namerecords as $rec) {
-                $names["$componentname-{$rec->id}"] = $rec->{$tabledata['namefield']};
+        $links = [];
+        foreach ($bycomponentarea as $componentname => $byarea) {
+            foreach ($byarea as $area => $itemids) {
+                $itemids = array_values(array_unique($itemids));
+                if (empty($itemids)) {
+                    continue;
+                }
+
+                // New adapter path: ask component service_provider for names.
+                $providerclass = null;
+                try {
+                    $providerclass = shopping_cart::get_service_provider_classname($componentname);
+                } catch (\coding_exception $e) {
+                    $providerclass = null;
+                }
+
+                if (!empty($providerclass)) {
+                    $resolved = component_class_callback(
+                        $providerclass,
+                        'resolve_item_names',
+                        [$itemids, $area],
+                        []
+                    );
+                    foreach ((array)$resolved as $id => $name) {
+                        $names["$componentname-$id"] = (string)$name;
+                    }
+
+                    // Optional: components may provide a link to view the item.
+                    $resolvedlinks = component_class_callback(
+                        $providerclass,
+                        'resolve_item_links',
+                        [$itemids, $area],
+                        []
+                    );
+                    foreach ((array)$resolvedlinks as $id => $url) {
+                        if (!empty($url)) {
+                            $links["$componentname-$id"] = (string)$url;
+                        }
+                    }
+                }
             }
         }
 
@@ -130,9 +157,15 @@ class coupon_affected_items extends dynamic_form {
             $namekey = $row['componentname'] . '-' . $row['itemid'];
             $itemname = $names[$namekey] ?? ($row['componentname'] . ' #' . $row['itemid']);
 
+            if (!empty($links[$namekey])) {
+                $itemnamehtml = html_writer::link($links[$namekey], s($itemname), ['target' => '_blank']);
+            } else {
+                $itemnamehtml = s($itemname);
+            }
+
             $rows .= html_writer::tag(
                 'tr',
-                html_writer::tag('td', s($itemname)) .
+                html_writer::tag('td', $itemnamehtml) .
                 html_writer::tag('td', s($row['componentname'])) .
                 html_writer::tag('td', s($row['area'])) .
                 html_writer::tag('td', $row['itemid']) .
