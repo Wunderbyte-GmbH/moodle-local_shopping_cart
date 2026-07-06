@@ -27,6 +27,7 @@ use core_payment\helper;
 use local_shopping_cart\admin_setting_taxcategories;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\utils\wb_payment;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -1035,6 +1036,48 @@ if ($hassiteconfig) {
             get_string('deleteledger', 'local_shopping_cart'),
             get_string('deleteledgerdescription', 'local_shopping_cart'),
             0
+        )
+    );
+
+    // Add a heading for the PRO license section.
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/licenseheading',
+        get_string('licenseheading', 'local_shopping_cart'),
+        get_string('licenseheadingdescription', 'local_shopping_cart')
+    ));
+
+    // Dynamically change the license info text depending on the current key's status.
+    $licensekeydesc = get_string('licensekeydesc', 'local_shopping_cart');
+    $licenseinfo = wb_payment::get_license_info();
+    switch ($licenseinfo['reason']) {
+        case 'valid':
+            $licensekeydesc = "<p style='color: green; font-weight: bold'>"
+                . get_string('licenseactivated', 'local_shopping_cart', $licenseinfo['expirationdate'])
+                . "</p>";
+            break;
+        case 'expired':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licenseexpired', 'local_shopping_cart', $licenseinfo['expirationdate'])
+                . "</p>";
+            break;
+        case 'wrongproduct':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licensewrongproduct', 'local_shopping_cart')
+                . "</p>";
+            break;
+        case 'invalid':
+            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
+                . get_string('licenseinvalid', 'local_shopping_cart')
+                . "</p>";
+            break;
+    }
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_shopping_cart/licensekey',
+            get_string('licensekey', 'local_shopping_cart'),
+            $licensekeydesc,
+            ''
         )
     );
 

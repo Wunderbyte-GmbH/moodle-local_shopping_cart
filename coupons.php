@@ -24,6 +24,7 @@
  */
 
 use local_shopping_cart\table\coupons_table;
+use local_shopping_cart\utils\wb_payment;
 
 require_once(__DIR__ . '/../../config.php');
 
@@ -44,6 +45,15 @@ if (!has_capability('local/shopping_cart:editcoupons', $context)) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('accessdenied', 'local_shopping_cart'), 4);
     echo get_string('nopermissiontoaccesspage', 'local_shopping_cart');
+    echo $OUTPUT->footer();
+    die();
+}
+
+// Coupons are a PRO feature.
+if (!wb_payment::pro_version_is_activated()) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('managecoupons', 'local_shopping_cart'));
+    echo $OUTPUT->notification(get_string('couponsprofeaturenotice', 'local_shopping_cart'), 'info');
     echo $OUTPUT->footer();
     die();
 }

@@ -36,6 +36,7 @@ use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\coupon;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\utils\wb_payment;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -155,9 +156,11 @@ class get_price extends external_api {
         $couponmanager = new cart_coupon_manager($cartstore);
         $appliedcoupon = $couponmanager->get_applied_coupon();
 
-        // Coupon UI state.
+        // Coupon UI state. Coupons are a PRO feature, so the input is only ever offered when a
+        // valid license is active, on top of the site-wide "couponenabled" setting.
         $data['couponmessage'] = $couponmessage;
-        $data['couponenabled'] = (bool) get_config('local_shopping_cart', 'couponenabled');
+        $data['couponenabled'] = (bool) get_config('local_shopping_cart', 'couponenabled')
+            && wb_payment::pro_version_is_activated();
         $data['couponapplied'] = $couponmanager->coupon_applied();
         $data['coupon'] = $appliedcoupon !== '' ? $appliedcoupon : $couponvalue;
 

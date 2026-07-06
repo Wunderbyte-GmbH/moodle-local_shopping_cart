@@ -26,6 +26,7 @@
 namespace local_shopping_cart\local;
 
 use cache_helper;
+use local_shopping_cart\utils\wb_payment;
 use moodle_exception;
 use stdClass;
 
@@ -66,6 +67,12 @@ class coupon {
             !get_config('local_shopping_cart', 'couponenabled')
         ) {
             return [false, ''];
+        }
+
+        // Coupons are a PRO feature: refuse to apply/remove one without a valid license,
+        // even if the site admin left the "couponenabled" setting switched on.
+        if (!wb_payment::pro_version_is_activated()) {
+            return [false, get_string('couponsprofeaturenotice', 'local_shopping_cart')];
         }
 
         $cartstore = cartstore::instance((int)$this->userid);

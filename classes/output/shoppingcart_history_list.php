@@ -522,7 +522,6 @@ class shoppingcart_history_list implements renderable, templatable {
      * @return array
      */
     public function return_list() {
-
         // Preprocess all items to force prices to 2 decimal digits always visible.
         foreach ($this->historyitems as $key => $item) {
             $this->historyitems[$key]['price'] = number_format(round((float) $item['price'], 2), 2, '.', '');
