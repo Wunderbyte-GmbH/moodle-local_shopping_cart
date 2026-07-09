@@ -123,23 +123,30 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     }
 
     $output = '';
+    $data = [];
 
-    $cartstore = cartstore::instance($USER->id);
-    $data = $cartstore->get_localized_data();
+    // Authenticated users should have capability to see the shopping cart nav item.
+    if (has_capability('local/shopping_cart:canseecartnavitem', context_system::instance())) {
+        $cartstore = cartstore::instance($USER->id);
+        $data = $cartstore->get_localized_data();
+        $dueinstallments = $cartstore->get_due_installments();
 
-    $dueinstallments = $cartstore->get_due_installments();
-
-    if (!empty($dueinstallments)) {
-        foreach ($dueinstallments as $dueinstallement) {
-            if ($dueinstallement['installment'] > time()) {
-                $message = get_string('installmentpaymentisdue', 'local_shopping_cart', $dueinstallement);
-                $type = \core\notification::INFO;
-            } else {
-                $message = get_string('installmentpaymentwasdue', 'local_shopping_cart', $dueinstallement);
-                $type = \core\notification::ERROR;
+        if (!empty($dueinstallments)) {
+            foreach ($dueinstallments as $dueinstallement) {
+                if ($dueinstallement['installment'] > time()) {
+                    $message = get_string('installmentpaymentisdue', 'local_shopping_cart', $dueinstallement);
+                    $type = \core\notification::INFO;
+                } else {
+                    $message = get_string('installmentpaymentwasdue', 'local_shopping_cart', $dueinstallement);
+                    $type = \core\notification::ERROR;
+                }
+                \core\notification::add($message, $type);
             }
-            \core\notification::add($message, $type);
         }
+
+        // Convert numbers to strings with 2 fixed decimals right before rendering.
+        shopping_cart::convert_prices_to_number_format($data);
+        $data['showcart'] = true;
     }
 
     // If we have the capability, we show a link to cashier's desk.
@@ -147,9 +154,6 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
         $data['showcashier'] = true;
         $data['cashierurl'] = new moodle_url('/local/shopping_cart/cashier.php');
     }
-
-    // Convert numbers to strings with 2 fixed decimals right before rendering.
-    shopping_cart::convert_prices_to_number_format($data);
 
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);
     return $output;
