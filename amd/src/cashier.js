@@ -30,6 +30,7 @@ import ModalForm from 'core_form/modalform';
 import ModalAlert from 'core/local/modal/alert';
 import {reinit} from 'local_shopping_cart/cart';
 import {deleteAllItems} from 'local_shopping_cart/cart';
+import {resolveLocale} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
 import DynamicForm from 'core_form/dynamicform';
 import {reloadHistory} from './shistory';
@@ -418,7 +419,7 @@ export function modifyTimeModal(event) {
         const response = e.detail;
         console.log(response);
         const deletionDate = new Date(response.taskdeletiontimestamp * 1000);
-        const formattedDate = deletionDate.toLocaleString(response.currentlang, {
+        const formattedDate = deletionDate.toLocaleString(resolveLocale(response.currentlang), {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

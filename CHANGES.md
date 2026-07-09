@@ -1,4 +1,5 @@
 ## Version 2.1.0 (2026070300)
+* Bugfix: The cashier cart display was never refreshed for users with a child language pack (e.g. de_gs): Intl.NumberFormat threw "Invalid language tag" and aborted every cart re-render (add to cart via booking modal, +/- item count, delete item - all required a manual page reload). Moodle language codes are now resolved to valid BCP 47 locales with fallback to the primary language (de_gs -> de-gs -> de).
 * Improvement: If optional VAT number is clicked it gets mandatory.
 
 ## Version 2.0.9 (2026060300)

@@ -1018,15 +1018,55 @@ export function initPriceLabel(userid) {
 }
 
 /**
+ * Resolve a Moodle language code to a valid BCP 47 locale for the Intl API.
+ *
+ * Moodle language codes like "de_gs" or "en_us" are no valid BCP 47 language tags,
+ * so Intl formatters would throw a RangeError. We normalize the code ("de-gs") and
+ * fall back to the primary language ("de"). Returns undefined (browser default
+ * locale) when no candidate is valid.
+ *
+ * @param {String} lang the Moodle language code
+ * @returns {String|undefined}
+ */
+export function resolveLocale(lang) {
+    const candidates = [];
+    if (lang) {
+        const normalized = String(lang).replace(/_/g, '-');
+        candidates.push(normalized);
+        candidates.push(normalized.split('-')[0]);
+    }
+
+    for (const candidate of candidates) {
+        try {
+            Intl.getCanonicalLocales(candidate);
+            return candidate;
+        } catch (e) {
+            // Invalid language tag - try the next candidate.
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Returns a number formatter for a Moodle language code.
+ *
+ * @param {String} lang the Moodle language code
+ * @returns {Intl.NumberFormat}
+ */
+function getNumberFormatter(lang) {
+    return new Intl.NumberFormat(resolveLocale(lang), {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+/**
  * Helper function to convert prices to number format before rendering.
  * @param {Object} data the data containing the price values
  */
 function convertPricesToNumberFormat(data) {
     // Create a formatter based on the current language of the user.
-    const formatter = new Intl.NumberFormat(data.lang, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    const formatter = getNumberFormatter(data.lang);
     /**
      * Formats a number using the Intl.NumberFormat instance.
      * @param {number} value - The value to format.
