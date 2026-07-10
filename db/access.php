@@ -97,4 +97,12 @@ $capabilities = [
                         'manager' => CAP_ALLOW,
                 ],
         ],
+        'local/shopping_cart:canseecartnavitem' => [
+                'riskbitmask' => RISK_PERSONAL,
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => [
+                        'user' => CAP_ALLOW, // Every authenticated user gets it by default.
+                ],
+        ],
 ];

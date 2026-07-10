@@ -688,6 +688,7 @@ $string['serviceperiodend'] = 'End of service period';
 $string['serviceperiodstart'] = 'Start of service period';
 $string['shopping_cart:canbuy'] = 'Can buy';
 $string['shopping_cart:cansearchusers'] = 'Can search other users';
+$string['shopping_cart:canseecartnavitem'] = 'See shopping cart navigation item';
 $string['shopping_cart:canverifypayments'] = 'Can verify payments';
 $string['shopping_cart:cashier'] = 'Is a cashier';
 $string['shopping_cart:cashiermanualrebook'] = 'Can manually rebook users';

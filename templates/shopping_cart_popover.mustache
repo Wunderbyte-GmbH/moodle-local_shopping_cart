@@ -117,31 +117,42 @@
 
 }}
 
-{{< core/popover_region }}
-    {{$classes}}popover-region-shopping_carts{{/classes}}
-    {{$attributes}}id="nav-shopping_cart-popover-container" data-userid="{{userid}}"{{/attributes}}
+{{#showcart}}
+    {{< core/popover_region }}
+        {{$classes}}popover-region-shopping_carts{{/classes}}
+        {{$attributes}}id="nav-shopping_cart-popover-container" data-userid="{{userid}}"{{/attributes}}
 
-    {{$togglelabel}}{{/togglelabel}}
-    {{$togglecontent}}
-        <i class="fa fa-shopping-cart" title="Shopping cart menu" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
-        <div id="itemcount" class="count-container {{^count}}hidden{{/count}}" data-region="count-container"
-        aria-label="Count: {{count}}">{{count}}</div>
-    {{/togglecontent}}
+        {{$togglelabel}}{{/togglelabel}}
+        {{$togglecontent}}
+            <i class="fa fa-shopping-cart" title="Shopping cart menu" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
+            <div id="itemcount" class="count-container {{^count}}hidden{{/count}}" data-region="count-container"
+            aria-label="Count: {{count}}">{{count}}</div>
+        {{/togglecontent}}
 
-    {{$containerlabel}}{{/containerlabel}}
+        {{$containerlabel}}{{/containerlabel}}
 
-    {{$headertext}}
-        <i class="fa fa-3x fa-shopping-cart" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
-        <span class="expirationtime" aria-live="polite"  aria-label="{{#str}} timeleft, local_shopping_cart {{/str}}" data-expirationtime='{{expirationtime}}'>[{{expirationtime}}] </span>
-    {{/headertext}}
-    {{$content}}
-    <h4 class="p-2 shopping-cart-items-title text-dark">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
-    <div class="shopping-cart-items-container text-dark">
-        {{> local_shopping_cart/shopping_cart_items }}
-    </div>
-    {{> local_shopping_cart/checkout_button }}
-    {{/content}}
-{{/ core/popover_region }}
+        {{$headertext}}
+            <i class="fa fa-3x fa-shopping-cart" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
+            <span class="expirationtime" aria-live="polite"  aria-label="{{#str}} timeleft, local_shopping_cart {{/str}}" data-expirationtime='{{expirationtime}}'>[{{expirationtime}}] </span>
+        {{/headertext}}
+        {{$content}}
+        <h4 class="p-2 shopping-cart-items-title text-dark">{{#str}} mycart, local_shopping_cart {{/str}} </h4>
+        <div class="shopping-cart-items-container text-dark">
+            {{> local_shopping_cart/shopping_cart_items }}
+        </div>
+        {{> local_shopping_cart/checkout_button }}
+        {{/content}}
+    {{/ core/popover_region }}
+
+    {{#js}}
+        require(['core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function(Сontroller, Ajax, cart) {
+            cart.init({{expirationtime}}, {{nowdate}});
+            let sccontainer = document.querySelector('#nav-shopping_cart-popover-container');
+            let sccontroller = new Сontroller(sccontainer);
+            sccontroller.registerListNavigationEventListeners();
+        });
+    {{/js}}
+{{/showcart}}
 
 {{#showcashier}}
     <div class="nav-area-cashier">
@@ -150,12 +161,3 @@
         </a>
     </div>
 {{/showcashier}}
-
-{{#js}}
-    require(['core/popover_region_controller', 'core/ajax', 'local_shopping_cart/cart'], function(Сontroller, Ajax, cart) {
-        cart.init({{expirationtime}}, {{nowdate}});
-        let sccontainer = document.querySelector('#nav-shopping_cart-popover-container');
-        let sccontroller = new Сontroller(sccontainer);
-        sccontroller.registerListNavigationEventListeners();
-    });
-{{/js}}
