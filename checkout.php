@@ -148,6 +148,14 @@ if (isset($success) && isset($historylist)) {
     shopping_cart::check_for_ongoing_payment($userid);
 
     $cartstore->get_expanded_checkout_data($data);
+
+    // Make sure the cart item buttons (delete, increase, decrease) work on this page,
+    // even when the navbar popover (which also calls init) is not shown.
+    $PAGE->requires->js_call_amd(
+        'local_shopping_cart/cart',
+        'init',
+        [$data['expirationtime'] ?? 0, $data['nowdate'] ?? 0]
+    );
 }
 
 // Address handling.

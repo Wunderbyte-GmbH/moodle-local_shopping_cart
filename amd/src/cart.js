@@ -41,6 +41,7 @@ import {modifyTimeModal} from './cashier';
 
 export var interval = null;
 export var visbilityevent = false;
+let pageinitialized = false;
 
 // This file inits the cart on every page, on checkout and cashier.
 // The cart is always loaed entirely and replaced via css.
@@ -88,6 +89,13 @@ export const init = (expirationtime, nowdate) => {
 
     containers.forEach(container => {
 
+        // Init might be called more than once (e.g. from the navbar popover and from the checkout page).
+        // Make sure we attach the click listener to each container only once.
+        if (container.dataset.cartinitialized) {
+            return;
+        }
+        container.dataset.cartinitialized = 'true';
+
         container.addEventListener('click', event => {
 
             // Decide the target of the click.
@@ -118,6 +126,13 @@ export const init = (expirationtime, nowdate) => {
             }
         });
     });
+
+    // The listeners below are page (document) level listeners, we must not attach them twice,
+    // even when init is called more than once.
+    if (pageinitialized) {
+        return;
+    }
+    pageinitialized = true;
 
     // Re-init cart on page reload or navigation to another page - required for 2-digit price precision visibility.
     document.addEventListener("readystatechange", () => {

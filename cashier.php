@@ -106,6 +106,14 @@ if (get_config('local_shopping_cart', 'schistorysections')) {
     shoppingcart_history_list::organize_returnarray_into_collapsible_sections($data);
 }
 
+// Make sure the cart item buttons (delete, increase, decrease) work on this page,
+// even when the navbar popover (which also calls init) is not shown.
+$PAGE->requires->js_call_amd(
+    'local_shopping_cart/cart',
+    'init',
+    [$data['expirationtime'] ?? 0, $data['nowdate'] ?? 0]
+);
+
 echo $OUTPUT->render_from_template('local_shopping_cart/cashier', $data);
 
 // Now output the footer.
