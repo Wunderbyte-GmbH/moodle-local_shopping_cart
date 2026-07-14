@@ -156,6 +156,11 @@ class guestcheckout {
             return;
         }
 
+        // Cookie-less scripts (styles.php, javascript.php) have no session, so logging in a guest would fail.
+        if (defined('NO_MOODLE_COOKIES') && NO_MOODLE_COOKIES) {
+            return;
+        }
+
         $fullme = qualified_me();
         if ($fullme === false) {
             return;
