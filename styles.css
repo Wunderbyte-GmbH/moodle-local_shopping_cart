@@ -292,6 +292,11 @@
     width: 25px;
 }
 
+#page-local-shopping_cart-checkout .sc_couponmessage,
+#page-local-shopping_cart-checkout .sc_coupondiscount {
+    margin-top: 1rem;
+}
+
 /* The images in the checkout page should be larger than in the navbar popup.
 We exclude the booking fee image from the selector. */
 #page-local-shopping_cart-checkout .shopping-cart-checkout-items-container .shopping-cart-items

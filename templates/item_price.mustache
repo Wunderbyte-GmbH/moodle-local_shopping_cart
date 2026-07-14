@@ -48,6 +48,9 @@
     {{#taxesenabled}}<b class="pull-right">{{price_gross}} {{currency}}</b><br><small>({{price_net}} {{currency}} + {{taxpercentage_visual}}%)</small>{{/taxesenabled}}
 
     {{! prices without tax information }}
-    {{^taxesenabled}}<b>{{price}} {{currency}}</b>{{/taxesenabled}}
+    {{^taxesenabled}}
+        {{#coupondiscount}}<div><s class="text-muted">{{originalprice}} {{currency}}</s></div>{{/coupondiscount}}
+        <b>{{price}} {{currency}}</b>
+    {{/taxesenabled}}
 
 </div>

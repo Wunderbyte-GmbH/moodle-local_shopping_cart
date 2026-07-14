@@ -67,6 +67,7 @@ define('LOCAL_SHOPPING_CART_CARTPARAM_PAYMENTACCOUNT', 6); // Item could not be 
 // Price modifiers.
 define('LOCAL_SHOPPING_CART_PRICEMOD_INSTALLMENTS', 10); // Apply Installments.
 define('LOCAL_SHOPPING_CART_PRICEMOD_STANDARD', 30); // Apply Standard calculation.
+define('LOCAL_SHOPPING_CART_PRICEMOD_COUPON', 40); // Apply Coupon discounts.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TAXES', 50); // Apply Taxes on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_CREDITS', 100); // Apply Credits on cart.
 define('LOCAL_SHOPPING_CART_PRICEMOD_TERMSANDCONDITIONS', 150); // Applies Terms and conditions, normally for checkout.
