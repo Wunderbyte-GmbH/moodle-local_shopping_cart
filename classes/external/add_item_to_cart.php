@@ -31,6 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use external_single_structure;
+use local_shopping_cart\local\guestcheckout;
 use local_shopping_cart\shopping_cart;
 use moodle_exception;
 
@@ -72,6 +73,8 @@ class add_item_to_cart extends external_api {
      * @return array
      */
     public static function execute(string $component, string $area, int $itemid, int $userid): array {
+        $guestusercreated = false;
+
         // We do this to ensure that we have the userid available during the request.
         shopping_cart::buy_for_user($userid);
 
@@ -81,6 +84,19 @@ class add_item_to_cart extends external_api {
             'itemid' => $itemid,
             'userid' => $userid,
         ]);
+
+        // Guest checkout: if the feature is enabled and the current visitor is not
+        // logged in (or is a Moodle guest), create a temporary user and log them in
+        // before proceeding.  This must happen before require_login() is called.
+        if (
+            !isloggedin()
+            || isguestuser()
+        ) {
+            if (get_config('local_shopping_cart', 'guestoncheckout')) {
+                guestcheckout::create_guest_user();
+                $guestusercreated = true;
+            }
+        }
 
         require_login();
 
@@ -95,6 +111,7 @@ class add_item_to_cart extends external_api {
         // The transformation of the userid will be done in the add_item_to_cart function.
         $item = shopping_cart::add_item_to_cart($params['component'], $params['area'], $params['itemid'], $params['userid']);
         $item['itemname'] = format_string($item['itemname'] ?? "");
+        $item['guestusercreated'] = $guestusercreated ? 1 : 0;
         return $item;
     }
 
@@ -115,6 +132,7 @@ class add_item_to_cart extends external_api {
             'description' => new external_value(PARAM_RAW, 'Item description', VALUE_DEFAULT, ''),
             'success' => new external_value(PARAM_INT, 'Successfully added'),
             'buyforuser' => new external_value(PARAM_INT, '0 if user bought for herself'),
+            'guestusercreated' => new external_value(PARAM_INT, '1 if guest user was created in this request', VALUE_DEFAULT, 0),
             ]);
     }
 }

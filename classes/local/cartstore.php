@@ -1171,7 +1171,9 @@ class cartstore {
 
         if ($billingaddressid != null) {
             $billingaddress = address_operations::get_specific_user_address($billingaddressid);
-            $taxcountrycode = $billingaddress->state;
+            if ($billingaddress) {
+                $taxcountrycode = $billingaddress->state;
+            }
         }
         $data["taxcountrycode"] = $taxcountrycode;
 

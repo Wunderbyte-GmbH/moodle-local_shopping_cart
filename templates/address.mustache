@@ -37,54 +37,92 @@
 
 }}
 
-<div class="local-shopping_cart-addressselection mb-4">
-    {{#required_addresses}}
-        <div class="local-shopping_cart-requiredaddress mb-3">
-            <h4>{{#str}} addresses:select, local_shopping_cart, {{addresslabel}} {{/str}}</h4>
-            <fieldset>
-                {{#saved_addresses}}
-                    <div class="ms-2">
-                        <input
-                            type="radio"
-                            name="selectedaddress_{{addresskey}}"
-                            value="{{id}}"
-                            id="{{addresskey}}address{{id}}"
-                            {{#selected}}
-                                checked
-                            {{/selected}}
-                            data-shopping-cart-process-data="true"
-                        />
-                        <label for="{{addresskey}}address{{id}}" class="local-shopping_cart-savedaddress">
-                            {{> local_shopping_cart/address_singleline }}
-                        </label>
+<section id="addressestemplatespace" class="local-shopping_cart-addressselection mb-4">
+    {{#required_addresses_multiple}}
+        <ul class="nav nav-pills mb-3" id="shopping-cart-address-tabs" role="tablist">
+            {{#required_addresses}}
+                <li class="nav-item" role="presentation">
+                    <button
+                        class="nav-link {{#isactive}}active{{/isactive}}"
+                        id="shopping-cart-tab-{{addresskey}}"
+                        data-bs-toggle="pill"
+                        data-bs-target="#shopping-cart-pane-{{addresskey}}"
+                        type="button"
+                        role="tab"
+                        aria-controls="shopping-cart-pane-{{addresskey}}"
+                        aria-selected="{{#isactive}}true{{/isactive}}{{^isactive}}false{{/isactive}}"
+                    >
+                        {{addresslabel}}
+                    </button>
+                </li>
+            {{/required_addresses}}
+        </ul>
+    {{/required_addresses_multiple}}
+
+    <div class="tab-content">
+        {{#required_addresses}}
+            <div
+                class="tab-pane fade {{#isactive}}show active{{/isactive}}"
+                id="shopping-cart-pane-{{addresskey}}"
+                role="tabpanel"
+                aria-labelledby="shopping-cart-tab-{{addresskey}}"
+            >
+                <div class="row g-3 align-items-start">
+                    <div class="col-lg-6">
+                        <div class="card h-100 shadow-sm border-0 sc-address-card">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h5 class="mb-1">{{#str}} addresses:select, local_shopping_cart, {{addresslabel}} {{/str}}</h5>
+                            </div>
+                            <div class="card-body pt-2">
+                                <fieldset class="sc-address-list">
+                                    {{#saved_addresses}}
+                                        <label class="sc-address-item mb-2" for="{{addresskey}}address{{id}}">
+                                            <input
+                                                type="radio"
+                                                name="selectedaddress_{{addresskey}}"
+                                                value="{{id}}"
+                                                id="{{addresskey}}address{{id}}"
+                                                {{#selected}}checked{{/selected}}
+                                                data-shopping-cart-process-data="true"
+                                            />
+                                            <span class="local-shopping_cart-savedaddress">
+                                                {{> local_shopping_cart/address_singleline }}
+                                            </span>
+                                        </label>
+                                    {{/saved_addresses}}
+                                </fieldset>
+                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm shopping-cart-new-address" data-addresskey="{{addresskey}}">
+                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>&nbsp;{{#str}} addresses:addnew, local_shopping_cart{{/str}}
+                                    </button>
+                                    {{^is_guest_checkout_user}}
+                                        {{#has_saved_addresses}}
+                                            <button type="button" class="btn btn-outline-info btn-sm shopping-cart-edit-selected-address" data-addresskey="{{addresskey}}">
+                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;{{#str}} addresses:edit:selected, local_shopping_cart{{/str}}
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm shopping-cart-delete-selected-address" data-addresskey="{{addresskey}}">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;{{#str}} addresses:delete:selected, local_shopping_cart{{/str}}
+                                            </button>
+                                        {{/has_saved_addresses}}
+                                    {{/is_guest_checkout_user}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                {{/saved_addresses}}
-            </fieldset>
-            <div class="d-flex justify-content-between ms-3 me-3 mt-2">
-                <a href="" class="shopping-cart-new-address text-primary">
-                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>&nbsp;
-                    {{#str}} addresses:addnew, local_shopping_cart{{/str}}
-                </a>
-                <a
-                    href=""
-                    class="shopping-cart-delete-selected-address text-danger"
-                    data-addresskey="{{addresskey}}"
-                >
-                    <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;
-                    {{#str}} addresses:delete:selected, local_shopping_cart{{/str}}
-                </a>
-                <a
-                    href=""
-                    class="shopping-cart-edit-selected-address text-info"
-                    data-address-id="{{id}}"
-                >
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;
-                    {{#str}} addresses:edit:selected, local_shopping_cart{{/str}}
-                </a>
+                    <div class="col-lg-6">
+                        <div class="card h-100 shadow-sm border-0 sc-address-card">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h5 class="mb-1">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</h5>
+                            </div>
+                            <div class="card-body" id="shopping-cart-inline-address-form-{{addresskey}}" data-addresskey="{{addresskey}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    {{/required_addresses}}
-</div>
+        {{/required_addresses}}
+    </div>
+</section>
 
 {{#js}}
     require(['local_shopping_cart/address'], function(address) {

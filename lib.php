@@ -108,6 +108,10 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
 function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     global $USER, $CFG, $PAGE;
 
+    // Note: guest checkout users are created in guestcheckout::after_config(), which runs at the end
+    // of bootstrap before any output, so the login session cookie is set reliably and errors surface
+    // loudly. Doing it during rendering set the cookie too late and hid failures.
+
     // Early bail out conditions.
     if (!isloggedin() || isguestuser()) {
         return '';

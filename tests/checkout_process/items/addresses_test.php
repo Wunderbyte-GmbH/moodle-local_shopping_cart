@@ -27,6 +27,7 @@ namespace local_shopping_cart\checkout_process\items;
 
 use advanced_testcase;
 use local_shopping_cart\local\checkout_process\items\addresses;
+use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 
 /**
  * Test for addresses
@@ -61,20 +62,38 @@ final class addresses_test extends advanced_testcase {
     }
 
     /**
-     * Test the check_status method.
+     * Test the evaluate_step method: with a required billing address but none
+     * selected, the step is invalid.
      */
-    public function test_check_status(): void {
-        $validationdata = json_encode([
-            (object)['name' => 'selectedaddress_billing', 'value' => 1],
-        ]);
+    public function test_evaluate_step(): void {
+        set_config('addresses_required', 'billing', 'local_shopping_cart');
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
-        $managercachestep = ['data' => []];
-        $addresses = new addresses(5);
-        $result = $addresses->check_status($managercachestep, $validationdata);
+        $addresses = new addresses($user->id);
+        $result = $addresses->evaluate_step([]);
 
-        $this->assertIsArray($result, 'Expected check_status to return an array.');
+        $this->assertIsArray($result, 'Expected evaluate_step to return an array.');
         $this->assertArrayHasKey('data', $result, 'Expected result to include data.');
-        $this->assertFalse($result['valid'], 'Expected valid to be true when all conditions are met.');
+        $this->assertArrayHasKey('mandatory', $result, 'Expected result to include mandatory.');
+        $this->assertFalse($result['valid'], 'Expected invalid when no required address is selected.');
+    }
+
+    /**
+     * Test parse_changed_input maps the legacy name/value JSON to step data.
+     */
+    public function test_parse_changed_input(): void {
+        set_config('addresses_required', 'billing', 'local_shopping_cart');
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $validationdata = json_encode([
+            (object)['name' => 'selectedaddress_billing', 'value' => 42],
+        ]);
+        $addresses = new addresses($user->id);
+        $data = $addresses->parse_changed_input($validationdata);
+
+        $this->assertEquals(42, $data['selectedaddress_billing'], 'Expected the billing selection to be parsed.');
     }
 
     /**
@@ -102,19 +121,54 @@ final class addresses_test extends advanced_testcase {
 
     /**
      * Test the get_required_address_keys method.
+     *
+     * The required addresses are driven by the 'addresses_required'
+     * multicheckbox setting (billing / shipping). The result follows that
+     * setting: billing is treated as the leading address (billing-centric
+     * checkout UX), shipping-only returns shipping, and nothing returns none.
      */
     public function test_get_required_address_keys(): void {
-        // Mock the configuration.
-        set_config('addresses_required', 'selectedaddress_billing,selectedaddress_shipping', 'local_shopping_cart');
-
-        $result = addresses::get_required_address_keys();
-
-        // Assertions.
-        $this->assertCount(2, $result, 'Expected two required address keys.');
+        // Billing required -> billing.
+        set_config('addresses_required', 'billing', 'local_shopping_cart');
         $this->assertEquals(
-            ['selectedaddress_billing', 'selectedaddress_shipping'],
-            $result,
-            'Expected required address keys to match.'
+            ['billing'],
+            addresses::get_required_address_keys(),
+            'Expected billing when billing is required.'
+        );
+
+        // Billing and shipping required -> billing-centric -> billing.
+        set_config('addresses_required', 'billing,shipping', 'local_shopping_cart');
+        $this->assertEquals(
+            ['billing'],
+            addresses::get_required_address_keys(),
+            'Expected billing-centric reduction when both are required.'
+        );
+
+        // Only shipping required -> shipping.
+        set_config('addresses_required', 'shipping', 'local_shopping_cart');
+        $this->assertEquals(
+            ['shipping'],
+            addresses::get_required_address_keys(),
+            'Expected shipping when only shipping is required.'
+        );
+
+        // Nothing required -> empty.
+        set_config('addresses_required', '', 'local_shopping_cart');
+        $this->assertEquals(
+            [],
+            addresses::get_required_address_keys(),
+            'Expected no required address keys when the setting is empty.'
+        );
+    }
+
+    /**
+     * A non-existent (e.g. deleted) address id must return false instead of
+     * throwing, so checkout.php can handle a stale address id in the cache.
+     */
+    public function test_get_specific_user_address_missing_returns_false(): void {
+        $this->assertFalse(
+            address_operations::get_specific_user_address(999999),
+            'Expected false for a non-existent address id.'
         );
     }
 }

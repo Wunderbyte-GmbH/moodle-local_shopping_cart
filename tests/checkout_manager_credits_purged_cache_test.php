@@ -115,7 +115,17 @@ final class checkout_manager_credits_purged_cache_test extends checkout_process_
                 }
                 $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
                 $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
-                $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
+                $managercache = $checkoutmanager->submit_step($stepdata['changedinput']);
+            }
+        }
+
+        // Carry the VAT / tax-country data set during the checkout steps onto
+        // $data so it is recorded on the history items (e.g. for invoices).
+        $cartstore = cartstore::instance($student1->id);
+        $refresheddata = $cartstore->get_localized_data();
+        foreach (['vatnrnumber', 'vatnrcountry', 'taxcountrycode', 'companyname'] as $vatkey) {
+            if (isset($refresheddata[$vatkey])) {
+                $data[$vatkey] = $refresheddata[$vatkey];
             }
         }
 

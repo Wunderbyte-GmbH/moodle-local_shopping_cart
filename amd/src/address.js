@@ -21,6 +21,7 @@
 
 import {showNotification} from 'local_shopping_cart/notifications';
 import ModalForm from 'core_form/modalform';
+import DynamicForm from 'core_form/dynamicform';
 
 import {get_string as getString} from 'core/str';
 import Templates from 'core/templates';
@@ -30,20 +31,53 @@ const SELECTORS = {
     NEWADDRESSBUTTON: '.shopping-cart-new-address',
     EDITADDRESSBUTTON: '.shopping-cart-edit-selected-address',
     DELETESELECTEDADDRESS: '.shopping-cart-delete-selected-address',
+    INLINEFORMCONTAINER: '[id^="shopping-cart-inline-address-form-"]',
 };
 
+let inlineAddressForms = {};
+
+const FORMCLASS = 'local_shopping_cart\\form\\modal_new_address';
+
 export const init = () => {
-    const buttons = document.querySelectorAll(SELECTORS.NEWADDRESSBUTTON);
-    if (buttons) {
-        buttons.forEach(newAddressButton => {
-            newAddressButton.addEventListener('click', e => {
-                e.preventDefault();
-                newAddressModal(newAddressButton);
-            });
-        });
+    if (document.body.dataset.shoppingCartAddressInit === 'true') {
+        return;
     }
-    setDeletionEventListeners();
-    setEditEventListeners();
+
+    document.body.dataset.shoppingCartAddressInit = 'true';
+
+    document.addEventListener('click', (event) => {
+        const newbutton = event.target.closest(SELECTORS.NEWADDRESSBUTTON);
+        if (newbutton) {
+            event.preventDefault();
+            newAddressModal(newbutton, 0);
+            return;
+        }
+
+        const editbutton = event.target.closest(SELECTORS.EDITADDRESSBUTTON);
+        if (editbutton) {
+            event.preventDefault();
+            const addresskey = editbutton.dataset.addresskey || 'billing';
+            const selectedradio = document.querySelector(`input[name="selectedaddress_${addresskey}"]:checked`);
+            if (!selectedradio) {
+                getString('addresses:delete:noaddressselected', 'local_shopping_cart').then(str => {
+                    showNotification(str, 'warning');
+                    return;
+                }).catch(
+                    // eslint-disable-next-line no-console
+                    console.error
+                );
+                return;
+            }
+            newAddressModal(editbutton, Number(selectedradio.value || 0));
+            return;
+        }
+
+        const deletebutton = event.target.closest(SELECTORS.DELETESELECTEDADDRESS);
+        if (deletebutton) {
+            handleAddressDeletion(event, deletebutton);
+        }
+    });
+
 };
 
 /**
@@ -123,8 +157,8 @@ function confirmAndDeleteAddress(addressId, button) {
     modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
         deselectAddressCheckbox(button.dataset.addresskey);
         const response = e.detail;
-        deleteAddress(response);
-        redrawRenderedAddresses([]); // No template data there (Moodle 4.1 compatibility).
+        deleteAddress(response.status ?? 0);
+        redrawRenderedAddresses(response.templatedata || {}, null, button.dataset.addresskey || 'billing');
     });
 
     modalForm.show();
@@ -169,63 +203,100 @@ function deleteAddress(response) {
 }
 
 /**
- * Show Modal.
- * @param {htmlElement} button
+ * Open inline address form in create/edit mode.
+ * @param {HTMLElement} button
+ * @param {Number} id
  */
-export function newAddressModal(button) {
-    // Detect if we are editing an existing address via the button's dataset or other relevant data.
-    const id = button.dataset.addressId ?? 0;
+export function newAddressModal(button, id = 0) {
+    const preferredAddressKey = button.dataset.addresskey || 'billing';
+    const container = document.querySelector(`#shopping-cart-inline-address-form-${preferredAddressKey}`);
+    if (!container) {
+        return;
+    }
 
-    // Set the save button text based on whether the address is being edited or added.
-    const saveButtonText = id > 0
-        ? getString('addresses:saveaddress:submit', 'local_shopping_cart') // Change "Add Address" to "Save Address" for edits.
-        : getString('addresses:newaddress:submit', 'local_shopping_cart'); // Default text for adding.
+    mountInlineAddressForm(container, id, preferredAddressKey);
+}
 
-    const modalForm = new ModalForm({
-        // Name of the class where the form is defined (must extend \core_form\dynamic_form):
-        formClass: "local_shopping_cart\\form\\modal_new_address",
-        // Pass arguments to indicate the state of the modal (new or edit):
-        args: {id},
-        // Configure the modal dialog with the updated save button text:
-        modalConfig: {title: getString('addresses:newaddress', 'local_shopping_cart')},
-        // DOM element that should get focus after the modal dialog is closed:
-        returnFocus: button,
-        saveButtonText: saveButtonText
-    });
+/**
+ * Mount or remount one inline address dynamic form.
+ * @param {HTMLElement} container
+ * @param {Number} id
+ * @param {String} addressKey
+ */
+function mountInlineAddressForm(container, id = 0, addressKey = 'billing') {
+    inlineAddressForms[addressKey] = new DynamicForm(container, FORMCLASS, {id});
 
-    // Listen to form submission events.
-    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, (e) => {
+    inlineAddressForms[addressKey].addEventListener(inlineAddressForms[addressKey].events.FORM_SUBMITTED, (e) => {
         const response = e.detail;
+        const stringKey = response.isnew ? 'addresses:newaddress:saved' : 'addresses:newaddress:updated';
 
-        // Determine the key to use based on whether the response is for a new or updated address.
-        const stringKey = response.isnew
-            ? 'addresses:newaddress:saved' // String for new address saved.
-            : 'addresses:newaddress:updated'; // String for updated address.
-
-        // Get the appropriate string and show the notification.
         getString(stringKey, 'local_shopping_cart')
             .then(str => {
                 showNotification(str, 'info');
                 return null;
             })
             .catch((error) => {
-                console.log(error); // eslint-disable-line no-console
+                // eslint-disable-next-line no-console
+                console.log(error);
             });
 
-        // Redraw the rendered addresses list based on the server response.
-        redrawRenderedAddresses(response.templatedata);
+        redrawRenderedAddresses(response.templatedata, response.newaddressid, addressKey);
     });
 
-    modalForm.show();
+    inlineAddressForms[addressKey].load({id});
 }
 
 /**
  * Re-Renders the address list with the newly returned data (most possible containing new saved addresses)
  * @param {Array} data data from addresses::get_template_render_data needed for rendering the address.mustache template
+ * @param {Number|null} newAddressId newly created/updated address id
+ * @param {String|null} preferredAddressKey preferred key to auto-select (e.g. billing)
  */
-function redrawRenderedAddresses(data) {
+function redrawRenderedAddresses(data, newAddressId = null, preferredAddressKey = null) {
+    // On the checkout page the addresses step is a dynamic form: reload it
+    // instead of re-rendering the legacy template (address.php still uses it).
+    const stepformcontainer = document.querySelector('[data-stepkey="addresses"]');
+    if (stepformcontainer) {
+        // Replace the inline-form containers with fresh clones: the legacy
+        // redraw recreated them (dropping the DynamicForm listeners), the
+        // form reload does not - without this, remounting stacks a second
+        // DynamicForm on the same container.
+        document.querySelectorAll(SELECTORS.INLINEFORMCONTAINER).forEach(container => {
+            container.parentNode.replaceChild(container.cloneNode(false), container);
+        });
+        inlineAddressForms = {};
+        document.dispatchEvent(new CustomEvent('local_shopping_cart/reloadAddressStep', {
+            detail: {
+                newaddressid: newAddressId,
+                addresskey: preferredAddressKey || 'billing',
+            },
+        }));
+        return;
+    }
     Templates.renderForPromise('local_shopping_cart/address', data).then(({html, js}) => {
-        Templates.replaceNodeContents(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
+        // The rendered template root is the container itself, so replace the
+        // whole node to avoid nesting duplicate ids on every redraw.
+        Templates.replaceNode(document.querySelector(SELECTORS.ADDRESSRENDERCONTAINER), html, js);
+        inlineAddressForms = {};
+
+        if (newAddressId) {
+            let selectedRadio = null;
+            if (preferredAddressKey) {
+                selectedRadio = document.querySelector(
+                    `input[name="selectedaddress_${preferredAddressKey}"][value="${newAddressId}"]`
+                );
+            }
+            if (!selectedRadio) {
+                selectedRadio = document.querySelector(
+                    `input[name^="selectedaddress_"][value="${newAddressId}"]`
+                );
+            }
+            if (selectedRadio) {
+                selectedRadio.checked = true;
+                selectedRadio.dispatchEvent(new Event('change', {bubbles: true}));
+            }
+        }
+
         const event = new CustomEvent('local_shopping_cart/addressesRedrawn', {});
         document.dispatchEvent(event);
         return null;

@@ -1,0 +1,124 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/guest_login_panel
+
+    Guest checkout panel shown above the addresses step form: registration
+    title, register/login tabs and the compact login form (incl. SSO).
+    The registration input fields themselves live in the step form
+    (addresses_form), this panel only carries the static parts and the
+    login alternative - it contains a real <form> and therefore cannot be
+    part of the mform.
+
+    Context variables required for this template:
+    * loginoptions - see addresses::get_login_options_data()
+
+    Example context (json):
+    {
+        "loginoptions": {
+            "loginurl": "https://example.com/login/index.php",
+            "logintoken": "abc",
+            "wantsurl": "https://example.com/local/shopping_cart/checkout.php",
+            "canloginbyemail": false,
+            "forgotpasswordurl": "https://example.com/login/forgot_password.php",
+            "hasidentityproviders": false,
+            "identityproviders": [],
+            "cansignup": false,
+            "signupurl": ""
+        }
+    }
+}}
+
+<section class="local-shopping_cart-guest-registration mb-4">
+    <div class="card border-0 shadow-sm sc-guest-card">
+        <div class="card-body">
+            <h4 class="mb-1">{{#str}} guestcheckout:registrationtitle, local_shopping_cart {{/str}}</h4>
+            <p class="text-muted small mb-3">{{#str}} guestcheckout:registrationdesc, local_shopping_cart {{/str}}</p>
+
+            {{#loginoptions}}
+                <ul class="nav nav-pills mb-3" id="shopping-cart-guest-login-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="shopping-cart-guest-tab-register" data-bs-toggle="pill" data-bs-target="#shopping-cart-guest-pane-register" type="button" role="tab" aria-controls="shopping-cart-guest-pane-register" aria-selected="true">
+                            {{#str}} guestcheckout:registertab, local_shopping_cart {{/str}}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="shopping-cart-guest-tab-login" data-bs-toggle="pill" data-bs-target="#shopping-cart-guest-pane-login" type="button" role="tab" aria-controls="shopping-cart-guest-pane-login" aria-selected="false">
+                            {{#str}} guestcheckout:alreadyregistered, local_shopping_cart {{/str}}
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mb-3">
+                    <div class="tab-pane fade show active" id="shopping-cart-guest-pane-register" role="tabpanel" aria-labelledby="shopping-cart-guest-tab-register">
+                        <p class="small text-muted mb-0">{{#str}} guestcheckout:registrationdesc, local_shopping_cart {{/str}}</p>
+                    </div>
+                    <div class="tab-pane fade" id="shopping-cart-guest-pane-login" role="tabpanel" aria-labelledby="shopping-cart-guest-tab-login">
+                        <div class="alert alert-light border mb-0">
+                            <h5 class="mb-2">{{#str}} guestcheckout:alreadyregistered, local_shopping_cart {{/str}}</h5>
+                            <form action="{{loginurl}}" method="post" class="mb-2">
+                                <input id="checkout_login_anchor" type="hidden" name="anchor" value="">
+                                <input type="hidden" name="logintoken" value="{{logintoken}}">
+                                <input type="hidden" name="wantsurl" value="{{wantsurl}}">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-5">
+                                        <label for="checkout_login_username" class="form-label mb-1">
+                                            {{^canloginbyemail}}{{#str}} username {{/str}}{{/canloginbyemail}}
+                                            {{#canloginbyemail}}{{#str}} usernameemail {{/str}}{{/canloginbyemail}}
+                                        </label>
+                                        <input type="text" id="checkout_login_username" name="username" class="form-control" autocomplete="username" data-skip-webservice="true">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="checkout_login_password" class="form-label mb-1">{{#str}} password {{/str}}</label>
+                                        <input type="password" id="checkout_login_password" name="password" class="form-control" autocomplete="current-password" data-skip-webservice="true">
+                                    </div>
+                                    <div class="col-md-3 d-grid">
+                                        <button class="btn btn-secondary" type="submit">{{#str}} login {{/str}}</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <p class="mb-2"><a href="{{forgotpasswordurl}}">{{#str}} forgotaccount {{/str}}</a></p>
+
+                            {{#hasidentityproviders}}
+                                <div class="mt-2">
+                                    {{#identityproviders}}
+                                        <a class="btn btn-outline-secondary btn-sm me-2 mb-2" href="{{url}}">
+                                            {{#iconurl}}<img src="{{iconurl}}" alt="" width="18" height="18" class="me-1"/>{{/iconurl}}
+                                            {{name}}
+                                        </a>
+                                    {{/identityproviders}}
+                                </div>
+                            {{/hasidentityproviders}}
+
+                            {{#cansignup}}
+                                <p class="mb-0 mt-2"><a href="{{signupurl}}">{{#str}} startsignup {{/str}}</a></p>
+                            {{/cansignup}}
+                        </div>
+                    </div>
+                </div>
+            {{/loginoptions}}
+        </div>
+    </div>
+</section>
+{{#js}}
+    (function() {
+    var anchor = document.getElementById('checkout_login_anchor');
+    if (anchor) {
+    anchor.value = window.location.hash || '';
+    }
+    })();
+{{/js}}

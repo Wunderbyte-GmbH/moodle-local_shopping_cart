@@ -43,8 +43,10 @@ class address_operations {
      */
     public static function add_address_for_user(object $address): int {
         global $DB, $USER;
-        $address->address2 = $record->address2 ?? '';
-        $address->phone = $record->phone ?? '';
+        $address->address2 = $address->address2 ?? '';
+        $address->phone = $address->phone ?? '';
+        $address->company = $address->company ?? '';
+        $address->name = $address->name ?? '';
         $address->userid = $USER->id;
         return $DB->insert_record('local_shopping_cart_address', $address, true);
     }
@@ -71,6 +73,7 @@ class address_operations {
         // Handle optional fields with default values if not provided.
         $address->address2 = $address->address2 ?? '';
         $address->phone = $address->phone ?? '';
+        $address->company = $address->company ?? '';
 
         // Update the record in the database.
         return $DB->update_record('local_shopping_cart_address', $address);
@@ -87,23 +90,28 @@ class address_operations {
     }
 
     /**
-     * Return the database object for a specific address ID as stdClass.
+     * Return the database object for a specific address ID, or false if the
+     * address no longer exists.
+     *
+     * A selected address may have been deleted while its id is still referenced
+     * in the checkout cache, so this uses IGNORE_MISSING and returns false
+     * instead of throwing. Callers handle a false result.
      *
      * @param int $addressid
-     * @return \stdClass
+     * @return \stdClass|false
      */
-    public static function get_specific_user_address(int $addressid): \stdClass {
+    public static function get_specific_user_address(int $addressid) {
         global $DB;
 
         // Define a static variable to hold the cache for all addresses queried in this request.
         static $addresscache = [];
         // Check if the specific address ID is already in the cache.
-        if (isset($addresscache[$addressid])) {
+        if (array_key_exists($addressid, $addresscache)) {
             // Return the cached result immediately.
             return $addresscache[$addressid];
         }
         // If not in cache, execute the database query.
-        $record = $DB->get_record('local_shopping_cart_address', ['id' => $addressid], '*', MUST_EXIST);
+        $record = $DB->get_record('local_shopping_cart_address', ['id' => $addressid], '*', IGNORE_MISSING);
         // Save the result to the cache for future calls within this request.
         $addresscache[$addressid] = $record;
         return $record;

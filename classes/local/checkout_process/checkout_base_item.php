@@ -60,6 +60,32 @@ abstract class checkout_base_item {
     }
 
     /**
+     * Steps migrated to the dynamic-form contract return their form classname
+     * here. For such steps the manager renders a form container instead of
+     * render_body() and skips check_status() - validity is written to the
+     * cache by the form's process_dynamic_submission().
+     *
+     * @return string Empty string for legacy steps.
+     */
+    public static function get_form_classname(): string {
+        return '';
+    }
+
+    /**
+     * Optional markup around the form of a dynamic-form step.
+     *
+     * Content that must not live inside the mform element (nested forms are
+     * invalid HTML - e.g. a login form or another dynamic form) is rendered
+     * before/after it. A wrapperclass wraps form and surroundings in one
+     * section (e.g. to keep legacy CSS/behat selectors working).
+     *
+     * @return array ['before' => string, 'after' => string, 'wrapperclass' => string]
+     */
+    public static function render_form_surroundings(): array {
+        return ['before' => '', 'after' => '', 'wrapperclass' => ''];
+    }
+
+    /**
      * Renders checkout item.
      * @param array $changedinput
      * @param array $managercache

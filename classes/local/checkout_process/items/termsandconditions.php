@@ -61,6 +61,16 @@ class termsandconditions extends checkout_base_item {
     }
 
     /**
+     * This step is implemented as dynamic form (pilot of the forms migration).
+     * Remove this override to roll back to the legacy render_body/check_status path.
+     *
+     * @return string
+     */
+    public static function get_form_classname(): string {
+        return \local_shopping_cart\local\checkout_process\steps\termsandconditions_form::class;
+    }
+
+    /**
      * Checks status of checkout item.
      * @return string
      */
@@ -78,103 +88,71 @@ class termsandconditions extends checkout_base_item {
     }
 
     /**
-     * Renders checkout item.
+     * Returns the conditions the user has to accept. A checkbox is only active
+     * when its accept-flag is on AND the conditions text is not empty.
      *
-     * @param mixed $cachedata
-     *
-     * @return array
-     *
+     * @return array fieldname => conditions text (HTML)
      */
-    public static function render_body($cachedata): array {
-        global $PAGE;
-
-        $data = [];
-
-        // Add data from cache.
-        self::set_data_from_cache($data, $cachedata['data'] ?? []);
+    public static function get_active_conditions(): array {
+        $conditions = [];
 
         $termsandconditions = get_config('local_shopping_cart', 'termsandconditions');
-        $additionalconditions = get_config('local_shopping_cart', 'additionalconditions');
-
-        // Correctly set terms and conditions.
         if (
             get_config('local_shopping_cart', 'accepttermsandconditions')
-            && !empty(trim(strip_tags($termsandconditions)))
+            && !empty(trim(strip_tags((string)$termsandconditions)))
         ) {
-            $data['termsandconditions'] = $termsandconditions;
-        } else {
-            unset($data['termsandconditions']);
+            $conditions['accepttermsandconditions'] = $termsandconditions;
         }
 
-        // Correctly set additional conditions.
+        $additionalconditions = get_config('local_shopping_cart', 'additionalconditions');
         if (
             get_config('local_shopping_cart', 'acceptadditionalconditions')
-            && !empty(trim(strip_tags($additionalconditions)))
+            && !empty(trim(strip_tags((string)$additionalconditions)))
         ) {
-            $data['additionalconditions'] = $additionalconditions;
-        } else {
-            unset($data['additionalconditions']);
+            $conditions['acceptadditionalconditions'] = $additionalconditions;
         }
 
-        $template = $PAGE->get_renderer('local_shopping_cart')
-            ->render_from_template("local_shopping_cart/termsandconditions", $data);
-        return [
-            'template' => $template,
-        ];
+        return $conditions;
     }
 
     /**
-     * Returns the required-address keys as specified in the plugin config.
+     * Validation core of the terms step: the step is valid once every active
+     * conditions checkbox is ticked. Used by both the termsandconditions_form
+     * step and the legacy check_preprocess() path.
      *
-     * @param mixed $managercachestep
-     * @param mixed $validationdata
-     *
-     * @return array
-     *
+     * @param array $data fieldname => bool (ticked)
+     * @return array ['data' => array, 'mandatory' => bool, 'valid' => bool]
      */
-    public static function check_status(
-        $managercachestep,
-        $validationdata
-    ): array {
-        $validationdata = json_decode($validationdata);
-        $data = [];
-        foreach ($validationdata as $validationvalue) {
-            $data[$validationvalue->name] = $validationvalue->value;
+    public function evaluate_step(array $data): array {
+        $stepdata = [];
+        $valid = true;
+        foreach (array_keys(self::get_active_conditions()) as $fieldname) {
+            $stepdata[$fieldname] = !empty($data[$fieldname]);
+            $valid = $valid && $stepdata[$fieldname];
         }
         return [
-            'data' => $data,
+            'data' => $stepdata,
             'mandatory' => self::is_mandatory(),
-            'valid' => self::is_valid($validationdata),
+            'valid' => $valid,
         ];
     }
 
     /**
-     * Returns the required-address keys as specified in the plugin config.
+     * Adapts the legacy changedinput (JSON array of {name,value}) to the data
+     * shape expected by evaluate_step().
      *
-     * @param array $validationdata
-     * @return bool list of all required address keys
+     * @param mixed $changedinput
+     * @return array
      */
-    public static function is_valid($validationdata): bool {
-        foreach ($validationdata as $validationvalue) {
-            if (
-                !isset($validationvalue->value) ||
-                $validationvalue->value == false
-            ) {
-                return false;
+    public function parse_changed_input($changedinput): array {
+        $decoded = is_array($changedinput) ? $changedinput : json_decode($changedinput);
+        $data = [];
+        foreach ((array)$decoded as $input) {
+            if (isset($input->name)) {
+                $data[$input->name] = $input->value ?? false;
             }
         }
-        return true;
-    }
-
-    /**
-     * Generates the data for rendering the templates/address.mustache template.
-     * @param array $termsandconditions
-     * @param array $cachedata
-     *
-     * @return void
-     */
-    public static function set_data_from_cache(&$termsandconditions, $cachedata): void {
-        $termsandconditions = array_merge($termsandconditions, $cachedata ?? []);
+        return $data;
     }
 
     /**

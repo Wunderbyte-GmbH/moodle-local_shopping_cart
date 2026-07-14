@@ -773,6 +773,12 @@ export function addItemShowNotification(data) {
                 // eslint-disable-next-line no-console
                 console.log(e);
             });
+
+            if (Number(data.guestusercreated || 0) === 1) {
+                window.location.reload();
+                return;
+            }
+
             reinit(data.userid);
             return;
         case CARTPARAM_CARTISFULL:

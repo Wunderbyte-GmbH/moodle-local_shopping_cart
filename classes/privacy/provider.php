@@ -135,6 +135,15 @@ class provider implements
             'privacy:metadata:local_shopping_cart_invoices'
         );
 
+        $collection->add_database_table(
+            'local_shopping_cart_guestusers',
+            [
+                'userid' => 'privacy:metadata:local_shopping_cart_guestusers:userid',
+                'timecreated' => 'privacy:metadata:local_shopping_cart_guestusers:timecreated',
+            ],
+            'privacy:metadata:local_shopping_cart_guestusers'
+        );
+
         return $collection;
     }
 
@@ -214,6 +223,7 @@ class provider implements
         // Ledger and invoices should never be deleted, regardless what.
         $DB->delete_records('local_shopping_cart_ledger');
         $DB->delete_records('local_shopping_cart_invoices');
+        $DB->delete_records('local_shopping_cart_guestusers');
     }
 
     /**
@@ -239,6 +249,7 @@ class provider implements
 
             $DB->delete_records('local_shopping_cart_history', ['userid' => $user->id]);
             $DB->delete_records('local_shopping_cart_credits', ['userid' => $user->id]);
+            $DB->delete_records('local_shopping_cart_guestusers', ['userid' => $user->id]);
 
             foreach ($records as $record) {
                 // Delete identifier.
@@ -300,6 +311,7 @@ class provider implements
 
         $DB->delete_records_list('local_shopping_cart_history', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_credits', 'userid', $userids);
+        $DB->delete_records_list('local_shopping_cart_guestusers', 'userid', $userids);
 
         if (!empty(get_config('local_shopping_cart', 'deleteledger'))) {
             $DB->delete_records_list('local_shopping_cart_ledger', 'userid', $userids);

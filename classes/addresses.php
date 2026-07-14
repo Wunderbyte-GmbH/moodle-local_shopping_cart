@@ -17,7 +17,6 @@
 namespace local_shopping_cart;
 
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
-use stdClass;
 
 /**
  * Helper Class to handle addresses for the current user
@@ -30,36 +29,14 @@ class addresses {
     /**
      * Generates the data for rendering the templates/address.mustache template.
      *
+     * The template expects the saved addresses nested inside each required
+     * address entry, so we delegate to the checkout-process item which builds
+     * exactly that structure (and is also guest-checkout aware).
+     *
      * @return array all required template data
      */
     public static function get_template_render_data(): array {
-        global $USER;
-        $userid = $USER->id ?? 0;
-        $data["email"] = $USER->email ?? "";
-        $data["username"] = $USER->username ?? "";
-        $data["firstname"] = $USER->firstname ?? "";
-        $data["lastname"] = $USER->lastname ?? "";
-        $data["userid"] = $userid;
-
-        // Get saved addresses for current user.
-        $addressesfromdb = address_operations::get_all_user_addresses($userid);
-
-        $countries = get_string_manager()->get_list_of_countries();
-        $savedaddresses = [];
-        foreach ($addressesfromdb as $dbaddress) {
-            $dbaddress->country = $countries[$dbaddress->state];
-            $savedaddresses[] = $dbaddress;
-        }
-        $data['saved_addresses'] = $savedaddresses;
-
-        $requiredaddresseslocalized = self::get_required_address_data();
-        $data['required_addresses'] = array_values($requiredaddresseslocalized);
-        $data['required_addresses_keys'] = array_reduce($requiredaddresseslocalized, function ($keys, $addressdata) {
-            $keys[] = $addressdata['addresskey'];
-            return $keys;
-        }, []);
-        $data['required_addresses_multiple'] = count($requiredaddresseslocalized) > 1;
-        return $data;
+        return \local_shopping_cart\local\checkout_process\items\addresses::get_template_render_data();
     }
 
     /**
