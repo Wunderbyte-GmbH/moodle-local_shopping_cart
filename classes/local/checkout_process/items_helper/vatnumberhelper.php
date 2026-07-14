@@ -160,6 +160,18 @@ class vatnumberhelper {
         return self::$lastfailureownvat;
     }
 
+    /**
+     * Validates a VAT number for the given country.
+     *
+     * Picks the validator by VAT region (GB format check, EU VIES SOAP lookup, or vatcomply
+     * fallback) and rejects empty input or the site's own VAT number. During Behat/PHPUnit runs
+     * a mocked result from config is returned instead of calling an external service.
+     *
+     * @param string $countrycode Two-letter country code.
+     * @param string $vatnrnumber VAT number, with or without the leading country code.
+     * @param object|null $client Optional SOAP client, injected for testing the VIES lookup.
+     * @return bool True when the VAT number is valid.
+     */
     public static function is_vatnr_valid(string $countrycode, string $vatnrnumber, ?object $client = null): bool {
         self::$lasttrace = [];
         self::$lastfailureownvat = false;

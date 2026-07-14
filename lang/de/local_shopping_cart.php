@@ -35,8 +35,6 @@ $string['accountid:description'] =
         'Wählen Sie aus, über welchen Anbieter (Payment Account) die Zahlungen abgewickelt werden sollen.';
 $string['action'] = 'Aktion';
 $string['addcoupon'] = 'Gutscheincode hinzufügen';
-$string['area'] = "Bereich";
-$string['editcoupon'] = 'Gutschein bearbeiten';
 $string['adddiscounttoitem'] = 'Der Preis dieses Artikels kann entweder um einen absoluten Betrag oder einen Prozentwert reduziert werden,
     nicht aber um beides. Wenn Sie einen negativen Wert als Betrag wählen, wird der Preis um diesen Betrag erhöht.';
 $string['addedtocart'] = '{$a} wurde in den Warenkorb gelegt.';
@@ -111,8 +109,6 @@ wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.'
 $string['alreadyincart'] = 'Das gewählte Item ist bereits im Warenkorb.';
 $string['alwaysanswerwithsuccessinverifypurchase'] = 'Immer mit erfolgreich auf im Validierungs Webservice antworten';
 $string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'Dieses Feature wird nur von manchen Payment Providern verwendet und kann üblicherweise ignoriert werden.';
-$string['enablesubscriptioncancelobserver'] = 'Verarbeitung von subscription_cancelled-Zahlungsereignissen aktivieren';
-$string['enablesubscriptioncancelobserver_desc'] = 'Wenn aktiviert, lauscht der Warenkorb auf Zahlungsanbieter-Ereignisse mit dem Namen "subscription_cancelled" und storniert die zugehörigen Warenkorb-Käufe. Standardmäßig deaktiviert.';
 $string['amount'] = 'Anzahl';
 $string['annotation'] = 'Anmerkung';
 $string['annotation_rebook_desc'] = 'Geben Sie eine Anmerkung oder die OrderID der Zahlungstransaktion an, die Sie nachbuchen wollen.';
@@ -120,6 +116,7 @@ $string['appliedtoallitemsincart'] = 'Der ausgewählte Zeipunkt des Reservierung
 $string['applydiscount'] = 'Rabatt abziehen';
 $string['applytocomponent'] = 'Stornierung an Artikel Plugin melden';
 $string['applytocomponent_desc'] = 'Wird ein Artikel irrtümlich doppelt bezahlt, kann das Häkchen entfernt werden um hier zu stornieren, ohne dass die Käuferin aus z.B. dem Kurs ausgeschrieben wird.';
+$string['area'] = "Bereich";
 $string['at'] = "Österreich";
 $string['backtohome'] = 'Zurück zur Überblicksseite';
 $string['baseurl'] = 'Basis-URL';
@@ -208,8 +205,8 @@ wenn die Kund/innen keine Angaben zur Rechnungsadresse machen.';
 $string['choosehighertimestamp'] = 'Wählen Sie einen späteren Zeitpunkt';
 $string['chooseplatform'] = 'Plattform wählen';
 $string['chooseplatformdesc'] = 'Wählen Sie Ihre Rechnungsplattform aus.';
-$string['component'] = 'Komponente';
 $string['completeshoppingcartprecheckout'] = 'Bitte bestätigen Sie noch folgende Felder: {$a}';
+$string['component'] = 'Komponente';
 $string['confirmadditionalconditions'] = "Zusätzliche Konditionen akzeptieren";
 $string['confirmcancelallbody'] = 'Möchten Sie den Kauf für alle aktuellen Käufer:innen wirklich stornieren?
     Folgende Nutzer:innen erhalten den Kaufpreis zurück:
@@ -348,8 +345,8 @@ $string['discount'] = 'Rabatt';
 $string['discountabsolute'] = 'Betrag';
 $string['discountabsolute_help'] = 'Reduziere den Preis um diesen Betrag, z.B. "15". Keine Währung eingeben.';
 $string['discountpercent'] = 'Prozent';
-$string['discounttype'] = 'Rabatttyp';
 $string['discountpercent_help'] = 'Reduziere den Preis um diesen Prozentwert, z.B. "10". Kein %-Zeichen eingeben.';
+$string['discounttype'] = 'Rabatttyp';
 $string['dk'] = "Dänemark";
 $string['downloadcashreportlimit'] = 'Download-Limit festlegen';
 $string['downloadcashreportlimitdesc'] = 'Geben Sie die maximale Anzahl an Zeilen ein, die beim Download des Kassajournals heruntergeladen werden sollen.
@@ -363,6 +360,7 @@ muss - nach der ersten Zahlung - die Hälfte des offenen Betrags nach 50 Tagen
 und der Rest nach 100 Tagen bezahlt werden.';
 $string['duedatevariable'] = 'Fällig N Tage nach erster Anzahlung';
 $string['duedatevariable_help'] = 'Anzahl Tage NACH der ersten Anzahlung nach denen der volle Betrag überwiesen worden sein muss. Achtung: Der Kursstart kann auch der Start des Semesters sein, je nach Plugin-Einstellung "canceldependenton"';
+$string['editcoupon'] = 'Gutschein bearbeiten';
 $string['ee'] = "Estland";
 $string['el'] = "Griechenland";
 $string['email'] = 'E-Mail';
@@ -372,6 +370,8 @@ $string['embedredirectallowlist'] = 'Erlaubte Weiterleitungsziele';
 $string['embedredirectallowlist_desc'] = 'Ein URL-Präfix pro Zeile. Wenn eine eingebettete Warenkorb-Ansicht ein Checkout- oder Success-Weiterleitungsziel überschreibt, wird dieses nur akzeptiert, wenn es mit einem dieser Präfixe beginnt; sonst gilt das Moodle-Standardziel. Leer lassen, um alle Überschreibungen zu verbieten. Beispiel: https://www.example.com/';
 $string['enableinstallments'] = 'Ermögliche Ratenzahlungen';
 $string['enableinstallments_desc'] = 'Für jeden verkauften Artikel kann eingestellt werden, ob Ratenzahlungen möglich sind und zu welchen Konditionen.';
+$string['enablesubscriptioncancelobserver'] = 'Verarbeitung von subscription_cancelled-Zahlungsereignissen aktivieren';
+$string['enablesubscriptioncancelobserver_desc'] = 'Wenn aktiviert, lauscht der Warenkorb auf Zahlungsanbieter-Ereignisse mit dem Namen "subscription_cancelled" und storniert die zugehörigen Warenkorb-Käufe. Standardmäßig deaktiviert.';
 $string['enabletax'] = 'MWSt aktivieren';
 $string['enabletax_desc'] = 'Soll MWSt im Wartenkorb angezeigt und verwendet werden';
 $string['endbeforestart'] = 'Das Enddatum muss nach dem Startdatum liegen.';
@@ -539,8 +539,8 @@ $string['nobillingaddress'] = 'Rechnungsaddresse für Benutzer/in nicht vorhande
 $string['nocostcenter'] = 'Keine Kostenstelle';
 $string['nofixedpercentage'] = 'Kein fixer Prozentsatz';
 $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
-$string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['noitemsaffected'] = 'Keine Artikel betroffen';
+$string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['nolimit'] = 'Kein Limit';
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
 $string['nopaymentaccountsdesc'] =
