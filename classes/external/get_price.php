@@ -74,6 +74,7 @@ class get_price extends external_api {
      * @param int $usecredit
      * @param int $useinstallments
      * @param string $couponvalue
+     * @param bool $couponenabled
      *
      * @return array
      */

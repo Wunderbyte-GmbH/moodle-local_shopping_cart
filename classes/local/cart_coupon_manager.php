@@ -25,8 +25,6 @@
 
 namespace local_shopping_cart\local;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class cart_coupon_manager
  *
@@ -135,6 +133,7 @@ class cart_coupon_manager {
      * @param float $percent
      * @param float $absolute
      * @param string $currency
+     * @param string $coupontype
      * @return void
      */
     public function set_coupon_data(

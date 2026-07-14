@@ -147,6 +147,10 @@ class addedit_coupon extends dynamic_form {
 
     /**
      * Server-side validation.
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
