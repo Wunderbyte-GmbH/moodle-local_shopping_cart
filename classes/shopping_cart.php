@@ -1750,6 +1750,22 @@ class shopping_cart {
     }
 
     /**
+     * Helper function to convert a price value to a float.
+     * Accepts raw numbers as well as strings that were already localized
+     * with format_float (e.g. "42,50" in languages using a decimal comma),
+     * so that convert_prices_to_number_format stays idempotent.
+     *
+     * @param mixed $value raw or localized price value.
+     * @return float
+     */
+    public static function price_to_float($value): float {
+        if (is_string($value)) {
+            return (float) unformat_float($value);
+        }
+        return (float) $value;
+    }
+
+    /**
      * Helper function to convert all prices in provided array
      * into strings with 2 fixed decimals.
      *
@@ -1758,41 +1774,41 @@ class shopping_cart {
     public static function convert_prices_to_number_format(array &$data) {
         // Render all prices to 2 fixed decimals.
         if (!empty($data['price'])) {
-            $data['price'] = format_float(round((float) $data['price'], 2), 2);
+            $data['price'] = format_float(round(self::price_to_float($data['price']), 2), 2);
         }
         if (!empty($data['initialtotal'])) {
-            $data['initialtotal'] = format_float(round((float) $data['initialtotal'], 2), 2);
+            $data['initialtotal'] = format_float(round(self::price_to_float($data['initialtotal']), 2), 2);
         }
         if (!empty($data['initialtotal_net'])) {
-            $data['initialtotal_net'] = format_float(round((float) $data['initialtotal_net'], 2), 2);
+            $data['initialtotal_net'] = format_float(round(self::price_to_float($data['initialtotal_net']), 2), 2);
         }
         if (!empty($data['discount'])) {
-            $data['discount'] = format_float(round((float) $data['discount'], 2), 2);
+            $data['discount'] = format_float(round(self::price_to_float($data['discount']), 2), 2);
         }
         if (!empty($data['deductible'])) {
-            $data['deductible'] = format_float(round((float) $data['deductible'], 2), 2);
+            $data['deductible'] = format_float(round(self::price_to_float($data['deductible']), 2), 2);
         }
         if (!empty($data['credit'])) {
-            $data['credit'] = format_float(round((float) $data['credit'], 2), 2);
+            $data['credit'] = format_float(round(self::price_to_float($data['credit']), 2), 2);
         }
         if (!empty($data['remainingcredit'])) {
-            $data['remainingcredit'] = format_float(round((float) $data['remainingcredit'], 2), 2);
+            $data['remainingcredit'] = format_float(round(self::price_to_float($data['remainingcredit']), 2), 2);
         }
         if (!empty($data['price_net'])) {
-            $data['price_net'] = format_float(round((float) $data['price_net'], 2), 2);
+            $data['price_net'] = format_float(round(self::price_to_float($data['price_net']), 2), 2);
         }
         if (!empty($data['price_gross'])) {
-            $data['price_gross'] = format_float(round((float) $data['price_gross'], 2), 2);
+            $data['price_gross'] = format_float(round(self::price_to_float($data['price_gross']), 2), 2);
         }
         // Also convert prices for each item.
         if (!empty($data['items'])) {
             foreach ($data['items'] as &$item) {
-                $item['price'] = format_float(round((float) $item['price'], 2), 2);
+                $item['price'] = format_float(round(self::price_to_float($item['price']), 2), 2);
                 if (!empty($item['price_net'])) {
-                    $item['price_net'] = format_float(round((float) $item['price_net'], 2), 2);
+                    $item['price_net'] = format_float(round(self::price_to_float($item['price_net']), 2), 2);
                 }
                 if (!empty($item['price_gross'])) {
-                    $item['price_gross'] = format_float(round((float) $item['price_gross'], 2), 2);
+                    $item['price_gross'] = format_float(round(self::price_to_float($item['price_gross']), 2), 2);
                 }
             }
             $data['items'] = array_values($data['items']);
@@ -1800,12 +1816,12 @@ class shopping_cart {
         // Also convert prices for each history item.
         if (!empty($data['historyitems'])) {
             foreach ($data['historyitems'] as &$hitem) {
-                $hitem['price'] = format_float(round((float) $hitem['price'], 2), 2);
+                $hitem['price'] = format_float(round(self::price_to_float($hitem['price']), 2), 2);
                 if (!empty($hitem['price_net'])) {
-                    $hitem['price_net'] = format_float(round((float) $hitem['price_net'], 2), 2);
+                    $hitem['price_net'] = format_float(round(self::price_to_float($hitem['price_net']), 2), 2);
                 }
                 if (!empty($hitem['price_gross'])) {
-                    $hitem['price_gross'] = format_float(round((float) $hitem['price_gross'], 2), 2);
+                    $hitem['price_gross'] = format_float(round(self::price_to_float($hitem['price_gross']), 2), 2);
                 }
             }
             $data['historyitems'] = array_values($data['historyitems']);

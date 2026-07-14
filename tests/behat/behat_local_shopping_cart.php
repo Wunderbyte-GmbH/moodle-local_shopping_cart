@@ -99,6 +99,39 @@ class behat_local_shopping_cart extends behat_base {
     }
 
     /**
+     * Set the decimal separator of the current language.
+     *
+     * Writes a local language customization (en_local) for the decsep string,
+     * so prices are rendered e.g. with a decimal comma like in German.
+     *
+     * @param string $decsep
+     * @Given /^the decimal separator has been set to "([^"]*)"$/
+     */
+    public function the_decimal_separator_has_been_set_to(string $decsep): void {
+        global $CFG;
+        $langfolder = $CFG->dataroot . '/lang/en_local';
+        check_dir_exists($langfolder);
+        file_put_contents($langfolder . '/langconfig.php', "<?php\n\$string['decsep'] = '$decsep';\n");
+        get_string_manager()->reset_caches();
+    }
+
+    /**
+     * Remove the local decsep customization again after each scenario.
+     *
+     * @param AfterScenarioScope $scope
+     *
+     * @AfterScenario
+     */
+    public function reset_local_decimal_separator(AfterScenarioScope $scope): void {
+        global $CFG;
+        $langfile = $CFG->dataroot . '/lang/en_local/langconfig.php';
+        if (file_exists($langfile)) {
+            unlink($langfile);
+            get_string_manager()->reset_caches();
+        }
+    }
+
+    /**
      * Clean shopping cart for given user.
      *
      * @param string $username

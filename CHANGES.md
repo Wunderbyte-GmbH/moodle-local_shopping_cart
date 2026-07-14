@@ -1,3 +1,5 @@
+* Bugfix: On checkout.php the cent amounts of prices were cut off (e.g. 42,50 displayed as 42,00) for languages with a decimal comma (e.g. German): convert_prices_to_number_format ran twice (once in checkout::prepare_checkout, once in checkout.php) and the second pass truncated the already localized string "42,50" at the comma via its (float) cast. The same double conversion hit the credit on the cashier and receipt pages. Prices are now parsed back with unformat_float, making the conversion idempotent.
+
 ## Version 2.1.0 (2026070300)
 * Bugfix: The cashier cart display was never refreshed for users with a child language pack (e.g. de_gs): Intl.NumberFormat threw "Invalid language tag" and aborted every cart re-render (add to cart via booking modal, +/- item count, delete item - all required a manual page reload). Moodle language codes are now resolved to valid BCP 47 locales with fallback to the primary language (de_gs -> de-gs -> de).
 * Improvement: If optional VAT number is clicked it gets mandatory.
