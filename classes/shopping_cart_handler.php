@@ -89,6 +89,7 @@ class shopping_cart_handler {
             get_config('local_shopping_cart', 'enableinstallments')
             || get_config('local_shopping_cart', 'allowrebooking')
             || get_config('local_shopping_cart', 'allowchooseaccount')
+            || get_config('local_shopping_cart', 'allowcustombookingfee')
         ) {
             $mform->addElement(
                 'header',
@@ -96,6 +97,20 @@ class shopping_cart_handler {
                 '<i class="fa fa-fw fa-shopping-cart" aria-hidden="true"></i>&nbsp;'
                 . get_string('pluginname', 'local_shopping_cart')
             );
+        }
+
+        if (get_config('local_shopping_cart', 'allowcustombookingfee')) {
+            // Item-specific booking fee. Empty = fall back to the global fee
+            // logic, 0 = explicitly no fee — so the raw value must survive,
+            // PARAM_FLOAT would coerce '' to 0.
+            $mform->addElement(
+                'text',
+                'sch_bookingfee',
+                get_string('sch_bookingfee', 'local_shopping_cart')
+            );
+            $mform->setType('sch_bookingfee', PARAM_RAW_TRIMMED);
+            $mform->setDefault('sch_bookingfee', '');
+            $mform->addHelpButton('sch_bookingfee', 'sch_bookingfee', 'local_shopping_cart');
         }
 
         if (has_capability('local/shopping_cart:changepaymentaccount', context_system::instance())) {
@@ -211,6 +226,23 @@ class shopping_cart_handler {
             $errors['sch_duedatevariable'] = get_string('onlyone', 'local_shopping_cart');
             $errors['sch_duedaysbeforecoursestart'] = get_string('onlyone', 'local_shopping_cart');
         }
+
+        if (isset($data['sch_bookingfee'])) {
+            $rawfee = self::normalize_custom_bookingfee($data['sch_bookingfee']);
+            if ($rawfee !== '' && (!is_numeric($rawfee) || (float)$rawfee < 0)) {
+                $errors['sch_bookingfee'] = get_string('sch_bookingfee_error', 'local_shopping_cart');
+            }
+        }
+    }
+
+    /**
+     * Normalize a raw custom booking fee form value (decimal comma tolerated).
+     *
+     * @param mixed $value
+     * @return string '' when no fee is set (= fall back to global fee logic)
+     */
+    public static function normalize_custom_bookingfee($value): string {
+        return str_replace(',', '.', trim((string)$value));
     }
 
     /**
@@ -256,6 +288,16 @@ class shopping_cart_handler {
 
         if (isset($formdata->sch_allowrebooking)) {
             $this->add_key_to_jsonobject('allowrebooking', $formdata->sch_allowrebooking);
+        }
+
+        if (
+            get_config('local_shopping_cart', 'allowcustombookingfee')
+            && property_exists($formdata, 'sch_bookingfee')
+        ) {
+            $rawfee = self::normalize_custom_bookingfee($formdata->sch_bookingfee);
+            // Empty = fall back to the global fee logic (stored as null),
+            // 0 = explicitly no fee, > 0 = this fee.
+            $this->add_key_to_jsonobject('bookingfee', is_numeric($rawfee) ? (float)$rawfee : null);
         }
 
         $this->save_iteminfo();
@@ -304,6 +346,11 @@ class shopping_cart_handler {
         // Rebooking.
         $formdata->sch_allowrebooking = $jsonobject->allowrebooking
             ?? get_config('local_shopping_cart', 'allowrebooking') ?: 0;
+
+        // Item-specific booking fee ('' = no own fee, global fee logic applies).
+        $formdata->sch_bookingfee = isset($jsonobject->bookingfee) && is_numeric($jsonobject->bookingfee)
+            ? $jsonobject->bookingfee
+            : '';
     }
 
     /**

@@ -168,6 +168,15 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/allowcustombookingfee',
+            get_string('allowcustombookingfee', 'local_shopping_cart'),
+            get_string('allowcustombookingfee_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
     // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox(
