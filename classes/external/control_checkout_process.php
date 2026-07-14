@@ -33,6 +33,7 @@ use external_value;
 use external_single_structure;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\pricemodifier\modifiers\checkout;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -91,9 +92,13 @@ class control_checkout_process extends external_api {
         $cartstore = cartstore::instance((int)$USER->id);
         $data = $cartstore->get_localized_data();
 
-        if (!empty($identifier)) {
-            $data['identifier'] = $identifier;
+        $data['userid'] = (int)$USER->id;
+        if (empty($identifier)) {
+            // Recover identifier from session cache to avoid data-itemid="" on the payment button.
+            $schistory = \cache::make('local_shopping_cart', 'schistory')->get('schistorycache');
+            $identifier = (string)($schistory['identifier'] ?? '');
         }
+        $data = checkout::prepare_checkout($data, (string)$identifier);
 
         $checkoutmanager = new checkout_manager(
             $data,

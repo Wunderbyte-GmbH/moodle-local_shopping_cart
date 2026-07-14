@@ -207,5 +207,18 @@
                 <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in WHERE"/>
             </INDEXES>
         </TABLE>
+        <TABLE NAME="local_shopping_cart_guestusers" COMMENT="Tracks temporary guest checkout accounts not yet converted to real Moodle users.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid_idx" UNIQUE="true" FIELDS="userid"/>
+            </INDEXES>
+        </TABLE>
     </TABLES>
 </XMLDB>

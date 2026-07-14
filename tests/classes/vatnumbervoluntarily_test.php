@@ -56,17 +56,23 @@ final class vatnumbervoluntarily_test extends advanced_testcase {
 
         set_config('showvatnrchecker', 0, 'local_shopping_cart');
         set_config('onlywithvatnrnumber', 0, 'local_shopping_cart');
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return true when configuration is valid.');
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when the checker is disabled and not forced.'
+        );
 
         set_config('showvatnrchecker', 1, 'local_shopping_cart');
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return true when configuration is valid.');
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when shown but neither forced nor voluntarily confirmed.'
+        );
 
         $this->assertFalse(
             vatnrchecker::is_active(
                 '[{"name": "vatnumbervoluntarily","value": false}]',
                 []
             ),
-            'Expected is_active to return true when configuration is valid.'
+            'Expected is_active to be false when the voluntarily flag is explicitly false.'
         );
 
         $this->assertTrue(
@@ -74,7 +80,7 @@ final class vatnumbervoluntarily_test extends advanced_testcase {
                 '[[],{"name":"vatnumbervoluntarily","value":true}]',
                 []
             ),
-            'Expected is_active to return true when configuration is valid.'
+            'Expected is_active to be true when the voluntarily flag is true.'
         );
 
         $this->assertTrue(
@@ -82,7 +88,7 @@ final class vatnumbervoluntarily_test extends advanced_testcase {
                 '[{"name":"vatnumbervoluntarily","value":true}]',
                 []
             ),
-            'Expected is_active to return true when configuration is valid.'
+            'Expected is_active to be true when the voluntarily flag is true.'
         );
     }
 }

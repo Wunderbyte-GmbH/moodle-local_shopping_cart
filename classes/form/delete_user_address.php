@@ -71,7 +71,10 @@ class delete_user_address extends dynamic_form {
      */
     public function process_dynamic_submission() {
         $data = $this->get_data();
-        return address_operations::delete_user_address($data->addressid);
+        $result = new stdClass();
+        $result->status = address_operations::delete_user_address($data->addressid);
+        $result->templatedata = addresses::get_template_render_data();
+        return $result;
     }
 
     /**

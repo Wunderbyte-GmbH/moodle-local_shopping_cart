@@ -106,7 +106,8 @@ final class vatnumberhelper_test extends advanced_testcase {
      * Test the validate_with_hmrc method.
      */
     public function test_own_country_vatnumber(): void {
-        set_config('ownvatnumber', 'GB731331179', 'local_shopping_cart');
+        // The registered config key is 'ownvatnrnumber' (see settings.php).
+        set_config('ownvatnrnumber', 'GB731331179', 'local_shopping_cart');
         $result = vatnumberhelper::is_vatnr_valid('GB', 'GB731331179');
         $this->assertFalse($result, 'Expected is_vatnr_valid to return false for own country VAT number.');
     }

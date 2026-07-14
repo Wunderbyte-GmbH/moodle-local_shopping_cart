@@ -111,7 +111,7 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
             }
             $checkoutmanager = new checkout_manager($data, $stepdata['controlparameter']);
             $checkoutmanagerrenderedoverview = $checkoutmanager->render_overview();
-            $managercache = $checkoutmanager->check_preprocess($stepdata['changedinput']);
+            $managercache = $checkoutmanager->submit_step($stepdata['changedinput']);
 
             $balance = shopping_cart_credits::add_credit($student1->id, $stepdata['generatedcredits'], 'EUR', '');
             shopping_cart::save_used_credit_state($student1->id, $stepdata['usecredit']);
@@ -251,6 +251,15 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
                 }
             }
         }
+
+        // B7: the plan is downpayment + 2 installments. After the second (final)
+        // installment is paid, it must be fully settled - no open or due installments
+        // remain. (open went 3 -> 2 after the first payment, -> 0 after the second.)
+        cartstore::reset();
+        $cartstore = cartstore::instance($student1->id);
+        $cartstore->get_localized_data();
+        $this->assertCount(0, $cartstore->get_open_installments(), 'No installment should remain open after the final payment.');
+        $this->assertCount(0, $cartstore->get_due_installments(), 'No installment should be due after the final payment.');
     }
 
     /**
@@ -304,8 +313,9 @@ final class checkout_installment_test extends \local_shopping_cart\checkout_proc
         // To check that we need to make sure the newdownpayments key not exists in the array
         // or it is emopty.
         $data = \local_shopping_cart\external\get_shopping_cart_items::execute($student1->id);
-        $condition = !array_key_exists('newdownpayments', $data) || empty($data['newdownpayments']);
-        $this->assertTrue($condition);
+        // No down payment records expected yet: the key is either absent or empty. Using
+        // assertEmpty (instead of assertTrue($a || $b)) so a non-empty array fails clearly.
+        $this->assertEmpty($data['newdownpayments'] ?? [], 'Expected no down payment records before any installment is chosen.');
 
         // Get the current (default) values of the useinstallement ans usecredit.
         // -1 always means no change in current value.

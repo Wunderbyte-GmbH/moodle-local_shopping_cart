@@ -79,85 +79,67 @@ final class termsandconditions_test extends advanced_testcase {
     }
 
     /**
-     * Test the render_body method.
+     * Test that get_active_conditions only returns conditions whose accept-flag
+     * is on and whose text is not empty.
      */
-    public function test_render_body(): void {
-        $cachedata = [
-            'data' => [
-                'terms' => 'Accept terms',
-                'additional' => 'Additional conditions',
-            ],
-        ];
+    public function test_get_active_conditions(): void {
+        set_config('accepttermsandconditions', 1, 'local_shopping_cart');
+        set_config('termsandconditions', 'Accept the terms', 'local_shopping_cart');
+        set_config('acceptadditionalconditions', 0, 'local_shopping_cart');
 
-        // Call the method to test.
-        $result = termsandconditions::render_body($cachedata);
+        $active = termsandconditions::get_active_conditions();
+        $this->assertArrayHasKey('accepttermsandconditions', $active);
+        $this->assertArrayNotHasKey('acceptadditionalconditions', $active);
 
-        // Assertions.
-        $this->assertIsArray($result, 'Expected render_body to return an array.');
-        $this->assertIsString($result['template'], 'Expected the template to be mocked.');
+        // Accept-flag on but empty text -> not active.
+        set_config('acceptadditionalconditions', 1, 'local_shopping_cart');
+        set_config('additionalconditions', '', 'local_shopping_cart');
+        $active = termsandconditions::get_active_conditions();
+        $this->assertArrayNotHasKey('acceptadditionalconditions', $active);
     }
 
     /**
-     * Test the check_status method.
+     * Test the evaluate_step method: the step is valid only once every active
+     * conditions checkbox is ticked.
      */
-    public function test_check_status(): void {
-        $validationdata = json_encode([
-            (object)['name' => 'accept_terms', 'value' => true],
-            (object)['name' => 'accept_additional', 'value' => true],
+    public function test_evaluate_step(): void {
+        set_config('accepttermsandconditions', 1, 'local_shopping_cart');
+        set_config('termsandconditions', 'Accept the terms', 'local_shopping_cart');
+        set_config('acceptadditionalconditions', 1, 'local_shopping_cart');
+        set_config('additionalconditions', 'Additional conditions', 'local_shopping_cart');
+
+        $item = new termsandconditions(0);
+
+        // All conditions ticked -> valid.
+        $result = $item->evaluate_step([
+            'accepttermsandconditions' => true,
+            'acceptadditionalconditions' => true,
         ]);
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertArrayHasKey('mandatory', $result);
+        $this->assertTrue($result['valid'], 'Expected valid when all conditions are ticked.');
 
-        $managercachestep = [];
-        $result = termsandconditions::check_status($managercachestep, $validationdata);
-
-        // Assertions.
-        $this->assertIsArray($result, 'Expected check_status to return an array.');
-        $this->assertArrayHasKey('data', $result, 'Expected the result to include "data".');
-        $this->assertArrayHasKey('mandatory', $result, 'Expected the result to include "mandatory".');
-        $this->assertArrayHasKey('valid', $result, 'Expected the result to include "valid".');
-        $this->assertTrue($result['valid'], 'Expected valid to return true when all conditions are met.');
+        // One condition not ticked -> invalid.
+        $result = $item->evaluate_step([
+            'accepttermsandconditions' => true,
+            'acceptadditionalconditions' => false,
+        ]);
+        $this->assertFalse($result['valid'], 'Expected invalid when a condition is not ticked.');
     }
 
     /**
-     * Test the is_valid method.
+     * Test that parse_changed_input maps the legacy name/value JSON to the
+     * data shape used by evaluate_step.
      */
-    public function test_is_valid(): void {
-        // Case: All conditions met.
-        $validationdata = [
-            (object)['name' => 'accept_terms', 'value' => true],
-            (object)['name' => 'accept_additional', 'value' => true],
-        ];
-        $this->assertTrue(
-            termsandconditions::is_valid($validationdata),
-            'Expected is_valid to return true when all conditions are met.'
-        );
+    public function test_parse_changed_input(): void {
+        $changedinput = json_encode([
+            (object)['name' => 'accepttermsandconditions', 'value' => true],
+        ]);
+        $item = new termsandconditions(0);
+        $data = $item->parse_changed_input($changedinput);
 
-        // Case: One condition not met.
-        $validationdata = [
-            (object)['name' => 'accept_terms', 'value' => true],
-            (object)['name' => 'accept_additional', 'value' => false],
-        ];
-        $this->assertFalse(
-            termsandconditions::is_valid($validationdata),
-            'Expected is_valid to return false when a condition is not met.'
-        );
-    }
-
-    /**
-     * Test the set_data_from_cache method.
-     */
-    public function test_set_data_from_cache(): void {
-        $data = ['termsandconditions' => 'Accept terms'];
-        $cachedata = ['additionalconditions' => 'Additional terms'];
-
-        termsandconditions::set_data_from_cache($data, $cachedata);
-
-        // Assertions.
-        $this->assertArrayHasKey('termsandconditions', $data, 'Expected termsandconditions to remain in the array.');
-        $this->assertArrayHasKey('additionalconditions', $data, 'Expected additionalconditions to be added to the array.');
-        $this->assertEquals(
-            'Additional terms',
-            $data['additionalconditions'],
-            'Expected additionalconditions to match cachedata value.'
-        );
+        $this->assertArrayHasKey('accepttermsandconditions', $data);
+        $this->assertTrue($data['accepttermsandconditions']);
     }
 }

@@ -108,7 +108,11 @@ final class checkout_manager_test extends advanced_testcase {
 
         $this->assertArrayHasKey('checkout_manager_head', $checkoutmanagerdata);
         $this->assertArrayHasKey('checkout_manager_body', $checkoutmanagerdata);
-        $this->assertIsArray($checkoutmanagerdata['checkout_manager_body']['item_list'] ?? []);
+        // set_manager_data always writes the passed current step and the progress-line
+        // flag into the body, independent of which steps happen to be active.
+        $this->assertSame(0, $checkoutmanagerdata['checkout_manager_body']['currentstep']);
+        $this->assertArrayHasKey('show_progress_line', $checkoutmanagerdata['checkout_manager_body']);
+        $this->assertIsBool($checkoutmanagerdata['checkout_manager_body']['show_progress_line']);
     }
 
     /**
@@ -157,8 +161,24 @@ final class checkout_manager_test extends advanced_testcase {
 
         $checkoutmanager = new checkout_manager($mockdata);
 
-        $result = $checkoutmanager->is_checkout_allowed(1, 1, 2);
-        $this->assertFalse($result, 'is_checkout_allowed should return true when conditions are met.');
+        // TRUE path: the current step is reached (1 <= 1) and no body step still needs
+        // viewing (0 <= count(viewed)).
+        $this->assertTrue(
+            $checkoutmanager->is_checkout_allowed(1, 1, 0),
+            'is_checkout_allowed should be true when the current step is reached and all body steps are viewed.'
+        );
+
+        // FALSE: body steps still need to be viewed (2 expected, none viewed yet).
+        $this->assertFalse(
+            $checkoutmanager->is_checkout_allowed(1, 1, 2),
+            'is_checkout_allowed should be false when body steps have not been viewed yet.'
+        );
+
+        // FALSE: the cached counter is ahead of the current counter.
+        $this->assertFalse(
+            $checkoutmanager->is_checkout_allowed(2, 1, 0),
+            'is_checkout_allowed should be false when the cached counter exceeds the current counter.'
+        );
     }
 
     /**
@@ -172,10 +192,14 @@ final class checkout_manager_test extends advanced_testcase {
 
         $checkoutmanager = new checkout_manager($mockdata);
 
-        // Set and retrieve from cache.
+        // Set and retrieve from cache. The constructor computes body_mandatory_count, so a
+        // persisted cache must carry it - this distinguishes a real write from the empty
+        // array that get_cache() auto-initialises on a cache miss.
         $checkoutmanager->set_cache();
         $cachedata = checkout_manager::get_cache(1);
 
-        $this->assertIsArray($cachedata, 'Cache data should be an array.');
+        $this->assertArrayHasKey('body_mandatory_count', $cachedata, 'set_cache should persist the manager cache content.');
+        $this->assertArrayHasKey('body_count', $cachedata['body_mandatory_count']);
+        $this->assertArrayHasKey('mandatory_count', $cachedata['body_mandatory_count']);
     }
 }

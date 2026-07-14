@@ -65,8 +65,8 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Select billing address
-    And I should see "Wien" in the ".local-shopping_cart-requiredaddress" "css_element"
-    And I click on "Wien" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "Wien" in the ".local-shopping_cart-addressselection" "css_element"
+    And I click on "Wien" "text" in the ".local-shopping_cart-addressselection" "css_element"
     And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Add optional VAT number
@@ -103,8 +103,8 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Select billing address
-    And I should see "Wien" in the ".local-shopping_cart-requiredaddress" "css_element"
-    And I click on "Wien" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "Wien" in the ".local-shopping_cart-addressselection" "css_element"
+    And I click on "Wien" "text" in the ".local-shopping_cart-addressselection" "css_element"
     And I press "Next Step"
     And I should see "12.00 EUR" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "(10.00 EUR + 20%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
@@ -135,8 +135,8 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
     ## Select billing address
-    And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
-    And I click on "Lisboa" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "Lisboa" in the ".local-shopping_cart-addressselection" "css_element"
+    And I click on "Lisboa" "text" in the ".local-shopping_cart-addressselection" "css_element"
     And I press "Next Step"
     And I should see "(10.00 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price
@@ -167,8 +167,8 @@ Feature: Configure tax categories and use VAT and addresses to reduce price.
     And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
     ## Select billing address
-    And I should see "Lisboa" in the ".local-shopping_cart-requiredaddress" "css_element"
-    And I click on "Lisboa" "text" in the ".local-shopping_cart-requiredaddress" "css_element"
+    And I should see "Lisboa" in the ".local-shopping_cart-addressselection" "css_element"
+    And I click on "Lisboa" "text" in the ".local-shopping_cart-addressselection" "css_element"
     And I press "Next Step"
     And I should see "(8.70 EUR + 15%)" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-1 .item-price" "css_element"
     ## Provide a valid VAT number and verify price

@@ -41,6 +41,6 @@
 
 }}
 <div>{{#label}}<span class="addresslabel">{{label}}</span><br>{{/label}}
-    {{name}}<br>
+    {{#company}}{{company}}<br>{{/company}}{{^company}}{{name}}<br>{{/company}}
     <span class="addresstring">{{address}}, {{zip}} {{city}}, {{country}}</span>
 </div>

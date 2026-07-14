@@ -335,7 +335,7 @@ final class shopping_cart_cache_test extends advanced_testcase {
         $historyitemidentifier = $DB->get_field('local_shopping_cart_history', 'identifier', ['id' => $historyitem['id']]);
         $ledgeritems = shopping_cart_history::return_data_from_ledger_via_identifier($historyitemidentifier);
 
-        $this->assertCount(1, $ledgeritems, 'There should be exactly no ledger items for the history item.');
+        $this->assertCount(1, $ledgeritems, 'There should be exactly one ledger item for the history item.');
     }
 
     /**
@@ -589,6 +589,6 @@ final class shopping_cart_cache_test extends advanced_testcase {
         $historyitemidentifier = $DB->get_field('local_shopping_cart_history', 'identifier', ['id' => $historyitem['id']]);
         $ledgeritems = shopping_cart_history::return_data_from_ledger_via_identifier($historyitemidentifier);
 
-        $this->assertCount(1, $ledgeritems, 'There should be exactly two ledger items for the history item.');
+        $this->assertCount(1, $ledgeritems, 'There should be exactly one ledger item for the history item.');
     }
 }
