@@ -1253,6 +1253,113 @@ class shopping_cart {
     }
 
     /**
+     * Grant a partial refund for an already purchased item as credit, WITHOUT cancelling the
+     * original purchase.
+     *
+     * Use case: a slot booking is moved to a cheaper slot. The booking stays active on the new
+     * slots; only the price difference is refunded. Unlike {@see self::cancel_purchase()} this:
+     *  - does NOT flip the original purchase to "cancelled" (the buyer keeps an active purchase),
+     *  - does NOT require the cashier capability (it is server-side, component-initiated; the
+     *    calling component is responsible for authorising the refund),
+     *  - is NOT routed through the rebookingcredit machinery (that is reserved for option switches).
+     *
+     * The refund is booked as credit and recorded as its own ledger entry with payment method
+     * {@see LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND} and the given description, so it
+     * receives its own receipt via the existing extra-receipt template (no dedicated document
+     * setting is required).
+     *
+     * @param string $component component the item belongs to (e.g. 'mod_booking')
+     * @param string $area payment area within the component
+     * @param int $itemid item id within the component/area
+     * @param int $userid user receiving the refund
+     * @param float $amount refund amount (gross, in the purchase currency); must be > 0 and is
+     *                      capped at the originally paid price
+     * @param string $description human readable description for ledger and receipt
+     * @param string $costcenter optional cost center; defaults to the original purchase's
+     * @return array ['success' => int, 'error' => string, 'credit' => float, 'identifier' => int]
+     */
+    public static function add_partial_refund(
+        string $component,
+        string $area,
+        int $itemid,
+        int $userid,
+        float $amount,
+        string $description,
+        string $costcenter = ''
+    ): array {
+
+        global $USER;
+
+        if ($amount <= 0) {
+            return [
+                'success' => 0,
+                'error' => get_string('partialrefund:invalidamount', 'local_shopping_cart'),
+                'credit' => 0.0,
+                'identifier' => 0,
+            ];
+        }
+
+        // A partial refund is only valid against an existing successful purchase of this item.
+        // Note: get_most_recent_historyitem() returns an empty stdClass (not false) when nothing
+        // is found, so we must check for a real record id rather than empty().
+        $record = shopping_cart_history::get_most_recent_historyitem($component, $area, $itemid, $userid);
+        if (empty($record) || empty($record->id)) {
+            return [
+                'success' => 0,
+                'error' => get_string('partialrefund:nopurchase', 'local_shopping_cart'),
+                'credit' => 0.0,
+                'identifier' => 0,
+            ];
+        }
+
+        // Never refund more than was actually paid for the item (mirrors the anti-misuse guard
+        // in shopping_cart_history::cancel_purchase).
+        if ($amount > (float) $record->price) {
+            $amount = (float) $record->price;
+        }
+
+        $currency = $record->currency ?? (get_config('local_shopping_cart', 'globalcurrency') ?: 'EUR');
+        if ($costcenter === '') {
+            $costcenter = $record->costcenter ?? '';
+        }
+
+        // Grant the refund as credit.
+        [$newcredit] = shopping_cart_credits::add_credit($userid, $amount, $currency, $costcenter);
+
+        // Record the refund in the ledger with its own identifier so it can have its own receipt.
+        // The purchase itself is left untouched (no cancellation, paymentstatus stays SUCCESS).
+        $now = time();
+        $ledgerrecord = new stdClass();
+        $ledgerrecord->userid = $userid;
+        $ledgerrecord->itemid = $itemid;
+        $ledgerrecord->itemname = $description;
+        $ledgerrecord->price = 0;
+        $ledgerrecord->credits = (float) $amount;
+        $ledgerrecord->fee = 0;
+        $ledgerrecord->currency = $currency;
+        $ledgerrecord->componentname = $component;
+        $ledgerrecord->area = $area;
+        $ledgerrecord->identifier = shopping_cart_history::create_unique_cart_identifier($userid);
+        $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND;
+        $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+        $ledgerrecord->usermodified = $USER->id;
+        $ledgerrecord->annotation = $description;
+        $ledgerrecord->costcenter = $costcenter;
+        $ledgerrecord->schistoryid = $record->id;
+        $ledgerrecord->timecreated = $now;
+        $ledgerrecord->timemodified = $now;
+
+        self::add_record_to_ledger_table($ledgerrecord);
+
+        return [
+            'success' => 1,
+            'error' => '',
+            'credit' => $newcredit,
+            'identifier' => $ledgerrecord->identifier,
+        ];
+    }
+
+    /**
      * Sets credit to 0, because we get information about cash pay-back.
      *
      * @param int $userid

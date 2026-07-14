@@ -28,6 +28,8 @@ use local_shopping_cart\interfaces\invoice;
 use local_shopping_cart\invoice\invoicenumber;
 use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\guestcheckout;
+use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
 
 /**
  * Event observer for local_shopping_cart.
@@ -189,5 +191,73 @@ class observer {
         }
 
         guestcheckout::convert_guest_to_real_user($userid, $firstname, $lastname, $email);
+    }
+
+    /**
+     * Triggered for any provider event named "subscription_cancelled".
+     * Cancels each purchased item in shopping cart history and notifies the owning component.
+     *
+     * Expected payload in $event->other:
+     * - component (string)
+     * - itemid (int) as cart identifier
+     * - userid (int) optional, falls back to $event->userid
+     *
+     * @param \core\event\base $event
+     * @return void
+     */
+    public static function subscription_cancelled(\core\event\base $event): void {
+        if (empty(get_config('local_shopping_cart', 'enablesubscriptioncancelobserver'))) {
+            return;
+        }
+
+        $data = $event->get_data();
+        $stringarray = explode("\\", $data['eventname'] ?? '');
+        if (end($stringarray) !== 'subscription_cancelled') {
+            return;
+        }
+
+        $other = $data['other'] ?? [];
+
+        if (
+            empty($other['component']) ||
+            $other['component'] !== 'local_shopping_cart' ||
+            empty($other['itemid'])
+        ) {
+            return;
+        }
+
+        $identifier = (int) $other['itemid'];
+        $userid     = (int) ($other['userid'] ?? ($data['userid'] ?? 0));
+        if (empty($userid)) {
+            return;
+        }
+
+        // Get all items bought under this cart identifier.
+        $records = shopping_cart_history::return_data_via_identifier($identifier);
+        if (empty($records)) {
+            return;
+        }
+
+        foreach ($records as $record) {
+            // Mark as cancelled first; if this returns no success, skip callback to stay idempotent.
+            $result = shopping_cart_history::cancel_purchase(
+                $record->itemid,
+                $userid,
+                $record->componentname,
+                $record->area,
+                $record->id  // historyid
+            );
+            if (empty($result[0])) {
+                continue;
+            }
+
+            // Notify the component (e.g. mod_booking) so it can unenrol / revoke access.
+            shopping_cart::cancel_purchase_for_component(
+                $record->componentname,
+                $record->area,
+                $record->itemid,
+                $userid
+            );
+        }
     }
 }
