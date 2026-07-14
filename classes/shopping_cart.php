@@ -224,8 +224,12 @@ class shopping_cart {
 
         $cartstore = cartstore::instance($userid);
 
+        // With item-specific fees every added item can change the resulting fee
+        // (the highest item-specific fee wins), so the fee must be recalculated
+        // on every add. Re-adding overwrites the existing fee item in the cart.
         $addfee = !$cartstore->has_items()
-        || $cartstore->get_total_price_of_items() === 0;
+        || $cartstore->get_total_price_of_items() === 0
+        || !empty(get_config('local_shopping_cart', 'allowcustombookingfee'));
 
         switch ($cartparam) {
             case LOCAL_SHOPPING_CART_CARTPARAM_SUCCESS:
