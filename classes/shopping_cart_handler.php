@@ -223,7 +223,8 @@ class shopping_cart_handler {
                 'autocomplete',
                 'sch_couponoptincodes',
                 get_string('sch_couponoptincodes', 'local_shopping_cart'),
-                $optincoupons, ['multiple' => true]
+                $optincoupons,
+                ['multiple' => true]
             );
 
             $optoutcoupons = $DB->get_records_menu(

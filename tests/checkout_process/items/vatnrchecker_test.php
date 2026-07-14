@@ -109,7 +109,7 @@ final class vatnrchecker_test extends advanced_testcase {
         $cache->set($user->id, ['vatnumbervoluntarily' => true]);
         $this->assertTrue(vatnrchecker::is_mandatory(), 'Expected mandatory once the voluntarily checkbox is ticked.');
 
-        // onlywithvatnrnumber always wins.
+        // Config onlywithvatnrnumber always wins.
         set_config('onlywithvatnrnumber', 1, 'local_shopping_cart');
         $cache->set($user->id, ['vatnumbervoluntarily' => false]);
         $this->assertTrue(vatnrchecker::is_mandatory(), 'Expected mandatory when onlywithvatnrnumber is set.');

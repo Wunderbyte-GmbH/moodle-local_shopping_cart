@@ -77,7 +77,7 @@ class local_shopping_cart_addresscard_element extends MoodleQuickForm_radio {
      *
      * @return string
      */
-    public function toHtml() {
+    public function toHtml() { // phpcs:ignore moodle.NamingConventions.ValidFunctionName.LowercaseMethod
         global $OUTPUT;
 
         if ($this->_flagFrozen) {

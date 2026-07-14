@@ -116,15 +116,24 @@ final class partial_refund_test extends advanced_testcase {
         ]);
         $this->assertNotEmpty($ledger, 'A partial-refund ledger entry should exist.');
         $this->assertEqualsWithDelta($refund, (float) $ledger->credits, 0.001, 'Ledger credits should equal the refund.');
-        $this->assertEquals(LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, (int) $ledger->paymentstatus,
-            'Partial refund must NOT be booked as a cancellation.');
-        $this->assertEquals('Rebooking refund: slot A -> slot B', $ledger->itemname,
-            'Ledger itemname should carry the given description.');
+        $this->assertEquals(
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            (int) $ledger->paymentstatus,
+            'Partial refund must NOT be booked as a cancellation.'
+        );
+        $this->assertEquals(
+            'Rebooking refund: slot A -> slot B',
+            $ledger->itemname,
+            'Ledger itemname should carry the given description.'
+        );
 
         // The original purchase stays active (it is not cancelled).
         $purchase = $DB->get_record('local_shopping_cart_history', ['id' => $historyid]);
-        $this->assertEquals(LOCAL_SHOPPING_CART_PAYMENT_SUCCESS, (int) $purchase->paymentstatus,
-            'The original purchase must remain successful (not cancelled).');
+        $this->assertEquals(
+            LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            (int) $purchase->paymentstatus,
+            'The original purchase must remain successful (not cancelled).'
+        );
     }
 
     /**

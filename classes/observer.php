@@ -245,7 +245,7 @@ class observer {
                 $userid,
                 $record->componentname,
                 $record->area,
-                $record->id  // historyid
+                $record->id // History id.
             );
             if (empty($result[0])) {
                 continue;

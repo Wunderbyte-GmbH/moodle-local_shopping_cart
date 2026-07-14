@@ -385,9 +385,7 @@ final class coupon_validity_test extends advanced_testcase {
         $this->assertEqualsWithDelta(13.80, (float) $prices[3], 0.001);
     }
 
-    // -------------------------------------------------------------------------
-    // Active / inactive tests
-    // -------------------------------------------------------------------------
+    // Active / inactive tests.
 
     /**
      * A coupon with active = 0 must be rejected regardless of other fields.
@@ -423,9 +421,7 @@ final class coupon_validity_test extends advanced_testcase {
         );
     }
 
-    // -------------------------------------------------------------------------
-    // Max-uses tests
-    // -------------------------------------------------------------------------
+    // Max-uses tests.
 
     /**
      * A coupon with maxnumber = 1 that has already been used once must be rejected.

@@ -756,7 +756,7 @@ class checkout_manager {
         $cartstore = \local_shopping_cart\local\cartstore::instance($userid);
         $data = $cartstore->get_localized_data();
 
-        // get_localized_data() does not set identifier; recover it from session cache so the
+        // The get_localized_data() call does not set identifier; recover it from session cache so the
         // re-rendered payment button keeps a valid data-itemid (empty → invalidparameter error).
         $data['userid'] = $userid;
         $schistory = \cache::make('local_shopping_cart', 'schistory')->get('schistorycache');
