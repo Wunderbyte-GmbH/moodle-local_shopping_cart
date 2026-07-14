@@ -28,6 +28,7 @@
 
     Context variables required for this template:
     * str
+    * iframeembed (optional) when set, the checkout breaks out of the iframe
 
     Example context (json):
     {
@@ -36,5 +37,5 @@
     }
 }}
 <div>
-    <a href="{{checkouturl}}" id="shopping-cart-checkout-button" class="btn btn-primary p-3 d-block mx-4 {{^count}}disabled{{/count}}">{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right"></i></a>
+    <a href="{{checkouturl}}" {{#iframeembed}}target="_top"{{/iframeembed}} id="shopping-cart-checkout-button" class="btn btn-primary p-3 d-block mx-4 {{^count}}disabled{{/count}}">{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right"></i></a>
 </div>

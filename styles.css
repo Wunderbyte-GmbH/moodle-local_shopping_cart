@@ -703,3 +703,51 @@ div.shopping-cart-items-container div.item-description {
         position: static;
     }
 }
+
+/* Embed badge (embed_views::render_badge): compact cart pill for a small iframe. */
+.sc-embed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    padding: .4em .8em;
+    border-radius: 999px;
+    background: #263683;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1;
+    white-space: nowrap;
+}
+.sc-embed-badge:hover {
+    color: #fff;
+    filter: brightness(1.08);
+}
+.sc-embed-badge.sc-embed-badge-empty {
+    opacity: .7;
+}
+.sc-embed-badge-empty .sc-embed-badge-count,
+.sc-embed-badge-empty .sc-embed-badge-total {
+    display: none;
+}
+.sc-embed-badge-icon {
+    position: relative;
+    display: inline-flex;
+}
+.sc-embed-badge-count {
+    position: absolute;
+    top: -.6em;
+    right: -.7em;
+    min-width: 1.5em;
+    height: 1.5em;
+    padding: 0 .3em;
+    border-radius: 999px;
+    background: #ec8600;
+    color: #fff;
+    font-size: .7em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.sc-embed-badge-total {
+    font-size: .9em;
+}

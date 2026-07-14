@@ -38,6 +38,7 @@ import {
 }
     from 'core/str';
 import {modifyTimeModal} from './cashier';
+import {notifyChange} from 'local_shopping_cart/cart_channel';
 
 export var interval = null;
 export var visbilityevent = false;
@@ -360,6 +361,7 @@ export const deleteAllItems = (userid = 0) => {
         },
         done: function() {
             reinit(0);
+            notifyChange();
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -389,6 +391,7 @@ export const deleteItem = (itemid, component, area, userid) => {
             });
 
             reinit(userid);
+            notifyChange();
 
             import('local_wunderbyte_table/reload')
                 // eslint-disable-next-line promise/always-return
@@ -429,6 +432,7 @@ export const addItem = (itemid, component, area, userid) => {
             data.itemid = itemid;
             data.userid = userid; // For the mustache template, we need to obey structure.
             addItemShowNotification(data);
+            notifyChange();
         },
         fail: function(ex) {
             // eslint-disable-next-line no-console
@@ -940,6 +944,13 @@ function confirmZeroPriceCheckoutModal(element) {
 function updateBadge(count) {
 
     const badge = document.querySelector(SELECTORS.BADGECOUNT);
+
+    // There is no nav cart badge in every context, e.g. inside an embedded
+    // listing iframe. Without this guard the null access throws and aborts the
+    // rest of reinit (price refresh, button state), breaking add/delete there.
+    if (!badge) {
+        return;
+    }
 
     if (count > 0) {
         badge.innerHTML = count;

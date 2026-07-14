@@ -1,0 +1,50 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/embed_badge
+
+    Compact shopping cart badge for embedding in a small iframe.
+
+    Classes required for JS:
+    * sc-embed-badge
+
+    Context variables required for this template:
+    * checkouturl string Target the badge links to (breaks out of the iframe)
+    * count int Number of items in the cart
+    * hasitems bool Whether the cart has items
+    * total string Formatted cart total
+    * currency string Currency code
+
+    Example context (json):
+    {
+        "checkouturl": "https://example.com/checkout",
+        "count": 2,
+        "hasitems": true,
+        "total": "40.00",
+        "currency": "EUR"
+    }
+}}
+<a href="{{checkouturl}}" target="_top"
+   class="sc-embed-badge {{^hasitems}}sc-embed-badge-empty{{/hasitems}}"
+   data-region="sc-embed-badge">
+    <span class="sc-embed-badge-icon">
+        <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+        <span class="sc-embed-badge-count" data-region="count">{{count}}</span>
+    </span>
+    <span class="sc-embed-badge-total" data-region="total">{{total}}&nbsp;{{currency}}</span>
+    <span class="sr-only">{{#str}} cart, local_shopping_cart {{/str}}</span>
+</a>

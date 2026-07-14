@@ -106,9 +106,11 @@ function local_shopping_cart_extend_navigation(navigation_node $navigation) {
  * Renders the popup.
  *
  * @param renderer_base $renderer
+ * @param bool $iframeembed True when rendered inside an embedded iframe page:
+ *                          checkout links then break out of the frame (target=_top).
  * @return string The HTML
  */
-function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
+function local_shopping_cart_render_navbar_output(\renderer_base $renderer, bool $iframeembed = false) {
     global $USER, $CFG, $PAGE;
 
     // Note: guest checkout users are created in guestcheckout::after_config(), which runs at the end
@@ -160,6 +162,10 @@ function local_shopping_cart_render_navbar_output(\renderer_base $renderer) {
     if (has_capability('local/shopping_cart:cashier', context_system::instance())) {
         $data['showcashier'] = true;
         $data['cashierurl'] = new moodle_url('/local/shopping_cart/cashier.php');
+    }
+
+    if ($iframeembed) {
+        $data['iframeembed'] = true;
     }
 
     $output .= $renderer->render_from_template('local_shopping_cart/shopping_cart_popover', $data);

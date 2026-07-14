@@ -1097,4 +1097,26 @@ if ($hassiteconfig) {
             0
         )
     );
+
+    // Embedding: cart views (badge, checkout) shown in iframes on external sites
+    // via a seller plugin's embed endpoint. The allow list restricts which URLs
+    // the checkout/success redirect may be overridden to, preventing open
+    // redirects from request-supplied targets.
+    $settings->add(new admin_setting_heading(
+        'local_shopping_cart/embedheading',
+        get_string('embedheading', 'local_shopping_cart'),
+        get_string('embedheadingdescription', 'local_shopping_cart')
+    ));
+
+    $settings->add(
+        new admin_setting_configtextarea(
+            'local_shopping_cart/embedredirectallowlist',
+            get_string('embedredirectallowlist', 'local_shopping_cart'),
+            get_string('embedredirectallowlist_desc', 'local_shopping_cart'),
+            '',
+            PARAM_RAW,
+            60,
+            6
+        )
+    );
 }
