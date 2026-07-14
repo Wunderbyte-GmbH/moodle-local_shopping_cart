@@ -38,8 +38,12 @@ $observers = [
         'eventname' => '\local_shopping_cart\event\checkout_completed',
         'callback' => '\local_shopping_cart\observer::checkout_completed',
     ],
-        [
-            'eventname' => '\\core\\event\\user_loggedin',
-            'callback' => '\\local_shopping_cart\\observer::user_loggedin',
-        ],
+    [
+        'eventname' => '\\core\\event\\user_loggedin',
+        'callback' => '\\local_shopping_cart\\observer::user_loggedin',
+    ],
+    [
+        'eventname' => '*',
+        'callback'  => '\local_shopping_cart\observer::subscription_cancelled',
+    ],
 ];

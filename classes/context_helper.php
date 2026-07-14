@@ -18,6 +18,7 @@ namespace local_shopping_cart;
 
 use context_system;
 use moodle_page;
+use ReflectionProperty;
 use Throwable;
 
 /**
@@ -46,10 +47,9 @@ class context_helper {
         }
 
         try {
-            if (!$context = $page->context ?? null) {
-                if (empty($context)) {
-                    $page->set_context(context_system::instance());
-                }
+            $contextproperty = new ReflectionProperty($page, '_context');
+            if ($contextproperty->getValue($page) === null) {
+                $page->set_context(context_system::instance());
             }
         } catch (Throwable $e) {
             $page->set_context(context_system::instance());
