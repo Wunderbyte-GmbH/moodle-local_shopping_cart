@@ -60,9 +60,12 @@ class shopping_cart_bookingfee {
     public static function add_fee_to_cart(int $userid, int $buyforuserid = 0): bool {
 
         // Do we need to add a fee at all?
+        // With allowcustombookingfee, single items can carry their own fee
+        // (stored via shopping_cart_handler) even when the global fee is 0.
         if (
             get_config('local_shopping_cart', 'bookingfee') <= 0
             && empty(get_config('local_shopping_cart', 'bookingfeevariable'))
+            && empty(get_config('local_shopping_cart', 'allowcustombookingfee'))
         ) {
             return false;
         }
@@ -88,6 +91,17 @@ class shopping_cart_bookingfee {
         // See if we are about to rebook, we don't add the booking fee.
         if (($buyforuserid == 0) && shopping_cart_rebookingcredit::is_rebooking($userid)) {
             return false;
+        }
+
+        // With item-specific fees the fee is recalculated on every item add.
+        // A fee already in the cart blocks the re-add ("already in cart"), so
+        // it must be removed first. This runs after all early returns above,
+        // so the fee is guaranteed to be re-added right away.
+        if (!empty(get_config('local_shopping_cart', 'allowcustombookingfee'))) {
+            $cartuserid = $userid >= 0 ? $userid : $buyforuserid;
+            if ($cartuserid > 0) {
+                local\cartstore::instance($cartuserid)->delete_bookingfee();
+            }
         }
 
         shopping_cart::add_item_to_cart('local_shopping_cart', 'bookingfee', $itemid, $userid);

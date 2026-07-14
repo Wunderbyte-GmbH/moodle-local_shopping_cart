@@ -168,6 +168,15 @@ if ($hassiteconfig) {
         )
     );
 
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/allowcustombookingfee',
+            get_string('allowcustombookingfee', 'local_shopping_cart'),
+            get_string('allowcustombookingfee_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
     // Setting to ask the payment gateways about pending payments when the checkout page is opened.
     $settings->add(
         new admin_setting_configcheckbox(
