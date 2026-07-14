@@ -90,6 +90,7 @@ class shopping_cart_handler {
             || get_config('local_shopping_cart', 'allowrebooking')
             || get_config('local_shopping_cart', 'allowchooseaccount')
             || get_config('local_shopping_cart', 'allowcustombookingfee')
+            || get_config('local_shopping_cart', 'couponenabled')
         ) {
             $mform->addElement(
                 'header',
@@ -208,6 +209,37 @@ class shopping_cart_handler {
             $mform->addHelpButton('sch_duedaysbeforecoursestart', 'duedaysbeforecoursestart', 'local_shopping_cart');
             $mform->hideIf('sch_duedaysbeforecoursestart', 'sch_allowinstallment', 'neq', "1");
         }
+
+        if (get_config('local_shopping_cart', 'couponenabled')) {
+            global $DB;
+
+            $optincoupons = $DB->get_records_menu(
+                'local_shopping_cart_coupons',
+                ['coupontype' => 'couponoptin', 'active' => 1],
+                '',
+                'id, coupon'
+            );
+            $mform->addElement(
+                'autocomplete',
+                'sch_couponoptincodes',
+                get_string('sch_couponoptincodes', 'local_shopping_cart'),
+                $optincoupons, ['multiple' => true]
+            );
+
+            $optoutcoupons = $DB->get_records_menu(
+                'local_shopping_cart_coupons',
+                ['coupontype' => 'couponoptout', 'active' => 1],
+                '',
+                'id, coupon'
+            );
+            $mform->addElement(
+                'autocomplete',
+                'sch_couponoptoutcodes',
+                get_string('sch_couponoptoutcodes', 'local_shopping_cart'),
+                $optoutcoupons,
+                ['multiple' => true]
+            );
+        }
     }
 
     /**
@@ -300,6 +332,13 @@ class shopping_cart_handler {
             $this->add_key_to_jsonobject('bookingfee', is_numeric($rawfee) ? (float)$rawfee : null);
         }
 
+        if (get_config('local_shopping_cart', 'couponenabled')) {
+            $optincodes = $formdata->sch_couponoptincodes ?? [];
+            $this->add_key_to_jsonobject('couponoptin', implode(',', (array)$optincodes));
+            $optoutcodes = $formdata->sch_couponoptoutcodes ?? [];
+            $this->add_key_to_jsonobject('couponoptout', implode(',', (array)$optoutcodes));
+        }
+
         $this->save_iteminfo();
     }
 
@@ -342,6 +381,10 @@ class shopping_cart_handler {
         $formdata->sch_numberofpayments = $jsonobject->numberofpayments ?? 0;
         $formdata->sch_duedatevariable = $jsonobject->duedatevariable ?? 0;
         $formdata->sch_duedaysbeforecoursestart = $jsonobject->duedaysbeforecoursestart ?? 0;
+        $formdata->sch_couponoptincodes = !empty($jsonobject->couponoptin)
+            ? explode(',', $jsonobject->couponoptin) : [];
+        $formdata->sch_couponoptoutcodes = !empty($jsonobject->couponoptout)
+            ? explode(',', $jsonobject->couponoptout) : [];
 
         // Rebooking.
         $formdata->sch_allowrebooking = $jsonobject->allowrebooking

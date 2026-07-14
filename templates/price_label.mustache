@@ -83,9 +83,6 @@
     {{/installmentscheckboxid}}
     {{#credit}}
         <div class="text-end me-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
-        {{#discount}}
-            <div class="text-end me-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
-        {{/discount}}
         <div class="text-end me-3 sc_credit">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" {{#usecredit}} checked {{/usecredit}}>
@@ -104,6 +101,13 @@
             <div class="text-end me-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
         {{/discount}}
     {{/credit}}
+
+    {{#coupondiscount}}
+        <div class="text-end me-3 sc_coupondiscount">
+            <strong>{{#str}} coupondiscount, local_shopping_cart {{/str}}:</strong>
+            -{{coupondiscount}} {{currency}}
+        </div>
+    {{/coupondiscount}}
 
     {{! prices have tax info}}
     {{#taxesenabled}}
@@ -125,6 +129,7 @@
             <span class="sc_totalprice text-success"><b>{{price}} {{currency}}</b></span>
         </div>
     {{/taxesenabled}}
+    {{> local_shopping_cart/component_coupon }}
 </div>
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {

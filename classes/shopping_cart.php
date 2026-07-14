@@ -24,13 +24,9 @@
  */
 
 namespace local_shopping_cart;
-use core\task\manager;
 use local_shopping_cart\event\payment_confirmed;
 use local_shopping_cart\local\taskmanager;
 use local_shopping_cart\output\shoppingcart_history_list;
-use mod_booking\local\mobile\customformstore;
-use mod_booking\price;
-use mod_booking\singleton_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -730,7 +726,7 @@ class shopping_cart {
         ?array $datafromhistory = null,
         ?string $annotation = ''
     ) {
-        global $USER;
+        global $DB, $USER;
 
         $identifier = 0;
 
@@ -900,7 +896,7 @@ class shopping_cart {
                     $paymentmethod = $paymenttype;
 
                     // Make sure we can pass on a valid value.
-                    $item['discount'] = $item['discount'] ?? 0;
+                    $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
                     $item['identifier'] = $identifier;
                     $item['annotation'] = $annotation ?? '';
                     $item['payment'] = $paymentmethod;
@@ -909,7 +905,6 @@ class shopping_cart {
                     $item['address_shipping'] = $data['address_shipping'] ?? 0;
                     $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
                     $item['vatnumber'] = $data['vatnrnumber'] ?? '';
-
                     if (
                         ($item['componentname'] === 'local_shopping_cart')
                         && ($item['area'] === 'rebookitem')
@@ -947,7 +942,7 @@ class shopping_cart {
                         $item['address_billing'],
                         $item['address_shipping'],
                         $item['taxcountrycode'],
-                        $item['vatnumber']
+                        $item['vatnumber'],
                     );
 
                     $item['id'] = $id;
@@ -959,7 +954,15 @@ class shopping_cart {
                         $item['id'] = $id;
                     }
                 }
-
+                if ($datafromhistory) {
+                    $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
+                }
+                if (!empty($data['coupon'])) {
+                    $couponrecord = $DB->get_record('local_shopping_cart_coupons', ['coupon' => $data['coupon']], 'id');
+                    $item['coupon'] = $couponrecord ? (string)$couponrecord->id : null;
+                } else {
+                    $item['coupon'] = null;
+                }
                 shopping_cart_history::set_success_in_db([(object)$item]);
             }
         }
