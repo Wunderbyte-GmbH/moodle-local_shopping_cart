@@ -18,12 +18,11 @@
  * @copyright  Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import ModalCancel from 'core/modal_cancel';
+import {reinit} from 'local_shopping_cart/cart';
 import {get_string as getString} from 'core/str';
 
-import {reinit} from 'local_shopping_cart/cart';
-
 const SELECTORS = {
+    STEPFORMCONTAINER: '[data-shopping-cart-step-form]',
     CHECKOUTMANAGERFORMID: '#shopping-cart-checkout-manager-form',
     CHECKOUTMANAGERFORMTEMPLATE: 'local_shopping_cart/checkout_manager_form',
     CHECKOUTMANAGERBUTTONSTEMPLATE: 'local_shopping_cart/checkout_manager_form_buttons',
@@ -43,19 +42,11 @@ const WEBSERVICE = {
 };
 
 const EVENTSLISTENING = {
-    ADDRESSREDRAWN: 'local_shopping_cart/addressesRedrawn',
+    RELOADADDRESSSTEP: 'local_shopping_cart/reloadAddressStep',
 };
 
-const IDS = {
-    VATNUMBER: 'shopping-cart-checkout-manager-vat-number',
-    VERIFYVAT: 'shopping-cart-checkout-manager-verify-vat',
-    COUNTRYSELECT: 'shopping-cart-checkout-manager-country-select',
-    VERIFYSTATUS: 'shopping-cart-checkout-manager-verify-vat-status',
-};
-
-let vatverificationinprogress = false;
-let vatverificationloadingtext = null;
-let vatverificationloadingtextpromise = null;
+// Mounted dynamic step forms by step key.
+const stepForms = {};
 
 /**
  * Initializes the checkout manager functionality.
@@ -63,7 +54,41 @@ let vatverificationloadingtextpromise = null;
 function init() {
     const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
     initListeners(formBody);
-    document.addEventListener(EVENTSLISTENING.ADDRESSREDRAWN, getNewAddress);
+    initAddressStepReloadListener();
+}
+
+/**
+ * After an address was created/edited/deleted via the inline address form,
+ * reload the addresses step form and select the given address.
+ */
+function initAddressStepReloadListener() {
+    if (document.body.dataset.scAddressStepReload === 'true') {
+        return;
+    }
+    document.body.dataset.scAddressStepReload = 'true';
+    document.addEventListener(EVENTSLISTENING.RELOADADDRESSSTEP, e => {
+        const form = stepForms.addresses;
+        if (!form) {
+            return;
+        }
+        form.load().then(() => {
+            const newaddressid = e.detail?.newaddressid;
+            const addresskey = e.detail?.addresskey || 'billing';
+            if (newaddressid) {
+                const radio = document.querySelector(
+                    `input[name="selectedaddress_${addresskey}"][value="${newaddressid}"]`
+                );
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change', {bubbles: true}));
+                }
+            }
+            return null;
+        }).catch(err => {
+            // eslint-disable-next-line no-console
+            console.error('fail address step reload', err);
+        });
+    });
 }
 
 /**
@@ -74,178 +99,8 @@ function initListeners(formBody) {
     initControlListener();
     if (formBody != undefined) {
         initChangeListener();
-        initVatNumberVerifyListener(formBody);
     }
 
-}
-
-/**
- * Initializes the change listener for the form body.
- */
-function getNewAddress() {
-    const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
-    const currentstep = getDatasetValue(formBody, 'currentstep');
-    const identifier = getDatasetValue(formBody, 'identifier');
-
-    if (currentstep !== null) {
-        triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-            action: '',
-            currentstep: currentstep,
-            identifier: identifier,
-        });
-    }
-}
-
-/**
- * Initializes the change listener for the form body.
- */
-function initVatNumberVerifyListener() {
-    const vatNumber = document.getElementById(IDS.VERIFYVAT);
-    if (vatNumber) {
-        vatNumber.addEventListener('click', vatNumberVerifyCallback);
-    }
-}
-
-/**
- * Initializes the change listener for the form body.
- */
-function vatNumberVerifyCallback() {
-    if (vatverificationinprogress) {
-        return;
-    }
-
-    const formBody = document.querySelector(SELECTORS.CHECKBOXITEMBODY);
-    const countryCode = document.getElementById(IDS.COUNTRYSELECT)?.value;
-    const vatNumber = document.getElementById(IDS.VATNUMBER)?.value;
-
-    if (!countryCode || !vatNumber) {
-        ModalCancel.create({
-            title: getString('errorinvalidvatdatatitle', 'local_shopping_cart'),
-            body: getString('errorinvalidvatdatadescription', 'local_shopping_cart'),
-        }).then(modal => {
-            modal.show();
-            return modal;
-        }).catch(e => {
-            // eslint-disable-next-line no-console
-            console.log(e);
-        });
-        return;
-    }
-
-    setVatVerificationState(true);
-
-    triggerButtonControlWebService(WEBSERVICE.CHECKOUTPROCESS, {
-        action: getDatasetValue(formBody, 'action'),
-        currentstep: getDatasetValue(formBody, 'currentstep'),
-        identifier: getDatasetValue(formBody, 'identifier'),
-        changedinput: JSON.stringify({
-            'vatCodeCountry': `${countryCode},${vatNumber}`,
-        }),
-    }).finally(function() {
-        setVatVerificationState(false);
-    });
-}
-
-/**
- * Toggles loading state for VAT verification controls.
- *
- * @param {boolean} loading
- */
-function setVatVerificationState(loading) {
-    vatverificationinprogress = loading;
-
-    const verifyButton = document.getElementById(IDS.VERIFYVAT);
-    const statusElement = getVatVerificationStatusElement(verifyButton);
-    if (verifyButton) {
-        const originalLabel = verifyButton.dataset.originalLabel || verifyButton.innerHTML;
-        verifyButton.dataset.originalLabel = originalLabel;
-        verifyButton.setAttribute('aria-busy', loading ? 'true' : 'false');
-
-        if (loading) {
-            verifyButton.innerHTML =
-                '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>' +
-                originalLabel;
-        } else {
-            verifyButton.innerHTML = originalLabel;
-        }
-    }
-
-    if (statusElement) {
-        if (loading) {
-            getVatVerificationLoadingText().then(function(localizedtext) {
-                // Guard against async race: request may have finished already.
-                if (!vatverificationinprogress) {
-                    return;
-                }
-                statusElement.textContent = localizedtext;
-                statusElement.classList.remove('hidden');
-            }).catch(function() {
-                statusElement.classList.add('hidden');
-                statusElement.textContent = '';
-            });
-        } else {
-            statusElement.classList.add('hidden');
-            statusElement.textContent = '';
-        }
-    }
-
-    const disableSelectors = [
-        SELECTORS.BUTTONS,
-        SELECTORS.PROGRESSBUTTONS,
-        SELECTORS.PAYMENTREGIONBUTTON,
-        `#${IDS.VERIFYVAT}`,
-        `#${IDS.COUNTRYSELECT}`,
-        `#${IDS.VATNUMBER}`,
-    ];
-
-    document.querySelectorAll(disableSelectors.join(', ')).forEach(element => {
-        element.disabled = loading;
-    });
-}
-
-/**
- * Returns localized loading text for VAT verification and caches it.
- *
- * @returns {Promise<string>}
- */
-function getVatVerificationLoadingText() {
-    if (vatverificationloadingtext !== null) {
-        return Promise.resolve(vatverificationloadingtext);
-    }
-
-    if (!vatverificationloadingtextpromise) {
-        vatverificationloadingtextpromise = getString('vatnrverificationinprogress', 'local_shopping_cart')
-            .then(function(localizedtext) {
-                vatverificationloadingtext = localizedtext;
-                return localizedtext;
-            });
-    }
-
-    return vatverificationloadingtextpromise;
-}
-
-/**
- * Returns or creates status element for VAT verification.
- *
- * @param {HTMLElement|null} verifyButton
- * @returns {HTMLElement|null}
- */
-function getVatVerificationStatusElement(verifyButton) {
-    if (!verifyButton) {
-        return null;
-    }
-
-    let statuselement = document.getElementById(IDS.VERIFYSTATUS);
-    if (statuselement) {
-        return statuselement;
-    }
-
-    statuselement = document.createElement('div');
-    statuselement.id = IDS.VERIFYSTATUS;
-    statuselement.className = 'small text-muted mt-1 hidden';
-    verifyButton.insertAdjacentElement('afterend', statuselement);
-
-    return statuselement;
 }
 
 /**
@@ -292,6 +147,11 @@ function initChangeListener() {
  */
 function changeCallback(event, formBody) {
     const target = event.target;
+    // Steps implemented as dynamic forms handle their own submission -
+    // the legacy input scraping must not touch them.
+    if (target.closest(SELECTORS.STEPFORMCONTAINER)) {
+        return;
+    }
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName)) {
         const changedInputs = getChangedInputs();
         if (
@@ -339,20 +199,17 @@ function getChangedInputs() {
  * @param {Object} params - The parameters for the web service call.
  */
 function triggerButtonControlWebService(serviceName, params) {
-    return new Promise(function(resolve, reject) {
-        require(['core/ajax'], function(Ajax) {
-            const requests = Ajax.call([{
-                methodname: serviceName,
-                args: params,
-            }]);
-            requests[0].done(function(response) {
-                updateCheckoutManagerPartials(response);
-                resolve(response);
-            }).fail(function(err) {
-                // eslint-disable-next-line no-console
-                console.error('fail button trigger', err);
-                reject(err);
-            });
+    require(['core/ajax'], function(Ajax) {
+        const requests = Ajax.call([{
+            methodname: serviceName,
+            args: params,
+        }]);
+        requests[0].done(function(response) {
+            updateCheckoutManagerPartials(response);
+        }).fail(function(err) {
+            // eslint-disable-next-line no-console
+            console.error('fail button trigger', err);
+            return;
         });
     });
 }
@@ -479,10 +336,157 @@ function getDatasetValue(element, key) {
     return element?.dataset[key] || '';
 }
 
+/**
+ * Mount dynamic forms for checkout steps that use the forms contract.
+ *
+ * Called from the step-form container template, both on initial page load
+ * and after a client-side body re-render. Auto-submits on change to keep
+ * the live update behaviour of the legacy steps.
+ */
+function initStepForms() {
+    document.querySelectorAll(SELECTORS.STEPFORMCONTAINER).forEach(container => {
+        if (container.dataset.stepFormInitialized === 'true') {
+            return;
+        }
+        container.dataset.stepFormInitialized = 'true';
+        require(['core_form/dynamicform'], function(DynamicForm) {
+            const form = new DynamicForm(container, container.dataset.shoppingCartStepForm);
+            stepForms[container.dataset.stepkey] = form;
+            // The VAT step verifies against an external service (VIES) which can
+            // be slow, so show a spinner and lock the UI while it runs.
+            const showsspinner = container.dataset.stepkey === 'vatnrchecker';
+            if (showsspinner) {
+                form.addEventListener(form.events.SUBMIT_BUTTON_PRESSED, () => {
+                    setStepVerificationState(container, true);
+                });
+                form.addEventListener(form.events.SERVER_VALIDATION_ERROR, () => {
+                    setStepVerificationState(container, false);
+                });
+                form.addEventListener(form.events.CLIENT_VALIDATION_ERROR, () => {
+                    setStepVerificationState(container, false);
+                });
+            }
+            form.addEventListener(form.events.FORM_SUBMITTED, e => {
+                // Keep the form mounted - the default handler would empty the container.
+                e.preventDefault();
+                if (showsspinner) {
+                    setStepVerificationState(container, false);
+                }
+                updateCheckoutManagerPartials(e.detail);
+                // A step submission (VAT validation, address selection) can change
+                // the applied tax and therefore the visible price. Reload the cart
+                // and price labels, matching the legacy standalone VAT checker
+                // behaviour where submitting always triggered reinit().
+                reinit();
+            });
+            if (container.dataset.autosubmit === '1') {
+                container.addEventListener('change', () => {
+                    form.submitFormAjax();
+                });
+            }
+            // The form is already rendered server-side (Moodle dynamic-forms
+            // pattern), so we hydrate it without an extra load() roundtrip.
+        });
+    });
+}
+
+// Cached localized "Checking VAT number..." text.
+let vatVerificationLoadingText = null;
+let vatVerificationLoadingTextPromise = null;
+
+/**
+ * Toggle the verifying state of a step form: spinner on its submit button,
+ * a status text, and the surrounding navigation/checkout buttons disabled.
+ *
+ * @param {HTMLElement} container - The step form container.
+ * @param {boolean} loading - Whether verification is in progress.
+ */
+function setStepVerificationState(container, loading) {
+    const submitButton = container.querySelector('form [type="submit"]');
+    if (submitButton) {
+        if (loading) {
+            if (!submitButton.dataset.originalLabel) {
+                submitButton.dataset.originalLabel = submitButton.innerHTML;
+            }
+            submitButton.setAttribute('aria-busy', 'true');
+            submitButton.disabled = true;
+            submitButton.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' +
+                submitButton.dataset.originalLabel;
+            getVatVerificationLoadingText().then(text => {
+                showStepStatus(container, text);
+                return null;
+            }).catch(() => {
+                return null;
+            });
+        } else {
+            submitButton.setAttribute('aria-busy', 'false');
+            submitButton.disabled = false;
+            if (submitButton.dataset.originalLabel) {
+                submitButton.innerHTML = submitButton.dataset.originalLabel;
+            }
+            clearStepStatus(container);
+        }
+    }
+    // Lock the surrounding navigation and checkout buttons while verifying.
+    const lockselectors = `${SELECTORS.BUTTONS}, ${SELECTORS.PROGRESSBUTTONS}, ${SELECTORS.PAYMENTREGIONBUTTON}`;
+    document.querySelectorAll(lockselectors).forEach(element => {
+        element.disabled = loading;
+    });
+}
+
+/**
+ * Loads and caches the localized "Checking VAT number..." text.
+ *
+ * @returns {Promise} resolving to the localized string.
+ */
+function getVatVerificationLoadingText() {
+    if (vatVerificationLoadingText !== null) {
+        return Promise.resolve(vatVerificationLoadingText);
+    }
+    if (!vatVerificationLoadingTextPromise) {
+        vatVerificationLoadingTextPromise = getString('vatnrverificationinprogress', 'local_shopping_cart')
+            .then(text => {
+                vatVerificationLoadingText = text;
+                return text;
+            });
+    }
+    return vatVerificationLoadingTextPromise;
+}
+
+/**
+ * Shows a status message inside a step form container.
+ *
+ * @param {HTMLElement} container - The step form container.
+ * @param {string} text - The message to show.
+ */
+function showStepStatus(container, text) {
+    let status = container.querySelector('.shopping-cart-step-verify-status');
+    if (!status) {
+        status = document.createElement('div');
+        status.className = 'shopping-cart-step-verify-status text-muted small mt-2';
+        container.appendChild(status);
+    }
+    status.textContent = text;
+}
+
+/**
+ * Removes the status message from a step form container.
+ *
+ * @param {HTMLElement} container - The step form container.
+ */
+function clearStepStatus(container) {
+    const status = container.querySelector('.shopping-cart-step-verify-status');
+    if (status) {
+        status.remove();
+    }
+}
+
 export {
     init,
     getDatasetValue,
-    getChangedInputs
+    getChangedInputs,
+    initStepForms
 };
 
 /**

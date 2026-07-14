@@ -68,6 +68,7 @@ $string['addresses:newaddress:checkasdefault'] = 'Als meine standard Adresse set
 $string['addresses:newaddress:city:error'] = 'Bitte gib eine Stadt ein';
 $string['addresses:newaddress:city:label'] = 'Stadt';
 $string['addresses:newaddress:city:placeholder'] = 'Stadt';
+$string['addresses:newaddress:company:error'] = 'Bitte gib einen Firmennamen ein';
 $string['addresses:newaddress:company:label'] = 'Company Name';
 $string['addresses:newaddress:name:error'] = 'Bitte gib einen Namen ein';
 $string['addresses:newaddress:name:label'] = 'Name';
@@ -369,8 +370,8 @@ $string['errorinvalidvatdatadescription'] = 'Beide Felder müssen ausgefüllt we
 $string['errorinvalidvatdatatitle'] = 'Ungültige Eingabewerte';
 $string['errorinvalidvatnr'] = 'Die übermittelte UID {$a} ist ungültig';
 $string['errorselectcountry'] = 'Bitte Land auswählen';
-$string['errorvatnrrequestlimit'] = 'Die UID-Pruefung ist voruebergehend nicht verfuegbar, da das Request-Limit erreicht wurde. Bitte versuchen Sie es in wenigen Minuten erneut.';
-$string['errorvatnrserviceunavailable'] = 'Der Dienst zur UID-Pruefung ist derzeit nicht verfuegbar. Bitte versuchen Sie es spaeter erneut.';
+$string['errorvatnrrequestlimit'] = 'Die UID-Prüfung ist vorübergehend nicht verfügbar, da das Anfragelimit erreicht wurde. Bitte versuchen Sie es in ein paar Minuten erneut.';
+$string['errorvatnrserviceunavailable'] = 'Der UID-Prüfdienst ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.';
 $string['es'] = "Spanien";
 $string['eu'] = "Europäische Union";
 $string['expirationtime'] = 'Anzahl Minuten für Ablauf des Warenkorbs';
@@ -397,6 +398,39 @@ $string['generalsettingspagetitle'] = 'Allgemeine Shopping Cart Einstellungen';
 $string['getrefundforcredit'] = 'Das Guthaben kann für einen zukünftigen Kauf genutzt werden.';
 $string['globalcurrency'] = 'Währung';
 $string['globalcurrencydesc'] = 'Wählen Sie die Währung für Preise aus.';
+$string['guestautocreatepatterns'] = 'Seitenmuster für automatische Erstellung (optional)';
+$string['guestautocreatepatterns:description'] = 'Optional. Ein lokaler Pfad pro Zeile, z. B. /, /my, /course/view.php. Verwenden Sie * als Suffix für Präfix-Matching, z. B. /course/*. Query-Parameter schränken auf eine konkrete Seite ein, z. B. /mod/page/view.php?id=5. Ist mindestens ein Muster gesetzt, wird bereits ein Gast-Benutzer erstellt, sobald ein anonymer Besucher (auch mit Site-Gast-Session) eine passende Seite öffnet – noch bevor etwas in den Warenkorb gelegt wird. Leer lassen, um Gast-Benutzer nur beim Hinzufügen zum Warenkorb zu erstellen.';
+$string['guestcheckout:alreadyregistered'] = 'Bereits registriert? Einloggen';
+$string['guestcheckout:email'] = 'E-Mail-Adresse';
+$string['guestcheckout:emailexists'] = 'Ein Konto mit dieser E-Mail-Adresse existiert bereits.
+ Bitte <a href="{$a->loginurl}">melden Sie sich an</a>, um fortzufahren.';
+$string['guestcheckout:emailplaceholder'] = 'ihre@email.com';
+$string['guestcheckout:errorinvalidemail'] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
+$string['guestcheckout:errormissingfields'] = 'Bitte füllen Sie Vorname, Nachname und E-Mail-Adresse aus.';
+$string['guestcheckout:feedbackregister'] = 'Bitte vervollständigen Sie die Registrierung oder melden Sie sich mit Ihrem bestehenden Konto an.';
+$string['guestcheckout:firstname'] = 'Vorname';
+$string['guestcheckout:firstnameplaceholder'] = 'Vorname';
+$string['guestcheckout:lastname'] = 'Nachname';
+$string['guestcheckout:lastnameplaceholder'] = 'Nachname';
+$string['guestcheckout:passwordresetemail'] = 'Hallo {$a->firstname},
+
+ Ihr Kauf wurde erfolgreich abgeschlossen. Wir haben ein Moodle-Konto für Sie erstellt.
+
+ Um Ihr Passwort zu setzen und sich zum ersten Mal anzumelden, folgen Sie bitte diesem Link:
+ {$a->reseturl}
+
+ Ihr Anmeldename ist die E-Mail-Adresse, die Sie beim Checkout angegeben haben.';
+$string['guestcheckout:passwordresetemailsubject'] = 'Ihr neues Konto';
+$string['guestcheckout:registertab'] = 'Registrieren & zur Kasse';
+$string['guestcheckout:registrationdesc'] = 'Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an, um die Registrierung abzuschließen.
+ Nach dem Kauf erhalten Sie eine E-Mail, um Ihr Passwort zu setzen.';
+$string['guestcheckout:registrationtitle'] = 'Ihre Kontaktdaten';
+$string['guestcheckoutrole'] = 'Rolle für Gast-Checkout-Benutzer';
+$string['guestcheckoutrole:description'] = 'Die Systemrolle, die jedem temporären Gast-Checkout-Benutzer zugewiesen wird. Voreingestellt ist die eingebaute Rolle „Authentifizierte:r Nutzer:in", die einem Gast dieselben Grundrechte wie jedem eingeloggten Benutzer gibt. Ist das zu weitreichend, legen Sie eine eigene Rolle an (Website-Administration → Nutzer/innen → Rollen definieren), die nur das Nötige zum Stöbern und Kaufen erlaubt – etwa nur local/shopping_cart:canbuy plus die für den Checkout benötigten Fähigkeiten – und wählen Sie diese hier aus. Die gewählte Rolle wird auf Systemebene zugewiesen, solange das temporäre Konto besteht, und bleibt erhalten, wenn das Konto nach dem Kauf in ein dauerhaftes Konto umgewandelt wird.';
+$string['guestoncheckout'] = 'Gast-Checkout aktivieren';
+$string['guestoncheckout:description'] = 'Hauptschalter für den Gast-Checkout. Wenn aktiviert, können nicht eingeloggte Besucher Elemente zum Warenkorb hinzufügen und den Checkout durchlaufen, ohne sich vorher anzumelden – als ein einziges, einheitliches Verhalten (es gibt keinen separaten Schalter „Gast-Benutzer erstellen").
+ Konkret bewirkt die Aktivierung: (1) Legt ein anonymer Besucher ein Element in den Warenkorb, wird automatisch ein temporäres Moodle-Benutzerkonto erstellt und der Besucher als dieser Benutzer eingeloggt; (2) das temporäre Konto erhält die unter „Rolle für Gast-Checkout-Benutzer" konfigurierte Rolle; (3) schließt der Besucher den Kauf ab, werden Vorname, Nachname und E-Mail im Checkout erfasst, das Konto wird in ein dauerhaftes umgewandelt und eine E-Mail zum Setzen des Passworts versendet; (4) ohne Kauf wird das temporäre Konto nach 24 Stunden automatisch gelöscht.
+ Optional können Sie über die „Seitenmuster für automatische Erstellung" unten Gast-Benutzer bereits beim Öffnen bestimmter Seiten erstellen lassen.';
 $string['history'] = "Käufe";
 $string['hr'] = "Kroatien";
 $string['hu'] = "Ungarn";
@@ -695,10 +729,11 @@ $string['usevatnr'] = "Umsatzsteuer-ID (UID) eingeben";
 $string['vatnrcheckerheading'] = "Umsatzsteuer-ID (UID) überprüfen";
 $string['vatnrcheckerheadingdescription'] = "Vor dem Zahlen kann eine Umsatzsteuer-ID (UID) eingegeben und überprüft werden";
 $string['vatnrerrorfeedback'] = 'UID ist nicht gültig!';
+$string['vatnrerrorownvatnr'] = 'Die UID des Seitenbetreibers kann nicht verwendet werden.';
 $string['vatnrfeedbackmandatory'] = 'Die Angabe der UID ist verpflichtend!';
 $string['vatnrfeedbackoptional'] = 'Die Angabe der UID ist optional';
 $string['vatnrvalidationfeedback'] = 'Gültige UID erkannt';
-$string['vatnrverificationinprogress'] = 'UID wird geprueft...';
+$string['vatnrverificationinprogress'] = 'UID wird geprüft...';
 $string['vatnumbervoluntarily'] = 'Ich habe eine gültige Umsatzsteuer-ID (UID).';
 $string['verify'] = "UID prüfen";
 $string['wronginputvalue'] = 'Die eingegebenen Werte sind ungültig.';

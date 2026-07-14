@@ -910,6 +910,50 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026071501, 'local', 'shopping_cart');
     }
 
+    if ($oldversion < 2026071502) {
+        // Create the local_shopping_cart_guestusers table to track temporary guest
+        // checkout accounts that have not yet been converted to real Moodle users.
+        $table = new xmldb_table('local_shopping_cart_guestusers');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // The separate "auto-create guest users" toggle has been merged into the single
+        // guestoncheckout master switch. Front-loading guest users on specific pages is now driven
+        // purely by the presence of URL patterns, so the obsolete flag can be removed.
+        unset_config('guestautocreateenabled', 'local_shopping_cart');
+
+        // The local_shopping_cart_guestusers table was originally created only inside the
+        // "if ($oldversion < 2026042100)" block. That version number is below the deployed base
+        // version (2026060300), so every site that was already at or above the base skips the block
+        // forever and the table is never created on upgrade. Recreate it here under a reachable
+        // version so existing sites get it; install.xml already provides it for fresh installs and
+        // the table_exists() guard keeps this idempotent.
+        $table = new xmldb_table('local_shopping_cart_guestusers');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Shopping_cart savepoint reached.
+        upgrade_plugin_savepoint(true, 2026071502, 'local', 'shopping_cart');
+    }
+
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.

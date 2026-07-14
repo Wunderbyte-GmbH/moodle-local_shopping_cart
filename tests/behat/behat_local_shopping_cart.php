@@ -161,6 +161,25 @@ class behat_local_shopping_cart extends behat_base {
     }
 
     /**
+     * Put specified item in the shopping cart of the most recently auto-created
+     * guest checkout user (see local_shopping_cart_guestusers).
+     *
+     * @param int $itemid
+     * @Given /^Testitem "(?P<itemid_int>(?:[^"]|\\")*)" has been put in shopping cart of the guest checkout user$/
+     */
+    public function i_put_testitem_in_guest_users_cart(int $itemid) {
+        global $DB;
+        $guestrecords = $DB->get_records('local_shopping_cart_guestusers', [], 'timecreated DESC, id DESC', 'userid', 0, 1);
+        if (empty($guestrecords)) {
+            throw new \moodle_exception('No guest checkout user found - was the auto-create page visited?');
+        }
+        $userid = (int)reset($guestrecords)->userid;
+        shopping_cart::buy_for_user($userid);
+        $area = $itemid < 6 ? 'main' : 'option';
+        shopping_cart::add_item_to_cart('local_shopping_cart', $area, $itemid, $userid);
+    }
+
+    /**
      * Purchase specified testitem for user (with checkout by cash).
      *
      * @param int $itemid

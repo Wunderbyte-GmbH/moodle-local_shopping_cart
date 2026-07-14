@@ -67,6 +67,7 @@ $string['addresses:newaddress:checkasdefault'] = 'Set as my primary address';
 $string['addresses:newaddress:city:error'] = 'Please enter your city';
 $string['addresses:newaddress:city:label'] = 'City';
 $string['addresses:newaddress:city:placeholder'] = 'City';
+$string['addresses:newaddress:company:error'] = 'Please enter your company name';
 $string['addresses:newaddress:company:label'] = 'Company Name';
 $string['addresses:newaddress:name:error'] = 'Please enter your name';
 $string['addresses:newaddress:name:label'] = 'Name';
@@ -398,6 +399,39 @@ $string['generalsettingspagetitle'] = 'General Shopping Cart Settings';
 $string['getrefundforcredit'] = 'You can use your credits to buy a new item.';
 $string['globalcurrency'] = 'Currency';
 $string['globalcurrencydesc'] = 'Choose the currency for prices.';
+$string['guestautocreatepatterns'] = 'Auto-create page patterns (optional)';
+$string['guestautocreatepatterns:description'] = 'Optional. One local path per line, e.g. /, /my, /course/view.php. Use * as a suffix for prefix matching, e.g. /course/*. Append query parameters to target one concrete page, e.g. /mod/page/view.php?id=5. When at least one pattern is set, a guest user is created as soon as an anonymous visitor (including a site guest session) opens a matching page — before they add anything to the cart. Leave empty to only create guest users when something is added to the cart.';
+$string['guestcheckout:alreadyregistered'] = 'Already registered? Log in';
+$string['guestcheckout:email'] = 'E-mail address';
+$string['guestcheckout:emailexists'] = 'An account with this e-mail address already exists.
+ Please <a href="{$a->loginurl}">log in</a> to continue.';
+$string['guestcheckout:emailplaceholder'] = 'your@email.com';
+$string['guestcheckout:errorinvalidemail'] = 'Please enter a valid e-mail address.';
+$string['guestcheckout:errormissingfields'] = 'Please fill in first name, last name and e-mail address.';
+$string['guestcheckout:feedbackregister'] = 'Please complete the registration or log in with your existing account.';
+$string['guestcheckout:firstname'] = 'First name';
+$string['guestcheckout:firstnameplaceholder'] = 'First name';
+$string['guestcheckout:lastname'] = 'Last name';
+$string['guestcheckout:lastnameplaceholder'] = 'Last name';
+$string['guestcheckout:passwordresetemail'] = 'Hello {$a->firstname},
+
+ Your purchase was completed successfully.  We have created a Moodle account for you.
+
+ To set your password and log in for the first time, please follow the link below:
+ {$a->reseturl}
+
+ Your username is the e-mail address you provided during checkout.';
+$string['guestcheckout:passwordresetemailsubject'] = 'Your new account';
+$string['guestcheckout:registertab'] = 'Register & check out';
+$string['guestcheckout:registrationdesc'] = 'Please enter your name and e-mail address to complete your registration.
+ After purchase you will receive an e-mail to set your password.';
+$string['guestcheckout:registrationtitle'] = 'Your contact details';
+$string['guestcheckoutrole'] = 'Role for guest checkout users';
+$string['guestcheckoutrole:description'] = 'The system role assigned to every temporary user created for guest checkout. The default is the built-in "Authenticated user" role, which gives a guest the same baseline permissions as any logged-in user. If that is too permissive, create a dedicated role (Site administration → Users → Define roles) that only grants what a guest needs to browse and buy — for example just local/shopping_cart:canbuy plus the capabilities required to reach the checkout — and select it here. The chosen role is assigned at system level while the temporary account exists and is carried over when the account is converted into a permanent user after purchase.';
+$string['guestoncheckout'] = 'Enable guest checkout';
+$string['guestoncheckout:description'] = 'Master switch for guest checkout. When enabled, unauthenticated visitors can add items to the cart and go through checkout without logging in first — a single, unified behaviour (there is no separate "create guest user" switch).
+ Concretely, enabling this means: (1) when an anonymous visitor adds an item to the cart, a temporary Moodle user account is created automatically and the visitor is logged in as that user; (2) the temporary account is granted the role configured under "Role for guest checkout users"; (3) if the visitor completes the purchase, their real first name, last name and e-mail are collected during checkout, the account is converted into a permanent one and a "set your password" e-mail is sent; (4) if no purchase is made, the temporary account is deleted automatically after 24 hours.
+ Optionally, you can also have guest users created up front on specific pages via "Auto-create page patterns" below.';
 $string['history'] = "Purchases";
 $string['hr'] = "Croatia";
 $string['hu'] = "Hungary";
@@ -553,6 +587,9 @@ $string['privacy:metadata:local_shopping_cart_credits:timecreated'] = 'Time this
 $string['privacy:metadata:local_shopping_cart_credits:timemodified'] = 'Time this entry was modified.';
 $string['privacy:metadata:local_shopping_cart_credits:userid'] = 'Userid of the concerned user.';
 $string['privacy:metadata:local_shopping_cart_credits:usermodified'] = 'The user who effected the transaction.';
+$string['privacy:metadata:local_shopping_cart_guestusers'] = 'Tracks temporary guest checkout users until they are converted or deleted';
+$string['privacy:metadata:local_shopping_cart_guestusers:timecreated'] = 'Timestamp when the guest user was created';
+$string['privacy:metadata:local_shopping_cart_guestusers:userid'] = 'The ID of the temporary guest user';
 $string['privacy:metadata:local_shopping_cart_history'] = 'Shopping Cart History';
 $string['privacy:metadata:local_shopping_cart_history:annotiation'] = 'Annotation or OrderID.';
 $string['privacy:metadata:local_shopping_cart_history:area'] = 'One component can provide different areas with independent ids.';
@@ -714,6 +751,7 @@ $string['startinvoicingdatedesc'] = 'In order to prevent invoice creation from i
  enter a UNIX timestamp for starting date to issue invoices. Get it from there: https://www.unixtimestamp.com/';
 $string['success'] = 'Success';
 $string['task:createinvoice'] = 'Create invoice Task';
+$string['task:deleteguestuser'] = 'Delete unconverted guest checkout user';
 $string['task:deleteitem'] = 'Delete item from cart Task';
 $string['taxcategories'] = 'Tax categories and their tax percentage';
 $string['taxcategories_desc'] = 'Tax categories per user-country and their tax percentage.';
@@ -759,6 +797,7 @@ $string['usevatnr'] = "Enter VAT number";
 $string['vatnrcheckerheading'] = "Check VAT number";
 $string['vatnrcheckerheadingdescription'] = "A VAT number can be entered and checked before payment";
 $string['vatnrerrorfeedback'] = 'VAT number is invalid!';
+$string['vatnrerrorownvatnr'] = 'You cannot use the VAT number of this site\'s operator.';
 $string['vatnrfeedbackmandatory'] = 'VAT number is mandatory!';
 $string['vatnrfeedbackoptional'] = 'VAT number is optional';
 $string['vatnrvalidationfeedback'] = 'VAT number was successfully validated';

@@ -28,7 +28,6 @@ namespace local_shopping_cart\local\checkout_process\items;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
-use moodle_exception;
 
 /**
  * Class checkout
@@ -77,23 +76,35 @@ class vatnrchecker extends checkout_base_item {
         if (!$showvatnrchecker) {
             return false;
         }
-        if (!is_string($changedinputs)) {
-            // No new input (e.g. page reload) – fall back to cached state.
-            return $managercache['vatnumbervoluntarily'] ?? false;
-        }
-        $changedinputs = json_decode($changedinputs);
-
-        if (!empty($changedinputs)) {
-            foreach ($changedinputs as $changedinput) {
-                if (
-                    isset($changedinput->name) &&
-                    $changedinput->name == 'vatnumbervoluntarily'
-                ) {
-                    return $changedinput->value;
+        // Only parse changedinput when it is actually provided (a JSON string,
+        // e.g. when the voluntarily checkbox was just toggled). When there is no
+        // changedinput (initial page load - it defaults to an array), fall
+        // through to the cached value so a previously confirmed checkbox keeps
+        // the VAT step active.
+        if (is_string($changedinputs)) {
+            $changedinputs = json_decode($changedinputs);
+            if (!empty($changedinputs)) {
+                foreach ($changedinputs as $changedinput) {
+                    if (
+                        isset($changedinput->name) &&
+                        $changedinput->name == 'vatnumbervoluntarily'
+                    ) {
+                        return $changedinput->value;
+                    }
                 }
             }
         }
         return $managercache['vatnumbervoluntarily'] ?? false;
+    }
+
+    /**
+     * This step is implemented as dynamic form (phase 2 of the forms migration).
+     * Remove this override to roll back to the legacy render_body/check_status path.
+     *
+     * @return string
+     */
+    public static function get_form_classname(): string {
+        return \local_shopping_cart\local\checkout_process\steps\vatnrchecker_form::class;
     }
 
     /**
@@ -105,73 +116,6 @@ class vatnrchecker extends checkout_base_item {
     }
 
     /**
-     * Render body.
-     *
-     * @param mixed $cachedata
-     *
-     * @return array
-     *
-     */
-    public static function render_body($cachedata): array {
-        global $PAGE;
-        $data = [];
-        $data['countries'] = self::get_country_code_name();
-        self::set_data_from_cache($data, $cachedata['data'] ?? []);
-        $template = $PAGE->get_renderer('local_shopping_cart')
-            ->render_from_template("local_shopping_cart/vatnrchecker", $data);
-        return [
-            'template' => $template,
-        ];
-    }
-
-    /**
-     * Generates the data for rendering the templates/address.mustache template.
-     * @param array $vatnrcheckerdata
-     * @param array $cachedata
-     *
-     * @return void
-     */
-    public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata): void {
-        $cacheddata = self::get_input_data($cachedata);
-        self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
-        $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
-    }
-
-    /**
-     * Generates the data for rendering the templates/address.mustache template.
-     * @param array $vatnrcheckerdata
-     * @param string $countrycode
-     *
-     * @return void
-     */
-    public static function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
-
-        foreach ($vatnrcheckerdata['countries'] as &$country) {
-            if ($country['code'] == $countrycode) {
-                $country['selected'] = true;
-            } else {
-                unset($country['selected']);
-            }
-        }
-    }
-
-    /**
-     * Renders checkout item.
-     * @return array
-     */
-    public static function get_country_code_name(): array {
-        $countries = vatnumberhelper::get_countrycodes_array();
-        $formattedcountrycodes = [];
-        foreach ($countries as $code => $name) {
-            $formattedcountrycodes[] = [
-                'code' => $code,
-                'name' => $name,
-            ];
-        }
-        return $formattedcountrycodes;
-    }
-
-    /**
      * Renders checkout item.
      * @return bool
      */
@@ -179,6 +123,8 @@ class vatnrchecker extends checkout_base_item {
         if (get_config('local_shopping_cart', 'onlywithvatnrnumber')) {
             return true;
         }
+        // Ticking the voluntarily-VAT checkbox makes this step mandatory: the
+        // user must then provide a valid VAT number before checkout is possible.
         if (!empty(self::$identifier)) {
             $cache = \cache::make('local_shopping_cart', 'cachebookingpreprocess');
             $managercache = $cache->get(self::$identifier);
@@ -190,53 +136,8 @@ class vatnrchecker extends checkout_base_item {
     }
 
     /**
-     * Returns the required-address keys as specified in the plugin config.
-     *
-     * @param mixed $managercachestep
-     * @param mixed $changedinput
-     *
-     * @return array
-     *
-     */
-    public static function check_status(
-        $managercachestep,
-        $changedinput
-    ): array {
-        $data = $changedinput ?? [];
-        $vatnumbercheck = false;
-        try {
-            $changedinput = self::get_input_data($changedinput);
-            if (isset($changedinput['country']) && isset($changedinput['vatnumber'])) {
-                $vatnumbercheck = vatnumberhelper::is_vatnr_valid(
-                    $changedinput['country'],
-                    $changedinput['vatnumber']
-                );
-
-                $cartstore = cartstore::instance(self::$identifier);
-                if ($vatnumbercheck) {
-                    $cartstore->set_vatnr_data($changedinput['country'], $changedinput['vatnumber'], '', '', '');
-                } else {
-                    $cartstore->unset_vatnr_data();
-                }
-            }
-        } catch (\Exception $e) {
-            throw new moodle_exception(
-                'wronginputvalue',
-                'local_shopping_cart',
-                '',
-                null,
-                $e->getMessage()
-            );
-        }
-        return [
-            'data' => $data,
-            'mandatory' => self::is_mandatory(),
-            'valid' => $vatnumbercheck,
-        ];
-    }
-
-    /**
-     * Returns the required-address keys as specified in the plugin config.
+     * Parses the cached VAT step data (legacy "COUNTRY,NUMBER" shape) into
+     * country/number. Still used by the vatnrchecker_form step to prefill.
      *
      * @param mixed $changedinput
      *
@@ -258,6 +159,54 @@ class vatnrchecker extends checkout_base_item {
     }
 
     /**
+     * Validation + persistence core of the VAT step. Verifies the VAT number
+     * against VIES and stores the result in the cartstore (valid -> tax-relevant
+     * VAT data set, invalid -> unset). Used by both the vatnrchecker_form step
+     * and the legacy check_preprocess() path.
+     *
+     * @param array $data ['vatcodecountry' => code, 'vatnumber' => number]
+     * @return array ['data' => string, 'mandatory' => bool, 'valid' => bool]
+     */
+    public function evaluate_step(array $data): array {
+        $country = trim((string)($data['vatcodecountry'] ?? ''));
+        $vatnumber = trim((string)($data['vatnumber'] ?? ''));
+
+        $valid = false;
+        if ($country !== '' && $country !== 'novatnr' && $vatnumber !== '') {
+            $valid = vatnumberhelper::is_vatnr_valid($country, $vatnumber);
+        }
+
+        $cartstore = cartstore::instance((int)self::$identifier);
+        if ($valid) {
+            $cartstore->set_vatnr_data($country, $vatnumber, '', '', '');
+        } else {
+            $cartstore->unset_vatnr_data();
+        }
+
+        return [
+            // Legacy cache shape, consumed by return_stored_vatnuber_country_code().
+            'data' => json_encode(['vatCodeCountry' => $country . ',' . $vatnumber]),
+            'mandatory' => self::is_mandatory(),
+            'valid' => $valid,
+        ];
+    }
+
+    /**
+     * Adapts the legacy changedinput (JSON {"vatCodeCountry":"CC,NUM"}) to the
+     * data shape expected by evaluate_step().
+     *
+     * @param mixed $changedinput
+     * @return array
+     */
+    public function parse_changed_input($changedinput): array {
+        $parsed = self::get_input_data($changedinput);
+        return [
+            'vatcodecountry' => $parsed['country'] ?? '',
+            'vatnumber' => $parsed['vatnumber'] ?? '',
+        ];
+    }
+
+    /**
      * Validation feedback.
      * @return string
      */
@@ -267,14 +216,30 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Validation feedback.
+     *
+     * With developer debugging enabled, the diagnostic trace of the last VAT
+     * check (region detection, validator used, raw response) is appended.
+     *
      * @return string
      */
     public static function get_error_feedback(): string {
-        $lasterrorkey = vatnumberhelper::get_last_validation_error_key();
-        if (!empty($lasterrorkey)) {
-            return get_string($lasterrorkey, 'local_shopping_cart');
+        global $CFG;
+
+        $errorkey = vatnumberhelper::get_last_validation_error_key();
+        if (vatnumberhelper::last_failure_was_own_vatnr()) {
+            $feedback = get_string('vatnrerrorownvatnr', 'local_shopping_cart');
+        } else if (!empty($errorkey)) {
+            // Technical error (service unavailable / rate limit) - tell the user
+            // it is not their VAT number that is wrong.
+            $feedback = get_string($errorkey, 'local_shopping_cart');
+        } else {
+            $feedback = get_string('vatnrerrorfeedback', 'local_shopping_cart');
         }
-        return get_string('vatnrerrorfeedback', 'local_shopping_cart');
+
+        if (!empty($CFG->debugdeveloper)) {
+            $feedback .= vatnumberhelper::get_last_trace_html();
+        }
+        return $feedback;
     }
 
     /**

@@ -29,11 +29,13 @@ Feature: As admin I configure shopping cart to use various settings. As teacher 
 
   @javascript
   Scenario: Shopping Cart settings: enable terms and conditions
-    Given I log in as "admin"
-    And I set the following administration settings values:
-      | accepttermsandconditions | 1                              |
-      | Terms & Conditions       | Are you agree with conditions? |
-    And I log out
+    ## Set the configs directly: navigating the admin settings UI is flaky in
+    ## full-suite runs (occasional redirect to the release info page). The
+    ## settings-page UI itself is covered by the strings scenario below.
+    Given the following config values are set as admin:
+      | config                   | value                          | plugin              |
+      | accepttermsandconditions | 1                              | local_shopping_cart |
+      | termsandconditions       | Are you agree with conditions? | local_shopping_cart |
     When I log in as "user1"
     And I wait until the page is ready
     And I visit "/local/shopping_cart/demo.php"

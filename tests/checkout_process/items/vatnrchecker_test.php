@@ -62,12 +62,26 @@ final class vatnrchecker_test extends advanced_testcase {
         set_config('showvatnrchecker', 1, 'local_shopping_cart');
         set_config('owncountrycode', 'DE', 'local_shopping_cart');
 
-        // Assert that the method returns true when conditions are met.
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return true when configuration is valid.');
+        // Not active: the checker is shown, but neither "only with vat number" nor the
+        // voluntarily flag is set, so show_vat_nr() falls back to false.
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when the step is neither forced nor voluntarily confirmed.'
+        );
 
-        // Remove configurations and test again.
+        // Active (TRUE path): "only with vat number" forces the step and a home country is set.
+        set_config('onlywithvatnrnumber', 1, 'local_shopping_cart');
+        $this->assertTrue(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be true when onlywithvatnrnumber is set and a country code is configured.'
+        );
+
+        // Not active: even when forced, a missing home country code disables the step.
         unset_config('owncountrycode', 'local_shopping_cart');
-        $this->assertFalse(vatnrchecker::is_active([], []), 'Expected is_active to return false when country code is missing.');
+        $this->assertFalse(
+            vatnrchecker::is_active([], []),
+            'Expected is_active to be false when the country code is missing.'
+        );
     }
 
     /**
@@ -79,54 +93,63 @@ final class vatnrchecker_test extends advanced_testcase {
     }
 
     /**
-     * Test the set_data_from_cache method.
+     * Test that ticking the voluntarily-VAT checkbox makes the step mandatory.
      */
-    public function test_set_data_from_cache(): void {
-        $vatnrcheckerdata = [
-            'countries' => [
-                ['code' => 'DE', 'name' => 'Germany'],
-                ['code' => 'FR', 'name' => 'France'],
-            ],
-        ];
-        $cachedata = json_encode(['vatCodeCountry' => 'DE,123456789']);
+    public function test_is_mandatory_with_voluntarily(): void {
+        unset_config('onlywithvatnrnumber', 'local_shopping_cart');
+        $user = $this->get_data_generator()->create_user();
+        vatnrchecker::$identifier = $user->id;
+        $cache = \cache::make('local_shopping_cart', 'cachebookingpreprocess');
 
-        vatnrchecker::set_data_from_cache($vatnrcheckerdata, $cachedata);
+        // No voluntarily flag -> not mandatory.
+        $cache->set($user->id, ['vatnumbervoluntarily' => false]);
+        $this->assertFalse(vatnrchecker::is_mandatory(), 'Expected not mandatory without the voluntarily flag.');
 
-        // Assertions.
-        $this->assertArrayHasKey('vatnumber', $vatnrcheckerdata, 'Expected vatnumber to be set in the data.');
-        $this->assertEquals('123456789', $vatnrcheckerdata['vatnumber'], 'Expected vatnumber to match cached data.');
-        $this->assertTrue($vatnrcheckerdata['countries'][0]['selected'], 'Expected Germany to be selected.');
-        $this->assertArrayNotHasKey('selected', $vatnrcheckerdata['countries'][1], 'Expected France not to be selected.');
+        // Voluntarily flag ticked -> mandatory.
+        $cache->set($user->id, ['vatnumbervoluntarily' => true]);
+        $this->assertTrue(vatnrchecker::is_mandatory(), 'Expected mandatory once the voluntarily checkbox is ticked.');
+
+        // onlywithvatnrnumber always wins.
+        set_config('onlywithvatnrnumber', 1, 'local_shopping_cart');
+        $cache->set($user->id, ['vatnumbervoluntarily' => false]);
+        $this->assertTrue(vatnrchecker::is_mandatory(), 'Expected mandatory when onlywithvatnrnumber is set.');
     }
 
     /**
-     * Test the get_country_code_name method.
+     * Test the evaluate_step method: validates against (mocked) VIES and returns
+     * the legacy-shaped cache data.
      */
-    public function test_get_country_code_name(): void {
-        $result = vatnrchecker::get_country_code_name();
-
-        // Assertions.
-        $this->assertIsArray($result, 'Expected get_country_code_name to return an array.');
-        $this->assertCount(30, $result, 'Expected exactly 30 countries in the result.');
-        $this->assertEquals(['code' => 'novatnr', 'name' => 'No VAT number'], $result[0], 'Expected first country to be Germany.');
-    }
-
-    /**
-     * Test the check_status method.
-     */
-    public function test_check_status(): void {
-        $managercachestep = [];
-        $changedinput = json_encode(['vatCodeCountry' => 'DE,123456789']);
-
+    public function test_evaluate_step(): void {
         $user1 = $this->get_data_generator()->create_user();
-        vatnrchecker::$identifier = $user1->id;
+        $this->setUser($user1);
 
-        $result = vatnrchecker::check_status($managercachestep, $changedinput);
+        // Mock a valid VAT response (is_vatnr_valid honours mockvat_* config under test).
+        set_config('mockvat_at_atu74259768', '{"valid": true}', 'local_shopping_cart');
 
-        $this->assertIsArray($result, 'Expected check_status to return an array.');
-        $this->assertFalse($result['valid'], 'Expected the VAT number to be valid.');
-        $this->assertArrayHasKey('mandatory', $result, 'Expected the result to include "mandatory".');
+        $item = new vatnrchecker($user1->id);
+
+        $result = $item->evaluate_step(['vatcodecountry' => 'AT', 'vatnumber' => 'ATU74259768']);
+        $this->assertIsArray($result, 'Expected evaluate_step to return an array.');
         $this->assertArrayHasKey('data', $result, 'Expected the result to include "data".');
+        $this->assertArrayHasKey('mandatory', $result, 'Expected the result to include "mandatory".');
+        $this->assertTrue($result['valid'], 'Expected valid for a mocked valid VAT number.');
+
+        // Empty input -> invalid.
+        $result = $item->evaluate_step(['vatcodecountry' => '', 'vatnumber' => '']);
+        $this->assertFalse($result['valid'], 'Expected invalid for empty input.');
+    }
+
+    /**
+     * Test that parse_changed_input maps the legacy {"vatCodeCountry":"CC,NUM"}
+     * shape to the data shape used by evaluate_step.
+     */
+    public function test_parse_changed_input(): void {
+        $changedinput = json_encode(['vatCodeCountry' => 'DE,123456789']);
+        $item = new vatnrchecker(0);
+        $data = $item->parse_changed_input($changedinput);
+
+        $this->assertEquals('DE', $data['vatcodecountry'], 'Expected country to be DE.');
+        $this->assertEquals('123456789', $data['vatnumber'], 'Expected VAT number to match.');
     }
 
     /**

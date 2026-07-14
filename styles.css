@@ -543,7 +543,11 @@ div.shopping-cart-items-container div.item-description {
 
 .shopping-cart-checkout-manager-buttons {
     margin-top: 20px;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
 }
 .shopping-cart-checkout-manager-status-bar {
     display: flex;
@@ -627,4 +631,70 @@ div.shopping-cart-items-container div.item-description {
 .shopping-cart-checkout-manager-form-container {
     max-width: 400px;
     width: 100%;
+}
+
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-main-card,
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-summary-card,
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-address-card,
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-guest-card {
+    border-radius: 14px;
+}
+
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-checkout-tabs {
+    border-bottom: 0;
+    gap: 8px;
+}
+
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-checkout-tabs .nav-link {
+    border: 0;
+    border-radius: 999px;
+    background: #f2f5f9;
+    color: #38506a;
+    padding: 8px 14px;
+}
+
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-checkout-tabs .nav-link.active {
+    background: #0f6cbf;
+    color: #fff;
+}
+
+#page-local-shopping_cart-checkout .sc-checkout-modern .sc-summary-card {
+    position: sticky;
+    top: 1rem;
+}
+
+#page-local-shopping_cart-checkout .sc-address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#page-local-shopping_cart-checkout .sc-address-item {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 10px;
+    align-items: start;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+}
+
+#page-local-shopping_cart-checkout .sc-address-item input[type="radio"] {
+    margin-top: 4px;
+}
+
+#page-local-shopping_cart-checkout [id^="shopping-cart-inline-address-form-"] .form-control,
+#page-local-shopping_cart-checkout [id^="shopping-cart-inline-address-form-"] .custom-select {
+    width: 100%;
+}
+
+#page-local-shopping_cart-checkout [id^="shopping-cart-inline-address-form-"] .mform fieldset {
+    margin: 0;
+}
+
+@media (max-width: 991px) {
+    #page-local-shopping_cart-checkout .sc-checkout-modern .sc-summary-card {
+        position: static;
+    }
 }

@@ -1,0 +1,72 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/address_actions
+
+    Add/edit/delete actions and the inline new-address form container,
+    rendered below the addresses step form (the inline form is its own
+    dynamic form and therefore cannot live inside the step mform).
+
+    Context variables required for this template:
+    * required_addresses - list of {addresskey, addresslabel}
+    * is_guest_checkout_user - bool
+    * has_saved_addresses - bool
+
+    Example context (json):
+    {
+        "required_addresses": [{"addresskey": "billing", "addresslabel": "billing address"}],
+        "is_guest_checkout_user": false,
+        "has_saved_addresses": true
+    }
+}}
+
+{{#required_addresses}}
+    <div class="row g-3 align-items-start mt-1">
+        <div class="col-lg-6">
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary btn-sm shopping-cart-new-address" data-addresskey="{{addresskey}}">
+                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>&nbsp;{{#str}} addresses:addnew, local_shopping_cart{{/str}}
+                </button>
+                {{^is_guest_checkout_user}}
+                    {{#has_saved_addresses}}
+                        <button type="button" class="btn btn-outline-info btn-sm shopping-cart-edit-selected-address" data-addresskey="{{addresskey}}">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;{{#str}} addresses:edit:selected, local_shopping_cart{{/str}}
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm shopping-cart-delete-selected-address" data-addresskey="{{addresskey}}">
+                            <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;{{#str}} addresses:delete:selected, local_shopping_cart{{/str}}
+                        </button>
+                    {{/has_saved_addresses}}
+                {{/is_guest_checkout_user}}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 sc-address-card">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="mb-1">{{#str}} addresses:addnew, local_shopping_cart{{/str}}</h5>
+                </div>
+                <div class="card-body" id="shopping-cart-inline-address-form-{{addresskey}}" data-addresskey="{{addresskey}}">
+                </div>
+            </div>
+        </div>
+    </div>
+{{/required_addresses}}
+
+{{#js}}
+    require(['local_shopping_cart/address'], function(address) {
+    address.init();
+    });
+{{/js}}
