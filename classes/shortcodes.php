@@ -27,6 +27,7 @@ namespace local_shopping_cart;
 
 use context_system;
 use local_shopping_cart\output\renderer;
+use local_shopping_cart\output\embed_views;
 use local_shopping_cart\shopping_cart;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\output\userinfocard;
@@ -127,6 +128,87 @@ class shortcodes {
             $out = '';
         }
         return $out;
+    }
+
+    /**
+     * Renders the compact cart badge (icon, item count, total) for embedding.
+     *
+     * Guarded by the shortcode security token: the configured token must be
+     * passed in the securitytoken argument, otherwise a warning is shown. This
+     * keeps the cart UI from being surfaced on arbitrary pages by anyone who
+     * merely knows the shortcode tag. The optional checkouturl argument is
+     * validated against the redirect allow list inside the renderable.
+     *
+     * @param string $shortcode
+     * @param array $args
+     * @param string|null $content
+     * @param object $env
+     * @param \Closure $next
+     * @return string
+     */
+    public static function cartbadge($shortcode, $args, $content, $env, $next): string {
+        if ($warning = self::verify_shortcode_token($args)) {
+            return $warning;
+        }
+        return embed_views::render_badge((array) $args);
+    }
+
+    /**
+     * Renders the full cart checkout (stepper, VAT, credits, coupons) for embedding.
+     *
+     * Guarded by the shortcode security token exactly like {@see self::cartbadge()}.
+     * The optional checkouturl/successurl arguments are validated against the
+     * redirect allow list inside the renderable.
+     *
+     * @param string $shortcode
+     * @param array $args
+     * @param string|null $content
+     * @param object $env
+     * @param \Closure $next
+     * @return string
+     */
+    public static function cartcheckout($shortcode, $args, $content, $env, $next): string {
+        if ($warning = self::verify_shortcode_token($args)) {
+            return $warning;
+        }
+        return embed_views::render_checkout((array) $args);
+    }
+
+    /**
+     * Verifies the shortcode security token passed to a protected shortcode.
+     *
+     * Compares the securitytoken argument against the configured shortcodetoken
+     * with a constant-time comparison. The check is deterministic and value
+     * based (no language or phrase matching): an empty configured or provided
+     * token, or a mismatch, yields a warning; a match yields null (render).
+     *
+     * @param array $args Shortcode arguments; the securitytoken key is read.
+     * @return string|null Warning HTML if the token is missing or invalid, null when valid.
+     */
+    private static function verify_shortcode_token($args): ?string {
+        $configuredtoken = (string) get_config('local_shopping_cart', 'shortcodetoken');
+        $providedtoken = isset($args['securitytoken']) ? trim((string) $args['securitytoken']) : '';
+
+        if ($configuredtoken === '' || $providedtoken === '') {
+            return self::render_shortcode_warning('shortcode_warning_missing_securitytoken');
+        }
+        if (!hash_equals($configuredtoken, $providedtoken)) {
+            return self::render_shortcode_warning('shortcode_warning_invalid_securitytoken');
+        }
+        return null;
+    }
+
+    /**
+     * Renders a shortcode warning message as a bootstrap alert.
+     *
+     * @param string $stringidentifier Lang string key in local_shopping_cart.
+     * @param mixed $a Optional lang string parameter.
+     * @return string
+     */
+    private static function render_shortcode_warning(string $stringidentifier, $a = null): string {
+        return '<div class="alert alert-warning local-shopping-cart-shortcode-warning" role="alert">'
+            . s(get_string($stringidentifier, 'local_shopping_cart', $a))
+            . '</div>';
     }
 
     /**

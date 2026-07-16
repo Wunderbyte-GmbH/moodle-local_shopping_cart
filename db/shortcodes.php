@@ -32,6 +32,19 @@ $shortcodes = [
         'wraps' => false,
         'description' => 'shoppingcarthistory',
     ],
+    // Compact cart badge for embedding in an iframe. Protected by the shortcode
+    // security token, so it only renders where the configured token is passed.
+    'cartbadge' => [
+        'callback' => 'local_shopping_cart\shortcodes::cartbadge',
+        'wraps' => false,
+        'description' => 'cartbadge',
+    ],
+    // Full cart checkout for embedding in an iframe. Same token protection.
+    'cartcheckout' => [
+        'callback' => 'local_shopping_cart\shortcodes::cartcheckout',
+        'wraps' => false,
+        'description' => 'cartcheckout',
+    ],
 ];
 
 // Define aliases for user information card.
