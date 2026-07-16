@@ -47,12 +47,12 @@ final class embed_views_test extends advanced_testcase {
      */
     public function test_list_views(): void {
         $views = embed_views::list_views();
-        $this->assertArrayHasKey('cart_badge', $views);
+        $this->assertArrayHasKey('cartbadge', $views);
         $this->assertSame(
             'local_shopping_cart\output\embed_views::render_badge',
-            $views['cart_badge']['callback']
+            $views['cartbadge']['callback']
         );
-        $this->assertSame([], $views['cart_badge']['requiredargs']);
+        $this->assertSame([], $views['cartbadge']['requiredargs']);
     }
 
     /**
