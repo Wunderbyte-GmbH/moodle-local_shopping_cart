@@ -1119,4 +1119,22 @@ if ($hassiteconfig) {
             6
         )
     );
+
+    // Security token for the embeddable cart shortcodes (cartbadge, cartcheckout).
+    // A random token is generated the first time this settings page is built, so
+    // the shortcodes are locked down by default; the admin can rotate it here.
+    $shortcodetoken = get_config('local_shopping_cart', 'shortcodetoken');
+    if (empty($shortcodetoken)) {
+        $shortcodetoken = random_string(8);
+        set_config('shortcodetoken', $shortcodetoken, 'local_shopping_cart');
+    }
+    $settings->add(
+        new admin_setting_configtext(
+            'local_shopping_cart/shortcodetoken',
+            get_string('shortcodetoken', 'local_shopping_cart'),
+            get_string('shortcodetoken_desc', 'local_shopping_cart'),
+            $shortcodetoken,
+            PARAM_RAW_TRIMMED
+        )
+    );
 }

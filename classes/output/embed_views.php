@@ -51,11 +51,11 @@ class embed_views {
      */
     public static function list_views(): array {
         return [
-            'cart_badge' => [
+            'cartbadge' => [
                 'callback' => self::class . '::render_badge',
                 'requiredargs' => [],
             ],
-            'cart_checkout' => [
+            'cartcheckout' => [
                 'callback' => self::class . '::render_checkout',
                 'requiredargs' => [],
             ],
