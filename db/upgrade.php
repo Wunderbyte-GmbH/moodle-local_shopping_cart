@@ -885,7 +885,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025081901, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2026071501) {
+    if ($oldversion < 2026071502) {
         // The reservations table is read/written on every cart interaction with
         // "WHERE userid = ? AND identifier IS NULL" (and once via identifier only),
         // but had no index besides the primary key, causing full table scans.
@@ -943,6 +943,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_field('maxnumber', XMLDB_TYPE_INTEGER, '8', null, null, null, '1');
         $table->add_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('active', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+        $table->add_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('starttime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('endtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -976,34 +977,6 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Conditionally launch add field coupon.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
-        }
-
-        $table = new xmldb_table('local_shopping_cart_coupons');
-        // Position after 'active' to match install.xml. The previous field must exist in THIS table:
-        // 'taxcountrycode' only exists on the history/ledger tables, so "AFTER taxcountrycode" failed here.
-        $field = new xmldb_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'active');
-
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // The local_shopping_cart_guestusers table was originally created only inside the
-        // "if ($oldversion < 2026042100)" block. That version number is below the deployed base
-        // version (2026060300), so every site that was already at or above the base skips the block
-        // forever and the table is never created on upgrade. Recreate it here under a reachable
-        // version so existing sites get it; install.xml already provides it for fresh installs and
-        // the table_exists() guard keeps this idempotent.
-        $table = new xmldb_table('local_shopping_cart_guestusers');
-
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
-
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
         }
 
         // Shopping_cart savepoint reached.
