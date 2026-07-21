@@ -201,6 +201,11 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid-identifier" UNIQUE="false" FIELDS="userid, identifier" COMMENT="Userid and identifier used in WHERE"/>
+                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="UserID used in WHERE"/>
+                <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier" COMMENT="Identifier used in WHERE"/>
+            </INDEXES>
         </TABLE>
     </TABLES>
 </XMLDB>

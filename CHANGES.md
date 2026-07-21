@@ -1,3 +1,5 @@
+* Improvement: Add indexes on userid/identifier to the local_shopping_cart_reserv table. The reservation cleanup query (DELETE ... WHERE userid = ? AND identifier IS NULL) runs on every cart interaction and was doing full table scans, making it the single biggest DB time consumer under load.
+
 ## Version 2.1.1 (2026071500)
 * Bugfix: On checkout.php the cent amounts of prices were cut off (e.g. 42,50 displayed as 42,00) for languages with a decimal comma (e.g. German): convert_prices_to_number_format ran twice (once in checkout::prepare_checkout, once in checkout.php) and the second pass truncated the already localized string "42,50" at the comma via its (float) cast. The same double conversion hit the credit on the cashier and receipt pages. Prices are now parsed back with unformat_float, making the conversion idempotent.
 * Improvement: Display the cart navigation item by default only to authenticated users with the canseecartnavitem capability.
