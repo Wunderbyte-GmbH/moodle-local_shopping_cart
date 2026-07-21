@@ -910,7 +910,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026071501, 'local', 'shopping_cart');
     }
 
-    if ($oldversion < 2026071502) {
+    if ($oldversion < 2026073001) {
         // Create the local_shopping_cart_guestusers table to track temporary guest
         // checkout accounts that have not yet been converted to real Moodle users.
         $table = new xmldb_table('local_shopping_cart_guestusers');
@@ -943,6 +943,7 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         $table->add_field('maxnumber', XMLDB_TYPE_INTEGER, '8', null, null, null, '1');
         $table->add_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('active', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+        $table->add_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null);
         $table->add_field('starttime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('endtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -958,6 +959,14 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
         // Conditionally launch create table for local_shopping_cart_coupons.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
+        }
+
+        // Sites whose coupons table was created before the coupontype field existed skip the
+        // create_table above, so the field has to be added separately for them.
+        // Position after 'active' to match install.xml.
+        $field = new xmldb_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'active');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
         }
 
         // Define field coupon to be added to local_shopping_cart_history.
@@ -978,36 +987,8 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $table = new xmldb_table('local_shopping_cart_coupons');
-        // Position after 'active' to match install.xml. The previous field must exist in THIS table:
-        // 'taxcountrycode' only exists on the history/ledger tables, so "AFTER taxcountrycode" failed here.
-        $field = new xmldb_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'active');
-
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // The local_shopping_cart_guestusers table was originally created only inside the
-        // "if ($oldversion < 2026042100)" block. That version number is below the deployed base
-        // version (2026060300), so every site that was already at or above the base skips the block
-        // forever and the table is never created on upgrade. Recreate it here under a reachable
-        // version so existing sites get it; install.xml already provides it for fresh installs and
-        // the table_exists() guard keeps this idempotent.
-        $table = new xmldb_table('local_shopping_cart_guestusers');
-
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_index('userid_idx', XMLDB_INDEX_UNIQUE, ['userid']);
-
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
         // Shopping_cart savepoint reached.
-        upgrade_plugin_savepoint(true, 2026071502, 'local', 'shopping_cart');
+        upgrade_plugin_savepoint(true, 2026073001, 'local', 'shopping_cart');
     }
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
