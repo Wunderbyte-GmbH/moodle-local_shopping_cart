@@ -62,7 +62,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -85,7 +85,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     And I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -108,7 +108,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -141,7 +141,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 4.5 |
     And I press "Save changes"
@@ -214,7 +214,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 2.5 |
     And I press "Save changes"
@@ -262,7 +262,7 @@ Feature: Cashier actions in shopping cart.
     And I should see "Username1 Test"
     And I click on "Continue" "button"
     Then I should see "Test item 1" in the "#shopping_cart-cashiers-cart" "css_element"
-    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] i.shoppingcart-discount-icon" "css_element"
+    And I click on "#shopping_cart-cashiers-cart [data-item=\"shopping_cart_item\"] .shoppingcart-discount-icon" "css_element"
     And I set the following fields to these values:
       | discountabsolute | 2.5 |
     And I press "Save changes"

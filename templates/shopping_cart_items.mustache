@@ -50,7 +50,9 @@
     }
 }}
 
-<div class="shopping-cart-items">
+{{! role="list" plus role="listitem" on the entries: a screen reader then announces how many
+    items are in the cart and can jump from one to the next. }}
+<div class="shopping-cart-items" role="list">
     {{#items}}
         {{> local_shopping_cart/shopping_cart_item }}
     {{/items}}

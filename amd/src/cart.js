@@ -63,6 +63,7 @@ const SELECTORS = {
     DISCOUNTCLASS: 'shoppingcart-discount-icon',
     MODIFYTIMECLASS: 'shoppingcart-modifytime-icon',
     BADGECOUNT: '#nav-shopping_cart-popover-container div.count-container',
+    POPOVERTOGGLE: '#nav-shopping_cart-popover-container [data-region="popover-region-toggle"]',
     COUNTDOWN: '#nav-shopping_cart-popover-container span.expirationtime',
     CASHIERSCART: 'div.shopping-cart-cashier-items-container',
     CHECKOUTCART: 'div.shopping-cart-checkout-items-container',
@@ -107,6 +108,13 @@ export const init = (expirationtime, nowdate) => {
             // Decide the target of the click.
             const element = event.target;
             const parent = element.closest(SELECTORS.SHOPPINGCARTITEM);
+
+            // Clicks land on the container as a whole, so they also arrive from the heading, the
+            // total or the empty area around the items. Without this the handler threw on the null
+            // reference for every one of them.
+            if (!parent) {
+                return;
+            }
 
             const userid = parent.dataset.userid ? parent.dataset.userid : 0;
             const component = parent.dataset.component ?? '';
@@ -983,6 +991,28 @@ function updateBadge(count) {
         badge.innerHTML = count;
         badge.classList.add('hidden');
     }
+
+    // The badge itself is aria-hidden - a bare number says nothing when read out. The name of the
+    // cart toggle carries the count as a sentence instead and has to follow it. It has to be the
+    // label, not extra content: an aria-label replaces everything inside the element.
+    const toggle = document.querySelector(SELECTORS.POPOVERTOGGLE);
+
+    if (!toggle) {
+        return;
+    }
+
+    const label = count > 0
+        ? getString('showcartwithcount', 'local_shopping_cart', count)
+        : getString('showcart', 'local_shopping_cart');
+
+    label.then(text => {
+        toggle.setAttribute('aria-label', text);
+        toggle.setAttribute('title', text);
+        return true;
+    }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log(e);
+    });
 }
 
 /**

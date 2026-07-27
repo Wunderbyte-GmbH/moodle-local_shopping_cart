@@ -122,18 +122,31 @@
         {{$classes}}popover-region-shopping_carts{{/classes}}
         {{$attributes}}id="nav-shopping_cart-popover-container" data-userid="{{userid}}"{{/attributes}}
 
-        {{$togglelabel}}{{/togglelabel}}
+        {{! The toggle of core/popover_region gets its name from this block. It used to be overridden
+            with an empty one, which left the toggle with aria-label="" and title="", so its name
+            fell back to whatever icon and counter happened to contain - including a hard coded
+            English "Count:". An aria-label replaces the content of the toggle, so the number of
+            items has to be part of the label itself; cart.js keeps it up to date. }}
+        {{$togglelabel}}{{#count}}{{#str}} showcartwithcount, local_shopping_cart, {{count}} {{/str}}{{/count}}{{^count}}{{#str}} showcart, local_shopping_cart {{/str}}{{/count}}{{/togglelabel}}
         {{$togglecontent}}
-            <i class="fa fa-shopping-cart" title="Shopping cart menu" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
+            <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+            {{! The bare number is decorative - it is part of the toggle's aria-label as a sentence. }}
             <div id="itemcount" class="count-container {{^count}}hidden{{/count}}" data-region="count-container"
-            aria-label="Count: {{count}}">{{count}}</div>
+            aria-hidden="true">{{count}}</div>
         {{/togglecontent}}
 
-        {{$containerlabel}}{{/containerlabel}}
+        {{! Names the region landmark of the open cart. }}
+        {{$containerlabel}}{{#str}} mycart, local_shopping_cart {{/str}}{{/containerlabel}}
 
         {{$headertext}}
-            <i class="fa fa-3x fa-shopping-cart" aria-label="{{#str}} cart, local_shopping_cart {{/str}}"></i>
-            <span class="expirationtime" aria-live="polite"  aria-label="{{#str}} timeleft, local_shopping_cart {{/str}}" data-expirationtime='{{expirationtime}}'>[{{expirationtime}}] </span>
+            <i class="fa fa-3x fa-shopping-cart" aria-hidden="true"></i>
+            {{! role="timer" instead of aria-live="polite": the countdown is rewritten every second,
+                so as a live region it interrupted screen reader users once per second. A timer is a
+                live region with "off" by default - the value stays readable in the reading order,
+                but is not announced on every tick. The label is real (screen reader only) text
+                instead of an aria-label, which would have replaced the value itself. }}
+            <span class="sc-sr-only">{{#str}} timeleft, local_shopping_cart {{/str}}</span>
+            <span class="expirationtime" role="timer" data-expirationtime='{{expirationtime}}'>[{{expirationtime}}] </span>
         {{/headertext}}
         {{$content}}
         <h4 class="p-2 shopping-cart-items-title text-dark">{{#str}} mycart, local_shopping_cart {{/str}} </h4>

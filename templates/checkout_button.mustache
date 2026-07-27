@@ -36,5 +36,10 @@
     }
 }}
 <div>
-    <a href="{{checkouturl}}" id="shopping-cart-checkout-button" class="btn btn-primary p-3 d-block mx-4 {{^count}}disabled{{/count}}">{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right"></i></a>
+    {{! With an empty cart the link only carried the "disabled" class. That stops the mouse
+        (pointer-events) but not the keyboard, so ENTER still opened the checkout of an empty cart,
+        and nothing told assistive technology that the link is inactive. }}
+    <a href="{{checkouturl}}" id="shopping-cart-checkout-button"
+        class="btn btn-primary p-3 d-block mx-4 {{^count}}disabled{{/count}}"
+        {{^count}}aria-disabled="true" tabindex="-1"{{/count}}>{{#str}} checkout, local_shopping_cart {{/str}} <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
 </div>

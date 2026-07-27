@@ -44,7 +44,10 @@
     }
 }}
 
+{{! role="listitem" (matching the role="list" of the container): the items are divs for layout
+    reasons, this gives a screen reader the "3 items" overview without changing the markup. }}
 <div id="item-{{componentname}}-{{area}}-{{itemid}}"
+    role="listitem"
     class="shopping-cart-item clearfix"
     data-price='{{price}}'
     data-name='{{itemname}}'
@@ -75,8 +78,13 @@
                 {{nritemsstring}}
             </span>
             {{#multipliable}}
+                {{! Real buttons: as <i data-action> they could only be clicked with a mouse and were
+                    invisible to assistive technology (aria-hidden on top of that). }}
                 <span class="multipliable_buttons">
-                    <i class="fa fa-minus-circle" aria-hidden="true" data-action="decrease"></i><i class="fa fa-plus-circle" aria-hidden="true" data-action="increase"></i>
+                    <button type="button" class="sc-icon-button fa fa-minus-circle" data-action="decrease"
+                        aria-label="{{#str}} decreaseamount, local_shopping_cart, {{itemname}} {{/str}}"></button><button
+                        type="button" class="sc-icon-button fa fa-plus-circle" data-action="increase"
+                        aria-label="{{#str}} increaseamount, local_shopping_cart, {{itemname}} {{/str}}"></button>
                 </span>
             {{/multipliable}}
             <span>
@@ -86,14 +94,16 @@
             </span>
             {{#iscashier}}
                 <span class="item-button pull-right">
-                    <i class="shoppingcart-discount-icon fa fa-fw fa-percent ps-2"
+                    <button type="button" class="sc-icon-button shoppingcart-discount-icon fa fa-fw fa-percent ps-2"
+                    aria-label="{{#str}} applydiscountitem, local_shopping_cart, {{itemname}} {{/str}}"
                     data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
-                    data-itemid="{{itemid}}" data-action="discount" data-userid="{{userid}}"></i>
+                    data-itemid="{{itemid}}" data-action="discount" data-userid="{{userid}}"></button>
                 </span>
             {{/iscashier}}
             {{^nodelete}}
             <span class="item-button pull-right">
-                <button class="delete-button fa fa-fw fa-trash-o" aria-label="{{#str}} delete, local_shopping_cart {{/str}}"
+                <button type="button" class="delete-button fa fa-fw fa-trash-o"
+                aria-label="{{#str}} deleteitem, local_shopping_cart, {{itemname}} {{/str}}"
                 data-item="shopping_cart_item" data-itemid="{{itemid}}" data-component="{{componentname}}"
                 data-area="{{area}}" data-action="delete" data-userid="{{userid}}"></button>
             </span>
@@ -116,9 +126,10 @@
 
     {{#iscashier}}
         <span class="item-button pull-right">
-            <i class="shoppingcart-modifytime-icon fa fa-clock-o ps-2" aria-hidden="true"
+            <button type="button" class="sc-icon-button shoppingcart-modifytime-icon fa fa-clock-o ps-2"
+            aria-label="{{#str}} modifyreservationtimeitem, local_shopping_cart, {{itemname}} {{/str}}"
             data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
-            data-itemid="{{itemid}}" data-action="modifyreservationtime" data-userid="{{userid}}"></i>
+            data-itemid="{{itemid}}" data-action="modifyreservationtime" data-userid="{{userid}}"></button>
         </span>
     {{/iscashier}}
     <div class="pull-right">

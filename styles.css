@@ -628,3 +628,52 @@ div.shopping-cart-items-container div.item-description {
     max-width: 400px;
     width: 100%;
 }
+/* ---------------------------------------------------------------------------
+   Accessibility of the shopping cart (WCAG 2.1 AA).
+   --------------------------------------------------------------------------- */
+
+/* Text that only exists for screen readers. Defined here instead of relying on the theme, because
+   "sr-only" (Bootstrap 4) and "visually-hidden" (Bootstrap 5) are not both available in every
+   Moodle/theme combination this plugin runs in. */
+.sc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* The icon controls inside a cart item are buttons now (they used to be <i> elements, which cannot
+   be reached or operated with a keyboard). They must not look like one, so the browser chrome is
+   removed - and the icon has to keep the size and colour of the surrounding text. */
+.shopping-cart-items .sc-icon-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+}
+
+/* The delete icon is the only carrier of its meaning, so it needs 3:1 against the white cart
+   background (WCAG 1.4.11). The previous #abb0be reached 2.1:1. */
+.shopping-cart-items .delete-button,
+.shopping-cart-items .item-button {
+    color: #6c757d;
+}
+
+/* Keyboard focus has to be visible on the icon buttons as well (WCAG 2.4.7). */
+.shopping-cart-items .delete-button:focus-visible,
+.shopping-cart-items .sc-icon-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* An inactive checkout button must not look like an available one. */
+#shopping-cart-checkout-button[aria-disabled="true"] {
+    cursor: default;
+}
