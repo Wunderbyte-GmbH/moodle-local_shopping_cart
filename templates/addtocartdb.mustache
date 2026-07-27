@@ -40,9 +40,21 @@
     }
 
 }}
-<div class="btn btn-secondary w-100 mt-0 mb-0 p-1 wb_shopping_cart booking-button-area "
+{{!
+    A real <button>, not a <div tabindex="0">: a div is focusable with a tabindex but has no
+    keyboard activation at all (neither ENTER nor SPACE fire a click) and screen readers announce
+    it as plain text instead of a button.
+
+    Exception: mod_booking/bookit_price wraps this partial in an <a href> when "link" is set (book
+    on the detail page). A button inside a link is invalid HTML and ambiguous for assistive
+    technology, so in that case this stays a plain <span> and the surrounding link provides both the
+    role and the keyboard handling. The data attributes are needed either way, they drive the
+    "already in cart" state in cart.js.
+}}
+{{#link}}
+<span class="btn btn-secondary w-100 mt-0 mb-0 p-1 wb_shopping_cart booking-button-area "
         id="btn-{{componentname}}-{{area}}-{{itemid}}"
-        tabindex="0"
+        data-itemname="{{itemname}}"
         data-itemid="{{itemid}}"
         {{#nojs}}
             data-nojs="1"
@@ -55,7 +67,29 @@
   <i class="fa fa-cart-plus" aria-hidden="true"></i>
   <span class="addtocartstring">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
   {{#main}}{{#foruser}}<br><span>{{{foruser}}}</span>{{/foruser}}{{/main}}
-</div>
+</span>
+{{/link}}
+{{^link}}
+<button type="button" class="btn btn-secondary w-100 mt-0 mb-0 p-1 wb_shopping_cart booking-button-area "
+        id="btn-{{componentname}}-{{area}}-{{itemid}}"
+        {{#itemname}}
+            aria-label="{{#str}} addtocartitem, local_shopping_cart, {{itemname}} {{/str}}"
+        {{/itemname}}
+        data-itemname="{{itemname}}"
+        data-itemid="{{itemid}}"
+        {{#nojs}}
+            data-nojs="1"
+        {{/nojs}}
+        data-userid="{{userid}}"
+        data-objecttable="local_shopping_cart"
+        data-component="{{componentname}}"
+        data-area="{{area}}"
+        data-installment="{{installment}}">
+  <i class="fa fa-cart-plus" aria-hidden="true"></i>
+  <span class="addtocartstring">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
+  {{#main}}{{#foruser}}<br><span>{{{foruser}}}</span>{{/foruser}}{{/main}}
+</button>
+{{/link}}
 
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {

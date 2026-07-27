@@ -43,6 +43,9 @@ export var interval = null;
 export var visbilityevent = false;
 let pageinitialized = false;
 
+// Debounce timer for the state of the add-to-cart buttons, see scheduleButtonStateUpdate.
+let buttonstatetimer = null;
+
 // This file inits the cart on every page, on checkout and cashier.
 // The cart is always loaed entirely and replaced via css.
 // The cashiers cart are identified in the DOM via userid -1 (CASHIERUSER).
@@ -52,6 +55,9 @@ const CASHIERUSER = -1;
 
 const SELECTORS = {
     SHOPPING_CART_ITEM: '[data-item="shopping_cart_item"]',
+    // Without a tag name on purpose: the control is a <button>, or a <span> when it is rendered
+    // inside a "book on detail page" link.
+    ADDTOCARTBUTTON: '[data-objecttable="local_shopping_cart"][data-itemid][data-component][data-area]',
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
     DISCOUNTCLASS: 'shoppingcart-discount-icon',
@@ -221,14 +227,20 @@ export const buttoninit = () => {
         return;
     }
 
+    // Every rendered button calls this function, so the state update is scheduled (and thereby
+    // collapsed into one run). It is needed here because the buttons arrive from the server in their
+    // default state: without it, an item that is already in the cart looked bookable until some
+    // other action happened to trigger a cart reload.
+    scheduleButtonStateUpdate();
+
     // Add one event listener only once
     if (!container.dataset.cartDelegated) {
         container.dataset.cartDelegated = 'true';
 
+        observeRenderedButtons();
+
         container.addEventListener('click', (e) => {
-            const button = e.target.closest(
-                'div[data-objecttable="local_shopping_cart"][data-itemid][data-component][data-area]'
-            );
+            const button = e.target.closest(SELECTORS.ADDTOCARTBUTTON);
             if (!button) {
                 return;
             }
@@ -260,6 +272,54 @@ export const buttoninit = () => {
         });
     }
 };
+
+/**
+ * Re-apply the cart state to add-to-cart controls that appear in the DOM after a re-render.
+ *
+ * Those controls come from the server in their default state ("add to cart"). Several flows replace
+ * them without knowing about the cart: deleting an item reloads every wunderbyte table, mod_booking
+ * swaps the button markup after booking, table filters and infinite scroll render new rows. Until
+ * now nothing restored the state afterwards, so removing one item out of several made every button
+ * on the page claim that its item was no longer in the cart.
+ */
+function observeRenderedButtons() {
+
+    const body = document.querySelector('body');
+
+    if (!body || body.dataset.cartStateObserved) {
+        return;
+    }
+    body.dataset.cartStateObserved = 'true';
+
+    const observer = new MutationObserver(mutations => {
+
+        const rendersbutton = mutations.some(mutation => Array.from(mutation.addedNodes).some(node =>
+            // Element nodes only: switching a label writes a text node, which must not retrigger us.
+            node.nodeType === 1
+            && (node.matches(SELECTORS.ADDTOCARTBUTTON) || node.querySelector(SELECTORS.ADDTOCARTBUTTON))
+        ));
+
+        if (!rendersbutton) {
+            return;
+        }
+
+        scheduleButtonStateUpdate();
+    });
+
+    observer.observe(body, {childList: true, subtree: true});
+}
+
+/**
+ * Update the state of all add-to-cart buttons once, after the current burst of changes.
+ *
+ * A reload inserts its rows in several batches and every rendered button asks for an update, so the
+ * calls are collapsed into a single run.
+ */
+function scheduleButtonStateUpdate() {
+
+    clearTimeout(buttonstatetimer);
+    buttonstatetimer = setTimeout(() => toggleActiveButtonState(), 100);
+}
 
 /**
  * Function to reload the cart. We can pass on the certain component if we need to make sure that not only the cart is reloaded.
@@ -945,17 +1005,14 @@ function toggleActiveButtonState(button = null) {
         area = button.dataset.area;
 
         selector =
-            'div'
-            + '[data-itemid="' + itemid + '"]'
+            '[data-itemid="' + itemid + '"]'
             + '[data-component="' + component + '"]'
             + '[data-area="' + area + '"]'
-            + '[data-objecttable="local_shopping_cart"';
+            + '[data-objecttable="local_shopping_cart"]';
     } else {
         // As we might have more than one of these buttons, we always need to look for all of them in the document.
         // We will update for all the buttons we find.
-        selector =
-            'div'
-            + '[data-objecttable="local_shopping_cart"';
+        selector = SELECTORS.ADDTOCARTBUTTON;
     }
 
     const buttons = document.querySelectorAll(selector);
@@ -965,6 +1022,14 @@ function toggleActiveButtonState(button = null) {
 
     if (!shoppingcart) {
         shoppingcart = document.querySelector(SELECTORS.NAVBARCONTAINER);
+    }
+
+    // On a page without any cart container we cannot tell which items are in the cart. Leaving early
+    // keeps the buttons in their rendered state; without this guard the loop below threw on the null
+    // reference, and because this function runs before addItem in the click handler, that exception
+    // stopped the click from ever adding anything.
+    if (!shoppingcart) {
+        return;
     }
 
     buttons.forEach(addtocartbutton => {
@@ -978,10 +1043,67 @@ function toggleActiveButtonState(button = null) {
         if (cartitem) {
 
             addtocartbutton.classList.add('disabled');
+            // The "disabled" class alone is invisible to assistive technology, and the real
+            // disabled attribute is deliberately not used: the button stays focusable so keyboard
+            // users can still reach it and hear that the item is already in the cart.
+            addtocartbutton.setAttribute('aria-disabled', 'true');
+            setButtonLabel(addtocartbutton, true);
         } else {
 
             addtocartbutton.classList.remove('disabled');
+            addtocartbutton.removeAttribute('aria-disabled');
+            setButtonLabel(addtocartbutton, false);
         }
+    });
+}
+
+/**
+ * Show on the button itself whether the item sits in the cart already.
+ *
+ * Until now that state was carried by the green background alone, which is information by colour
+ * only (WCAG 1.4.1) and says nothing to a screen reader. Label and accessible name are switched
+ * together, otherwise the accessible name would no longer contain the visible label (WCAG 2.5.3).
+ *
+ * @param {HTMLElement} button the add-to-cart control
+ * @param {boolean} incart whether the item is currently in the cart
+ */
+function setButtonLabel(button, incart) {
+
+    const label = button.querySelector('.addtocartstring');
+
+    // The price-only variant has no label element, there is nothing to switch.
+    if (!label) {
+        return;
+    }
+
+    // Remember the rendered state once, so it can be restored when the item leaves the cart.
+    if (button.dataset.defaultlabel === undefined) {
+        button.dataset.defaultlabel = label.textContent.trim();
+        button.dataset.defaultarialabel = button.getAttribute('aria-label') ?? '';
+    }
+
+    if (!incart) {
+        label.textContent = button.dataset.defaultlabel;
+        if (button.dataset.defaultarialabel) {
+            button.setAttribute('aria-label', button.dataset.defaultarialabel);
+        } else {
+            button.removeAttribute('aria-label');
+        }
+        return;
+    }
+
+    const itemname = button.dataset.itemname;
+    const request = itemname
+        ? getString('incartitem', 'local_shopping_cart', itemname)
+        : getString('incart', 'local_shopping_cart');
+
+    Promise.all([getString('incart', 'local_shopping_cart'), request]).then(([visible, accessible]) => {
+        label.textContent = visible;
+        button.setAttribute('aria-label', accessible);
+        return true;
+    }).catch(e => {
+        // eslint-disable-next-line no-console
+        console.log(e);
     });
 }
 

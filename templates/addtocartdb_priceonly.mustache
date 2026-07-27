@@ -40,8 +40,23 @@
     }
 
 }}
-<div class="mt-0 mb-0 ps-1 pe-1 pt-0 pb-0 wb_shopping_cart booking-button-area"
+{{!
+    A real <button>, not a <div>: this price chip adds the slot to the cart when it is clicked, but
+    it had neither a tabindex nor a role, so it was unreachable by keyboard and announced as plain
+    table text. Its visible content is only the price, which says nothing about what activating it
+    does - hence the aria-label naming the slot.
+
+    "free" is a boolean, and mustache renders false as an empty string. Writing the value out
+    explicitly keeps data-bookable="1" for the bookable case (the timeslot table styles that value)
+    and produces a real "false" for the other one, which the not-bookable styling expects.
+}}
+<button type="button" class="mt-0 mb-0 ps-1 pe-1 pt-0 pb-0 wb_shopping_cart booking-button-area"
         id="btn-{{componentname}}-{{area}}-{{itemid}}"
+        {{#slot}}
+            aria-label="{{#str}} addtocartitem, local_shopping_cart, {{slot}} {{/str}}"
+        {{/slot}}
+        {{^free}}aria-disabled="true"{{/free}}
+        data-itemname="{{slot}}"
         data-itemid="{{itemid}}"
         {{#nojs}}
             data-nojs="1"
@@ -50,9 +65,9 @@
         data-objecttable="local_shopping_cart"
         data-component="{{componentname}}"
         data-area="{{area}}"
-        data-bookable='{{free}}'>
+        data-bookable="{{#free}}1{{/free}}{{^free}}false{{/free}}">
         {{price}} {{currency}} {{tag}}
-</div>
+</button>
 
 {{#js}}
     require(['local_shopping_cart/cart'], function(fn) {
