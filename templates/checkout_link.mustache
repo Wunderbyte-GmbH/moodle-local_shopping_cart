@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/checkout_link
+
+    Route to the checkout, shown right after the add-to-cart control once the item is in the cart.
+
+    Why it exists: the cart icon is rendered into the navbar by
+    local_shopping_cart_render_navbar_output(), so in document order it sits *before* the page
+    content. Tabbing on from an add-to-cart button therefore moves away from the cart, and a
+    keyboard user has no forward route to the checkout.
+
+    Deliberately not solved by moving focus or by tabindex: focus would jump backwards into the
+    navbar after every single add, which breaks adding several items in a row, and a positive
+    tabindex would reorder the whole page (WCAG 2.4.3). A real element in document order gives the
+    same result - the next TAB lands on it - without touching the tab order. While hidden it is not
+    focusable, so it does not lengthen the tab path for anyone who wants to keep browsing.
+
+    cart.js (setButtonLabel) toggles the hidden attribute together with the button state, which is
+    why the id has to follow the same componentname-area-itemid pattern as the button.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none - cart.js finds this element by its id
+
+    Context variables required for this template:
+    * componentname - component the item belongs to
+    * area - area the item belongs to
+    * itemid - id of the item
+    * itemname - name of the item, used for the accessible name
+
+    Example context (json):
+    {
+        "componentname": "mod_booking",
+        "area": "option",
+        "itemid": 1,
+        "itemname": "Test item 1"
+    }
+}}
+<a href="{{config.wwwroot}}/local/shopping_cart/checkout.php"
+    id="checkoutlink-{{componentname}}-{{area}}-{{itemid}}"
+    class="btn btn-sm shopping-cart-checkout-link"
+    role="button"
+    {{#itemname}}aria-label="{{#str}} tocheckoutitem, local_shopping_cart, {{itemname}} {{/str}}"{{/itemname}}
+    {{^itemname}}aria-label="{{#str}} tocheckout, local_shopping_cart {{/str}}"{{/itemname}}
+    hidden>
+    {{#str}} tocheckout, local_shopping_cart {{/str}}
+    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+</a>

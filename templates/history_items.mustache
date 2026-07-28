@@ -75,6 +75,13 @@
     {{/historyitems}}
 {{/structuredhistoryitems}}
 {{#structuredhistoryitems.0}}
+{{! This partial is included directly inside <ul class="cashier-history-items">, which may only
+    contain <li>, <script> or <template>, so the whole accordion sits in one <li>. Unlike the
+    credits manager button this really is list content, so it stays inside the list.
+    "list-group-item" is what makes it display: block and thus removes the bullet (Bootstrap
+    deliberately does not set list-style: none on .list-group); the three utilities strip the
+    padding, border and background that come with it, so the appearance is unchanged. }}
+<li class="list-group-item p-0 border-0 bg-transparent">
 <div id="shoppingcarthistory-accordion">
 {{#structuredhistoryitems}}
     <div class="card rounded-0">
@@ -85,12 +92,17 @@
         </div>
         <div id="collapse-{{dateintervalkey}}" class="collapse {{#firstsection}}show{{/firstsection}}" aria-labelledby="heading-{{dateintervalkey}}" data-parent="#shoppingcarthistory-accordion">
             <div class="card-body">
+                {{! history_item is an <li>, so it needs a list around it here as well -- otherwise
+                    the same nesting error just moves from the <ul> above into the card body. }}
+                <ul class="list-group">
                 {{#sectionhistoryitems}}
                 {{> local_shopping_cart/history_item }}
                 {{/sectionhistoryitems}}
+                </ul>
             </div>
         </div>
     </div>
 {{/structuredhistoryitems}}
 </div>
+</li>
 {{/structuredhistoryitems.0}}

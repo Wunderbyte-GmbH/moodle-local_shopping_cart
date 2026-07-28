@@ -46,6 +46,10 @@ let pageinitialized = false;
 // Debounce timer for the state of the add-to-cart buttons, see scheduleButtonStateUpdate.
 let buttonstatetimer = null;
 
+// Identifies the add-to-cart control that had focus when it was activated, so focus can be put back
+// after mod_booking has swapped the button markup. See restorePendingFocus().
+let pendingfocusbutton = null;
+
 // This file inits the cart on every page, on checkout and cashier.
 // The cart is always loaed entirely and replaced via css.
 // The cashiers cart are identified in the DOM via userid -1 (CASHIERUSER).
@@ -58,6 +62,7 @@ const SELECTORS = {
     // Without a tag name on purpose: the control is a <button>, or a <span> when it is rendered
     // inside a "book on detail page" link.
     ADDTOCARTBUTTON: '[data-objecttable="local_shopping_cart"][data-itemid][data-component][data-area]',
+    CHECKOUTLINK: '.shopping-cart-checkout-link',
     NAVBARCONTAINER: '#nav-shopping_cart-popover-container .shopping-cart-items-container',
     TRASHCLASS: 'fa-trash-o',
     DISCOUNTCLASS: 'shoppingcart-discount-icon',
@@ -262,6 +267,13 @@ export const buttoninit = () => {
                 return;
             }
 
+            // Remember the control while it still exists: several flows replace the button markup
+            // right after this (see observeRenderedButtons), which destroys the focused element.
+            // Only relevant when it actually has focus, i.e. when it was reached by keyboard.
+            pendingfocusbutton = document.activeElement === button
+                ? {itemid, component, area}
+                : null;
+
             // Keep button state up to date
             toggleActiveButtonState(button);
 
@@ -277,6 +289,28 @@ export const buttoninit = () => {
             } else {
                 addItem(itemid, component, area, userid);
             }
+        });
+
+        // An <a href> reacts to ENTER only, SPACE scrolls the page instead. The checkout control
+        // looks like a button and is announced as one (role="button"), so it has to react to SPACE
+        // as well - otherwise the announced role and the actual behaviour disagree (WCAG 4.1.2).
+        // The href is kept, so ENTER, mouse clicks and "open in new tab" keep working natively and
+        // the control still leads somewhere if this script never runs.
+        container.addEventListener('keydown', (e) => {
+
+            if (e.key !== ' ' && e.key !== 'Spacebar') {
+                return;
+            }
+
+            const link = e.target.closest(SELECTORS.CHECKOUTLINK);
+
+            if (!link) {
+                return;
+            }
+
+            // Without this the page scrolls down as well as following the link.
+            e.preventDefault();
+            link.click();
         });
     }
 };
@@ -326,7 +360,48 @@ function observeRenderedButtons() {
 function scheduleButtonStateUpdate() {
 
     clearTimeout(buttonstatetimer);
-    buttonstatetimer = setTimeout(() => toggleActiveButtonState(), 100);
+    buttonstatetimer = setTimeout(() => {
+        toggleActiveButtonState();
+        restorePendingFocus();
+    }, 100);
+}
+
+/**
+ * Put focus back on an add-to-cart control that was replaced while it had focus.
+ *
+ * mod_booking swaps the button markup after booking (see observeRenderedButtons). Removing the
+ * focused element drops focus to <body>, and browsers then continue tabbing from the position the
+ * element used to have - so the next TAB landed on the freshly rendered button again instead of
+ * moving on to the checkout link behind it. Restoring focus keeps the keyboard user where they
+ * were and makes the checkout link the next stop, which is the whole point of putting it there.
+ *
+ * Only fires when focus really was lost, so it can never pull focus away from somewhere the user
+ * has moved on to in the meantime.
+ */
+function restorePendingFocus() {
+
+    const target = pendingfocusbutton;
+    pendingfocusbutton = null;
+
+    if (!target) {
+        return;
+    }
+
+    // Anything other than <body> means focus is somewhere deliberate - leave it alone.
+    if (document.activeElement && document.activeElement !== document.body) {
+        return;
+    }
+
+    const button = document.querySelector(
+        '[data-itemid="' + target.itemid + '"]'
+        + '[data-component="' + target.component + '"]'
+        + '[data-area="' + target.area + '"]'
+        + '[data-objecttable="local_shopping_cart"]'
+    );
+
+    if (button) {
+        button.focus();
+    }
 }
 
 /**
@@ -1099,6 +1174,10 @@ function toggleActiveButtonState(button = null) {
  */
 function setButtonLabel(button, incart) {
 
+    // Has to happen before the early return below: the price-only variant has no label to switch,
+    // but it can still have a checkout link that needs to follow the cart state.
+    toggleCheckoutLink(button, incart);
+
     const label = button.querySelector('.addtocartstring');
 
     // The price-only variant has no label element, there is nothing to switch.
@@ -1135,6 +1214,31 @@ function setButtonLabel(button, incart) {
         // eslint-disable-next-line no-console
         console.log(e);
     });
+}
+
+/**
+ * Show or hide the route to the checkout that sits directly after the add-to-cart control.
+ *
+ * The cart icon lives in the navbar, so in document order it is *before* the page content and TAB
+ * can never reach it from an item. This link gives keyboard and screen reader users a forward route
+ * without moving focus or reordering the tab sequence: while hidden it is not focusable, so it only
+ * appears in the tab path once there actually is something to check out.
+ *
+ * @param {HTMLElement} button the add-to-cart control
+ * @param {boolean} incart whether the item is currently in the cart
+ */
+function toggleCheckoutLink(button, incart) {
+
+    const link = document.getElementById(
+        'checkoutlink-' + button.dataset.component + '-' + button.dataset.area + '-' + button.dataset.itemid
+    );
+
+    // Not every caller renders the link (price-only variant, cashier views).
+    if (!link) {
+        return;
+    }
+
+    link.hidden = !incart;
 }
 
 /**

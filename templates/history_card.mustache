@@ -46,6 +46,15 @@
     </div>
     <div class="card-body">
         <div class="history">
+            {{! Before the <ul>, not inside it: a <button> is not a valid child of a list, and
+                the credits manager is a control rather than a history entry. It used to be the
+                first entry of the list, so it stays above it. The condition matches what
+                credit_item used to check ("no cost centre credits and no credit yet"). }}
+            {{^costcentercredits.0}}
+                {{^credit}}
+                    {{> local_shopping_cart/creditsmanager_button }}
+                {{/credit}}
+            {{/costcentercredits.0}}
             <ul class="list-group cashier-history-items">
             {{#costcentercredits.0}}
                 {{> local_shopping_cart/costcentercredit_item }}

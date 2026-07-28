@@ -73,14 +73,17 @@
 {{#credit}}
 <li class="list-group-item flex-column align-items-start text-dark bg-light shopping_cart_history_paidback">
     <div class="d-flex w-100 justify-content-between">
-        <h5>
+        {{! Class "h5" instead of an <h5> element: this is a label with an amount, not a section
+            heading. As a real heading it entered the document outline and skipped levels
+            (WCAG 1.3.1). Same pattern as in history_item.mustache. }}
+        <div class="h5">
         {{#str}} paymentmethodcredits, local_shopping_cart {{/str}}:
         <span class="credit_total">
             {{credit}}
         </span>
         <span class="currency_credit">
             {{currency}}
-        </span></h5>
+        </span></div>
     </div>
 
     {{#canpayback}}
@@ -111,11 +114,8 @@
     {{/canpayback}}
 </li>
 {{/credit}}
-{{^credit}}
-    {{#canpayback}}
-        <button type="button" class="shopping_cart_history_creditsmanager btn btn-secondary m-1 btn-sm w-50"
-            data-userid='{{userid}}'>
-            {{#str}} creditsmanager, local_shopping_cart {{/str}}
-        </button>
-    {{/canpayback}}
-{{/credit}}
+{{! The "no credit yet" case used to render the credits manager button here. This partial is
+    included inside <ul class="cashier-history-items">, where a <button> is not a valid child,
+    and the button is a control rather than a history entry. It now lives in
+    local_shopping_cart/creditsmanager_button, which the calling templates render next to the
+    list instead of inside it. }}

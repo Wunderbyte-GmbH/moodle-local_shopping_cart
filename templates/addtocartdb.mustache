@@ -89,6 +89,11 @@
   <span class="addtocartstring">{{#str}} addtocart, local_shopping_cart {{/str}}</span>
   {{#main}}{{#foruser}}<br><span>{{{foruser}}}</span>{{/foruser}}{{/main}}
 </button>
+{{! Forward route to the checkout, directly after the button in document order so the next TAB
+    reaches it once the item is in the cart. Only in this branch: in the "link" case above,
+    mod_booking/bookit_price wraps this partial in an <a href>, and a link inside a link is
+    invalid - there the partial is included after the closing </a> instead. }}
+{{> local_shopping_cart/checkout_link }}
 {{/link}}
 
 {{#js}}

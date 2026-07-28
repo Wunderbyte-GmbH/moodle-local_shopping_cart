@@ -677,3 +677,55 @@ div.shopping-cart-items-container div.item-description {
 #shopping-cart-checkout-button[aria-disabled="true"] {
     cursor: default;
 }
+
+/* Route to the checkout, rendered right after the add-to-cart control and revealed by cart.js
+   once the item is in the cart (see toggleCheckoutLink). Shares the Bootstrap button shape with
+   the add-to-cart control (btn + btn-sm), but green instead of the theme colour, so that "add" and
+   "pay" are told apart by more than position.
+
+   The greens are fixed values, not "btn-success": Bootstrap 4's $success (#28a745) only reaches
+   3.13:1 against white and fails WCAG 1.4.3. These are the darken() steps of the same palette
+   colour, so the button still fits the site:
+     base   #1e7e34  5.14:1   (also 5.14:1 against a white page, SC 1.4.11 for the button area)
+     hover  #19692c  6.78:1
+     active #155d27  7.99:1
+   A theme variable is deliberately not used - whatever a theme's Bootstrap build produced can land
+   far below the required 4.5:1.
+
+   Deliberately no Bootstrap display utility ("d-inline-block" and friends): those set display with
+   !important, and because the utilities are imported after reboot they beat
+   "[hidden] { display: none !important }" at equal specificity - the link would then be visible
+   even while it carries the hidden attribute. ".btn" sets display without !important, so [hidden]
+   still wins, which is what keeps the link out of the tab order until there is something to pay
+   for. Same reason for the margin here instead of an "mt-*" utility.
+
+   Note it does not carry "wb_shopping_cart": that class is what theme_musi paints blue and pads
+   with "10px !important", which would both undo the colour and cancel out btn-sm. */
+.shopping-cart-checkout-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #fff;
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+}
+
+.shopping-cart-checkout-link:hover,
+.shopping-cart-checkout-link:focus {
+    color: #fff;
+    background-color: #19692c;
+    border-color: #19692c;
+}
+
+.shopping-cart-checkout-link:active {
+    color: #fff;
+    background-color: #155d27;
+    border-color: #155d27;
+}
+
+/* The focus ring has to stay visible on the green (SC 2.4.11/2.4.13): Bootstrap's default ring is
+   tinted with the button colour and would disappear against it. */
+.shopping-cart-checkout-link:focus-visible {
+    outline: 2px solid #155d27;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
+}

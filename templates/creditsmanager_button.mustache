@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/creditsmanager_button
+
+    Button that opens the credits manager, shown when the user has no credit yet.
+
+    This used to live inside credit_item / costcentercredit_item and was therefore rendered
+    inside <ul class="cashier-history-items">, where a <button> is not a valid child. It is a
+    control, not a history entry, so it belongs next to the list rather than inside it.
+
+    Classes required for JS:
+    * shopping_cart_history_creditsmanager - shistory.js binds the click handler to it.
+
+    Data attributes required for JS:
+    * data-userid - the user the credits manager is opened for
+
+    Context variables required for this template:
+    * canpayback - whether the current user may manage credits
+    * userid - the user the credits manager is opened for
+
+    Example context (json):
+    {
+        "canpayback": true,
+        "userid": 5
+    }
+}}
+{{#canpayback}}
+    <button type="button" class="shopping_cart_history_creditsmanager btn btn-secondary m-1 btn-sm w-50"
+        data-userid='{{userid}}'>
+        {{#str}} creditsmanager, local_shopping_cart {{/str}}
+    </button>
+{{/canpayback}}
