@@ -110,8 +110,10 @@ export const init = (expirationtime, nowdate) => {
 
         container.addEventListener('click', event => {
 
-            // Decide the target of the click.
-            const element = event.target;
+            // Decide the target of the click. The icon buttons carry their icon in a nested <i>,
+            // so the click target can be the icon - resolve to the button holding the classes
+            // and data attributes.
+            const element = event.target.closest('button') ?? event.target;
             const parent = element.closest(SELECTORS.SHOPPINGCARTITEM);
 
             // Clicks land on the container as a whole, so they also arrive from the heading, the
@@ -133,8 +135,6 @@ export const init = (expirationtime, nowdate) => {
             } else if (element.classList.contains(SELECTORS.MODIFYTIMECLASS)) {
                 modifyTimeModal(event);
             } else if (element.dataset.action == SELECTORS.INCREASEBUTTON) {
-                // eslint-disable-next-line no-console
-                console.log('increase button clicked');
                 event.preventDefault();
                 event.stopPropagation();
                 increaseItem(itemid, component, area, userid);

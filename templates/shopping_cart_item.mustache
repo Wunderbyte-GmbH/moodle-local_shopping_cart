@@ -81,10 +81,14 @@
                 {{! Real buttons: as <i data-action> they could only be clicked with a mouse and were
                     invisible to assistive technology (aria-hidden on top of that). }}
                 <span class="multipliable_buttons">
-                    <button type="button" class="sc-icon-button fa fa-minus-circle" data-action="decrease"
-                        aria-label="{{#str}} decreaseamount, local_shopping_cart, {{itemname}} {{/str}}"></button><button
-                        type="button" class="sc-icon-button fa fa-plus-circle" data-action="increase"
-                        aria-label="{{#str}} increaseamount, local_shopping_cart, {{itemname}} {{/str}}"></button>
+                    {{! The FontAwesome classes must sit on a nested <i>, not on the button itself:
+                        .sc-icon-button resets the font to inherit, which overrides the icon font. }}
+                    <button type="button" class="sc-icon-button" data-action="decrease"
+                        aria-label="{{#str}} decreaseamount, local_shopping_cart, {{itemname}} {{/str}}"><i
+                        class="fa fa-minus-circle" aria-hidden="true"></i></button><button
+                        type="button" class="sc-icon-button" data-action="increase"
+                        aria-label="{{#str}} increaseamount, local_shopping_cart, {{itemname}} {{/str}}"><i
+                        class="fa fa-plus-circle" aria-hidden="true"></i></button>
                 </span>
             {{/multipliable}}
             <span>
@@ -94,10 +98,11 @@
             </span>
             {{#iscashier}}
                 <span class="item-button pull-right">
-                    <button type="button" class="sc-icon-button shoppingcart-discount-icon fa fa-fw fa-percent ps-2"
+                    <button type="button" class="sc-icon-button shoppingcart-discount-icon ps-2"
                     aria-label="{{#str}} applydiscountitem, local_shopping_cart, {{itemname}} {{/str}}"
                     data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
-                    data-itemid="{{itemid}}" data-action="discount" data-userid="{{userid}}"></button>
+                    data-itemid="{{itemid}}" data-action="discount"
+                    data-userid="{{userid}}"><i class="fa fa-fw fa-percent" aria-hidden="true"></i></button>
                 </span>
             {{/iscashier}}
             {{^nodelete}}
@@ -126,10 +131,11 @@
 
     {{#iscashier}}
         <span class="item-button pull-right">
-            <button type="button" class="sc-icon-button shoppingcart-modifytime-icon fa fa-clock-o ps-2"
+            <button type="button" class="sc-icon-button shoppingcart-modifytime-icon ps-2"
             aria-label="{{#str}} modifyreservationtimeitem, local_shopping_cart, {{itemname}} {{/str}}"
             data-item="shopping_cart_item" data-component="{{componentname}}" data-area="{{area}}"
-            data-itemid="{{itemid}}" data-action="modifyreservationtime" data-userid="{{userid}}"></button>
+            data-itemid="{{itemid}}" data-action="modifyreservationtime"
+            data-userid="{{userid}}"><i class="fa fa-clock-o" aria-hidden="true"></i></button>
         </span>
     {{/iscashier}}
     <div class="pull-right">
