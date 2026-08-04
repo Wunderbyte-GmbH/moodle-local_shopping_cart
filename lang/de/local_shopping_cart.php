@@ -303,6 +303,8 @@ $string['decreaseamount'] = 'Anzahl von {$a} verringern';
 $string['deductible'] = 'Abziehbar:';
 $string['defaultcostcenterforcredits'] = 'Standard Kostenstelle zur Einlösung von Guthaben';
 $string['defaultcostcenterforcredits_desc'] = 'Ist keine Kostenstelle angegeben, können Guthaben für Artikel dieser Kostenstelle eingelöst werden. Wird hier kein Wert eingegeben, können Guthaben ohne angegebene Kostenstelle für alle Artikel eingelöst werden.';
+$string['defaultcurrency'] = 'Standard-Rechnungswährung';
+$string['defaultcurrency_desc'] = 'Transaktionswährung für ERPNext-Rechnungen. EUR behält das bisherige Verhalten bei; andere Währungen werden verwendet, wenn ein Aufrufer eine Währung übergibt (z. B. USD vom Marketplace).';
 $string['defaulttaxcategory'] = 'Standard Steuerkategorie';
 $string['defaulttaxcategory_desc'] =
         'Standard-Steuerkategorie, die verwendet wird, wenn das Cart-Item diese nicht explizit angibt (z.B. "A")';

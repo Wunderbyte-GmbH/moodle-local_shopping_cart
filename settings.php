@@ -869,6 +869,16 @@ if ($hassiteconfig) {
         $newcountries
     ));
 
+    // Default transaction currency for ERPNext invoices (EUR keeps the existing behaviour; other
+    // currencies are used when a caller injects a currency, e.g. USD from the marketplace).
+    $settings->add(new admin_setting_configselect(
+        'local_shopping_cart/defaultcurrency',
+        get_string('defaultcurrency', 'local_shopping_cart'),
+        get_string('defaultcurrency_desc', 'local_shopping_cart'),
+        'EUR',
+        ['EUR' => 'EUR', 'USD' => 'USD', 'GBP' => 'GBP', 'CHF' => 'CHF']
+    ));
+
     // Add a heading for the rebooking section.
     $settings->add(new admin_setting_heading(
         'local_shopping_cart/rebookingheading',

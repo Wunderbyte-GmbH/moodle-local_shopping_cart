@@ -127,6 +127,51 @@ class erpnext_invoice implements invoice {
     private int $identifier;
 
     /**
+     * @var bool True when the invoice data is injected by a non-cart caller instead of read from cart tables.
+     */
+    private bool $injected = false;
+
+    /**
+     * @var string|null Injected billing country ISO2 code (overrides billingaddress->state for tax logic).
+     */
+    private ?string $taxcountrycode = null;
+
+    /**
+     * @var bool Injected has-VAT-id flag (used instead of the cart ledger when injected).
+     */
+    private bool $injectedhasvatid = false;
+
+    /**
+     * @var string|null Transaction currency; null keeps the ERPNext/company default (EUR).
+     */
+    private ?string $currency = null;
+
+    /**
+     * @var float|null Exchange rate from the transaction currency to the company currency.
+     */
+    private ?float $conversionrate = null;
+
+    /**
+     * @var string External idempotency reference (e.g. a Stripe order id); stored as ERPNext po_no.
+     */
+    private string $reference = '';
+
+    /**
+     * @var string|null Explicit tax template name to use (overrides auto-selection when set).
+     */
+    private ?string $forcedtaxtemplate = null;
+
+    /**
+     * @var string Name of the created ERPNext Sales Invoice (set after creation).
+     */
+    public string $invoiceid = '';
+
+    /**
+     * @var bool True when the reconciliation guard rejected the invoice (persistent, do not retry).
+     */
+    public bool $reconciliationfailed = false;
+
+    /**
      * Set up curl to be able to connect to ERPNext using config settings.
      */
     public function __construct() {
@@ -250,6 +295,170 @@ class erpnext_invoice implements invoice {
     }
 
     /**
+     * Create a Sales Invoice from explicit data, without any shopping-cart tables.
+     *
+     * Reuses the same ERPNext helpers as {@see create_invoice()} but takes all data from a plain DTO,
+     * so callers outside the cart (e.g. a Stripe webhook) can invoice. v1 creates and submits the Sales
+     * Invoice only (no Payment Entry). A reconciliation guard refuses to submit an invoice whose ERPNext
+     * grand total does not match the amount actually paid.
+     *
+     * Expected $data shape:
+     *  ->reference       string  external idempotency key (stored as po_no)
+     *  ->currency        string  transaction currency (e.g. 'USD'); optional
+     *  ->conversionrate  float   rate to company currency; optional
+     *  ->grosscheck      float   amount actually paid (net+VAT); optional reconciliation target
+     *  ->taxtemplate     string  ERPNext template to force; optional (else auto-selected)
+     *  ->vatnumber       string  customer VAT id; optional
+     *  ->user            object  {id, email, firstname, lastname}
+     *  ->billing         object  {company, name, state(ISO2 country), address, city, zip, id}
+     *  ->items           array   of {itemname, net, serviceperiodstart, serviceperiodend}
+     *
+     * @param stdClass $data
+     * @return bool true when a Sales Invoice was created (or already existed) and submitted
+     */
+    public function create_invoice_from_data(stdClass $data): bool {
+        $this->injected = true;
+        $this->reference = (string) ($data->reference ?? '');
+        $this->currency = !empty($data->currency)
+            ? (string) $data->currency
+            : ((string) get_config('local_shopping_cart', 'defaultcurrency') ?: null);
+        $this->conversionrate = isset($data->conversionrate) && $data->conversionrate ? (float) $data->conversionrate : null;
+        $this->forcedtaxtemplate = !empty($data->taxtemplate) ? (string) $data->taxtemplate : null;
+        $this->injectedhasvatid = !empty($data->vatnumber);
+
+        $this->user = $data->user;
+        $this->billingaddress = $data->billing;
+        $this->taxcountrycode = $data->billing->state ?? null;
+        if (!empty($this->billingaddress->company)) {
+            $this->customername = $this->billingaddress->company;
+            $this->customercompany = $this->customername;
+        } else {
+            $this->customername = fullname($this->user) . ' - ' . $this->user->id;
+            $this->customercompany = '';
+        }
+
+        // Build invoice items: net price goes in as price with tax 0, so rate = price - tax = net.
+        $vatnumber = (string) ($data->vatnumber ?? '');
+        $this->invoiceitems = [];
+        foreach ($data->items as $lineitem) {
+            $item = new stdClass();
+            $item->itemname = $lineitem->itemname;
+            $item->price = (float) $lineitem->net;
+            $item->tax = 0;
+            $item->vatnumber = $vatnumber;
+            $item->serviceperiodstart = $lineitem->serviceperiodstart ?? time();
+            $item->serviceperiodend = $lineitem->serviceperiodend ?? time();
+            $item->timecreated = time();
+            $item->address_billing = '';
+            $this->invoiceitems[] = $item;
+        }
+
+        // Idempotency: reuse an already-submitted invoice for this reference.
+        if ($this->reference !== '') {
+            $existing = $this->find_invoice_by_reference($this->reference);
+            if (!empty($existing)) {
+                $this->invoiceid = $existing;
+                return true;
+            }
+        }
+
+        if (!$this->prepare_json_invoice_data()) {
+            return false;
+        }
+
+        if (!$this->customer_exists()) {
+            if (!$this->create_customer() || !$this->set_customer_name()) {
+                return false;
+            }
+        }
+
+        // Create the Sales Invoice (draft).
+        $url = $this->baseurl . '/api/resource/Sales Invoice';
+        $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
+        if (!$this->validate_response($response, $url)) {
+            return false;
+        }
+        $responsedata = json_decode($response, true);
+        $this->invoiceid = $responsedata['data']['name'];
+
+        // Reconciliation guard: ERPNext grand total must match what the customer actually paid.
+        if (isset($data->grosscheck)) {
+            $grandtotal = (float) ($responsedata['data']['grand_total'] ?? 0);
+            if (abs($grandtotal - (float) $data->grosscheck) > 0.02) {
+                $this->errormessage = "ERPNext gross {$grandtotal} does not match paid amount "
+                    . "{$data->grosscheck} for reference {$this->reference}; invoice left as draft.";
+                mtrace($this->errormessage);
+                $this->delete_invoice($this->invoiceid);
+                $this->invoiceid = '';
+                $this->reconciliationfailed = true;
+                return false;
+            }
+        }
+
+        return $this->submit_invoice($this->invoiceid);
+    }
+
+    /**
+     * Find a submitted Sales Invoice by its external reference (po_no).
+     *
+     * @param string $reference
+     * @return string the ERPNext invoice name, or '' if none
+     */
+    public function find_invoice_by_reference(string $reference): string {
+        $filters = '[["Sales Invoice","po_no","=","' . addslashes($reference) . '"],'
+            . '["Sales Invoice","docstatus","=",1]]';
+        $url = str_replace(' ', '%20', $this->baseurl . '/api/resource/Sales Invoice?filters=' . $filters);
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return '';
+        }
+        $data = json_decode($response, true);
+        return $data['data'][0]['name'] ?? '';
+    }
+
+    /**
+     * Delete a (draft) Sales Invoice in ERPNext.
+     *
+     * @param string $invoiceid
+     * @return bool
+     */
+    public function delete_invoice(string $invoiceid): bool {
+        $url = str_replace(' ', '%20', $this->baseurl . '/api/resource/Sales Invoice/' . $invoiceid);
+        $response = $this->client->delete($url);
+        return $this->validate_response($response, $url);
+    }
+
+    /**
+     * Fetch the list of ERPNext Item codes (for settings dropdowns).
+     *
+     * @return array item codes
+     */
+    public function get_erp_items(): array {
+        $url = str_replace(' ', '%20', $this->baseurl . '/api/resource/Item?limit_page_length=0');
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return [];
+        }
+        $data = json_decode($response, true);
+        return array_column($data['data'] ?? [], 'name');
+    }
+
+    /**
+     * Fetch the list of ERPNext currencies (for settings dropdowns).
+     *
+     * @return array currency codes
+     */
+    public function get_erp_currencies(): array {
+        $url = str_replace(' ', '%20', $this->baseurl . '/api/resource/Currency?limit_page_length=0');
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return [];
+        }
+        $data = json_decode($response, true);
+        return array_column($data['data'] ?? [], 'name');
+    }
+
+    /**
      * Submit invoice.
      *
      * @param string $invoiceid
@@ -348,34 +557,58 @@ class erpnext_invoice implements invoice {
      * @return string tax tamplete
      */
     public function set_taxes_charges_template(): string {
-        // Fetch 20 templates from ERP.
         $taxtemplates = $this->get_erp_taxes_charges_templates();
-        $countrykey = $this->billingaddress->state;
-        $cartstore = cartstore::instance($this->user->id);
-        $cartstore->set_countrycode($countrykey);
-        // ToDo: This is hardcoded, for internal use only, to make tax templates generic, we have to implement additional settings.
+        $countrykey = $this->taxcountrycode ?? $this->billingaddress->state;
+        if ($this->injected) {
+            // Injected callers supply the has-VAT-id flag directly (no cart ledger).
+            $hasvatid = $this->injectedhasvatid;
+        } else {
+            $cartstore = cartstore::instance($this->user->id);
+            $cartstore->set_countrycode($countrykey);
+            $ledgerentries = shopping_cart_history::return_data_from_ledger_via_identifier($this->identifier);
+            $hasvatid = !empty(reset($ledgerentries)->vatnumber);
+        }
+        return self::select_tax_template($countrykey, $hasvatid, $taxtemplates);
+    }
 
-        // Pre-Checks for finding out which template to use.
+    /**
+     * Pure selection of the ERPNext tax template from country code + presence of a VAT id.
+     *
+     * @param string $countrykey ISO2 country code
+     * @param bool $hasvatid whether a valid VAT id is present
+     * @param array $taxtemplates available ERPNext template names
+     * @return string chosen template name
+     */
+    public static function select_tax_template(string $countrykey, bool $hasvatid, array $taxtemplates): string {
+        // ToDo: template names are hardcoded for internal use; make generic via settings.
         $isowncountry = vatnrchecker::is_own_country($countrykey);
         $iseuropean = vatnrchecker::is_european($countrykey);
-        $ledgerentries = shopping_cart_history::return_data_from_ledger_via_identifier($this->identifier);
-        $hasvatid = !empty(reset($ledgerentries)->vatnumber);
 
         if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates) && $hasvatid) {
-            // Condtion for EU reverse charge template.
-            $taxtemplate = 'EU Reverse Charge';
-        } else if (($iseuropean && !$hasvatid)) {
-            $taxtemplate = 'Austria Tax';
+            // EU reverse charge (cross-border B2B with VAT id).
+            return 'EU Reverse Charge';
+        } else if ($iseuropean && !$hasvatid) {
+            return 'Austria Tax';
         } else if (!$iseuropean && in_array('Export VAT', $taxtemplates)) {
-            // Condition for Export (Non-EU) sales.
-            $taxtemplate = 'Export VAT';
+            // Export (non-EU) sales.
+            return 'Export VAT';
         } else if ($isowncountry && in_array('Austria Tax', $taxtemplates)) {
-            $taxtemplate = 'Austria Tax';
-        } else {
-            // Default fallback to Austria Tax if no other condition is met.
-            $taxtemplate = 'Austria Tax';
+            return 'Austria Tax';
         }
-        return $taxtemplate;
+        // Default fallback to Austria Tax if no other condition is met.
+        return 'Austria Tax';
+    }
+
+    /**
+     * Resolve the tax template to use: the forced one if set, otherwise auto-select.
+     *
+     * @return string
+     */
+    private function resolve_tax_template(): string {
+        if (!empty($this->forcedtaxtemplate)) {
+            return $this->forcedtaxtemplate;
+        }
+        return $this->set_taxes_charges_template();
     }
 
     /**
@@ -405,7 +638,8 @@ class erpnext_invoice implements invoice {
      * @return string Address name of the customer or empty string
      */
     public function get_erp_billing_address_name(): string {
-        $addressrecord = address_operations::get_specific_user_address($this->addressid);
+        // Use the already-resolved billing address (set from cart tables or injected data).
+        $addressrecord = $this->billingaddress;
         if ($addressrecord) {
             // Check if the address exists in ERPNext.
             if (!empty($this->customercompany)) {
@@ -519,7 +753,7 @@ class erpnext_invoice implements invoice {
 
             $this->invoicedata['vatid'] = $item->vatnumber;
             if (!isset($this->invoicedata['taxes_and_charges'])) {
-                $this->invoicedata['taxes_and_charges'] = self::set_taxes_charges_template();
+                $this->invoicedata['taxes_and_charges'] = $this->resolve_tax_template();
                 if (!$this->invoicedata['taxes_and_charges']) {
                     return false;
                 } else {
@@ -568,6 +802,17 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
         $this->invoicedata['terms'] = 'Thank you for your online payment and your trust in our services.';
         $this->invoicedata['customer_address'] = $this->billingaddressname;
+        // Multi-currency support: only emit when explicitly set, so the existing EUR cart flow is unchanged.
+        if (!empty($this->currency)) {
+            $this->invoicedata['currency'] = $this->currency;
+            if (!empty($this->conversionrate)) {
+                $this->invoicedata['conversion_rate'] = $this->conversionrate;
+            }
+        }
+        // External idempotency reference (e.g. Stripe order id); only set for injected callers.
+        if (!empty($this->reference)) {
+            $this->invoicedata['po_no'] = $this->reference;
+        }
         $this->jsoninvoice = json_encode($this->invoicedata);
         return true;
     }
