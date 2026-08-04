@@ -270,6 +270,7 @@ class erpnext_invoice implements invoice {
         }
 
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
+        mtrace(is_string($response) ? $response : json_encode($response));
         $success = $this->validate_response($response, $url);
         if ($success) {
             $invoice = new stdClass();
