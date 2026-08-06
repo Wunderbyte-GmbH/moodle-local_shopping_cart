@@ -237,6 +237,21 @@ class guestcheckout {
         }
 
         $path = self::normalize_path(self::strip_wwwroot_prefix($url->get_path()));
+
+        // The whole login and auth areas must never be captured, no matter how
+        // broad the configured patterns are - not even by an explicit pattern:
+        // an auto-created guest is logged in and redirected, which locks
+        // anonymous visitors out of the login form, creates a fresh guest the
+        // moment somebody logs out, breaks self-registration (signup/confirm)
+        // and the anonymous token links of the password reset
+        // (forgot_password/set_password), and would tear down SSO handshakes
+        // on the auth callbacks (e.g. /auth/oauth2/login.php).
+        foreach (['/login', '/auth'] as $excludedarea) {
+            if ($path === $excludedarea || strpos($path, $excludedarea . '/') === 0) {
+                return false;
+            }
+        }
+
         $patterns = preg_split('/[\r\n,;]+/', $rawpatterns);
 
         foreach ($patterns as $pattern) {
