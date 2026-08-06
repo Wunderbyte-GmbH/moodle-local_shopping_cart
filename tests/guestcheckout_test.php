@@ -174,6 +174,15 @@ final class guestcheckout_test extends advanced_testcase {
             ],
             'query pattern on wrong path' => ['/mod/url/view.php?id=5', '/mod/page/view.php?id=5', false],
             'second line matches' => ['/mod/page/view.php?id=5', "/my\n/mod/page/view.php?id=5", true],
+            'login page excluded from wildcard' => ['/login/index.php', '/login/*', false],
+            'login page excluded even when configured directly' => ['/login/index.php', '/login/index.php', false],
+            'login page with params stays excluded' => ['/login/index.php?loginredirect=1', '/*', false],
+            'logout page excluded' => ['/login/logout.php', '/login/logout.php', false],
+            'password reset request page excluded' => ['/login/forgot_password.php', '/login/*', false],
+            'password reset token page excluded' => ['/login/set_password.php', '/*', false],
+            'signup page excluded even when configured directly' => ['/login/signup.php', '/login/signup.php', false],
+            'oauth2 sso callback excluded' => ['/auth/oauth2/login.php', '/*', false],
+            'auth area excluded even when configured directly' => ['/auth/shibboleth/index.php', '/auth/*', false],
         ];
     }
 
