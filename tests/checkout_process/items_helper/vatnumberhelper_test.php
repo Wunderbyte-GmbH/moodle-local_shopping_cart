@@ -103,6 +103,30 @@ final class vatnumberhelper_test extends advanced_testcase {
     }
 
     /**
+     * The explicit non-European selection is offered at the top of the dropdown
+     * and accepted without any VAT check, even without a number.
+     */
+    public function test_noneu_selection_skips_validation(): void {
+        $countries = vatnumberhelper::get_countrycodes_array();
+        $this->assertArrayHasKey('noneu', $countries, 'Expected "noneu" option in the country dropdown.');
+        $keys = array_keys($countries);
+        $this->assertSame('noneu', $keys[1], 'Expected "noneu" directly after "novatnr" at the top of the list.');
+
+        $this->assertTrue(
+            vatnumberhelper::is_vatnr_valid('noneu', 'CHE-123.456.789'),
+            'Expected any number to pass for the non-European selection.'
+        );
+        $this->assertTrue(
+            vatnumberhelper::is_vatnr_valid('noneu', ''),
+            'Expected an empty number to pass for the non-European selection.'
+        );
+        $this->assertFalse(
+            \local_shopping_cart\local\vatnrchecker::is_european('noneu'),
+            'Expected the non-European selection not to count as European for tax logic.'
+        );
+    }
+
+    /**
      * Test the validate_with_hmrc method.
      */
     public function test_own_country_vatnumber(): void {

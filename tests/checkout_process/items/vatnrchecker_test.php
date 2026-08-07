@@ -140,6 +140,50 @@ final class vatnrchecker_test extends advanced_testcase {
     }
 
     /**
+     * The explicit non-European selection passes without any VAT check, stores the
+     * (optional) number, and keeps the tax country on the billing address.
+     */
+    public function test_evaluate_step_noneu(): void {
+        $user1 = $this->get_data_generator()->create_user();
+        $this->setUser($user1);
+
+        $item = new vatnrchecker($user1->id);
+        $cartstore = cartstore::instance((int)$user1->id);
+
+        // The number is optional and stored as entered, without any check.
+        $result = $item->evaluate_step(['vatcodecountry' => 'noneu', 'vatnumber' => 'CHE-123.456.789']);
+        $this->assertTrue($result['valid'], 'Expected valid for the non-European selection.');
+        $vatnrdata = $cartstore->get_vatnr_data();
+        $this->assertIsArray($vatnrdata, 'Expected VAT data to be stored for the non-European selection.');
+        $this->assertEquals('noneu', $vatnrdata['vatnrcountry'], 'Expected the noneu marker as VAT country.');
+        $this->assertEquals('CHE-123.456.789', $vatnrdata['vatnrnumber'], 'Expected the number stored as entered.');
+
+        // The tax country falls back to the billing-address country, not "noneu".
+        $cartstore->set_countrycode('CH');
+        $this->assertSame('CH', $cartstore->get_countrycode(), 'Expected the billing country as tax country.');
+
+        // An empty number passes as well.
+        $result = $item->evaluate_step(['vatcodecountry' => 'noneu', 'vatnumber' => '']);
+        $this->assertTrue($result['valid'], 'Expected valid for the non-European selection without a number.');
+
+        // The feedback of the submission must not claim a successful validation.
+        $this->assertSame(
+            get_string('vatnrnoneufeedback', 'local_shopping_cart'),
+            vatnrchecker::get_validation_feedback(),
+            'Expected the honest non-European feedback instead of "successfully validated".'
+        );
+
+        // A subsequent EU submission returns to the regular validation feedback.
+        set_config('mockvat_at_atu74259768', '{"valid": true}', 'local_shopping_cart');
+        $item->evaluate_step(['vatcodecountry' => 'AT', 'vatnumber' => 'ATU74259768']);
+        $this->assertSame(
+            get_string('vatnrvalidationfeedback', 'local_shopping_cart'),
+            vatnrchecker::get_validation_feedback(),
+            'Expected the regular validation feedback after a real validation.'
+        );
+    }
+
+    /**
      * Test that parse_changed_input maps the legacy {"vatCodeCountry":"CC,NUM"}
      * shape to the data shape used by evaluate_step.
      */

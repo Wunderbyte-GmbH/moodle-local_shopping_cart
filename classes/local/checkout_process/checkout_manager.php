@@ -753,6 +753,34 @@ class checkout_manager {
      * @return array
      */
     public static function store_form_step_result(int $userid, string $stepkey, array $stepresult): array {
+        [$manager, $data] = self::persist_form_step_result($userid, $stepkey, $stepresult);
+
+        $checkoutmanagerdata = $manager->render_overview();
+        $data = array_merge($data, $checkoutmanagerdata);
+        $data['area'] = 'main';
+
+        return [
+            'data' => json_encode($data),
+            'jsscript' => '',
+            'reloadbody' => false,
+            'managerdata' => json_encode($manager->managercache),
+        ];
+    }
+
+    /**
+     * Persists a form-step result without rendering anything.
+     *
+     * Used directly by no-submit form rebuilds (e.g. the VAT step): a render here
+     * would instantiate a second, discarded copy of the step form whose
+     * change-checker init ends up in the AJAX response and points at a form that
+     * never reaches the DOM.
+     *
+     * @param int $userid
+     * @param string $stepkey Short classname of the step item.
+     * @param array $stepresult ['data' => array, 'valid' => bool, 'mandatory' => bool]
+     * @return array [checkout_manager, array] The manager and the prepared checkout data.
+     */
+    public static function persist_form_step_result(int $userid, string $stepkey, array $stepresult): array {
         $cartstore = \local_shopping_cart\local\cartstore::instance($userid);
         $data = $cartstore->get_localized_data();
 
@@ -770,16 +798,7 @@ class checkout_manager {
         ]);
         $manager->apply_form_step_result($stepkey, $stepresult);
 
-        $checkoutmanagerdata = $manager->render_overview();
-        $data = array_merge($data, $checkoutmanagerdata);
-        $data['area'] = 'main';
-
-        return [
-            'data' => json_encode($data),
-            'jsscript' => '',
-            'reloadbody' => false,
-            'managerdata' => json_encode($manager->managercache),
-        ];
+        return [$manager, $data];
     }
 
     /**

@@ -558,6 +558,7 @@ $string['noinstallments'] = "Aktuell keine Ratenzahlungen";
 $string['noitemsaffected'] = 'Keine Artikel betroffen';
 $string['noitemsincart'] = 'Es gibt keine Artikel im Warenkorb';
 $string['nolimit'] = 'Kein Limit';
+$string['noneu'] = "Außereuropäisch (außerhalb der EU)";
 $string['nopaymentaccounts'] = '<div class="text-danger font-weight-bold">Kein Zahlungsanbieter-Konto vorhanden!</div>';
 $string['nopaymentaccountsdesc'] =
         '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
@@ -823,6 +824,7 @@ $string['vatnrerrorfeedback'] = 'UID ist nicht gültig!';
 $string['vatnrerrorownvatnr'] = 'Die UID des Seitenbetreibers kann nicht verwendet werden.';
 $string['vatnrfeedbackmandatory'] = 'Die Angabe der UID ist verpflichtend!';
 $string['vatnrfeedbackoptional'] = 'Die Angabe der UID ist optional';
+$string['vatnrnoneufeedback'] = 'Außereuropäisch gewählt — es findet keine UID-Prüfung statt.';
 $string['vatnrvalidationfeedback'] = 'Gültige UID erkannt';
 $string['vatnrverificationinprogress'] = 'UID wird geprüft...';
 $string['vatnumbervoluntarily'] = 'Ich habe eine gültige Umsatzsteuer-ID (UID).';

@@ -62,6 +62,14 @@ class vatnumberhelper {
     ];
 
     /**
+     * Dropdown value for customers outside the EU VAT area: accepted without any
+     * VAT check and tax-neutral (the billing country stays authoritative).
+     *
+     * @var string
+     */
+    const COUNTRY_NONEU = 'noneu';
+
+    /**
      * Function to return an array of localized country codes.
      *
      * @return array
@@ -70,6 +78,7 @@ class vatnumberhelper {
         $stringman = get_string_manager();
         return [
             'novatnr' => $stringman->get_string('novatnr', 'local_shopping_cart'),
+            self::COUNTRY_NONEU => $stringman->get_string('noneu', 'local_shopping_cart'),
             'AT' => $stringman->get_string('at', 'local_shopping_cart'),
             'DE' => $stringman->get_string('de', 'local_shopping_cart'),
             'EU' => $stringman->get_string('eu', 'local_shopping_cart'),
@@ -129,6 +138,13 @@ class vatnumberhelper {
     protected static $lastvalidationerrorkey = null;
 
     /**
+     * Set when the last is_vatnr_valid() call was the non-European selection, so
+     * the success feedback can stay honest ("no check performed").
+     * @var bool
+     */
+    protected static $lastcheckwasnoneu = false;
+
+    /**
      * Records a diagnostic trace line for the last VAT check.
      *
      * @param string $line
@@ -161,6 +177,16 @@ class vatnumberhelper {
     }
 
     /**
+     * True when the last is_vatnr_valid() call was the non-European selection,
+     * which is accepted without any check.
+     *
+     * @return bool
+     */
+    public static function last_check_was_noneu(): bool {
+        return self::$lastcheckwasnoneu;
+    }
+
+    /**
      * Validates a VAT number for the given country.
      *
      * Picks the validator by VAT region (GB format check, EU VIES SOAP lookup, or vatcomply
@@ -176,7 +202,15 @@ class vatnumberhelper {
         self::$lasttrace = [];
         self::$lastfailureownvat = false;
         self::$lastvalidationerrorkey = null;
+        self::$lastcheckwasnoneu = false;
         self::add_trace("input: country={$countrycode} vatnr={$vatnrnumber}");
+
+        if ($countrycode === self::COUNTRY_NONEU) {
+            // Explicit non-European selection: accepted without any VAT check, number optional.
+            self::$lastcheckwasnoneu = true;
+            self::add_trace('validator: none (non-European selection, no check performed)');
+            return true;
+        }
 
         // Special treatment for the Behat and PHPUnit tests.
         if ((defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) || (defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
