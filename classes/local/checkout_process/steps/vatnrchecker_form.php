@@ -24,6 +24,7 @@
 
 namespace local_shopping_cart\local\checkout_process\steps;
 
+use local_shopping_cart\local\checkout_process\checkout_manager;
 use local_shopping_cart\local\checkout_process\checkout_step_form;
 use local_shopping_cart\local\checkout_process\items\vatnrchecker;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
@@ -63,7 +64,11 @@ class vatnrchecker_form extends checkout_step_form {
     }
 
     /**
-     * Country select, VAT number input and an explicit verify (submit) button.
+     * Static part of the form: the country select and a hidden no-submit button.
+     *
+     * Every country change presses the hidden button (change listener in
+     * checkout_manager.js), which rebuilds the form server-side. All
+     * country-dependent elements live in definition_after_data().
      */
     public function definition() {
         $mform = $this->_form;
@@ -75,15 +80,98 @@ class vatnrchecker_form extends checkout_step_form {
             vatnumberhelper::get_countrycodes_array()
         );
 
+        // The label doubles as the submitted value of the button - it must not be
+        // empty, otherwise no_submit_button_pressed() cannot detect the press.
+        $mform->registerNoSubmitButton('vatcountryrebuild');
+        $mform->addElement(
+            'submit',
+            'vatcountryrebuild',
+            get_string('checkvatnrcountrycode', 'local_shopping_cart'),
+            ['class' => 'd-none', 'tabindex' => '-1']
+        );
+        $mform->setType('vatcountryrebuild', PARAM_RAW);
+    }
+
+    /**
+     * Country-dependent part of the form (rules-form pattern).
+     *
+     * Runs in both form lifecycles (render and submission), reacting to the
+     * no-submit rebuild:
+     *  - "No VAT number": neither number input nor verification are shown.
+     *  - Non-European: number input without any verify button - no check exists
+     *    and none is pretended; the optional number autosubmits on entry.
+     *  - EU/GB: number input plus explicit verify button, so the external VIES
+     *    lookup only runs on click.
+     *
+     * @return void
+     */
+    public function definition_after_data() {
+        parent::definition_after_data();
+        $mform = $this->_form;
+        $country = $this->current_country();
+
+        // A country change (no-submit press) persists the new state right away, like
+        // other dynamic forms store their data during the rebuild: the non-European
+        // selection simply becomes valid (check-free, number taken over as entered),
+        // every other selection is reset until it is verified explicitly - a mere
+        // country change never triggers a VIES call.
+        if (!empty($this->_ajaxformdata['vatcountryrebuild'])) {
+            global $USER;
+            $item = new vatnrchecker((int)$USER->id);
+            $result = $item->evaluate_step([
+                'vatcodecountry' => $country,
+                'vatnumber' => $country === vatnumberhelper::COUNTRY_NONEU
+                    ? trim((string)($this->_ajaxformdata['vatnumber'] ?? ''))
+                    : '',
+            ]);
+            checkout_manager::persist_form_step_result((int)$USER->id, static::get_step_key(), [
+                'data' => $result['data'],
+                'valid' => (bool)$result['valid'],
+                'mandatory' => $this->is_step_mandatory(),
+            ]);
+        }
+
+        if ($country === '' || $country === 'novatnr') {
+            // No VAT number: nothing to enter and nothing to verify.
+            return;
+        }
+
+        $attributes = ['placeholder' => get_string('usevatnr', 'local_shopping_cart')];
+        if ($country === vatnumberhelper::COUNTRY_NONEU) {
+            // The optional, check-free number is saved on entry (change listener in
+            // checkout_manager.js), like the address step persists a selection.
+            $attributes['data-vat-autosubmit'] = 1;
+        }
         $mform->addElement(
             'text',
             'vatnumber',
             get_string('checkvatnrnumber', 'local_shopping_cart'),
-            ['placeholder' => get_string('usevatnr', 'local_shopping_cart')]
+            $attributes
         );
         $mform->setType('vatnumber', PARAM_TEXT);
 
-        $this->add_action_buttons(false, get_string('verify', 'local_shopping_cart'));
+        if ($country !== vatnumberhelper::COUNTRY_NONEU) {
+            $this->add_action_buttons(false, get_string('verify', 'local_shopping_cart'));
+        }
+    }
+
+    /**
+     * The currently chosen country, covering both form lifecycles: the submitted
+     * value during a rebuild or submission, and the value cached from the previous
+     * step submission on the initial server-side pre-render.
+     *
+     * @return string
+     */
+    protected function current_country(): string {
+        $country = (string)($this->_ajaxformdata['vatcodecountry'] ?? '');
+        if ($country !== '') {
+            return $country;
+        }
+        $cached = static::get_cached_step_data();
+        if (is_string($cached) && $cached !== '') {
+            return (string)(vatnrchecker::get_input_data($cached)['country'] ?? '');
+        }
+        return '';
     }
 
     /**

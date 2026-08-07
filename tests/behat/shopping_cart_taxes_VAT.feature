@@ -117,3 +117,39 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I click on "Verify validity of VAT number" "button"
     And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
     And I should see "20.00 EUR" in the ".sc_totalprice" "css_element"
+
+  @javascript
+  Scenario: Shopping Cart VAT: non-European selection performs no check and shows no verify button
+    Given the following config values are set as admin:
+      | config              | value | plugin              |
+      | itempriceisnet      | 1     | local_shopping_cart |
+      | onlywithvatnrnumber | 1     | local_shopping_cart |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    ## Default "No VAT number": neither number input nor verification are shown.
+    And I should not see "Enter your VAT number"
+    And "Verify validity of VAT number" "button" should not exist
+    ## Non-European: the number input appears, but no verify button - no check exists.
+    And I set the field "Select your country" to "Non-European (outside the EU)"
+    And I wait "1" seconds
+    And I should see "Enter your VAT number"
+    And "Verify validity of VAT number" "button" should not exist
+    ## The optional number is saved check-free on entry.
+    And I set the field "Enter your VAT number" to "CHE-123.456.789"
+    And I take focus off "Enter your VAT number" "field"
+    And I wait "1" seconds
+    And I should see "Non-European selected" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
+    ## The submit triggers a cart reload (prices can change) - let it finish.
+    And I wait "1" seconds
+    ## Switching to an EU country restores the explicit verify step and clears the stale feedback.
+    And I set the field "Select your country" to "Austria"
+    And I wait "1" seconds
+    And I should not see "Non-European selected"
+    And "Verify validity of VAT number" "button" should exist
+    ## And "No VAT number" hides number input and verification entirely.
+    And I set the field "Select your country" to "No VAT number"
+    And I wait "1" seconds
+    And I should not see "Enter your VAT number"
+    And "Verify validity of VAT number" "button" should not exist

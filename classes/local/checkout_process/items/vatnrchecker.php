@@ -172,7 +172,12 @@ class vatnrchecker extends checkout_base_item {
         $vatnumber = trim((string)($data['vatnumber'] ?? ''));
 
         $valid = false;
-        if ($country !== '' && $country !== 'novatnr' && $vatnumber !== '') {
+        if ($country === vatnumberhelper::COUNTRY_NONEU) {
+            // Non-European: accepted without any check (number optional). Routed through
+            // is_vatnr_valid so the "no check" state is recorded for the feedback. The
+            // number is stored as entered; tax treatment stays with the billing country.
+            $valid = vatnumberhelper::is_vatnr_valid($country, $vatnumber);
+        } else if ($country !== '' && $country !== 'novatnr' && $vatnumber !== '') {
             $valid = vatnumberhelper::is_vatnr_valid($country, $vatnumber);
         }
 
@@ -208,9 +213,17 @@ class vatnrchecker extends checkout_base_item {
 
     /**
      * Validation feedback.
+     *
+     * For the explicit non-European selection no check was performed, so no
+     * "successfully validated" must be claimed either. Mirrors get_error_feedback(),
+     * which likewise reads the request-scoped state left by the last check.
+     *
      * @return string
      */
     public static function get_validation_feedback(): string {
+        if (vatnumberhelper::last_check_was_noneu()) {
+            return get_string('vatnrnoneufeedback', 'local_shopping_cart');
+        }
         return get_string('vatnrvalidationfeedback', 'local_shopping_cart');
     }
 

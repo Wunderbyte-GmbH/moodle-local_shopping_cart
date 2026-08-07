@@ -51,6 +51,10 @@ class vatnrchecker {
      * @return bool
      */
     public static function is_european(string $countrykey): bool {
+        if ($countrykey === vatnumberhelper::COUNTRY_NONEU) {
+            // Explicit non-European selection from the VAT step dropdown.
+            return false;
+        }
         $countries = vatnumberhelper::get_countrycodes_array();
         if (isset($countries[$countrykey])) {
             return true;

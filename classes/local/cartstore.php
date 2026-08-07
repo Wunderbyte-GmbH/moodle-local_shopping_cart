@@ -28,6 +28,7 @@ namespace local_shopping_cart\local;
 use coding_exception;
 use local_shopping_cart\form\dynamicvatnrchecker;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\local\entities\cartitem;
 use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -1214,6 +1215,11 @@ class cartstore {
     public function get_countrycode() {
         $data = $this->get_cache();
 
+        // The explicit non-European selection is not a tax country: fall back to the
+        // billing-address country so the per-country tax matrix stays authoritative.
+        if (($data['vatnrcountry'] ?? '') === vatnumberhelper::COUNTRY_NONEU) {
+            return $data['taxcountrycode'] ?? '';
+        }
         return $data['vatnrcountry'] ?? $data['taxcountrycode'] ?? '';
     }
 

@@ -379,6 +379,29 @@ function initStepForms() {
                 // behaviour where submitting always triggered reinit().
                 reinit();
             });
+            if (showsspinner) {
+                // One dumb listener, no state (rules-form pattern): every country change
+                // clicks the hidden no-submit button, so definition_after_data() rebuilds
+                // the form to match the selection. Fields the form marks with
+                // data-vat-autosubmit (the check-free non-European VAT number, which has
+                // no verify button) submit for real, like the address step persists a
+                // selection. Everything else - including the verify button for EU/GB -
+                // is handled by the form definition itself.
+                container.addEventListener('change', e => {
+                    if (e.target.matches('select[name="vatcodecountry"]')) {
+                        // A previous validation feedback no longer applies to the new
+                        // country - remove it instead of letting it claim a validation.
+                        document.querySelectorAll('.shopping-cart-checkout-manager-alert')
+                            .forEach(el => el.remove());
+                        const rebuild = container.querySelector('form [name="vatcountryrebuild"]');
+                        if (rebuild) {
+                            rebuild.click();
+                        }
+                    } else if (e.target.matches('[data-vat-autosubmit]')) {
+                        form.submitFormAjax();
+                    }
+                });
+            }
             if (container.dataset.autosubmit === '1') {
                 container.addEventListener('change', () => {
                     form.submitFormAjax();
@@ -402,7 +425,7 @@ let vatVerificationLoadingTextPromise = null;
  * @param {boolean} loading - Whether verification is in progress.
  */
 function setStepVerificationState(container, loading) {
-    const submitButton = container.querySelector('form [type="submit"]');
+    const submitButton = container.querySelector('form [type="submit"]:not([data-no-submit])');
     if (submitButton) {
         if (loading) {
             if (!submitButton.dataset.originalLabel) {
