@@ -67,4 +67,14 @@ final class erpnext_invoice_test extends advanced_testcase {
         $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('US', true, $this->templates));
         $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('US', false, $this->templates));
     }
+
+    /**
+     * UK customers are export customers since Brexit, with and without a VAT id (GH-199).
+     */
+    public function test_gb_is_export(): void {
+        $this->resetAfterTest();
+        set_config('owncountrycode', 'AT', 'local_shopping_cart');
+        $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('GB', true, $this->templates));
+        $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('GB', false, $this->templates));
+    }
 }

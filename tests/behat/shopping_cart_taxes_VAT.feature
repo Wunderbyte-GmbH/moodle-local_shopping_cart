@@ -119,6 +119,26 @@ Feature: Configure tax categories and use VAT to reduce price.
     And I should see "20.00 EUR" in the ".sc_totalprice" "css_element"
 
   @javascript
+  Scenario: Shopping Cart VAT: UK VAT number zero-rates as export since Brexit
+    Given the following config values are set as admin:
+      | config              | value | plugin              |
+      | itempriceisnet      | 1     | local_shopping_cart |
+      | onlywithvatnrnumber | 1     | local_shopping_cart |
+    And I log in as "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "1" has been put in shopping cart of user "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I should see "11.50 EUR" in the ".sc_totalprice" "css_element"
+    ## GB numbers are validated offline (checksum) - no VIES involved.
+    And I set the field "Select your country" to "United Kingdom"
+    And I wait "1" seconds
+    And I set the field "Enter your VAT number" to "731331179"
+    And I click on "Verify validity of VAT number" "button"
+    And I should see "VAT number was successfully validated" in the ".shopping-cart-checkout-manager-alert-success" "css_element"
+    ## Export: no VAT on the net price (GH-199).
+    And I should see "10.00 EUR" in the ".sc_totalprice" "css_element"
+
+  @javascript
   Scenario: Shopping Cart VAT: non-European selection performs no check and shows no verify button
     Given the following config values are set as admin:
       | config              | value | plugin              |
