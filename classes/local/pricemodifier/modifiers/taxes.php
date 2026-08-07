@@ -29,6 +29,7 @@ use dml_exception;
 use coding_exception;
 use context_system;
 use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\local\pricemodifier\modifier_base;
 use local_shopping_cart\local\vatnrchecker;
 use local_shopping_cart\shopping_cart;
@@ -96,17 +97,20 @@ abstract class taxes extends modifier_base {
                 $taxpercent = $taxcategories->tax_for_category($item['taxcategory'], $countrycode);
                 if ($taxpercent >= 0) {
                     $itemisnet = get_config('local_shopping_cart', 'itempriceisnet');
-                    $iseuropean = vatnrchecker::is_european($countrycode);
                     $isowncountry = vatnrchecker::is_own_country($countrycode);
                     $hasvatnumber = $cartstore->has_vatnr_data();
+                    // A validated foreign VAT registration zero-rates the sale: EU
+                    // cross-border B2B (reverse charge) and GB B2B (export, GH-199).
+                    // The check-free non-European selection never reaches this branch:
+                    // its tax country is the billing-address country (see
+                    // cartstore::get_countrycode), so the tax matrix stays authoritative.
+                    $zerorated = $hasvatnumber && !$isowncountry
+                        && (vatnumberhelper::is_european_region($countrycode)
+                            || vatnumberhelper::get_vat_region($countrycode) === 'gb');
                     if ($itemisnet) {
                         $netprice = $items[$key]['price']; // Price is now considered a net price.
-                        if (
-                            $iseuropean &&
-                            $hasvatnumber &&
-                            !$isowncountry
-                        ) {
-                            // EU reverse charge applies. No taxes added to net.
+                        if ($zerorated) {
+                            // No taxes added to net.
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else if ($item['area'] == "rebookitem") {
@@ -125,11 +129,7 @@ abstract class taxes extends modifier_base {
                         $items[$key]['tax'] = $grossprice - $netprice;
                     } else {
                         $netprice = round($items[$key]['price'] / (1 + $taxpercent), 2);
-                        if (
-                            $iseuropean &&
-                            $hasvatnumber &&
-                            !$isowncountry
-                        ) {
+                        if ($zerorated) {
                             $grossprice = $netprice;
                             $taxpercent = 0;
                         } else {

@@ -168,6 +168,56 @@ final class cartstore_test extends advanced_testcase {
     }
 
     /**
+     * A validated foreign VAT registration zero-rates the cart: EU cross-border
+     * B2B (reverse charge) and GB B2B (export, GH-199). The own country and the
+     * check-free non-European selection keep the tax-matrix rates.
+     * @covers \local_shopping_cart\local\pricemodifier\modifiers\taxes
+     */
+    public function test_cartstore_foreign_vat_zero_rating(): void {
+
+        $user1 = $this->get_data_generator()->create_user();
+
+        set_config('enabletax', "1", 'local_shopping_cart');
+        set_config('defaulttaxcategory', 'A', 'local_shopping_cart');
+        set_config('taxcategories', 'A:15 B:10 C:0', 'local_shopping_cart');
+        set_config('itempriceisnet', "1", 'local_shopping_cart');
+        set_config('owncountrycode', 'DE', 'local_shopping_cart');
+
+        $cartstore = cartstore::instance((int)$user1->id);
+
+        shopping_cart::add_item_to_cart(
+            'local_shopping_cart',
+            'testitem',
+            1,
+            $user1->id
+        );
+
+        // Baseline: net item price plus category A taxes.
+        $data = $cartstore->get_data();
+        $this->assertEquals(11.5, $data['price']);
+
+        // GB B2B: a checksum-validated UK number zero-rates as export (GH-199).
+        $cartstore->set_vatnr_data('GB', '731331179', '', '', '');
+        $data = $cartstore->get_data();
+        $this->assertEquals(10.0, $data['price']);
+
+        // EU cross-border B2B: reverse charge, same result.
+        $cartstore->set_vatnr_data('AT', 'U74259768', '', '', '');
+        $data = $cartstore->get_data();
+        $this->assertEquals(10.0, $data['price']);
+
+        // Own country: no exemption despite a VAT number.
+        $cartstore->set_vatnr_data('DE', '812526315', '', '', '');
+        $data = $cartstore->get_data();
+        $this->assertEquals(11.5, $data['price']);
+
+        // Non-European selection: unchecked number, the tax matrix stays authoritative.
+        $cartstore->set_vatnr_data('noneu', 'CHE-123.456.789', '', '', '');
+        $data = $cartstore->get_data();
+        $this->assertEquals(11.5, $data['price']);
+    }
+
+    /**
      * Test test_cartstore_get_costcenter
      * @covers \local_shopping_cart\local\cartstore
      */

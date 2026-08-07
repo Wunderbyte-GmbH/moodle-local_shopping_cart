@@ -583,6 +583,8 @@ class erpnext_invoice implements invoice {
     public static function select_tax_template(string $countrykey, bool $hasvatid, array $taxtemplates): string {
         // ToDo: template names are hardcoded for internal use; make generic via settings.
         $isowncountry = vatnrchecker::is_own_country($countrykey);
+        // Since GH-199 this is the real EU-27 area: GB is an export destination
+        // ("Export VAT" template, with and without a VAT id), like US or CH.
         $iseuropean = vatnrchecker::is_european($countrykey);
 
         if ($iseuropean && !$isowncountry && in_array('EU Reverse Charge', $taxtemplates) && $hasvatid) {

@@ -127,6 +127,19 @@ final class vatnumberhelper_test extends advanced_testcase {
     }
 
     /**
+     * is_european() follows the EU-27 list as single source of truth (GH-199):
+     * GB, the EU-OSS prefix and the technical dropdown keys are not European.
+     */
+    public function test_is_european_single_source(): void {
+        $this->assertTrue(\local_shopping_cart\local\vatnrchecker::is_european('AT'));
+        $this->assertTrue(\local_shopping_cart\local\vatnrchecker::is_european('FR'));
+        $this->assertFalse(\local_shopping_cart\local\vatnrchecker::is_european('GB'));
+        $this->assertFalse(\local_shopping_cart\local\vatnrchecker::is_european('EU'));
+        $this->assertFalse(\local_shopping_cart\local\vatnrchecker::is_european('novatnr'));
+        $this->assertFalse(\local_shopping_cart\local\vatnrchecker::is_european(''));
+    }
+
+    /**
      * Test the validate_with_hmrc method.
      */
     public function test_own_country_vatnumber(): void {

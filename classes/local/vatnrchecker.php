@@ -47,19 +47,17 @@ class vatnrchecker {
 
     /**
      * Function to determine if country is within EU. Returns false when no country code was given.
+     *
+     * Delegates to the EU-27 list as the single source of truth (GH-199): the
+     * dropdown array used before also contained GB and technical keys, so UK
+     * customers were treated as EU - wrong ERPNext tax template ("EU Reverse
+     * Charge" instead of "Export VAT") and a mislabelled cart exemption.
+     *
      * @param string $countrykey
      * @return bool
      */
     public static function is_european(string $countrykey): bool {
-        if ($countrykey === vatnumberhelper::COUNTRY_NONEU) {
-            // Explicit non-European selection from the VAT step dropdown.
-            return false;
-        }
-        $countries = vatnumberhelper::get_countrycodes_array();
-        if (isset($countries[$countrykey])) {
-            return true;
-        }
-        return false;
+        return vatnumberhelper::is_european_region($countrykey);
     }
 
     /**
