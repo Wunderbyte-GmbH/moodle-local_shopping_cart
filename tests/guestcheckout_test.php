@@ -183,6 +183,8 @@ final class guestcheckout_test extends advanced_testcase {
             'signup page excluded even when configured directly' => ['/login/signup.php', '/login/signup.php', false],
             'oauth2 sso callback excluded' => ['/auth/oauth2/login.php', '/*', false],
             'auth area excluded even when configured directly' => ['/auth/shibboleth/index.php', '/auth/*', false],
+            'mfa pending-factor page excluded' => ['/admin/tool/mfa/auth.php', '/*', false],
+            'admin area excluded even when configured directly' => ['/admin/purgecaches.php', '/admin/*', false],
         ];
     }
 
