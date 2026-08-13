@@ -329,7 +329,12 @@ class create_invoice {
             }
         }
 
+        // Date only, without time.
         $date = date($dateformat, $timecreated);
+
+        // Date and time.
+        $datetime = date($datetimeformat, $timecreated);
+
         $userid = $items[array_key_first($items)]->userid;
 
         global $DB;
@@ -392,6 +397,7 @@ class create_invoice {
         }
 
         $cfghtml = str_replace("[[date]]", $date, $cfghtml);
+        $cfghtml = str_replace("[[datetime]]", $datetime, $cfghtml);
         $cfghtml = str_replace("[[username]]", $user->username, $cfghtml);
         $cfghtml = str_replace("[[firstname]]", $user->firstname, $cfghtml);
         $cfghtml = str_replace("[[lastname]]", $user->lastname, $cfghtml);
