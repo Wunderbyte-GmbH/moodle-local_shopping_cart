@@ -545,6 +545,7 @@ $string['paymentstatus'] = 'Status';
 $string['paymentsuccess'] = 'Erfolg';
 $string['paymentsuccessful'] = 'Zahlung erfolgreich!';
 $string['paymentsuccessfultext'] = 'Der Zahlungsanbieter hat Ihre Zahlung bestätigt. Vielen Dank für Ihren Kauf!';
+$string['pdfahint'] = 'Das PDF wird als PDF/A-2b (archivfähig) erzeugt. Schriftarten werden auf die einbettbaren Schriften FreeSans / FreeSerif / FreeMono abgebildet (Helvetica, Arial → FreeSans; Times → FreeSerif; Courier → FreeMono). Verwenden Sie RGB-Bilder (PNG oder JPEG, kein CMYK). Per URL eingebundene Bilder lädt der Server (die cURL-Sicherheitseinstellungen von Moodle gelten); ein nicht ladbares Bild wird weggelassen, das PDF wird trotzdem erzeugt.';
 $string['pending'] = 'Warten...';
 $string['pl'] = "Polen";
 $string['placeholderlabeldate'] = "";

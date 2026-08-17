@@ -1,3 +1,5 @@
+* New feature: PDF/A-2b capable TCPDF wrapper `local_wunderbyte_table\local\pdf\pdfa_pdf` for template based PDFs (used by mod_booking and local_shopping_cart): core fonts are mapped to the embeddable GNU FreeFonts, font subsetting and stream compression are kept enabled, CMYK JPEGs are converted to RGB. Images referenced by URL are downloaded once per document with Moodle's curl (proxy and cURL security settings apply); an image that cannot be loaded is skipped instead of aborting the document.
+
 ## Version 2.1.3 (2026081700)
 * New feature: Introduce new place holder [[datetime]] for invoices (can be added in setting 'receipthtml') to show date and time of when a user has booked something.
 * Improvement: Add support for Moodle 5.2.

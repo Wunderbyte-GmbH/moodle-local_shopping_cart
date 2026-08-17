@@ -17,7 +17,7 @@
 // phpcs:disable moodle.NamingConventions.ValidFunctionName.LowercaseMethod
 
 /**
- * Functions for SAP text files (daily SAP sums for M:USI).
+ * PDF class for receipts / invoices.
  *
  * @package local_shopping_cart
  * @since Moodle 4.0
@@ -28,29 +28,20 @@
 
 namespace local_shopping_cart\local;
 
-use context_system;
-use core_user;
-use Exception;
-use html_writer;
-use local_entities\entitiesrelation_handler;
-use local_shopping_cart\addresses;
-use local_shopping_cart\invoice\invoicenumber;
-use local_shopping_cart\shopping_cart_history;
-use mod_booking\booking_option_settings;
-use moodle_exception;
-use stored_file;
-use TCPDF;
-
-// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+use local_wunderbyte_table\local\pdf\pdfa_pdf;
 
 /**
- * Class WBPDF
+ * Class WBPDF - receipt PDF with header/footer taken from the receipt HTML template.
+ *
+ * Extends the PDF/A-2b capable wrapper from local_wunderbyte_table: receipts are stored
+ * as invoices and therefore have to be archivable (PDF/A). Only fonts shipped with Moodle
+ * as embeddable TrueType fonts (freesans, freeserif, freemono) may be used here.
  *
  * @author Stephan Lorbek
  * @copyright 2025 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class WBPDF extends TCPDF {
+class WBPDF extends pdfa_pdf {
     /**
      * Parse HTML tags.
      * @param string $content
@@ -115,7 +106,7 @@ class WBPDF extends TCPDF {
             return;
         }
         $header = $this->parse_tags($content, 'header');
-        $this->SetFont('helvetica', 'B', 20);
+        $this->SetFont('freesans', 'B', 20);
         $this->writeHTMLCell(0, 0, '', '', $header, 0, 1, 0, true, 'L', true);
     }
 
@@ -131,7 +122,7 @@ class WBPDF extends TCPDF {
         }
 
         $this->SetY(-220);
-        $this->SetFont('helvetica', '', 7);
+        $this->SetFont('freesans', '', 7);
 
         $autopagebreak = $this->AutoPageBreak;
         $bmargin = $this->bMargin;
@@ -146,7 +137,7 @@ class WBPDF extends TCPDF {
 
         // Page number section (always bottom-right).
         $this->SetY(-20); // 20mm from bottom.
-        $this->SetFont('helvetica', '', 7);
+        $this->SetFont('freesans', '', 7);
 
         $pagenum = get_string("page") . ' ' .
             $this->getAliasNumPage() . '/' .

@@ -205,8 +205,8 @@ class create_invoice {
 
         ob_start();
 
-        // Create new PDF document.
-        $pdf = new WBPDF('p', 'pt', 'A4', true, 'UTF-8', false);
+        // Create new PDF document (PDF/A-2b, see WBPDF / local_wunderbyte_table\local\pdf\pdfa_pdf).
+        $pdf = new WBPDF('p', 'pt', 'A4', true, 'UTF-8');
         // Set some content to print.
 
         // HTML templates.
@@ -559,7 +559,7 @@ class create_invoice {
         <style>
             h1 {
                 color: black;
-                font-family: times;
+                font-family: freeserif;
                 font-size: 24pt;
             }
             td {
@@ -606,12 +606,9 @@ class create_invoice {
         $pdf->SetSubject('');
         $pdf->SetKeywords('');
 
-        // Set header and footer fonts.
-        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
-
-        // Set default monospaced font.
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        // Header, footer and monospaced fonts are set by the PDF/A base class (embeddable
+        // FreeFonts). TCPDF's defaults (helvetica, courier) cannot be embedded and would
+        // break PDF/A conformance.
 
         $pdf->SetAutoPageBreak(true, $pdf->is_tag_present($cfghtml, 'footer') ? 220 : PDF_MARGIN_BOTTOM);
         $pdf->SetMargins(15, $pdf->is_tag_present($cfghtml, 'header') ? 120 : 20, 15);
@@ -621,8 +618,6 @@ class create_invoice {
 
         // Set default font subsetting mode.
         $pdf->setFontSubsetting(true);
-
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // Remove default footer.
         $pdf->setPrintHeader(true);

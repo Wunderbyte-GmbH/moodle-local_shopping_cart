@@ -1,0 +1,114 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+namespace local_shopping_cart\local;
+
+use local_shopping_cart\shopping_cart;
+use local_wunderbyte_table\local\pdf\pdfa_pdf;
+
+/**
+ * Builds the daily sums PDF (cash report of one day) from the configured HTML template.
+ *
+ * The template comes from the setting local_shopping_cart/dailysumspdfhtml; when it is
+ * empty the mustache template local_shopping_cart/report_daily_sums_pdf is used. The
+ * document is generated as PDF/A-2b (see {@see pdfa_pdf}).
+ *
+ * @package     local_shopping_cart
+ * @copyright   2024 Wunderbyte GmbH <info@wunderbyte.at>
+ * @author      Bernhard Fischer-Sengseis
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class daily_sums_pdf {
+    /**
+     * Creates the daily sums document for the given day.
+     *
+     * The returned document is complete; the caller decides how to output it
+     * (e.g. $pdf->Output('daily_sums_2026-01-01.pdf', 'I') or 'S' for the string).
+     *
+     * @param string $date the day, as accepted by strtotime() (e.g. Y-m-d)
+     * @return pdfa_pdf
+     */
+    public static function create(string $date): pdfa_pdf {
+        global $USER;
+
+        $data = shopping_cart::get_daily_sums_data($date);
+        $html = self::render_html($data);
+
+        $pdf = new pdfa_pdf('p', 'pt', 'A4', true, 'UTF-8');
+
+        // Set document information.
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor("$USER->firstname $USER->lastname");
+        $pdf->SetTitle('daily_sums_' . $date);
+        $pdf->SetSubject('Daily sums');
+        $pdf->SetKeywords('daily sums');
+
+        // Header, footer and monospaced fonts are set by the PDF/A base class.
+        $pdf->SetAutoPageBreak(false, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->setFontSubsetting(true);
+        $pdf->SetHeaderMargin(0);
+        $pdf->SetFooterMargin(0);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        $pdf->AddPage();
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        return $pdf;
+    }
+
+    /**
+     * Renders the HTML for the daily sums data - configured template or mustache fallback.
+     *
+     * @param array $data as returned by shopping_cart::get_daily_sums_data()
+     * @return string
+     */
+    public static function render_html(array $data): string {
+        global $OUTPUT;
+
+        $html = get_config('local_shopping_cart', 'dailysumspdfhtml');
+        if (empty($html)) {
+            // No template defined, so use default mustache template.
+            return $OUTPUT->render_from_template('local_shopping_cart/report_daily_sums_pdf', $data);
+        }
+
+        // Calculate the sum of all not-online payments.
+        $creditpart = $data['creditcard'] ?? 0.0;
+        $debitpart = $data['debitcard'] ?? 0.0;
+        $cashpart = $data['cash'] ?? 0.0;
+        $cashandcards = format_float((float)$creditpart + (float)$debitpart + (float)$cashpart, 2);
+
+        // Only if HTML template is defined in settings, we use it.
+        // At first, replace all placeholders.
+        $html = str_replace("[[title]]", $data['title'] ?? '', $html);
+        $html = str_replace("[[date]]", $data['date'] ?? '', $html);
+        $html = str_replace("[[printdate]]", $data['printdate'] ?? '', $html);
+        $html = str_replace("[[totalsum]]", $data['totalsum'] ?? '0.00', $html);
+        $html = str_replace("[[totalcash]]", $data['totalcash'] ?? '0.00', $html);
+        $html = str_replace("[[currency]]", $data['currency'] ?? '', $html);
+        $html = str_replace("[[online]]", $data['online'] ?? '0.00', $html);
+        $html = str_replace("[[cash]]", $data['cash'] ?? '0.00', $html);
+        $html = str_replace("[[creditcard]]", $data['creditcard'] ?? '0.00', $html);
+        $html = str_replace("[[debitcard]]", $data['debitcard'] ?? '0.00', $html);
+        $html = str_replace("[[manual]]", $data['manual'] ?? '0.00', $html);
+        $html = str_replace("[[creditspaidbackcash]]", $data['creditspaidbackcash'] ?? '0.00', $html);
+        $html = str_replace("[[creditspaidbacktransfer]]", $data['creditspaidbacktransfer'] ?? '0.00', $html);
+        $html = str_replace("[[cashandcards]]", $cashandcards ?? '', $html);
+
+        return $html;
+    }
+}

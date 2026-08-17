@@ -392,7 +392,7 @@ if ($hassiteconfig) {
         new admin_setting_configtextarea(
             'local_shopping_cart/receipthtml',
             get_string('receipthtml', 'local_shopping_cart'),
-            get_string('receipthtml:description', 'local_shopping_cart'),
+            get_string('receipthtml:description', 'local_shopping_cart') . '<br>' . get_string('pdfahint', 'local_shopping_cart'),
             '', /* $defaultreceipthtml */
             PARAM_RAW
         )
@@ -469,7 +469,7 @@ if ($hassiteconfig) {
         new admin_setting_configtextarea(
             'local_shopping_cart/extrareceiptshtml',
             get_string('extrareceiptshtml', 'local_shopping_cart'),
-            get_string('extrareceiptshtmldesc', 'local_shopping_cart'),
+            get_string('extrareceiptshtmldesc', 'local_shopping_cart') . '<br>' . get_string('pdfahint', 'local_shopping_cart'),
             '', /* $defaultextrareceipthtml */
             PARAM_RAW
         )
@@ -479,7 +479,8 @@ if ($hassiteconfig) {
         new admin_setting_configtextarea(
             'local_shopping_cart/cancelconfirmationshtml',
             get_string('cancelconfirmationshtml', 'local_shopping_cart'),
-            get_string('cancelconfirmationshtmldesc', 'local_shopping_cart'),
+            get_string('cancelconfirmationshtmldesc', 'local_shopping_cart')
+                . '<br>' . get_string('pdfahint', 'local_shopping_cart'),
             '',
             PARAM_RAW
         )
@@ -593,7 +594,8 @@ if ($hassiteconfig) {
         new admin_setting_configtextarea(
             'local_shopping_cart/dailysumspdfhtml',
             get_string('dailysumspdfhtml', 'local_shopping_cart'),
-            get_string('dailysumspdfhtml:description', 'local_shopping_cart'),
+            get_string('dailysumspdfhtml:description', 'local_shopping_cart')
+                . '<br>' . get_string('pdfahint', 'local_shopping_cart'),
             '',
             PARAM_RAW
         )

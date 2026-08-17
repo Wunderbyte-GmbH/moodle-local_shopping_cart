@@ -129,6 +129,14 @@ if (isset($success) && isset($historylist)) {
             try {
                 create_invoice::create_invoice_files_from_identifier($identifier, $userid);
             } catch (Exception $e) {
+                // Never break the checkout because of the invoice file, but do not fail
+                // silently either: a missing font, image or template error would otherwise
+                // leave the purchase without an invoice PDF unnoticed.
+                debugging(
+                    "local_shopping_cart: could not create invoice file for identifier $identifier"
+                    . " (user $userid): " . $e->getMessage(),
+                    DEBUG_MINIMAL
+                );
                 if ($CFG->debug == DEBUG_DEVELOPER) {
                     throw $e;
                 }

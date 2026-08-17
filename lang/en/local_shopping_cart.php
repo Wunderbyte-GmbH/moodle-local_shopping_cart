@@ -546,6 +546,7 @@ $string['paymentstatus'] = 'Status';
 $string['paymentsuccess'] = 'Success';
 $string['paymentsuccessful'] = 'Payment successful!';
 $string['paymentsuccessfultext'] = 'Your payment provider has confirmed the payment. Thank you for your purchase.';
+$string['pdfahint'] = 'The PDF is generated as PDF/A-2b (archivable). Fonts are mapped to the embeddable fonts FreeSans / FreeSerif / FreeMono (Helvetica, Arial → FreeSans; Times → FreeSerif; Courier → FreeMono). Use RGB images (PNG or JPEG, no CMYK). Images referenced by URL are downloaded by the server (Moodle\'s cURL security settings apply); an image that cannot be loaded is left out, the PDF is still generated.';
 $string['pending'] = 'Pending';
 $string['pl'] = "Poland";
 $string['placeholderlabeldate'] = "";
