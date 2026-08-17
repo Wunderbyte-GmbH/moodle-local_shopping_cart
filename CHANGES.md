@@ -1,3 +1,7 @@
+## Version 2.1.3 (2026081700)
+* New feature: Introduce new place holder [[datetime]] for invoices (can be added in setting 'receipthtml') to show date and time of when a user has booked something.
+* Improvement: Add support for Moodle 5.2.
+
 ## Version 2.1.2 (2026073000)
 * Improvement: Improve accessibility of adding items to cart.
 * Improvement: Accessibility improvements for shopping cart.
