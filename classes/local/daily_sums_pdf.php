@@ -18,13 +18,19 @@ namespace local_shopping_cart\local;
 
 use local_shopping_cart\shopping_cart;
 use local_wunderbyte_table\local\pdf\pdfa_pdf;
+use TCPDF;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/pdflib.php');
 
 /**
  * Builds the daily sums PDF (cash report of one day) from the configured HTML template.
  *
  * The template comes from the setting local_shopping_cart/dailysumspdfhtml; when it is
- * empty the mustache template local_shopping_cart/report_daily_sums_pdf is used. The
- * document is generated as PDF/A-2b (see {@see pdfa_pdf}).
+ * empty the mustache template local_shopping_cart/report_daily_sums_pdf is used. With the
+ * setting local_shopping_cart/pdfaenabled the document is generated as PDF/A-2b
+ * (see {@see pdfa_pdf}), otherwise as plain TCPDF output as before.
  *
  * @package     local_shopping_cart
  * @copyright   2024 Wunderbyte GmbH <info@wunderbyte.at>
@@ -33,21 +39,37 @@ use local_wunderbyte_table\local\pdf\pdfa_pdf;
  */
 class daily_sums_pdf {
     /**
+     * Whether the daily sums PDF is generated as PDF/A-2b (setting local_shopping_cart/pdfaenabled).
+     *
+     * @return bool
+     */
+    public static function pdfa_enabled(): bool {
+        return !empty(get_config('local_shopping_cart', 'pdfaenabled'));
+    }
+
+    /**
      * Creates the daily sums document for the given day.
      *
      * The returned document is complete; the caller decides how to output it
      * (e.g. $pdf->Output('daily_sums_2026-01-01.pdf', 'I') or 'S' for the string).
      *
      * @param string $date the day, as accepted by strtotime() (e.g. Y-m-d)
-     * @return pdfa_pdf
+     * @return TCPDF plain TCPDF, or the PDF/A-2b variant when the setting is on
      */
-    public static function create(string $date): pdfa_pdf {
+    public static function create(string $date): TCPDF {
         global $USER;
 
+        // Create new PDF document.
+        if (self::pdfa_enabled()) {
+            // PDF/A-2b (archivable), see local_wunderbyte_table\local\pdf\pdfa_pdf.
+            $pdf = new pdfa_pdf('p', 'pt', 'A4', true, 'UTF-8');
+        } else {
+            $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
+        }
+
+        // Get the daily sums data.
         $data = shopping_cart::get_daily_sums_data($date);
         $html = self::render_html($data);
-
-        $pdf = new pdfa_pdf('p', 'pt', 'A4', true, 'UTF-8');
 
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
@@ -56,16 +78,33 @@ class daily_sums_pdf {
         $pdf->SetSubject('Daily sums');
         $pdf->SetKeywords('daily sums');
 
-        // Header, footer and monospaced fonts are set by the PDF/A base class.
+        // Set header and footer fonts.
+        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+
+        // Set default monospaced font.
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // Set auto page breaks.
         $pdf->SetAutoPageBreak(false, PDF_MARGIN_BOTTOM);
+
+        // Set image scale factor.
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // Set default font subsetting mode.
         $pdf->setFontSubsetting(true);
+
         $pdf->SetHeaderMargin(0);
         $pdf->SetFooterMargin(0);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // Remove default footer.
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
 
         $pdf->AddPage();
+
+        // Print text using writeHTMLCell().
         $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
         return $pdf;

@@ -25,7 +25,9 @@ use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\local\daily_sums_pdf;
 
 /**
- * The template based PDFs (receipts / invoices, daily sums) have to be PDF/A-2b.
+ * The template based PDFs (receipts / invoices, daily sums) are PDF/A-2b when the setting
+ * local_shopping_cart/pdfaenabled is on - and exactly the previous plain TCPDF output when
+ * it is off.
  *
  * Structural checks only; the full ISO validation runs when VERAPDF_BIN points to
  * the veraPDF CLI (local check).
@@ -50,6 +52,7 @@ final class pdfa_documents_test extends advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
+        set_config('pdfaenabled', 1, 'local_shopping_cart');
     }
 
     /**
@@ -206,5 +209,54 @@ final class pdfa_documents_test extends advanced_testcase {
         $this->assert_pdfa2b($pdf);
         $this->assertStringContainsString('FreeSans', $pdf);
         $this->assertStringContainsString('FreeMono', $pdf);
+    }
+
+    /**
+     * With the setting off the receipt is generated as before: plain TCPDF, header/footer in
+     * unembedded Helvetica, no PDF/A markers.
+     *
+     * @runInSeparateProcess
+     */
+    public function test_receipt_without_setting_is_plain_tcpdf(): void {
+        set_config('pdfaenabled', 0, 'local_shopping_cart');
+        [$identifier, $user] = $this->buy_test_item();
+        set_config(
+            'receipthtml',
+            '<header><h1>Wunderbyte GmbH</h1></header><footer><p>Footer</p></footer>'
+            . '<h1>Rechnung [[invoice_number]]</h1><table>[[items]]<tr><td>[[name]]</td><td>[[price]]</td></tr>[[/items]]</table>',
+            'local_shopping_cart'
+        );
+
+        $pdf = create_invoice::create_receipt($identifier, $user->id, '', true);
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertStringNotContainsString('pdfaid:part', $pdf);
+        $this->assertStringNotContainsString('/OutputIntents', $pdf);
+        // WBPDF::Header()/Footer() use the core font helvetica, unembedded as before.
+        $this->assertMatchesRegularExpression('#/BaseFont\s*/Helvetica#', $pdf);
+        // The inline <style> of create_receipt() requests the core font times for <h1>.
+        $this->assertMatchesRegularExpression('#/BaseFont\s*/Times-#', $pdf);
+        $this->assertStringNotContainsString('FreeSans', $pdf);
+    }
+
+    /**
+     * With the setting off the daily sums PDF is plain TCPDF as before.
+     *
+     * @runInSeparateProcess
+     */
+    public function test_daily_sums_without_setting_is_plain_tcpdf(): void {
+        set_config('pdfaenabled', 0, 'local_shopping_cart');
+        $this->buy_test_item();
+        $this->setAdminUser();
+        set_config(
+            'dailysumspdfhtml',
+            '<h1 style="font-family: sans-serif">[[title]]</h1><p>[[totalsum]]</p>',
+            'local_shopping_cart'
+        );
+
+        $doc = daily_sums_pdf::create(date('Y-m-d'));
+        $this->assertSame(\TCPDF::class, get_class($doc));
+        $pdf = $doc->Output('daily_sums.pdf', 'S');
+        $this->assertStringNotContainsString('pdfaid:part', $pdf);
+        $this->assertMatchesRegularExpression('#/BaseFont\s*/Helvetica#', $pdf);
     }
 }

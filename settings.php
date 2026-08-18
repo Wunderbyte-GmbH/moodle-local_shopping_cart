@@ -388,6 +388,16 @@ if ($hassiteconfig) {
     </tr>
     </table>'; */
 
+    // PDF/A-2b for receipts / invoices and the daily sums PDF (opt-in, plain TCPDF output otherwise).
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/pdfaenabled',
+            get_string('pdfaenabled', 'local_shopping_cart'),
+            get_string('pdfaenabled_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
     $settings->add(
         new admin_setting_configtextarea(
             'local_shopping_cart/receipthtml',

@@ -28,20 +28,23 @@
 
 namespace local_shopping_cart\local;
 
-use local_wunderbyte_table\local\pdf\pdfa_pdf;
+use local_wunderbyte_table\local\pdf\pdfa_trait;
+use TCPDF;
 
 /**
  * Class WBPDF - receipt PDF with header/footer taken from the receipt HTML template.
  *
- * Extends the PDF/A-2b capable wrapper from local_wunderbyte_table: receipts are stored
- * as invoices and therefore have to be archivable (PDF/A). Only fonts shipped with Moodle
- * as embeddable TrueType fonts (freesans, freeserif, freemono) may be used here.
+ * Plain TCPDF by default. With the setting local_shopping_cart/pdfaenabled the caller
+ * switches the document to PDF/A-2b via enable_pdfa() (see pdfa_trait; core fonts such
+ * as the helvetica used below are mapped to embeddable fonts automatically then).
  *
  * @author Stephan Lorbek
  * @copyright 2025 Wunderbyte GmbH
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class WBPDF extends pdfa_pdf {
+class WBPDF extends TCPDF {
+    use pdfa_trait;
+
     /**
      * Parse HTML tags.
      * @param string $content
@@ -106,7 +109,7 @@ class WBPDF extends pdfa_pdf {
             return;
         }
         $header = $this->parse_tags($content, 'header');
-        $this->SetFont('freesans', 'B', 20);
+        $this->SetFont('helvetica', 'B', 20);
         $this->writeHTMLCell(0, 0, '', '', $header, 0, 1, 0, true, 'L', true);
     }
 
@@ -122,7 +125,7 @@ class WBPDF extends pdfa_pdf {
         }
 
         $this->SetY(-220);
-        $this->SetFont('freesans', '', 7);
+        $this->SetFont('helvetica', '', 7);
 
         $autopagebreak = $this->AutoPageBreak;
         $bmargin = $this->bMargin;
@@ -137,7 +140,7 @@ class WBPDF extends pdfa_pdf {
 
         // Page number section (always bottom-right).
         $this->SetY(-20); // 20mm from bottom.
-        $this->SetFont('freesans', '', 7);
+        $this->SetFont('helvetica', '', 7);
 
         $pagenum = get_string("page") . ' ' .
             $this->getAliasNumPage() . '/' .

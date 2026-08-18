@@ -162,6 +162,15 @@ class create_invoice {
     }
 
     /**
+     * Whether receipts / invoices are generated as PDF/A-2b (setting local_shopping_cart/pdfaenabled).
+     *
+     * @return bool
+     */
+    public static function pdfa_enabled(): bool {
+        return !empty(get_config('local_shopping_cart', 'pdfaenabled'));
+    }
+
+    /**
      * This function creates the content of the pdf.
      *
      * @param int $identifier
@@ -205,8 +214,13 @@ class create_invoice {
 
         ob_start();
 
-        // Create new PDF document (PDF/A-2b, see WBPDF / local_wunderbyte_table\local\pdf\pdfa_pdf).
-        $pdf = new WBPDF('p', 'pt', 'A4', true, 'UTF-8');
+        // Create new PDF document.
+        $pdf = new WBPDF('p', 'pt', 'A4', true, 'UTF-8', false);
+        if (self::pdfa_enabled()) {
+            // PDF/A-2b (archivable): all fonts embedded, core fonts mapped to FreeFonts,
+            // CMYK images converted - see local_wunderbyte_table\local\pdf\pdfa_trait.
+            $pdf->enable_pdfa();
+        }
         // Set some content to print.
 
         // HTML templates.
@@ -559,7 +573,7 @@ class create_invoice {
         <style>
             h1 {
                 color: black;
-                font-family: freeserif;
+                font-family: times;
                 font-size: 24pt;
             }
             td {
@@ -606,9 +620,12 @@ class create_invoice {
         $pdf->SetSubject('');
         $pdf->SetKeywords('');
 
-        // Header, footer and monospaced fonts are set by the PDF/A base class (embeddable
-        // FreeFonts). TCPDF's defaults (helvetica, courier) cannot be embedded and would
-        // break PDF/A conformance.
+        // Set header and footer fonts.
+        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+
+        // Set default monospaced font.
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         $pdf->SetAutoPageBreak(true, $pdf->is_tag_present($cfghtml, 'footer') ? 220 : PDF_MARGIN_BOTTOM);
         $pdf->SetMargins(15, $pdf->is_tag_present($cfghtml, 'header') ? 120 : 20, 15);
@@ -618,6 +635,8 @@ class create_invoice {
 
         // Set default font subsetting mode.
         $pdf->setFontSubsetting(true);
+
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // Remove default footer.
         $pdf->setPrintHeader(true);
