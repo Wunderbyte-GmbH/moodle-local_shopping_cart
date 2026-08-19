@@ -38,6 +38,7 @@ use mod_booking\booking_option_settings;
 use moodle_exception;
 use stored_file;
 use local_shopping_cart\local\WBPDF;
+use local_wunderbyte_table\local\pdf\pdfa_pdf;
 
 /**
  * Deals with local_shortcodes regarding booking.
@@ -162,15 +163,6 @@ class create_invoice {
     }
 
     /**
-     * Whether receipts / invoices are generated as PDF/A-2b (setting local_shopping_cart/pdfaenabled).
-     *
-     * @return bool
-     */
-    public static function pdfa_enabled(): bool {
-        return !empty(get_config('local_shopping_cart', 'pdfaenabled'));
-    }
-
-    /**
      * This function creates the content of the pdf.
      *
      * @param int $identifier
@@ -216,9 +208,9 @@ class create_invoice {
 
         // Create new PDF document.
         $pdf = new WBPDF('p', 'pt', 'A4', true, 'UTF-8', false);
-        if (self::pdfa_enabled()) {
-            // PDF/A-2b (archivable): all fonts embedded, core fonts mapped to FreeFonts,
-            // CMYK images converted - see local_wunderbyte_table\local\pdf\pdfa_trait.
+        if (pdfa_pdf::enabled()) {
+            // Setting local_wunderbyte_table/pdfaenabled: PDF/A-2b (archivable) - all fonts
+            // embedded, core fonts mapped to FreeFonts, CMYK images converted (pdfa_trait).
             $pdf->enable_pdfa();
         }
         // Set some content to print.

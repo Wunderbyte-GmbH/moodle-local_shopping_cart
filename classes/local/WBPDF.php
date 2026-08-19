@@ -34,7 +34,7 @@ use TCPDF;
 /**
  * Class WBPDF - receipt PDF with header/footer taken from the receipt HTML template.
  *
- * Plain TCPDF by default. With the setting local_shopping_cart/pdfaenabled the caller
+ * Plain TCPDF by default. With the setting local_wunderbyte_table/pdfaenabled the caller
  * switches the document to PDF/A-2b via enable_pdfa() (see pdfa_trait; core fonts such
  * as the helvetica used below are mapped to embeddable fonts automatically then).
  *

@@ -26,7 +26,7 @@ use local_shopping_cart\local\daily_sums_pdf;
 
 /**
  * The template based PDFs (receipts / invoices, daily sums) are PDF/A-2b when the setting
- * local_shopping_cart/pdfaenabled is on - and exactly the previous plain TCPDF output when
+ * local_wunderbyte_table/pdfaenabled is on - and exactly the previous plain TCPDF output when
  * it is off.
  *
  * Structural checks only; the full ISO validation runs when VERAPDF_BIN points to
@@ -52,7 +52,7 @@ final class pdfa_documents_test extends advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
-        set_config('pdfaenabled', 1, 'local_shopping_cart');
+        set_config('pdfaenabled', 1, 'local_wunderbyte_table');
     }
 
     /**
@@ -218,7 +218,7 @@ final class pdfa_documents_test extends advanced_testcase {
      * @runInSeparateProcess
      */
     public function test_receipt_without_setting_is_plain_tcpdf(): void {
-        set_config('pdfaenabled', 0, 'local_shopping_cart');
+        set_config('pdfaenabled', 0, 'local_wunderbyte_table');
         [$identifier, $user] = $this->buy_test_item();
         set_config(
             'receipthtml',
@@ -244,7 +244,7 @@ final class pdfa_documents_test extends advanced_testcase {
      * @runInSeparateProcess
      */
     public function test_daily_sums_without_setting_is_plain_tcpdf(): void {
-        set_config('pdfaenabled', 0, 'local_shopping_cart');
+        set_config('pdfaenabled', 0, 'local_wunderbyte_table');
         $this->buy_test_item();
         $this->setAdminUser();
         set_config(

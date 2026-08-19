@@ -29,7 +29,7 @@ require_once($CFG->libdir . '/pdflib.php');
  *
  * The template comes from the setting local_shopping_cart/dailysumspdfhtml; when it is
  * empty the mustache template local_shopping_cart/report_daily_sums_pdf is used. With the
- * setting local_shopping_cart/pdfaenabled the document is generated as PDF/A-2b
+ * setting local_wunderbyte_table/pdfaenabled the document is generated as PDF/A-2b
  * (see {@see pdfa_pdf}), otherwise as plain TCPDF output as before.
  *
  * @package     local_shopping_cart
@@ -38,15 +38,6 @@ require_once($CFG->libdir . '/pdflib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class daily_sums_pdf {
-    /**
-     * Whether the daily sums PDF is generated as PDF/A-2b (setting local_shopping_cart/pdfaenabled).
-     *
-     * @return bool
-     */
-    public static function pdfa_enabled(): bool {
-        return !empty(get_config('local_shopping_cart', 'pdfaenabled'));
-    }
-
     /**
      * Creates the daily sums document for the given day.
      *
@@ -60,8 +51,8 @@ class daily_sums_pdf {
         global $USER;
 
         // Create new PDF document.
-        if (self::pdfa_enabled()) {
-            // PDF/A-2b (archivable), see local_wunderbyte_table\local\pdf\pdfa_pdf.
+        if (pdfa_pdf::enabled()) {
+            // Setting local_wunderbyte_table/pdfaenabled: PDF/A-2b (archivable).
             $pdf = new pdfa_pdf('p', 'pt', 'A4', true, 'UTF-8');
         } else {
             $pdf = new TCPDF('p', 'pt', 'A4', true, 'UTF-8', false);
