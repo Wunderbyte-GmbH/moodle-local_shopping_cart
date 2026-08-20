@@ -1,3 +1,6 @@
+## Version 2.1.3 (2026081802)
+* Improvement: delete_item_task no longer calls the deprecated mod_booking bookforuser session cache setter - the acting user is resolved request-bound by mod_booking itself now. Requires a mod_booking version without the bookforuser session cache. (Wunderbyte-GmbH/Wunderbyte-GmbH#2214)
+
 * New feature: Receipts / invoices (receipthtml, extrareceiptshtml, cancelconfirmationshtml) and the daily sums PDF (dailysumspdfhtml) can be generated as PDF/A-2b (archivable) - switched on with the setting "Create PDF/A-2b compliant PDFs" of the Wunderbyte Table plugin (local_wunderbyte_table/pdfaenabled, off by default): all fonts are embedded (Helvetica/Times/Courier in templates are mapped to FreeSans/FreeSerif/FreeMono), CMYK images are converted to RGB, images referenced by URL are downloaded by the server (Moodle's cURL security settings apply) and left out when they cannot be loaded. When the setting is off the PDFs are generated exactly as before. Failures during invoice file creation at checkout are now reported via debugging() instead of being swallowed silently. Requires local_wunderbyte_table 3.3.2 (2026081800).
 
 ## Version 2.1.3 (2026081700)
