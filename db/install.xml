@@ -228,7 +228,7 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
                 <FIELD NAME="coupon" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Couponcode"/>
-                <FIELD NAME="discountpercentage" TYPE="number" LENGTH="3" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="1" COMMENT="Discount as percentage of total."/>
+                <FIELD NAME="discountpercentage" TYPE="number" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="1" COMMENT="Discount as percentage of total. Precision 4,1 so that 100.0 fits."/>
                 <FIELD NAME="discountabsolute" TYPE="number" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="2" COMMENT="Reduce by absolute value. Needs to be combined with currency"/>
                 <FIELD NAME="currency" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="EUR" SEQUENCE="false" COMMENT="Currency of discountabsolute."/>
                 <FIELD NAME="maxnumber" TYPE="int" LENGTH="8" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Max number of usages allowed. 0 is unlimited."/>
