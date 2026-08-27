@@ -47,9 +47,10 @@ class addedit_coupon extends dynamic_form {
         $mform->setType('id', PARAM_INT);
 
         // Coupon code.
-        $mform->addElement('text', 'coupon', get_string('coupon', 'local_shopping_cart'));
+        $mform->addElement('text', 'coupon', get_string('coupon', 'local_shopping_cart'), ['maxlength' => 255]);
         $mform->setType('coupon', PARAM_RAW_TRIMMED);
-        $mform->addRule('coupon', null, 'maxlength', 1333);
+        // The coupon column is varchar(255), so a longer code would fail on insert.
+        $mform->addRule('coupon', null, 'maxlength', 255);
 
         // Discount type selector.
         $mform->addElement('select', 'discounttype', get_string('discounttype', 'local_shopping_cart'), [

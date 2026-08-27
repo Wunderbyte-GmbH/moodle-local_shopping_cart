@@ -140,6 +140,54 @@ final class coupon_application_test extends advanced_testcase {
     }
 
     /**
+     * A 100 % coupon has to be storable and has to make the whole cart free.
+     *
+     * The discountpercentage column used to be number(3, 1), which silently capped the value at
+     * 99.9 and made an insert of 100.0 fail under a strict SQL mode.
+     *
+     * @covers \local_shopping_cart\local\coupon
+     */
+    public function test_full_discount_coupon_makes_cart_free(): void {
+        global $DB, $USER;
+
+        $this->setAdminUser();
+        $userid = (int) $USER->id;
+
+        set_config('couponenabled', 1, 'local_shopping_cart');
+        set_config('bookingfee', 0, 'local_shopping_cart');
+        set_config('bookingfeevariable', 0, 'local_shopping_cart');
+        set_config('rounddiscounts', 0, 'local_shopping_cart');
+        set_config('enabletax', '0', 'local_shopping_cart');
+
+        coupon::add_edit_coupon(0, 'FREE100', 100.0, 0.0, 'EUR', 0, 1, 0, 0, $userid, 'couponoptout');
+
+        // The stored value must survive the round trip unchanged, not be capped at 99.9.
+        $stored = $DB->get_field('local_shopping_cart_coupons', 'discountpercentage', ['coupon' => 'FREE100']);
+        $this->assertEqualsWithDelta(100.0, (float) $stored, 0.001);
+
+        // Add three items with different prices (from mockitems):
+        // itemid 1 => 10.00, itemid 2 => 20.30, itemid 3 => 13.8.
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 1, $userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 2, $userid);
+        shopping_cart::add_item_to_cart('local_shopping_cart', 'testitem', 3, $userid);
+
+        $coupon = new coupon($userid);
+        [$success, $couponmessage] = $coupon->apply_coupon_code('FREE100');
+        $this->assertTrue($success, $couponmessage);
+
+        $cartstore = cartstore::instance($userid);
+        $data = $cartstore->get_data();
+
+        $carttotal = 10.00 + 20.30 + 13.80;
+        $this->assertEqualsWithDelta($carttotal, (float) $data['coupondiscount'], 0.01);
+        $this->assertEqualsWithDelta(0.0, (float) $data['price'], 0.01);
+        // Every single item has to end up at zero, not just the cart total.
+        foreach ($data['items'] as $item) {
+            $this->assertEqualsWithDelta(0.0, (float) $item['price'], 0.01);
+        }
+    }
+
+    /**
      * Sum discounts across cart items.
      *
      * @param array $items
