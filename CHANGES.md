@@ -1,3 +1,7 @@
+## Version 2.1.4 (2026082700)
+* Bugfix: A 100 % coupon could not be created - discountpercentage was stored as number(3, 1), which caps the value at 99.9 and fails the insert under a strict SQL mode. The column is widened to number(4, 1), so a coupon can now make a booking free. (Wunderbyte-GmbH/Wunderbyte-GmbH#2078)
+* Bugfix: The coupon code field allowed up to 1333 characters although the coupon column is varchar(255), so an overlong code failed on insert instead of being rejected by form validation. (Wunderbyte-GmbH/Wunderbyte-GmbH#2078)
+
 ## Version 2.1.3 (2026081804)
 * Improvement: The purchase history list does not query the database per entry any more. Installment receipts and cancellation confirmations are fetched for the whole list in two queries, allowed_to_cancel() is handed the record the caller already holds instead of reading the same row again, and the rebooking count is determined once per user. Building the list for 50 entries went from 109 to 10 database reads and no longer grows with the number of entries, which is what made checkout.php and /my/ slow for users with many purchases (about 35 ms per entry, measured 396 ms at 7 entries against 4.016 ms at 106). (Wunderbyte-GmbH/moodle-local_shopping_cart#204)
 
