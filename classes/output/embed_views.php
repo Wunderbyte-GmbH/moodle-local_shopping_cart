@@ -133,6 +133,15 @@ class embed_views {
         // still flush in the footer, so this is fine after the header.
         $PAGE->requires->js_call_amd('local_shopping_cart/checkout_manager', 'preventBFCache', []);
 
+        // Make sure the cart item buttons (delete, increase, decrease) work in
+        // the embedded checkout too: the navbar popover, which also calls init,
+        // is not rendered in the embedded page layout.
+        $PAGE->requires->js_call_amd(
+            'local_shopping_cart/cart',
+            'init',
+            [$data['expirationtime'] ?? 0, $data['nowdate'] ?? 0]
+        );
+
         shopping_cart::convert_prices_to_number_format($data);
         if (get_config('local_shopping_cart', 'schistorysections')) {
             shoppingcart_history_list::organize_returnarray_into_collapsible_sections($data);
