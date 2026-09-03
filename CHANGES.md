@@ -1,3 +1,6 @@
+## Version 2.1.3 (2026081804)
+* Improvement: The purchase history list does not query the database per entry any more. Installment receipts and cancellation confirmations are fetched for the whole list in two queries, allowed_to_cancel() is handed the record the caller already holds instead of reading the same row again, and the rebooking count is determined once per user. Building the list for 50 entries went from 109 to 10 database reads and no longer grows with the number of entries, which is what made checkout.php and /my/ slow for users with many purchases (about 35 ms per entry, measured 396 ms at 7 entries against 4.016 ms at 106). (Wunderbyte-GmbH/moodle-local_shopping_cart#204)
+
 ## Version 2.1.3 (2026081802)
 * Improvement: delete_item_task no longer calls the deprecated mod_booking bookforuser session cache setter - the acting user is resolved request-bound by mod_booking itself now. Requires a mod_booking version without the bookforuser session cache. (Wunderbyte-GmbH/Wunderbyte-GmbH#2214)
 
