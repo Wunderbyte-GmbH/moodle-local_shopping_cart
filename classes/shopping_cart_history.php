@@ -91,6 +91,31 @@ class shopping_cart_history {
     }
 
     /**
+     * Tells whether a user has any purchase to show, without building the whole list.
+     *
+     * The checkout page only needs to know whether it has to offer the history at all. Loading
+     * every entry just to answer that question is what made the page slow (GH-204).
+     *
+     * @param int $userid
+     * @return bool
+     */
+    public static function user_has_history(int $userid): bool {
+
+        global $DB;
+
+        return $DB->record_exists_select(
+            'local_shopping_cart_history',
+            "userid = :userid
+             AND paymentstatus >= :paymentstatus
+             AND NOT (componentname LIKE 'local_shopping_cart' AND area LIKE 'installments%')",
+            [
+                'userid' => $userid,
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            ]
+        );
+    }
+
+    /**
      * Prepare submitted form data for writing to db.
      *
      * @param int $userid
@@ -345,6 +370,8 @@ class shopping_cart_history {
                 $data->timecreated = $now;
                 $data->usecredit = shopping_cart_credits::use_credit_fallback(null, $data->userid);
                 if ($id = $DB->insert_record('local_shopping_cart_history', $data)) {
+                    // From now on this user has a purchase history, see cartstore::has_history().
+                    cartstore::set_has_history((int) $data->userid);
                     // We also need to insert the record into the ledger table.
                     // We only write the old schistoryid, if we have it.
                     $data->schistoryid = $data->schistoryid ?? $id;
@@ -810,6 +837,9 @@ class shopping_cart_history {
             if (empty($record->id)) {
                 if (!$DB->insert_record('local_shopping_cart_history', $record)) {
                     $success = false;
+                } else {
+                    // From now on this user has a purchase history, see cartstore::has_history().
+                    cartstore::set_has_history((int) $record->userid);
                 }
             } else if (!$DB->update_record('local_shopping_cart_history', $record)) {
                 $success = false;

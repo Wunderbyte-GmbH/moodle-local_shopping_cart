@@ -35,6 +35,7 @@ use core_privacy\local\request\writer;
 use context;
 use context_system;
 use dml_exception;
+use local_shopping_cart\local\cartstore;
 use moodle_exception;
 
 /**
@@ -251,6 +252,9 @@ class provider implements
             $DB->delete_records('local_shopping_cart_credits', ['userid' => $user->id]);
             $DB->delete_records('local_shopping_cart_guestusers', ['userid' => $user->id]);
 
+            // The cached answer to "did this user ever buy something" is wrong now.
+            cartstore::purge_has_history((int) $user->id);
+
             foreach ($records as $record) {
                 // Delete identifier.
                 $DB->delete_records('local_shopping_cart_invoices', ['identifier' => $record->identifier]);
@@ -312,6 +316,11 @@ class provider implements
         $DB->delete_records_list('local_shopping_cart_history', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_credits', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_guestusers', 'userid', $userids);
+
+        // The cached answer to "did this user ever buy something" is wrong now.
+        foreach ($userids as $userid) {
+            cartstore::purge_has_history((int) $userid);
+        }
 
         if (!empty(get_config('local_shopping_cart', 'deleteledger'))) {
             $DB->delete_records_list('local_shopping_cart_ledger', 'userid', $userids);

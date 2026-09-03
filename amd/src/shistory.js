@@ -37,6 +37,8 @@ const SELECTORS = {
     PAIDBACKBUTTON: 'button.shopping_cart_history_paidback_button',
     CREDITSMANAGER: 'button.shopping_cart_history_creditsmanager',
     REBOOKBUTTON: '.shopping_cart_history_rebook_button',
+    HISTORYTAB: '#shopping-cart-history-tab',
+    HISTORYPLACEHOLDER: '[data-id="shopping-cart-history-lazy"]',
 };
 
 // Little hack to get strings at top-level although getString is asynchronous.
@@ -47,7 +49,12 @@ let notenoughcredits = 'notenoughcredits';
     notenoughcredits = await getString('notenoughcredits', 'local_shopping_cart');
 })();
 
+// Remembered so that the history loaded on demand can initialise its buttons the same way.
+let knownCancelationFee = null;
+
 export const init = (cancelationFee = null) => {
+
+    knownCancelationFee = cancelationFee;
 
     const buttons = document.querySelectorAll(SELECTORS.CANCELBUTTON);
 
@@ -735,3 +742,53 @@ export function reloadHistory(userid) {
         }]);
     });
 }
+
+/**
+ * Load the purchase history into the checkout page when the user opens the history tab.
+ *
+ * The checkout page does not render the history any more, because building it costs about 35 ms
+ * per purchase and nobody needs it in order to pay (GH-204). The placeholder is replaced with the
+ * real list the first time the tab is opened.
+ *
+ * @param {int} userid
+ */
+export const initLazyHistory = (userid) => {
+
+    const tab = document.querySelector(SELECTORS.HISTORYTAB);
+    const placeholder = document.querySelector(SELECTORS.HISTORYPLACEHOLDER);
+
+    if (!tab || !placeholder || tab.dataset.lazyinitialized) {
+        return;
+    }
+    tab.dataset.lazyinitialized = true;
+
+    // A plain click listener works with the tab markup of both Bootstrap 4 and 5.
+    tab.addEventListener('click', () => {
+
+        if (placeholder.dataset.loading || !placeholder.isConnected) {
+            return;
+        }
+        placeholder.dataset.loading = true;
+
+        Ajax.call([{
+            methodname: "local_shopping_cart_reload_history",
+            args: {
+                'userid': userid,
+            },
+            done: function(data) {
+                Templates.renderForPromise('local_shopping_cart/history_body', data).then(({html, js}) => {
+                    Templates.replaceNode(placeholder, html, js);
+                    init(knownCancelationFee);
+                    return true;
+                }).catch((e) => {
+                    delete placeholder.dataset.loading;
+                    showNotification(e.message ? e.message : e, 'danger');
+                });
+            },
+            fail: function(ex) {
+                delete placeholder.dataset.loading;
+                showNotification(ex.message ? ex.message : ex, 'danger');
+            },
+        }]);
+    });
+};

@@ -172,20 +172,17 @@
 
                         {{#has_historyitems}}
                             <div class="tab-pane fade" id="shopping-cart-history-panel" role="tabpanel" aria-labelledby="shopping-cart-history-tab">
-                                <div class="history">
-                                    {{! Before the <ul>, not inside it: a <button> is not a valid child of a
-                                        list, and the credits manager is a control rather than a history
-                                        entry. It used to be the first entry of the list, so it stays above
-                                        it. The condition matches what costcentercredit_item used to
-                                        check. }}
-                                    {{^costcentercredits.0}}
-                                        {{> local_shopping_cart/creditsmanager_button }}
-                                    {{/costcentercredits.0}}
-                                    <ul class="list-group cashier-history-items">
-                                        {{> local_shopping_cart/costcentercredit_item }}
-                                        {{> local_shopping_cart/history_items }}
-                                    </ul>
-                                </div>
+                                {{#lazyhistory}}
+                                    {{! The history is fetched when the user opens this tab, see shistory.js. }}
+                                    <div data-id="shopping-cart-history-lazy" data-userid="{{userid}}" class="text-center p-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only visually-hidden">{{#str}} loading, core {{/str}}</span>
+                                        </div>
+                                    </div>
+                                {{/lazyhistory}}
+                                {{^lazyhistory}}
+                                    {{> local_shopping_cart/history_body }}
+                                {{/lazyhistory}}
                             </div>
                         {{/has_historyitems}}
                     </div>
@@ -223,5 +220,8 @@
 {{#js}}
     require(['local_shopping_cart/shistory'], function(fn) {
       fn.init({{cancelationfee}});
+      {{#lazyhistory}}
+      fn.initLazyHistory({{userid}});
+      {{/lazyhistory}}
     });
 {{/js}}
