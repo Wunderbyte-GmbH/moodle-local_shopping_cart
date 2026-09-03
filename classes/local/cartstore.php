@@ -34,6 +34,7 @@ use local_shopping_cart\local\pricemodifier\modifier_info;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\local\pricemodifier\modifiers\installments;
 use local_shopping_cart\shopping_cart;
+use local_shopping_cart\shopping_cart_history;
 use moodle_exception;
 use context_system;
 use local_shopping_cart\addresses;
@@ -728,19 +729,23 @@ class cartstore {
      * Return the data with localized strings.
      *
      * @param mixed $data
+     * @param bool $withhistory whether the purchase history is rendered into the data as well
      *
      * @return void
      *
      */
-    public function get_expanded_checkout_data(&$data): void {
+    public function get_expanded_checkout_data(&$data, bool $withhistory = true): void {
         global $USER;
         $data["mail"] = $USER->email;
         $data["name"] = $USER->firstname . $USER->lastname;
         $data["userid"] = $USER->id;
 
-        // This creates just our list of boght items.
-        $historylist = new shoppingcart_history_list($USER->id);
-        $historylist->insert_list($data);
+        /* This creates just our list of boght items. Callers that load the history separately
+        (the checkout page fetches it when the user opens the tab, GH-204) skip it here. */
+        if ($withhistory) {
+            $historylist = new shoppingcart_history_list($USER->id);
+            $historylist->insert_list($data);
+        }
 
         // The modifier "checkout" prepares our data for the checkout page.
         // During this process,the new identifier is created, if necessary.
@@ -1205,6 +1210,72 @@ class cartstore {
      */
     private function get_cachekey() {
         return $this->userid . '_shopping_cart';
+    }
+
+    /**
+     * Returns the cachekey under which we note whether a user has bought anything at all.
+     *
+     * @param int $userid
+     * @return string
+     */
+    private static function get_hashistorykey(int $userid) {
+        return $userid . '_hashistory';
+    }
+
+    /**
+     * Tells whether the user has any purchase in her history.
+     *
+     * The checkout page asks this on every single request, only to decide whether it has to offer
+     * the history at all. The answer changes exactly once in a user's life, namely with her first
+     * purchase, so it is kept in the cache and written by the purchase itself (GH-204).
+     *
+     * @return bool
+     */
+    public function has_history(): bool {
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cachekey = self::get_hashistorykey($this->userid);
+
+        /* An unset key gives false, a user without purchases gives the integer 0, so the two are
+        told apart by the strict comparison. */
+        $hashistory = $cache->get($cachekey);
+
+        if ($hashistory === false) {
+            $hashistory = (int) shopping_cart_history::user_has_history($this->userid);
+            $cache->set($cachekey, $hashistory);
+        }
+
+        return (bool) $hashistory;
+    }
+
+    /**
+     * Note that a user has a purchase history, called when a history record is written.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function set_has_history(int $userid): void {
+
+        if (empty($userid)) {
+            return;
+        }
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cache->set(self::get_hashistorykey($userid), 1);
+    }
+
+    /**
+     * Forget what we know about the purchase history of a user.
+     *
+     * Only needed where history records disappear, which is the privacy API.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function purge_has_history(int $userid): void {
+
+        $cache = \cache::make('local_shopping_cart', 'cacheshopping');
+        $cache->delete(self::get_hashistorykey($userid));
     }
 
     /**

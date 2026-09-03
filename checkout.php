@@ -159,7 +159,20 @@ if (isset($success) && isset($historylist)) {
     // Therefore, we need to call it before the get expanded checkout data.
     shopping_cart::check_for_ongoing_payment($userid);
 
-    $cartstore->get_expanded_checkout_data($data);
+    /* The purchase history is not needed to pay, and rendering it here made the page slow for
+    users with many purchases (GH-204). We only ask whether there is a history at all, so that the
+    tab can be offered, and load its content when the user actually opens the tab. */
+    $cartstore->get_expanded_checkout_data($data, false);
+
+    $data['has_historyitems'] = $cartstore->has_history();
+    $data['lazyhistory'] = $data['has_historyitems'];
+
+    if ($data['has_historyitems']) {
+        $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
+        if ($cancelationfee >= 0) {
+            $data['cancelationfee'] = $cancelationfee;
+        }
+    }
 
     // Make sure the cart item buttons (delete, increase, decrease) work on this page,
     // even when the navbar popover (which also calls init) is not shown.
