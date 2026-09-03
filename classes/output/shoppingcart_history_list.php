@@ -35,6 +35,7 @@ use local_shopping_cart\shopping_cart_history;
 use moodle_url;
 use renderable;
 use renderer_base;
+use SplObjectStorage;
 use stdClass;
 use templatable;
 
@@ -124,7 +125,7 @@ class shoppingcart_history_list implements renderable, templatable {
      * @param bool $fromledger
      */
     public function __construct(int $userid, int $identifier = 0, $fromledger = false) {
-        global $DB, $PAGE;
+        global $PAGE;
 
         $this->userid = $userid;
         $this->fromledger = $fromledger;
@@ -139,6 +140,14 @@ class shoppingcart_history_list implements renderable, templatable {
         if (empty($userid)) {
             return;
         }
+
+        /* Read the settings that are needed inside the item loop only once. They used to be read
+        per item, which is measurable on users with a long purchase history (GH-204). */
+        $showextrareceipts = !empty(get_config('local_shopping_cart', 'showextrareceiptstousers'));
+        $allowrebooking = !empty(get_config('local_shopping_cart', 'allowrebooking'));
+        $strftimedatetime = get_string('strftimedatetime', 'langconfig');
+
+        $ledgerextras = new SplObjectStorage();
 
         // If we provide an identifier, we only get the items from history with this identifier, else, we get all for this user.
         if ($identifier != 0) {
@@ -158,7 +167,12 @@ class shoppingcart_history_list implements renderable, templatable {
 
             $ledgeritems = shopping_cart_history::return_extra_lines_from_ledger($userid);
 
-            if (get_config('local_shopping_cart', 'showextrareceiptstousers')) {
+            if ($showextrareceipts) {
+                /* Remember which entries are ledger rows: they carry a ledger id, not a history id, so
+                further down they must not be handed to allowed_to_cancel() as history records. */
+                foreach ($ledgeritems as $ledgeritem) {
+                    $ledgerextras->attach($ledgeritem);
+                }
                 $items = array_merge($ledgeritems, $items);
 
                 usort($items, function ($a, $b) {
@@ -184,11 +198,18 @@ class shoppingcart_history_list implements renderable, templatable {
 
         $now = time();
 
+        /* Everything the loop below needs from other tables is fetched here for the whole list.
+        Fetching it per item made the history list scale linearly with the number of entries
+        (GH-204): roughly 35 ms per entry, which is what makes checkout.php slow for users with a
+        long purchase history. */
+        $ledgerdata = self::prefetch_ledger_data($items);
+        $rebookingdata = $allowrebooking ? self::prefetch_rebooking_data($items) : [];
+
         // We transform the stdClass from DB to array for template.
         foreach ($items as $item) {
             // We might have an item from ledger.
             if (
-                get_config('local_shopping_cart', 'showextrareceiptstousers')
+                $showextrareceipts
                 && empty($item->uniqueid)
                 && in_array($item->payment, [
                     LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER,
@@ -209,15 +230,15 @@ class shoppingcart_history_list implements renderable, templatable {
                 $item->price = $item->credits;
                 $item->taxesenabled = false;
                 $item->timecreatedrendered = !empty($item->timecreated) ?
-                    userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
+                    userdate($item->timecreated, $strftimedatetime) : null;
                 $item->timemodifiedrendered = !empty($item->timemodified) ?
-                    userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+                    userdate($item->timemodified, $strftimedatetime) : null;
                 $item->canceluntilrendered = !empty($item->canceluntil) ?
-                    userdate($item->canceluntil, get_string('strftimedatetime', 'langconfig')) : null;
+                    userdate($item->canceluntil, $strftimedatetime) : null;
                 $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
-                    userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
+                    userdate($item->serviceperiodstart, $strftimedatetime) : null;
                 $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
-                    userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
+                    userdate($item->serviceperiodend, $strftimedatetime) : null;
                 $item->buttonclass = ' hidden ';
                 $this->historyitems[] = (array)$item;
                 continue;
@@ -235,28 +256,11 @@ class shoppingcart_history_list implements renderable, templatable {
             }
 
             // Improvement: For installments, we need to aggregate all receipts (GH-92).
-            $schistoryid = $DB->get_field_sql(
-                "SELECT schistoryid
-                   FROM {local_shopping_cart_ledger}
-                  WHERE identifier = :identifier
-                    AND schistoryid IS NOT NULL
-                  LIMIT 1",
-                ['identifier' => $item->identifier]
-            );
+            $schistoryid = $ledgerdata['schistoryids'][(int) ($item->identifier ?? 0)] ?? null;
             if (!empty($schistoryid)) {
-                $additionalidentifiers = $DB->get_fieldset_sql(
-                    "SELECT DISTINCT identifier
-                                FROM {local_shopping_cart_ledger}
-                               WHERE schistoryid = :schistoryid
-                                 AND identifier <> :identifier
-                                 AND identifier IS NOT NULL
-                                 AND paymentstatus = :paymentstatus
-                            ORDER BY identifier DESC",
-                    [
-                        'schistoryid' => $schistoryid,
-                        'identifier' => $item->identifier,
-                        'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-                    ]
+                $additionalidentifiers = self::filter_out_own_identifier(
+                    $ledgerdata['successidentifiers'][$schistoryid] ?? [],
+                    (int) $item->identifier
                 );
                 if (!empty($additionalidentifiers)) {
                     $item->hasinstallments = true;
@@ -276,20 +280,11 @@ class shoppingcart_history_list implements renderable, templatable {
                 }
                 if ($item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED) {
                     // If it was canceled, we might have an identifier for the canceled item.
-                    $canceledidentifier = $DB->get_field_sql(
-                        "SELECT identifier
-                        FROM {local_shopping_cart_ledger}
-                        WHERE schistoryid = :schistoryid
-                            AND identifier <> :identifier
-                            AND identifier IS NOT NULL
-                            AND paymentstatus = :paymentstatus
-                        LIMIT 1",
-                        [
-                            'schistoryid' => $schistoryid,
-                            'identifier' => $item->identifier,
-                            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
-                        ]
+                    $canceledidentifiers = self::filter_out_own_identifier(
+                        $ledgerdata['canceledidentifiers'][$schistoryid] ?? [],
+                        (int) $item->identifier
                     );
+                    $canceledidentifier = reset($canceledidentifiers) ?: null;
                 } else {
                     $canceledidentifier = null;
                 }
@@ -324,8 +319,20 @@ class shoppingcart_history_list implements renderable, templatable {
                 $item->canceluntilstring = date('Y-m-d', $item->canceluntil);
 
                 if (!$iscashier) {
-                    // The allowed_to_cancel function only checks if cancelling is disabled, it does not check canceluntil!
-                    if (shopping_cart::allowed_to_cancel($item->id, $item->itemid, $item->area ?? "", $item->userid)) {
+                    /* The allowed_to_cancel function only checks if cancelling is disabled, it does not check canceluntil!
+                    We hand over the record we already hold, so that it does not have to read the very same row from
+                    the database again (GH-204). Items from the ledger are not history records, so for those we keep
+                    the lookup by history id. */
+                    $historyitem = ($this->fromledger || $ledgerextras->contains($item)) ? null : $item;
+                    if (
+                        shopping_cart::allowed_to_cancel(
+                            $item->id,
+                            $item->itemid,
+                            $item->area ?? "",
+                            $item->userid,
+                            $historyitem
+                        )
+                    ) {
                         if (empty($item->canceluntil)) {
                             // There is no canceluntil, so we can cancel.
                             $item->buttonclass = 'btn-primary';
@@ -397,11 +404,11 @@ class shoppingcart_history_list implements renderable, templatable {
                     break;
             }
 
-            if (get_config('local_shopping_cart', 'allowrebooking')) {
+            if ($allowrebooking) {
                 // Get the marked information.
                 $item->rebooking = shopping_cart_history::is_marked_for_rebooking($item->id, (int) $userid);
 
-                if (rebookings::allow_rebooking($item, $userid)) {
+                if (rebookings::allow_rebooking($item, $userid, $rebookingdata)) {
                     $item->showrebooking = true; // If it is shown at all.
                 } else {
                     $item->showrebooking = null; // So we can hide it in mustache template.
@@ -409,15 +416,15 @@ class shoppingcart_history_list implements renderable, templatable {
             }
             // Format the Items for output at the last moment.
             $item->timecreatedrendered = !empty($item->timecreated) ?
-                userdate($item->timecreated, get_string('strftimedatetime', 'langconfig')) : null;
+                userdate($item->timecreated, $strftimedatetime) : null;
             $item->timemodifiedrendered = !empty($item->timemodified) ?
-                userdate($item->timemodified, get_string('strftimedatetime', 'langconfig')) : null;
+                userdate($item->timemodified, $strftimedatetime) : null;
             $item->canceluntilrendered = !empty($item->canceluntil) ?
-                userdate($item->canceluntil, get_string('strftimedatetime', 'langconfig')) : null;
+                userdate($item->canceluntil, $strftimedatetime) : null;
             $item->serviceperiodstartrendered = !empty($item->serviceperiodstart) ?
-                userdate($item->serviceperiodstart, get_string('strftimedatetime', 'langconfig')) : null;
+                userdate($item->serviceperiodstart, $strftimedatetime) : null;
             $item->serviceperiodendrendered = !empty($item->serviceperiodend) ?
-                userdate($item->serviceperiodend, get_string('strftimedatetime', 'langconfig')) : null;
+                userdate($item->serviceperiodend, $strftimedatetime) : null;
 
             $item->itemname = format_string($item->itemname);
 
@@ -431,6 +438,195 @@ class shoppingcart_history_list implements renderable, templatable {
         }
 
         $this->costcentercredits = shopping_cart_credits::get_balance_for_all_costcenters($userid);
+    }
+
+    /**
+     * Fetch the ledger data the item loop needs for the whole list at once.
+     *
+     * Installment receipts and cancellation confirmations used to cost one to three queries per
+     * history entry, which is what made the list scale linearly with the number of entries
+     * (GH-204). Two queries for the whole list produce the same result.
+     *
+     * @param array $items the history items
+     * @return array with the keys schistoryids, successidentifiers and canceledidentifiers
+     */
+    private static function prefetch_ledger_data(array $items): array {
+
+        global $DB;
+
+        $ledgerdata = [
+            'schistoryids' => [],
+            'successidentifiers' => [],
+            'canceledidentifiers' => [],
+        ];
+
+        $identifiers = [];
+        foreach ($items as $item) {
+            if (!empty($item->identifier)) {
+                $identifiers[(int) $item->identifier] = (int) $item->identifier;
+            }
+        }
+
+        if (empty($identifiers)) {
+            return $ledgerdata;
+        }
+
+        [$inidentifiers, $params] = $DB->get_in_or_equal($identifiers, SQL_PARAMS_NAMED, 'identifier');
+
+        /* One row per identifier. The single-item query used LIMIT 1 without an order, so any of
+        the schistoryids was fine; MIN() keeps that but is deterministic. */
+        $records = $DB->get_records_sql(
+            "SELECT identifier, MIN(schistoryid) AS schistoryid
+               FROM {local_shopping_cart_ledger}
+              WHERE identifier $inidentifiers
+                AND schistoryid IS NOT NULL
+           GROUP BY identifier",
+            $params
+        );
+
+        foreach ($records as $record) {
+            $ledgerdata['schistoryids'][(int) $record->identifier] = (int) $record->schistoryid;
+        }
+
+        if (empty($ledgerdata['schistoryids'])) {
+            return $ledgerdata;
+        }
+
+        [$inschistoryids, $params] = $DB->get_in_or_equal(
+            array_unique(array_values($ledgerdata['schistoryids'])),
+            SQL_PARAMS_NAMED,
+            'schistoryid'
+        );
+        $params['success'] = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+        $params['canceled'] = LOCAL_SHOPPING_CART_PAYMENT_CANCELED;
+
+        /* The rows come in the order they were written. The single-item queries returned the
+        success identifiers distinct and descending, and for the cancellation the first row found;
+        both are reproduced below. The identifiers are kept as the database returns them. */
+        $rs = $DB->get_recordset_sql(
+            "SELECT id, schistoryid, identifier, paymentstatus
+               FROM {local_shopping_cart_ledger}
+              WHERE schistoryid $inschistoryids
+                AND identifier IS NOT NULL
+                AND paymentstatus IN (:success, :canceled)
+           ORDER BY id ASC",
+            $params
+        );
+
+        foreach ($rs as $record) {
+            $schistoryid = (int) $record->schistoryid;
+            if ($record->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED) {
+                $ledgerdata['canceledidentifiers'][$schistoryid][] = $record->identifier;
+            } else {
+                $ledgerdata['successidentifiers'][$schistoryid][(int) $record->identifier] = $record->identifier;
+            }
+        }
+        $rs->close();
+
+        foreach ($ledgerdata['successidentifiers'] as $schistoryid => $identifiers) {
+            krsort($identifiers, SORT_NUMERIC);
+            $ledgerdata['successidentifiers'][$schistoryid] = array_values($identifiers);
+        }
+
+        return $ledgerdata;
+    }
+
+    /**
+     * Fetch the data rebookings::allow_rebooking() needs for the whole list at once.
+     *
+     * The number of rebookings is a per user value and was counted once per history entry; the
+     * item infos were read one by one (GH-204).
+     *
+     * @param array $items the history items
+     * @return array with the keys numberrebookings and iteminfos
+     */
+    private static function prefetch_rebooking_data(array $items): array {
+
+        global $DB;
+
+        $rebookingdata = [];
+
+        // Only needed when the rebooking period is actually configured, see rebookings::allow_rebooking().
+        $rebookingperiod = get_config('local_shopping_cart', 'rebookingperiod');
+        if (!empty($rebookingperiod) && !empty(get_config('local_shopping_cart', 'rebookingmaxnumber'))) {
+            $limitdate = strtotime(" - $rebookingperiod days ");
+            $rebookingdata['numberrebookings'] = [];
+
+            $userids = [];
+            foreach ($items as $item) {
+                if (!empty($item->userid)) {
+                    $userids[(int) $item->userid] = (int) $item->userid;
+                }
+            }
+
+            foreach ($userids as $itemuserid) {
+                $rebookingdata['numberrebookings'][$itemuserid] = $DB->count_records_sql(
+                    "SELECT COUNT(id)
+                       FROM {local_shopping_cart_history}
+                      WHERE componentname = :componentname
+                        AND area = :area
+                        AND userid = :userid
+                        AND timecreated > :limitdate",
+                    [
+                        'componentname' => 'local_shopping_cart',
+                        'area' => 'rebookitem',
+                        'userid' => $itemuserid,
+                        'limitdate' => $limitdate,
+                    ]
+                );
+            }
+        }
+
+        $itemids = [];
+        foreach ($items as $item) {
+            if (isset($item->itemid)) {
+                $itemids[(int) $item->itemid] = (int) $item->itemid;
+            }
+        }
+
+        $rebookingdata['iteminfos'] = [];
+        if (!empty($itemids)) {
+            [$initemids, $params] = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'itemid');
+            $records = $DB->get_records_select('local_shopping_cart_iteminfo', "itemid $initemids", $params);
+            foreach ($records as $record) {
+                $key = self::return_iteminfo_key($record->componentname, $record->area, (int) $record->itemid);
+                $rebookingdata['iteminfos'][$key] = $record;
+            }
+        }
+
+        return $rebookingdata;
+    }
+
+    /**
+     * Build the key under which an item info is stored in the prefetched data.
+     *
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
+     * @return string
+     */
+    public static function return_iteminfo_key(string $componentname, string $area, int $itemid): string {
+        return $componentname . '-' . $area . '-' . $itemid;
+    }
+
+    /**
+     * Remove the identifier of the item itself from a list of identifiers.
+     *
+     * The identifiers are returned as they came from the database.
+     *
+     * @param array $identifiers
+     * @param int $ownidentifier
+     * @return array
+     */
+    private static function filter_out_own_identifier(array $identifiers, int $ownidentifier): array {
+
+        $filtered = [];
+        foreach ($identifiers as $identifier) {
+            if ((int) $identifier !== $ownidentifier) {
+                $filtered[] = $identifier;
+            }
+        }
+        return $filtered;
     }
 
     /**

@@ -1292,11 +1292,22 @@ class shopping_cart {
      * @param int $itemid
      * @param string $area
      * @param int $userid
+     * @param stdClass|null $historyitem the history record, if the caller already holds it
      * @return bool
      */
-    public static function allowed_to_cancel(int $historyid, int $itemid, string $area, int $userid): bool {
+    public static function allowed_to_cancel(
+        int $historyid,
+        int $itemid,
+        string $area,
+        int $userid,
+        ?stdClass $historyitem = null
+    ): bool {
 
-        if (!$item = shopping_cart_history::return_item_from_history($historyid)) {
+        /* Callers that render a whole list of history items already hold the record and would
+        otherwise make us read the very same row again, once per item (GH-204). */
+        $item = $historyitem;
+
+        if (empty($item) && !$item = shopping_cart_history::return_item_from_history($historyid)) {
             return false;
         }
 

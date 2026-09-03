@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart\local;
 
+use local_shopping_cart\output\shoppingcart_history_list;
 use stdClass;
 
 /**
@@ -39,8 +40,10 @@ class rebookings {
      * Checks all the conditions if we should allow rebooking.
      * @param stdClass $item
      * @param int $userid
+     * @param array $prefetched data the caller has already fetched for a whole list of items,
+     *                          see shoppingcart_history_list::prefetch_rebooking_data()
      */
-    public static function allow_rebooking(stdClass $item, int $userid = 0) {
+    public static function allow_rebooking(stdClass $item, int $userid = 0, array $prefetched = []) {
 
         global $DB;
 
@@ -101,7 +104,10 @@ class rebookings {
                 'limitdate' => $limitdate,
             ];
 
-            $numberrebookings = $DB->count_records_sql($sql, $params);
+            /* This count is the same for every item of a user, so a caller rendering a whole list
+            counts it once instead of once per item (GH-204). */
+            $numberrebookings = $prefetched['numberrebookings'][(int) $item->userid]
+                ?? $DB->count_records_sql($sql, $params);
 
             if ($maxnumberofrebookings <= $numberrebookings) {
                 return false;
@@ -109,12 +115,23 @@ class rebookings {
         }
 
         // Finally, we have a look if allowrebooking is turned off for this particular item.
-        if (
+        if (isset($prefetched['iteminfos'])) {
+            // Component name and area might be empty on old records, the lookup then simply finds nothing.
+            $key = shoppingcart_history_list::return_iteminfo_key(
+                (string) ($item->componentname ?? ''),
+                (string) ($item->area ?? ''),
+                (int) $item->itemid
+            );
+            $record = $prefetched['iteminfos'][$key] ?? false;
+        } else {
             $record = $DB->get_record('local_shopping_cart_iteminfo', [
-            'componentname' => $item->componentname,
-            'area' => $item->area,
-            'itemid' => $item->itemid])
-        ) {
+                'componentname' => $item->componentname,
+                'area' => $item->area,
+                'itemid' => $item->itemid,
+            ]);
+        }
+
+        if (!empty($record)) {
             $jsonobject = json_decode($record->json);
 
             if (
