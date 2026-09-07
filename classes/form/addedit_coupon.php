@@ -154,7 +154,24 @@ class addedit_coupon extends dynamic_form {
      * @return array
      */
     public function validation($data, $files) {
+        global $DB;
+
         $errors = parent::validation($data, $files);
+
+        $coupon = trim($data['coupon'] ?? '');
+        if ($coupon === '') {
+            $errors['coupon'] = get_string('required');
+        } else {
+            $params = ['coupon' => $coupon];
+            $select = 'coupon = :coupon';
+            if (!empty($data['id'])) {
+                $select .= ' AND id <> :id';
+                $params['id'] = $data['id'];
+            }
+            if ($DB->record_exists_select('local_shopping_cart_coupons', $select, $params)) {
+                $errors['coupon'] = get_string('couponalreadyexists', 'local_shopping_cart');
+            }
+        }
 
         if ($data['discounttype'] === 'percentage') {
             if ($data['discountpercentage'] < 0 || $data['discountpercentage'] > 100) {

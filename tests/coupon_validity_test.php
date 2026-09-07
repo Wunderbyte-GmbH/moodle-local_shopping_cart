@@ -26,6 +26,7 @@
 namespace local_shopping_cart;
 
 use advanced_testcase;
+use local_shopping_cart\form\addedit_coupon;
 use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\coupon;
@@ -556,6 +557,38 @@ final class coupon_validity_test extends advanced_testcase {
         $data = cartstore::instance($this->userid)->get_data();
         $this->assertEqualsWithDelta(2.38, (float) $data['coupondiscount'], 0.01);
         $this->assertEqualsWithDelta(41.72, (float) $data['price'], 0.01);
+    }
+
+    // Form validation tests.
+
+    /**
+     * The addedit_coupon form must reject a coupon code that already exists for
+     * another record, but must still accept it when editing that same record.
+     *
+     * @covers \local_shopping_cart\form\addedit_coupon::validation
+     */
+    public function test_form_validation_rejects_duplicate_coupon_code(): void {
+        coupon::add_edit_coupon(0, 'DUPLICATE', 10.0, 0.0, 'EUR', 0, 1, 0, 0, $this->userid, 'couponoptout');
+        global $DB;
+        $existingid = (int) $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => 'DUPLICATE']);
+
+        $basedata = [
+            'discounttype' => 'percentage',
+            'discountpercentage' => 10.0,
+            'discountabsolute' => 0.0,
+            'starttime' => 0,
+            'endtime' => 0,
+        ];
+
+        // Creating a new coupon with the same code must fail with 'couponalreadyexists'.
+        $newform = new addedit_coupon(null, null, 'post', '', null, true, ['id' => 0] + $basedata, false);
+        $newerrors = $newform->validation(['id' => 0, 'coupon' => 'DUPLICATE'] + $basedata, []);
+        $this->assertSame(get_string('couponalreadyexists', 'local_shopping_cart'), $newerrors['coupon'] ?? null);
+
+        // Editing the same record with its own code must not trigger the duplicate error.
+        $editform = new addedit_coupon(null, null, 'post', '', null, true, ['id' => $existingid] + $basedata, false);
+        $editerrors = $editform->validation(['id' => $existingid, 'coupon' => 'DUPLICATE'] + $basedata, []);
+        $this->assertArrayNotHasKey('coupon', $editerrors);
     }
 
     /**
