@@ -548,9 +548,17 @@ class shopping_cart {
      * @param string $area
      * @param int $itemid
      * @param int $userid
+     * @param int $identifier the purchase this checkout belongs to, handed to the component so it
+     *                        can tell several purchases of the same item apart later
      * @return local\entities\cartitem
      */
-    public static function successful_checkout(string $component, string $area, int $itemid, int $userid): bool {
+    public static function successful_checkout(
+        string $component,
+        string $area,
+        int $itemid,
+        int $userid,
+        int $identifier = 0
+    ): bool {
 
         global $USER;
 
@@ -570,12 +578,16 @@ class shopping_cart {
 
         $providerclass = static::get_service_provider_classname($component);
 
+        // The identifier is passed as a trailing argument on purpose: it is NOT part of the
+        // service_provider interface, so implementations that do not declare it simply ignore it
+        // (PHP drops surplus arguments on user-defined methods) and no third-party provider breaks.
         return component_class_callback(
             $providerclass,
             'successful_checkout',
             [$area, $itemid,
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER,
-            $userid]
+            $userid,
+            $identifier]
         );
     }
 
@@ -586,13 +598,23 @@ class shopping_cart {
      * @param string $area Name of the area that the cartitems belong to
      * @param int $itemid An internal identifier that is used by the component
      * @param int $userid
+     * @param int $identifier the purchase being cancelled, so the component can scope the
+     *                        cancellation to it instead of dropping everything for this item
      * @return local\entities\cartitem
      */
-    public static function cancel_purchase_for_component(string $component, string $area, int $itemid, int $userid): bool {
+    public static function cancel_purchase_for_component(
+        string $component,
+        string $area,
+        int $itemid,
+        int $userid,
+        int $identifier = 0
+    ): bool {
 
         $providerclass = static::get_service_provider_classname($component);
 
-        return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid]);
+        // Trailing argument, see the note in successful_checkout(): not part of the interface, so
+        // providers that do not declare it are unaffected.
+        return component_class_callback($providerclass, 'cancel_purchase', [$area, $itemid, $userid, $identifier]);
     }
 
     /**
@@ -868,7 +890,9 @@ class shopping_cart {
                     $item['itemid'],
                     $userid,
                 );
-            } else if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
+            } else if (
+                !self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid, (int)$identifier)
+            ) {
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
 
@@ -1058,6 +1082,115 @@ class shopping_cart {
     }
 
     /**
+     * Cancel every successful purchase a user holds for one item, each one properly refunded.
+     *
+     * The "undo my booking" button on an item knows only the item, not the individual purchases -
+     * but a user can have bought the same item several times. Cancelling just one of them leaves
+     * the rest silently in place, so this walks all of them, oldest first, and cancels each through
+     * the regular path (its own remaining value, cancellation fee and component callback).
+     *
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @return array success (1 when every purchase was cancelled), error, credit (total granted),
+     *               cancelled (number of purchases cancelled)
+     */
+    public static function cancel_all_purchases_for_item(
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $userid
+    ): array {
+
+        global $DB;
+
+        $purchases = $DB->get_records('local_shopping_cart_history', [
+            'componentname' => $componentname,
+            'area' => $area,
+            'itemid' => $itemid,
+            'userid' => $userid,
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ], 'id ASC', 'id');
+
+        if (empty($purchases)) {
+            return [
+                'success' => 0,
+                'error' => get_string('nopurchasefound', 'local_shopping_cart'),
+                'credit' => 0,
+                'cancelled' => 0,
+            ];
+        }
+
+        $cancelled = 0;
+        $errors = [];
+        $credit = 0.0;
+        foreach ($purchases as $purchase) {
+            $result = self::cancel_purchase($itemid, $area, $userid, $componentname, (int)$purchase->id);
+            if (empty($result['success'])) {
+                $errors[] = (string)($result['error'] ?? '');
+                continue;
+            }
+            $cancelled++;
+            // cancel_purchase() reports the resulting balance, so the last successful one carries
+            // the total. Reading it here keeps this method free of its own credit arithmetic.
+            $credit = (float)($result['credit'] ?? $credit);
+        }
+
+        return [
+            'success' => empty($errors) ? 1 : 0,
+            'error' => implode(' ', array_filter(array_unique($errors))),
+            'credit' => $credit,
+            'cancelled' => $cancelled,
+        ];
+    }
+
+    /**
+     * Cancel one specific purchase, named by the identifier the component stored at checkout.
+     *
+     * cancel_purchase() falls back to the most recent purchase when it is given no history id,
+     * which is wrong as soon as a user bought the same item more than once. A component that kept
+     * the identifier handed to it in successful_checkout() can name the purchase exactly, without
+     * having to know anything about this plugin's history table.
+     *
+     * @param string $componentname
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @param int $identifier the purchase reference from successful_checkout()
+     * @return array same shape as cancel_purchase(): success, error, credit
+     */
+    public static function cancel_purchase_by_identifier(
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $userid,
+        int $identifier
+    ): array {
+
+        global $DB;
+
+        $historyid = (int)$DB->get_field('local_shopping_cart_history', 'id', [
+            'componentname' => $componentname,
+            'area' => $area,
+            'itemid' => $itemid,
+            'userid' => $userid,
+            'identifier' => $identifier,
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ], IGNORE_MULTIPLE);
+
+        if (empty($historyid)) {
+            return [
+                'success' => 0,
+                'error' => get_string('nopurchasefound', 'local_shopping_cart'),
+                'credit' => 0,
+            ];
+        }
+
+        return self::cancel_purchase($itemid, $area, $userid, $componentname, $historyid);
+    }
+
+    /**
      * Function to cancel purchase of item. The price of the item will be handled as a credit for the next purchases.
      *
      * @param int $itemid
@@ -1084,7 +1217,7 @@ class shopping_cart {
         int $applygivenquota = 0
     ): array {
 
-        global $USER;
+        global $USER, $DB;
         // A user can only cancel for herself, unless she is cashier.
         if ($USER->id != $userid) {
             $context = context_system::instance();
@@ -1121,7 +1254,10 @@ class shopping_cart {
 
         // Sometimes, we don't want a callback to the compoonent.
         if ($applytocomponent == 1) {
-            if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid)) {
+            // Which purchase is being cancelled: the component may hold several for the same item
+            // (bought separately) and can only keep the others alive if it is told which one goes.
+            $identifier = (int)$DB->get_field('local_shopping_cart_history', 'identifier', ['id' => $historyid]);
+            if (!self::cancel_purchase_for_component($componentname, $area, $itemid, $userid, $identifier)) {
                 return [
                         'success' => 0,
                         'error' => get_string('canceldidntwork', 'local_shopping_cart'),
@@ -1315,10 +1451,25 @@ class shopping_cart {
             ];
         }
 
-        // Never refund more than was actually paid for the item (mirrors the anti-misuse guard
-        // in shopping_cart_history::cancel_purchase).
-        if ($amount > (float) $record->price) {
-            $amount = (float) $record->price;
+        // Never refund more than is still owed on the purchase: the price minus every partial
+        // refund already granted against it. Capping against the bare price would let repeated
+        // partial refunds add up past what was paid (three refunds of 45.00 on a 45.00 purchase
+        // each pass the price check on their own), and the later full cancellation subtracts the
+        // same sum, so both payouts stay inside the one purchase.
+        $refundable = round(
+            max(0.0, (float) $record->price - shopping_cart_history::get_partial_refunds_sum((int) $record->id)),
+            2
+        );
+        if ($refundable <= 0) {
+            return [
+                'success' => 0,
+                'error' => get_string('partialrefund:nothingleft', 'local_shopping_cart'),
+                'credit' => 0.0,
+                'identifier' => 0,
+            ];
+        }
+        if ($amount > $refundable) {
+            $amount = $refundable;
         }
 
         $currency = $record->currency ?? (get_config('local_shopping_cart', 'globalcurrency') ?: 'EUR');
@@ -2047,7 +2198,7 @@ class shopping_cart {
         $dailysumsdata['title'] = get_string('titledailysums', 'local_shopping_cart');
 
         // SQL to get daily sums.
-        $dailysumssql = "SELECT payment, sum(price) dailysum
+        $dailysumssql = "SELECT payment, sum(price) dailysum, sum(credits) dailycredits
             FROM {local_shopping_cart_ledger}
             WHERE timecreated BETWEEN :startofday AND :endofday
             AND paymentstatus = :paymentsuccess
@@ -2094,6 +2245,17 @@ class shopping_cart {
                     $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                     $dailysumsdata['creditspaidbacktransfer'] = $dailysumrecord->dailysumformatted;
                     break;
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND:
+                    // A partial refund carries its amount in the credits column, not in price, so
+                    // the summed price is always 0 here and has to be replaced. It gives money
+                    // back, so it lowers the day's total - like the paid-back methods above, it
+                    // contributes a negative number. It is credit, not cash, so totalcash stays.
+                    $dailysumrecord->dailysum = -1 * (float)$dailysumrecord->dailycredits;
+                    $dailysumrecord->dailysumformatted = format_float((float)$dailysumrecord->dailysum, 2);
+                    $total += (float)$dailysumrecord->dailysum;
+                    $dailysumrecord->paymentmethod = get_string('paymentmethodpartialrefund', 'local_shopping_cart');
+                    $dailysumsdata['partialrefund'] = $dailysumrecord->dailysumformatted;
+                    break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                     $total += (float)$dailysumrecord->dailysum;
                     $totalcash += (float)$dailysumrecord->dailysum;
@@ -2129,7 +2291,7 @@ class shopping_cart {
         if (get_config('local_shopping_cart', 'showdailysumscurrentcashier')) {
             // Now get data for current cashier.
             // SQL to get daily sums.
-            $dailysumssqlcurrent = "SELECT payment, sum(price) dailysum
+            $dailysumssqlcurrent = "SELECT payment, sum(price) dailysum, sum(credits) dailycredits
                 FROM {local_shopping_cart_ledger}
                 WHERE timecreated BETWEEN :startofday AND :endofday
                 AND paymentstatus = :paymentsuccess
@@ -2164,6 +2326,13 @@ class shopping_cart {
                     case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_PAID_BACK_BY_TRANSFER:
                         $dailysumrecord->paymentmethod = get_string('paymentmethodcreditspaidbacktransfer', 'local_shopping_cart');
                         $dailysumsdata['currentcashier:creditspaidbacktransfer'] = $dailysumrecord->dailysumformatted;
+                        break;
+                    case LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND:
+                        // See the comment on the same case above: the amount lives in credits.
+                        $dailysumrecord->dailysum = -1 * (float)$dailysumrecord->dailycredits;
+                        $dailysumrecord->dailysumformatted = format_float((float)$dailysumrecord->dailysum, 2);
+                        $dailysumrecord->paymentmethod = get_string('paymentmethodpartialrefund', 'local_shopping_cart');
+                        $dailysumsdata['currentcashier:partialrefund'] = $dailysumrecord->dailysumformatted;
                         break;
                     case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                         $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');

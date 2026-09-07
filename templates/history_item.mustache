@@ -85,7 +85,14 @@
                 {{/serviceperiodstartrendered}}
             {{/canpayback}}{{/showserviceperiod}}
         </small></span></p>
-        <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}</small></span></p>
+        <p><span><small>{{#str}} paid, local_shopping_cart {{/str}} {{paymentstring}}
+            {{#partiallyrefunded}}
+                <br>{{#str}} alreadyrefunded, local_shopping_cart, {{partiallyrefunded}} {{/str}}
+                {{#partialrefunds}}
+                    <br>&nbsp;&nbsp;{{date}}: {{amount}} {{currency}}
+                {{/partialrefunds}}
+            {{/partiallyrefunded}}
+        </small></span></p>
     </div>
     {{#gateway}}
     <p>

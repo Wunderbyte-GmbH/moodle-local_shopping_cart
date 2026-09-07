@@ -314,6 +314,24 @@ class shoppingcart_history_list implements renderable, templatable {
 
             $item->canceled = $item->paymentstatus == LOCAL_SHOPPING_CART_PAYMENT_CANCELED ? true : false;
 
+            // A partial refund leaves the purchase successful and only writes a ledger line, so the
+            // entry keeps showing the full price although part of it is already back on the user's
+            // credit. Carry the refunded sum along so the template can say so.
+            $refunded = shopping_cart_history::get_partial_refunds_sum((int)$item->id);
+            if ($refunded > 0) {
+                $item->partiallyrefunded = format_float($refunded, 2);
+                // Itemised as well: the total alone leaves the user adding up where their credit
+                // came from, especially with several purchases of the same item in the list.
+                $item->partialrefunds = [];
+                foreach (shopping_cart_history::get_partial_refunds((int)$item->id) as $refund) {
+                    $item->partialrefunds[] = [
+                        'amount' => format_float((float)$refund->credits, 2),
+                        'date' => userdate((int)$refund->timecreated, get_string('strftimedatetime', 'langconfig')),
+                        'currency' => $item->currency ?? '',
+                    ];
+                }
+            }
+
             // Depending on how is calling this and which status the person has, we display different cancel options.
             if (!$item->canceled) {
                 $item->canceluntilstring = date('Y-m-d', $item->canceluntil);

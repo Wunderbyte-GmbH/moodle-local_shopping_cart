@@ -530,6 +530,68 @@ class shopping_cart_history {
     }
 
     /**
+     * Sum of the partial refunds already granted against one purchase.
+     *
+     * A partial refund does not cancel the purchase: it leaves the history entry successful and
+     * only writes a credit line into the ledger, linked back through schistoryid. Anything that
+     * later pays out against the same purchase - another partial refund, or the full cancellation -
+     * has to subtract what was already given back, or the user ends up with more credit than they
+     * ever paid.
+     *
+     * @param int $historyid local_shopping_cart_history id
+     * @return float sum of the credits already refunded for this purchase
+     */
+    public static function get_partial_refunds_sum(int $historyid): float {
+        global $DB;
+
+        if (empty($historyid)) {
+            return 0.0;
+        }
+
+        $sum = $DB->get_field_sql(
+            "SELECT COALESCE(SUM(credits), 0)
+               FROM {local_shopping_cart_ledger}
+              WHERE schistoryid = :historyid
+                AND payment = :payment
+                AND paymentstatus = :paymentstatus",
+            [
+                'historyid' => $historyid,
+                'payment' => LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND,
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            ]
+        );
+
+        return round((float)$sum, 2);
+    }
+
+    /**
+     * The partial refunds already granted against one purchase, newest first.
+     *
+     * A partial refund lives only in the ledger (the purchase itself stays successful), so without
+     * this the purchase list can show a total but not where it came from.
+     *
+     * @param int $historyid local_shopping_cart_history id
+     * @return array<int, \stdClass> ledger rows: credits, timecreated, itemname
+     */
+    public static function get_partial_refunds(int $historyid): array {
+        global $DB;
+
+        if (empty($historyid)) {
+            return [];
+        }
+
+        return $DB->get_records(
+            'local_shopping_cart_ledger',
+            [
+                'schistoryid' => $historyid,
+                'payment' => LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND,
+                'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            ],
+            'timecreated DESC, id DESC'
+        );
+    }
+
+    /**
      * This function updates the entry in shopping cart history and sets the status to "canceled".
      *
      * @param int $itemid
@@ -592,17 +654,23 @@ class shopping_cart_history {
 
             // NOTE: Ledger entry will be inserted in shopping_cart::cancel_purchase function!
 
+            // What is still owed on this purchase: the price minus everything already refunded
+            // partially against it (see get_partial_refunds_sum). Without this subtraction a user
+            // who gave back two of three slots for 45.00 each would receive the full 135.00 again
+            // when cancelling the rest - 225.00 credit on a 135.00 purchase.
+            $refundable = round(max(0.0, (float)$record->price - self::get_partial_refunds_sum((int)$record->id)), 2);
+
             // There might have been a credit value set manually by the cashier.
-            // The credit can be the whole price, or it can be just a fraction.
-            // If there is no price or the credit is higher than the price, we use the price.
-            // This is to prevent malusage, where users get higher credit than they actually paid for.
+            // The credit can be the whole remaining value, or it can be just a fraction.
+            // If there is nothing left or the credit is higher than what is left, we use what is
+            // left. This is to prevent malusage, where users get higher credit than they paid for.
             if (
                 empty($credit)
-                || ($credit > $record->price)
+                || ($credit > $refundable)
             ) {
-                return [1, '', $record->price, $record->currency, $record];
+                return [1, '', $refundable, $record->currency, $record];
             } else {
-                // If the credit is smaller than the price, we use the credit.
+                // If the credit is smaller than the remaining value, we use the credit.
                 return [1, '', $credit, $record->currency, $record];
             }
         } catch (Exception $e) {

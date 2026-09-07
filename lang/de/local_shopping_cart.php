@@ -109,6 +109,7 @@ $string['allowrebookingcredit'] = 'Umbuchungsgutschrift';
 $string['allowrebookingcredit_desc'] = 'Wenn Sie die Umbuchungsgutschrift aktivieren, bekommt ein:e Nutzer:in eine Gutschrift in Höhe der Buchungs- und Stornogebühr gutgeschrieben,
 wenn er:sie innerhalb der Stornofrist ein Item storniert und ein anderes bucht.';
 $string['alreadyincart'] = 'Das gewählte Item ist bereits im Warenkorb.';
+$string['alreadyrefunded'] = 'Bereits rückerstattet: {$a}';
 $string['alwaysanswerwithsuccessinverifypurchase'] = 'Immer mit erfolgreich auf im Validierungs Webservice antworten';
 $string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'Dieses Feature wird nur von manchen Payment Providern verwendet und kann üblicherweise ignoriert werden.';
 $string['amount'] = 'Anzahl';
@@ -564,6 +565,7 @@ $string['nopaymentaccountsdesc'] =
         '<p><a href="{$a->link}" target="_blank">Hier klicken, um ein Zahlungsanbieter-Konto anzulegen.</a></p>';
 $string['nopermission'] = "Keine Berechtigung zum Stornieren";
 $string['nopermissiontoaccesspage'] = '<div class="alert alert-danger" role="alert">Sie sind nicht berechtigt, auf diese Seite zuzugreifen.</div>';
+$string['nopurchasefound'] = 'Kein passender Kauf gefunden.';
 $string['notenoughcredits'] = 'Nicht genügend Guthaben vorhanden.';
 $string['nouserselected'] = 'Noch niemand ausgewählt';
 $string['nousersfound'] = 'Keine Nutzerinnen gefunden.';
@@ -600,6 +602,7 @@ $string['paidwithcreditcard'] = 'Kreditkartenzahlung bestätigen';
 $string['paidwithdebitcard'] = 'Bankomatkartenzahlung bestätigen';
 $string['partialrefund:invalidamount'] = 'Eine Teilrückerstattung erfordert einen positiven Betrag.';
 $string['partialrefund:nopurchase'] = 'Kein passender Kauf für die Rückerstattung gefunden.';
+$string['partialrefund:nothingleft'] = 'Dieser Kauf wurde bereits vollständig rückerstattet.';
 $string['pathtoinvoices'] = 'Rechnungspfad';
 $string['pathtoinvoices_desc'] = 'Pfad im Moodle Dataroot. Kann z.B. in ein Repository gelegt werden, um direkten Zugang auf die Rechnungen zu haben.';
 $string['payment'] = 'Bezahlmethode';

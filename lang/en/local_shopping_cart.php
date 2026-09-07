@@ -109,6 +109,7 @@ $string['allowrebookingcredit'] = 'Rebooking credit';
 $string['allowrebookingcredit_desc'] = 'If you activate rebooking credit, a user will get refunded the cancelation and booking fee
 if (s)he cancels an item within the cancelation period and books another item.';
 $string['alreadyincart'] = 'The item is already in your cart.';
+$string['alreadyrefunded'] = 'Already refunded: {$a}';
 $string['alwaysanswerwithsuccessinverifypurchase'] = 'Always answer with success in verify purchase webservice.';
 $string['alwaysanswerwithsuccessinverifypurchase_desc'] = 'This feature can normally be ignored, as it\'s only used by some payment providers.';
 $string['amount'] = 'Amount';
@@ -565,6 +566,7 @@ $string['nopaymentaccountsdesc'] = '<p><a href="{$a->link}" target="_blank">Clic
 $string['nopermission'] = "No permission to cancel";
 $string['nopermissiontoaccesspage'] =
         '<div class="alert alert-danger" role="alert">You have no permission to access this page.</div>';
+$string['nopurchasefound'] = 'No matching purchase found.';
 $string['notenoughcredits'] = 'Not enough credits available.';
 $string['nouserselected'] = 'No user selected';
 $string['nousersfound'] = 'No users found';
@@ -601,6 +603,7 @@ $string['paidwithcreditcard'] = 'Confirm credit card payment';
 $string['paidwithdebitcard'] = 'Confirm debit card payment';
 $string['partialrefund:invalidamount'] = 'A partial refund requires a positive amount.';
 $string['partialrefund:nopurchase'] = 'No matching purchase found to refund.';
+$string['partialrefund:nothingleft'] = 'This purchase has already been refunded in full.';
 $string['pathtoinvoices'] = 'Path to the invoices';
 $string['pathtoinvoices_desc'] = 'Path within the Moodle data root. Can be directed to a repository, to have direct access to the invoices.';
 $string['payment'] = 'Payment method';

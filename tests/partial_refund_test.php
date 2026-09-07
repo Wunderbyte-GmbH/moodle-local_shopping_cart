@@ -197,4 +197,89 @@ final class partial_refund_test extends advanced_testcase {
         $balance = shopping_cart_credits::get_balance($user->id);
         $this->assertEqualsWithDelta(0.0, (float) $balance[0], 0.001, 'Nothing should be credited without a purchase.');
     }
+
+    /**
+     * Partial refunds and the later full cancellation together never exceed the price paid.
+     *
+     * The reported loop: three slots bought as one purchase, two of them given back one by one
+     * (a partial refund each), then the rest cancelled through the regular cancel button. Before
+     * the fix the cancellation paid out the full price again, so the user ended up with more
+     * credit than they had ever spent.
+     *
+     * @runInSeparateProcess
+     * @return void
+     */
+    public function test_partial_refunds_and_cancellation_never_exceed_the_price(): void {
+        $user = $this->getDataGenerator()->create_user();
+        [$price, $historyid] = $this->buy_cancellable_item($user, 1);
+
+        // A fifth of the price, so the two refunds and the remainder are all clean amounts and
+        // the cart's credit rounding cannot blur what this test is about.
+        $part = round($price / 5, 2);
+        $this->assertGreaterThan(0, $part, 'Test precondition: paid price must be positive.');
+
+        // Out of the box the cart forbids user cancellation (cancelationfee = -1); this test is
+        // about an installation that allows it.
+        set_config('cancelationfee', 0, 'local_shopping_cart');
+
+        $this->setUser($user);
+        foreach ([1, 2] as $round) {
+            $result = shopping_cart::add_partial_refund(
+                'local_shopping_cart',
+                'main',
+                1,
+                $user->id,
+                $part,
+                'Given up slot ' . $round
+            );
+            $this->assertEquals(1, $result['success'], 'Partial refund ' . $round . ' should succeed.');
+        }
+        $this->assertEqualsWithDelta(
+            2 * $part,
+            (float) shopping_cart_credits::get_balance($user->id)[0],
+            0.001,
+            'Two partial refunds should credit exactly their own amounts.'
+        );
+
+        // The rest is given up through the regular cancellation.
+        $cancel = shopping_cart::cancel_purchase(1, 'main', $user->id, 'local_shopping_cart', $historyid);
+        $this->assertEquals(1, $cancel['success'], 'The cancellation should succeed.');
+
+        $total = (float) shopping_cart_credits::get_balance($user->id)[0];
+        $this->assertLessThanOrEqual(
+            $price + 0.001,
+            $total,
+            'The total credit must never exceed the price actually paid.'
+        );
+        $this->assertEqualsWithDelta(
+            $price,
+            $total,
+            0.011,
+            'The cancellation should hand back exactly what was left of the purchase.'
+        );
+    }
+
+    /**
+     * Once everything has been refunded partially, a further partial refund is rejected.
+     *
+     * @runInSeparateProcess
+     * @return void
+     */
+    public function test_partial_refund_is_rejected_once_the_purchase_is_used_up(): void {
+        $user = $this->getDataGenerator()->create_user();
+        [$price] = $this->buy_cancellable_item($user, 1);
+
+        $this->setUser($user);
+        $full = shopping_cart::add_partial_refund('local_shopping_cart', 'main', 1, $user->id, $price, 'Everything back');
+        $this->assertEquals(1, $full['success'], 'Refunding the whole price at once must be possible.');
+
+        $again = shopping_cart::add_partial_refund('local_shopping_cart', 'main', 1, $user->id, $price, 'Once more');
+        $this->assertEquals(0, $again['success'], 'A fully refunded purchase must not be refunded again.');
+        $this->assertEqualsWithDelta(
+            $price,
+            (float) shopping_cart_credits::get_balance($user->id)[0],
+            0.001,
+            'The rejected refund must not have changed the balance.'
+        );
+    }
 }
