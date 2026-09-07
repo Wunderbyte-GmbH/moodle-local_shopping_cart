@@ -281,6 +281,7 @@ $string['costcenterstrings_desc'] = 'Übersetzungen für Kostenstellen: Pro Kost
 $string['coupon'] = 'Gutscheincode';
 $string['coupon:apply'] = 'Gutschein einlösen';
 $string['coupon:entercode'] = 'Gutscheincode eingeben';
+$string['couponalreadyexists'] = 'Ein Gutschein mit diesem Code existiert bereits. Bitte wählen Sie einen anderen Code.';
 $string['couponappliedsuccessfully'] = 'Gutscheincode "{$a}" erfolgreich angewendet.';
 $string['couponcouldnotbeapplied'] = 'Gutscheincode "{$a}" konnte nicht angewendet werden.';
 $string['coupondiscount'] = 'Gutscheinrabatt';

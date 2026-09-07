@@ -280,6 +280,7 @@ $string['costcenterstrings_desc'] = 'Translations for costcenters. One line per 
 $string['coupon'] = 'Coupon code';
 $string['coupon:apply'] = 'Apply coupon';
 $string['coupon:entercode'] = 'Enter coupon code';
+$string['couponalreadyexists'] = 'A coupon with this code already exists. Please choose a different code.';
 $string['couponappliedsuccessfully'] = 'Coupon code "{$a}" applied successfully.';
 $string['couponcouldnotbeapplied'] = 'Coupon code "{$a}" could not be applied.';
 $string['coupondiscount'] = 'Coupon discount';
