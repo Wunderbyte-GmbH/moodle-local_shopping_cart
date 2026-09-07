@@ -86,7 +86,7 @@ class get_history_item extends external_api {
         int $userid
     ): array {
 
-        global $USER;
+        global $USER, $DB;
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
@@ -122,6 +122,8 @@ class get_history_item extends external_api {
                 'round' => 0,
                 'roundrefundamount' => 0,
                 'cancelationfee' => 0,
+                'numberofpurchases' => 0,
+                'refundable' => 0,
             ];
         }
 
@@ -135,10 +137,31 @@ class get_history_item extends external_api {
         shopping_cart::add_quota_consumed_to_item($item, $userid);
         shoppingcart_history_list::add_round_config($item);
 
+        // A user can hold several purchases of the same item, and each of them can already be
+        // partly refunded. The cancel dialog has to talk about what is actually still refundable
+        // across all of them, otherwise it promises money that is long since paid back.
+        $purchases = $DB->get_records('local_shopping_cart_history', [
+            'componentname' => $params['componentname'],
+            'area' => $params['area'],
+            'itemid' => $params['itemid'],
+            'userid' => $params['userid'],
+            'paymentstatus' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ], 'id ASC', 'id, price');
+
+        $refundable = 0.0;
+        foreach ($purchases as $purchase) {
+            $refundable += max(
+                0.0,
+                (float)$purchase->price - shopping_cart_history::get_partial_refunds_sum((int)$purchase->id)
+            );
+        }
+
         return [
             'success' => 1,
             'id' => $item->id,
             'price' => $item->price,
+            'numberofpurchases' => count($purchases),
+            'refundable' => round($refundable, 2),
             'currency' => $item->currency,
             'quotaconsumed' => $item->quotaconsumed,
             'round' => $item->round ? 1 : 0,
@@ -163,6 +186,8 @@ class get_history_item extends external_api {
             'round' => new external_value(PARAM_INT, 'Round'),
             'roundrefundamount' => new external_value(PARAM_INT, 'Round refund amount'),
             'cancelationfee' => new external_value(PARAM_FLOAT, 'Cancelationfee'),
+            'numberofpurchases' => new external_value(PARAM_INT, 'How many successful purchases of this item the user holds'),
+            'refundable' => new external_value(PARAM_FLOAT, 'Sum still refundable across those purchases'),
         ]);
     }
 }

@@ -67,6 +67,12 @@ interface service_provider {
      * @param int $paymentid payment id as inserted into the 'payments' table, if needed for reference
      * @param int $userid The userid the order is going to deliver to
      *
+     * NOTE: the cart passes ONE additional trailing argument that is deliberately not part of this
+     * signature - int $identifier, the purchase this checkout belongs to. Declare it as an optional
+     * fifth parameter to receive it; implementations that do not are unaffected, because PHP drops
+     * surplus arguments on user-defined methods. It exists so a component holding several purchases
+     * of the same item for the same user can tell them apart later (see cancel_purchase below).
+     *
      * @return bool Whether successful or not
      */
     public static function successful_checkout(string $area, int $itemid, int $paymentid, int $userid): bool;
@@ -77,6 +83,11 @@ interface service_provider {
      * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      * @param int $userid
+     *
+     * NOTE: as in successful_checkout above, the cart passes int $identifier as a trailing argument
+     * outside this signature - the purchase being cancelled. A component that stored it at checkout
+     * can scope the cancellation to that one purchase instead of dropping everything it holds for
+     * this item and user. Declare it as an optional fourth parameter to receive it.
      *
      * @return bool
      */

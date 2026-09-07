@@ -142,8 +142,10 @@ export const init = (cancelationFee = null) => {
  * @param {string} price
  * @param {string} credit
  * @param {type} button
+ * @param {bool} cancelall cancel every purchase of this item instead of the single one
  */
-export function cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, credit, button) {
+export function cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, credit, button,
+    cancelall = false) {
 
     Ajax.call([{
         methodname: "local_shopping_cart_cancel_purchase",
@@ -153,7 +155,8 @@ export function cancelPurchase(itemid, area, userid, componentname, historyid, c
             'area': area,
             'userid': userid,
             'historyid': historyid,
-            'credit': credit
+            'credit': credit,
+            'cancelall': cancelall
         },
         done: function(data) {
 
@@ -397,7 +400,13 @@ export async function confirmCancelModal(button, cancelationFee) {
                     }
 
                     button.dataset.historyid = data.id;
-                    button.dataset.price = data.price;
+                    // What the cancellation really pays out: the price of every purchase of this
+                    // item minus everything already refunded from them. Showing the raw price of
+                    // the newest purchase would promise money that is long since paid back, and it
+                    // would ignore the user's other purchases of the same item entirely.
+                    button.dataset.price = data.refundable ?? data.price;
+                    button.dataset.numberofpurchases = data.numberofpurchases ?? 1;
+                    button.dataset.cancelall = (data.numberofpurchases ?? 1) > 1 ? '1' : '0';
                     button.dataset.credit = 0;
                     button.dataset.currency = data.currency;
                     button.dataset.quotaconsumed = data.quotaconsumed;
@@ -437,6 +446,10 @@ export async function confirmCancelModal(button, cancelationFee) {
     const price = parseFloat(button.dataset.price);
     // Quota consumed is always on two deciamals.
     const quotaconsumed = parseFloat(button.dataset.quotaconsumed);
+
+    // One fee per purchase: cancelling three purchases at once is charged three times.
+    const numberofpurchases = parseInt(button.dataset.numberofpurchases || 1, 10);
+    cancelationFee = cancelationFee * numberofpurchases;
 
     const deducedvalue = price * quotaconsumed;
     const credit = price - deducedvalue - cancelationFee;
@@ -510,11 +523,13 @@ export async function confirmCancelModal(button, cancelationFee) {
                 const area = button.dataset.area;
                 const price = button.dataset.price;
 
+                const cancelall = button.dataset.cancelall === '1';
+
                 if (button.dataset.buttontonull) {
                     button = null;
                 }
 
-                cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button);
+                cancelPurchase(itemid, area, userid, componentname, historyid, currency, price, 0, button, cancelall);
             });
 
             modal.show();

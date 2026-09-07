@@ -60,6 +60,12 @@ class cancel_purchase extends external_api {
             'userid'  => new external_value(PARAM_INT, 'userid', VALUE_REQUIRED),
             'historyid'  => new external_value(PARAM_INT, 'id of entry in shopping_cart_history db', VALUE_REQUIRED),
             'credit' => new external_value(PARAM_FLOAT, 'Custom credit value', VALUE_REQUIRED),
+            'cancelall' => new external_value(
+                PARAM_BOOL,
+                'Cancel every successful purchase the user holds for this item instead of a single one',
+                VALUE_DEFAULT,
+                false
+            ),
             ]);
     }
 
@@ -72,6 +78,7 @@ class cancel_purchase extends external_api {
      * @param int $userid
      * @param int $historyid
      * @param float $credit
+     * @param bool $cancelall cancel all of the user's purchases of this item, not just one
      * @return array
      */
     public static function execute(
@@ -80,7 +87,8 @@ class cancel_purchase extends external_api {
         int $itemid,
         int $userid,
         int $historyid,
-        float $credit
+        float $credit,
+        bool $cancelall = false
     ): array {
         $params = self::validate_parameters(self::execute_parameters(), [
             'componentname' => $componentname,
@@ -89,6 +97,7 @@ class cancel_purchase extends external_api {
             'userid' => $userid,
             'historyid' => $historyid,
             'credit' => $credit,
+            'cancelall' => $cancelall,
         ]);
 
         require_login();
@@ -99,6 +108,18 @@ class cancel_purchase extends external_api {
 
         if (!has_capability('local/shopping_cart:canbuy', $context)) {
             throw new moodle_exception('norighttoaccess', 'local_shopping_cart');
+        }
+
+        // Undo my booking on the item itself means every purchase of it - a user can have
+        // bought the same item more than once, and cancelling only one of them would leave the
+        // rest quietly booked. Each purchase is still cancelled on its own terms.
+        if (!empty($params['cancelall'])) {
+            return shopping_cart::cancel_all_purchases_for_item(
+                $params['componentname'],
+                $params['area'],
+                $params['itemid'],
+                $params['userid']
+            );
         }
 
         return shopping_cart::cancel_purchase(
@@ -121,6 +142,11 @@ class cancel_purchase extends external_api {
             'success' => new external_value(PARAM_INT, 'Success value 0 or 1'),
             'error' => new external_value(PARAM_RAW, 'Error message if something went wrong'),
             'credit' => new external_value(PARAM_FLOAT, 'New credit value'),
+            'cancelled' => new external_value(
+                PARAM_INT,
+                'How many purchases were cancelled (only returned for cancelall)',
+                VALUE_OPTIONAL
+            ),
             ]);
     }
 }
