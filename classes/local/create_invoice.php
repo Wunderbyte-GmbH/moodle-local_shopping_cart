@@ -531,14 +531,24 @@ class create_invoice {
             $tmp = str_replace("[[discount]]", $item->discount ?? 0, $tmp);
 
             // If it's a booking option, we add option-specific data.
+            $optionsettings = null;
             if ($item->area == "option" && class_exists('mod_booking\singleton_service')) {
                 $optionid = (int)$item->itemid;
                 $optionsettings = \mod_booking\singleton_service::get_instance_of_booking_option_settings($optionid);
                 if (empty($optionsettings->cmid)) {
                     // Bugfix: If for some reason cmid is empty, we re-create the option settings from DB.
                     $dbrecord = $DB->get_record('booking_options', ['id' => $optionid]);
-                    $optionsettings = new booking_option_settings($optionid, $dbrecord);
+                    // An option that was sold in the past can have been deleted since, and then
+                    // there is nothing left to rebuild the settings from. A receipt is a payment
+                    // record and has to stay readable no matter what happened to the product
+                    // afterwards, so fall through to the empty placeholders below rather than
+                    // handing false to a constructor that only accepts ?stdClass - which is a fatal
+                    // error and takes the whole receipt down.
+                    $optionsettings = !empty($dbrecord) ? new booking_option_settings($optionid, $dbrecord) : null;
                 }
+            }
+
+            if (!empty($optionsettings)) {
                 $bookingsettings = \mod_booking\singleton_service::get_instance_of_booking_settings_by_cmid($optionsettings->cmid);
 
                 // If option has no semester id, then use semester id from instance.
