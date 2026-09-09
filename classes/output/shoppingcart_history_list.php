@@ -203,6 +203,7 @@ class shoppingcart_history_list implements renderable, templatable {
         (GH-204): roughly 35 ms per entry, which is what makes checkout.php slow for users with a
         long purchase history. */
         $ledgerdata = self::prefetch_ledger_data($items);
+        $refunddata = self::prefetch_partial_refunds($items);
         $rebookingdata = $allowrebooking ? self::prefetch_rebooking_data($items) : [];
 
         // We transform the stdClass from DB to array for template.
@@ -317,16 +318,16 @@ class shoppingcart_history_list implements renderable, templatable {
             // A partial refund leaves the purchase successful and only writes a ledger line, so the
             // entry keeps showing the full price although part of it is already back on the user's
             // credit. Carry the refunded sum along so the template can say so.
-            $refunded = shopping_cart_history::get_partial_refunds_sum((int)$item->id);
+            $refunded = $refunddata['sums'][(int)$item->id] ?? 0.0;
             if ($refunded > 0) {
                 $item->partiallyrefunded = format_float($refunded, 2);
                 // Itemised as well: the total alone leaves the user adding up where their credit
                 // came from, especially with several purchases of the same item in the list.
                 $item->partialrefunds = [];
-                foreach (shopping_cart_history::get_partial_refunds((int)$item->id) as $refund) {
+                foreach ($refunddata['refunds'][(int)$item->id] ?? [] as $refund) {
                     $item->partialrefunds[] = [
                         'amount' => format_float((float)$refund->credits, 2),
-                        'date' => userdate((int)$refund->timecreated, get_string('strftimedatetime', 'langconfig')),
+                        'date' => userdate((int)$refund->timecreated, $strftimedatetime),
                         'currency' => $item->currency ?? '',
                     ];
                 }
@@ -551,6 +552,68 @@ class shoppingcart_history_list implements renderable, templatable {
 
         return $ledgerdata;
     }
+
+    /**
+     * Fetch the partial refunds the item loop needs for the whole list at once.
+     *
+     * A partial refund lives only in the ledger, linked back through schistoryid. Reading it per
+     * history entry cost one query per entry, which is exactly the linear growth the prefetching
+     * above was introduced to remove (GH-204).
+     *
+     * @param array $items the history items
+     * @return array with the keys sums (historyid => float) and refunds (historyid => ledger rows)
+     */
+    private static function prefetch_partial_refunds(array $items): array {
+
+        global $DB;
+
+        $refunddata = [
+            'sums' => [],
+            'refunds' => [],
+        ];
+
+        $historyids = [];
+        foreach ($items as $item) {
+            if (!empty($item->id)) {
+                $historyids[(int) $item->id] = (int) $item->id;
+            }
+        }
+
+        if (empty($historyids)) {
+            return $refunddata;
+        }
+
+        [$inhistoryids, $params] = $DB->get_in_or_equal($historyids, SQL_PARAMS_NAMED, 'schistoryid');
+        $params['payment'] = LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND;
+        $params['paymentstatus'] = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+
+        /* Newest first, the order get_partial_refunds() returned. The sum is built from the very
+        same rows, so the total and its itemisation cannot drift apart. */
+        $rs = $DB->get_recordset_sql(
+            "SELECT id, schistoryid, credits, timecreated, itemname
+               FROM {local_shopping_cart_ledger}
+              WHERE schistoryid $inhistoryids
+                AND payment = :payment
+                AND paymentstatus = :paymentstatus
+           ORDER BY timecreated DESC, id DESC",
+            $params
+        );
+
+        foreach ($rs as $record) {
+            $schistoryid = (int) $record->schistoryid;
+            $refunddata['refunds'][$schistoryid][] = $record;
+            $refunddata['sums'][$schistoryid] = ($refunddata['sums'][$schistoryid] ?? 0) + (float) $record->credits;
+        }
+        $rs->close();
+
+        // The single-row get_partial_refunds_sum() rounded its result, so entries compare the same way.
+        foreach ($refunddata['sums'] as $schistoryid => $sum) {
+            $refunddata['sums'][$schistoryid] = round($sum, 2);
+        }
+
+        return $refunddata;
+    }
+
 
     /**
      * Fetch the data rebookings::allow_rebooking() needs for the whole list at once.

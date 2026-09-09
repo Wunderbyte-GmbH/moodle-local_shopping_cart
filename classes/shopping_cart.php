@@ -1132,8 +1132,8 @@ class shopping_cart {
                 continue;
             }
             $cancelled++;
-            // cancel_purchase() reports the resulting balance, so the last successful one carries
-            // the total. Reading it here keeps this method free of its own credit arithmetic.
+            // Cancel_purchase() reports the resulting balance, so the last successful one carries
+            // The total. Reading it here keeps this method free of its own credit arithmetic.
             $credit = (float)($result['credit'] ?? $credit);
         }
 
