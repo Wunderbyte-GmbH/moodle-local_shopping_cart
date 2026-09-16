@@ -1061,48 +1061,6 @@ if ($hassiteconfig) {
         )
     );
 
-    // Add a heading for the PRO license section.
-    $settings->add(new admin_setting_heading(
-        'local_shopping_cart/licenseheading',
-        get_string('licenseheading', 'local_shopping_cart'),
-        get_string('licenseheadingdescription', 'local_shopping_cart')
-    ));
-
-    // Dynamically change the license info text depending on the current key's status.
-    $licensekeydesc = get_string('licensekeydesc', 'local_shopping_cart');
-    $licenseinfo = wb_payment::get_license_info();
-    switch ($licenseinfo['reason']) {
-        case 'valid':
-            $licensekeydesc = "<p style='color: green; font-weight: bold'>"
-                . get_string('licenseactivated', 'local_shopping_cart', $licenseinfo['expirationdate'])
-                . "</p>";
-            break;
-        case 'expired':
-            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
-                . get_string('licenseexpired', 'local_shopping_cart', $licenseinfo['expirationdate'])
-                . "</p>";
-            break;
-        case 'wrongproduct':
-            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
-                . get_string('licensewrongproduct', 'local_shopping_cart')
-                . "</p>";
-            break;
-        case 'invalid':
-            $licensekeydesc = "<p style='color: red; font-weight: bold'>"
-                . get_string('licenseinvalid', 'local_shopping_cart')
-                . "</p>";
-            break;
-    }
-
-    $settings->add(
-        new admin_setting_configtext(
-            'local_shopping_cart/licensekey',
-            get_string('licensekey', 'local_shopping_cart'),
-            $licensekeydesc,
-            ''
-        )
-    );
-
     // Add a heading for the section.
     $settings->add(new admin_setting_heading(
         'local_shopping_cart/couponsheading',

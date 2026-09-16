@@ -38,6 +38,9 @@ class wb_payment {
     /** @var string The product identifier license keys must carry to activate PRO features here. */
     const PRODUCT = 'shoppingcartpro';
 
+    /** @var bool Whether feature availability is tied to a stored key. */
+    const ENFORCE_KEY = false;
+
     /** @var string Wunderbyte shared public key used to verify license keys. */
     const WB_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu8vRBnPDug2pKoGY9wQS
@@ -130,6 +133,10 @@ pwIDAQAB
      * @return bool true if the PRO version is activated
      */
     public static function pro_version_is_activated(): bool {
+        if (!self::ENFORCE_KEY) {
+            return true;
+        }
+
         if (self::get_license_info()['valid']) {
             return true;
         }
