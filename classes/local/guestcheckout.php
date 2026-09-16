@@ -324,7 +324,7 @@ class guestcheckout {
         if (substr($pattern, -1) === '*') {
             $prefix = self::normalize_path(rtrim(substr($pattern, 0, -1)));
             if ($prefix === '' || $prefix === '/') {
-                return true;
+                return self::path_is_catch_all_entry_point($path);
             }
             return $path === $prefix || strpos($path, $prefix . '/') === 0;
         }
@@ -334,6 +334,32 @@ class guestcheckout {
         }
 
         return $path === $pattern || strpos($path, $pattern . '/') === 0;
+    }
+
+    /**
+     * Checks whether a path is one of the pages the catch-all pattern (* or /*) may trigger on.
+     *
+     * The catch-all is deliberately narrow: creating a logged-in guest on arbitrary pages
+     * (user profiles, calendar, reports, the checkout itself, ...) caused too many side
+     * effects, so it only covers the pages a visitor lands on to browse an offer - the front
+     * page, the dashboard and activity pages below /mod. Any other page must be listed as an
+     * explicit pattern (e.g. /course/*) to trigger the auto-create.
+     *
+     * @param string $path Normalized local path.
+     * @return bool
+     */
+    private static function path_is_catch_all_entry_point(string $path): bool {
+        if ($path === '/' || $path === '/index.php') {
+            return true;
+        }
+
+        foreach (['/my', '/mod'] as $area) {
+            if ($path === $area || strpos($path, $area . '/') === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
