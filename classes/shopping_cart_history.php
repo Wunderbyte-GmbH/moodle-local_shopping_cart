@@ -309,6 +309,12 @@ class shopping_cart_history {
                 $item['address_shipping'] = $addresses["selectedaddress_shipping"] ?? null;
                 $item['taxcountrycode'] = $vatnumbercountrycode["taxcountrycode"] ?? null;
                 $item['vatnumber'] = $vatnumbercountrycode["vatnumber"] ?? null;
+                // The identifier of the cart decides where the history goes. A checkout which was
+                // given a new identifier must not store its items under the one left on them by a
+                // previous checkout - the gateway and deliver_order() look up the cart identifier.
+                if (isset($data->identifier)) {
+                    $item['identifier'] = $data->identifier;
+                }
                 if (self::write_to_db((object)$item) == 0) {
                     $returnid = 0;
                 }
