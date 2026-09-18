@@ -186,6 +186,8 @@ $string['cashtransferreason'] = 'Grund für die Bargeldumbuchung';
 $string['cashtransferreason_help'] = 'Geben Sie einen Grund für die Bargeldumbuchung an.';
 $string['cashtransferreasonnecessary'] = 'Sie müssen einen Grund für die Bargeldumbuchung angeben!';
 $string['cashtransfersuccess'] = 'Bargeldumbuchung erfolgreich';
+$string['checkongoingpayments'] = 'Offene Zahlungen automatisch abschließen';
+$string['checkongoingpayments_desc'] = 'Beim Öffnen der Kassenseite wird jedes Zahlungs-Plugin, das dies unterstützt, gefragt, ob eine offene Zahlung dieser Person inzwischen abgeschlossen wurde. Diese Zahlung wird dann beendet. Schalten Sie die Funktion aus, um den Zahlungsdienst weniger zu belasten. Offene Zahlungen werden dann nur noch abgeschlossen, wenn die Person vom Zahlungsdienst zurückkehrt oder dieser die Website benachrichtigt.';
 $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Weiter zur Bezahlung';
 $string['checkout_completed'] = 'Checkout abgeschlossen';
 $string['checkout_completed_desc'] = 'Der Benutzer mit der ID {$a->userid} hat den Checkout mit identifier {$a->identifier}

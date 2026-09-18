@@ -186,6 +186,8 @@ $string['cashtransferreason'] = 'Reason for the cash transfer';
 $string['cashtransferreason_help'] = 'Enter a reason why cash was transferred.';
 $string['cashtransferreasonnecessary'] = 'You need to give a reason why cash was transferred.';
 $string['cashtransfersuccess'] = 'Cash transfer successful';
+$string['checkongoingpayments'] = 'Complete ongoing payments automatically';
+$string['checkongoingpayments_desc'] = 'When the checkout page is opened, every payment gateway that supports it is asked whether a pending payment of this user has been completed meanwhile, and that payment is then finished. Switch this off to spare the payment provider these requests. Pending payments are then only completed when the user returns from the payment provider or when it notifies the site.';
 $string['checkout'] = '<i class="fa fa-shopping-cart" aria-hidden="true"></i> Proceed to checkout';
 $string['checkout_completed'] = 'Checkout Completed';
 $string['checkout_completed_desc'] = 'The user with userid {$a->userid} successfully completed the checkout with identifier {$a->identifier}';

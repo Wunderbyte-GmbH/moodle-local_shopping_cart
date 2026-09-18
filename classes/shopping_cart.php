@@ -1611,12 +1611,25 @@ class shopping_cart {
     /**
      * Check for ongoing payment.
      *
+     * Asks every enabled gateway that supports it whether a pending payment of this user has been
+     * completed meanwhile and finishes it. Does nothing when checkongoingpayments is switched off.
+     *
      * @param int $userid
      * @return void
      */
     public static function check_for_ongoing_payment(int $userid) {
 
         global $DB, $CFG;
+
+        /* Gateways that support it are asked whether a pending payment of this user has been
+        completed meanwhile, which means a request to the payment provider per visit of the
+        checkout page. Sites that want to spare their payment provider can switch this off; pending
+        payments are then only completed through the return url and the purchase notification.
+        The check is on by default, also on sites where the setting has never been saved. */
+        $checkongoingpayments = get_config('local_shopping_cart', 'checkongoingpayments');
+        if ($checkongoingpayments !== false && empty($checkongoingpayments)) {
+            return;
+        }
 
         $now = time();
 
@@ -1656,8 +1669,10 @@ class shopping_cart {
                         GROUP BY sch.identifier, sch.userid, oo.timecreated, tid";
 
                 // Filtern records.
+                // Only payments started within the last 24 hours are completed automatically,
+                // older ones are left to the payment provider's own notification.
                 $now = time();
-                $past = strtotime('-48 hours', $now);
+                $past = strtotime('-24 hours', $now);
 
                 $records = $DB->get_records_sql($sql, $params);
 

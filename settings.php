@@ -168,6 +168,16 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to ask the payment gateways about pending payments when the checkout page is opened.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/checkongoingpayments',
+            new lang_string('checkongoingpayments', 'local_shopping_cart'),
+            new lang_string('checkongoingpayments_desc', 'local_shopping_cart'),
+            1
+        )
+    );
+
     // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox(
