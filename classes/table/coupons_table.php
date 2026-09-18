@@ -27,6 +27,7 @@ require_once(__DIR__ . '/../../lib.php');
 require_once($CFG->libdir . '/tablelib.php');
 
 use dml_exception;
+use local_shopping_cart\local\coupon;
 use local_wunderbyte_table\wunderbyte_table;
 
 /**
@@ -173,6 +174,20 @@ class coupons_table extends wunderbyte_table {
             return get_string($key, 'local_shopping_cart');
         }
         return $key;
+    }
+
+    /**
+     * Render the counting mode of a coupon as a readable string.
+     *
+     * @param object $values Contains object with all the values of record.
+     * @return string
+     */
+    public function col_countmode(object $values): string {
+        $mode = $values->countmode ?? coupon::COUNTMODE_CHECKOUT;
+        if ($mode === coupon::COUNTMODE_ITEM) {
+            return get_string('countmodeitem', 'local_shopping_cart');
+        }
+        return get_string('countmodecheckout', 'local_shopping_cart');
     }
 
     /**

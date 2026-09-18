@@ -138,6 +138,8 @@ function local_shopping_cart_create_coupon_and_guest_tables() {
     $table->add_field('discountabsolute', XMLDB_TYPE_NUMBER, '10, 2', null, null, null, '0');
     $table->add_field('currency', XMLDB_TYPE_CHAR, '10', null, null, null, 'EUR');
     $table->add_field('maxnumber', XMLDB_TYPE_INTEGER, '8', null, null, null, '1');
+    $table->add_field('maxnumberperuser', XMLDB_TYPE_INTEGER, '8', null, null, null, '0');
+    $table->add_field('countmode', XMLDB_TYPE_CHAR, '20', null, null, null, 'checkout');
     $table->add_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null);
     $table->add_field('active', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
     $table->add_field('coupontype', XMLDB_TYPE_CHAR, '255', null, null, null, null);

@@ -48,6 +48,7 @@ use moodle_exception;
 use Exception;
 use local_shopping_cart\event\item_notbought;
 use local_shopping_cart\interfaces\interface_transaction_complete;
+use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\payment\service_provider;
 use moodle_url;
@@ -957,7 +958,10 @@ class shopping_cart {
                 if ($datafromhistory) {
                     $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
                 }
-                if (!empty($data['coupon'])) {
+                // The coupon is recorded on an item only if it actually reduced that item's price.
+                // Items that opted out, were not opted in or got nothing from an already used up
+                // absolute coupon must not count as a coupon usage in the ledger.
+                if (!empty($data['coupon']) && !empty($item['coupondiscount'])) {
                     $couponrecord = $DB->get_record('local_shopping_cart_coupons', ['coupon' => $data['coupon']], 'id');
                     $item['coupon'] = $couponrecord ? (string)$couponrecord->id : null;
                 } else {
@@ -1014,6 +1018,15 @@ class shopping_cart {
                     'costcenter' => $data['costcenter'] ?? '',
                 ];
                 shopping_cart_credits::creditsmanager_correct_credits($correctiondata);
+            }
+
+            // The coupon of this checkout has been used. It must not stay in the buyer's cart,
+            // otherwise it would silently apply to the next purchase without checking the limits.
+            if (!empty($data['coupon'])) {
+                $couponmanager = new cart_coupon_manager(cartstore::instance($userid));
+                if ($couponmanager->get_applied_coupon() === (string) $data['coupon']) {
+                    $couponmanager->clear_coupon();
+                }
             }
 
             // We now trigger an event to card & cashier checkout to react on it.

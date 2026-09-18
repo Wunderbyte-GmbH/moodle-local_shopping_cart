@@ -226,6 +226,7 @@ class coupon_affected_items extends dynamic_form {
      */
     public function check_access_for_dynamic_submission(): void {
         require_login();
+        require_capability('local/shopping_cart:editcoupons', $this->get_context_for_dynamic_submission());
     }
 
     /**

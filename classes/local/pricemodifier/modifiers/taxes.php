@@ -69,6 +69,21 @@ abstract class taxes extends modifier_base {
             $data['price_net'] = shopping_cart::calculate_total_price($data["items"], true);
             $data['initialtotal'] = $data['price'];
             $data['initialtotal_net'] = $data['price_net'];
+
+            // The initial total is the amount before any coupon, as without taxes.
+            $undiscounted = [];
+            foreach ($data['items'] as $key => $item) {
+                if (!empty($item['coupondiscount']) && isset($item['originalprice'])) {
+                    $item['price'] = $item['originalprice'];
+                    $undiscounted[$key] = $item;
+                }
+            }
+            if (!empty($undiscounted)) {
+                self::update_item_price_data($undiscounted, $data['userid'], $taxcategories);
+                $initialitems = array_replace($data['items'], $undiscounted);
+                $data['initialtotal'] = shopping_cart::calculate_total_price($initialitems);
+                $data['initialtotal_net'] = shopping_cart::calculate_total_price($initialitems, true);
+            }
         }
 
         $data['taxesenabled'] = $taxesenabled;

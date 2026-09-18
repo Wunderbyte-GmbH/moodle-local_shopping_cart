@@ -417,4 +417,39 @@ final class shopping_cart_credits_test extends advanced_testcase {
             ['checkouturl'],
         ];
     }
+
+    /**
+     * Credits in a second currency are refused with a readable message in every language pack.
+     *
+     * @covers \local_shopping_cart\shopping_cart_credits::get_balance
+     */
+    public function test_credits_in_two_currencies_are_refused_with_message(): void {
+        global $DB;
+        $user = $this->getDataGenerator()->create_user();
+        foreach (['EUR', 'USD'] as $currency) {
+            $DB->insert_record('local_shopping_cart_credits', (object) [
+                'userid' => $user->id,
+                'credits' => 10,
+                'currency' => $currency,
+                'balance' => 10,
+                'usermodified' => $user->id,
+                'timecreated' => time(),
+                'timemodified' => time(),
+            ]);
+        }
+
+        foreach (['en', 'de'] as $lang) {
+            $strings = get_string_manager()->load_component_strings('local_shopping_cart', $lang, true);
+            $this->assertArrayHasKey('nomulticurrencysupportyet', $strings, "Missing string in language pack $lang");
+        }
+
+        try {
+            shopping_cart_credits::get_balance((int) $user->id);
+            $this->fail('Credits in two currencies must be refused.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('nomulticurrencysupportyet', $e->errorcode);
+            $this->assertSame('local_shopping_cart', $e->module);
+            $this->assertSame(get_string('nomulticurrencysupportyet', 'local_shopping_cart'), $e->getMessage());
+        }
+    }
 }

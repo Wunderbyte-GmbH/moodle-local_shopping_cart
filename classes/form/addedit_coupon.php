@@ -93,6 +93,27 @@ class addedit_coupon extends dynamic_form {
         $mform->addElement('text', 'maxnumber', get_string('maxnumber', 'local_shopping_cart'));
         $mform->setType('maxnumber', PARAM_INT);
         $mform->setDefault('maxnumber', 1);
+        $mform->addHelpButton('maxnumber', 'maxnumber', 'local_shopping_cart');
+
+        // Maximum use count per user.
+        $mform->addElement('text', 'maxnumberperuser', get_string('maxnumberperuser', 'local_shopping_cart'));
+        $mform->setType('maxnumberperuser', PARAM_INT);
+        $mform->setDefault('maxnumberperuser', 0);
+        $mform->addHelpButton('maxnumberperuser', 'maxnumberperuser', 'local_shopping_cart');
+
+        // How usages are counted: per checkout or per discounted item.
+        $mform->addElement(
+            'select',
+            'countmode',
+            get_string('countmode', 'local_shopping_cart'),
+            [
+                coupon::COUNTMODE_CHECKOUT => get_string('countmodecheckout', 'local_shopping_cart'),
+                coupon::COUNTMODE_ITEM => get_string('countmodeitem', 'local_shopping_cart'),
+            ]
+        );
+        $mform->setType('countmode', PARAM_ALPHA);
+        $mform->setDefault('countmode', coupon::COUNTMODE_CHECKOUT);
+        $mform->addHelpButton('countmode', 'countmode', 'local_shopping_cart');
 
         // Active.
         $mform->addElement(
@@ -154,7 +175,23 @@ class addedit_coupon extends dynamic_form {
      * @return array
      */
     public function validation($data, $files) {
+        global $DB;
+
         $errors = parent::validation($data, $files);
+
+        // The code is what users type in, so it must not be empty and must be unique.
+        $code = trim((string) ($data['coupon'] ?? ''));
+        if ($code === '') {
+            $errors['coupon'] = get_string('required');
+        } else if (
+            $DB->record_exists_select(
+                'local_shopping_cart_coupons',
+                $DB->sql_equal('coupon', ':coupon', false) . ' AND id <> :id',
+                ['coupon' => $code, 'id' => (int) ($data['id'] ?? 0)]
+            )
+        ) {
+            $errors['coupon'] = get_string('couponcodeexists', 'local_shopping_cart');
+        }
 
         if ($data['discounttype'] === 'percentage') {
             if ($data['discountpercentage'] < 0 || $data['discountpercentage'] > 100) {
@@ -164,6 +201,13 @@ class addedit_coupon extends dynamic_form {
             if ($data['discountabsolute'] < 0) {
                 $errors['discountabsolute'] = get_string('invalidabsolute', 'local_shopping_cart');
             }
+        }
+
+        if ((int) $data['maxnumber'] < 0) {
+            $errors['maxnumber'] = get_string('invalidmaxnumber', 'local_shopping_cart');
+        }
+        if ((int) $data['maxnumberperuser'] < 0) {
+            $errors['maxnumberperuser'] = get_string('invalidmaxnumber', 'local_shopping_cart');
         }
 
         if (
@@ -210,7 +254,9 @@ class addedit_coupon extends dynamic_form {
             $data->starttime,
             $data->endtime,
             $USER->id,
-            $data->coupontype
+            $data->coupontype,
+            (int) $data->maxnumberperuser,
+            $data->countmode
         );
 
         $data->reload = true;

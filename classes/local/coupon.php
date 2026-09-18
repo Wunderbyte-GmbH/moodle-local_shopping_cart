@@ -42,6 +42,12 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupon {
+    /** @var string Count one usage per checkout (ledger identifier), however many items were discounted. */
+    public const COUNTMODE_CHECKOUT = 'checkout';
+
+    /** @var string Count one usage per discounted item (ledger record). */
+    public const COUNTMODE_ITEM = 'item';
+
     /** @var int */
     protected $userid = 0;
 
@@ -88,11 +94,21 @@ class coupon {
             return [false, ''];
         }
 
-        // If the same coupon is already applied, do nothing.
+        // A coupon that is already applied is validated again, because a usage limit may have been
+        // reached since it was applied. Otherwise keeping it in the cart would bypass the limits.
         if ($couponmanager->coupon_applied()) {
             $appliedcoupon = $couponmanager->get_applied_coupon();
             if ($appliedcoupon === $couponcode) {
-                return [true, get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode)];
+                try {
+                    $message = $this->validate_coupon($this->get_coupon_by_code($couponcode), $this->userid);
+                } catch (moodle_exception $e) {
+                    $message = get_string('invalidcouponcode', 'local_shopping_cart');
+                }
+                if ($message === '') {
+                    return [true, get_string('couponappliedsuccessfully', 'local_shopping_cart', $couponcode)];
+                }
+                $couponmanager->clear_coupon();
+                return [false, get_string('couponcouldnotbeapplied', 'local_shopping_cart', $couponcode) . ' ' . $message];
             }
             // Switch coupon: remove existing one before applying a new code.
             $couponmanager->clear_coupon();
@@ -173,19 +189,70 @@ class coupon {
             return get_string('couponexpired', 'local_shopping_cart');
         }
 
+        $countmode = (string) ($coupon->countmode ?? self::COUNTMODE_CHECKOUT);
+
         // Check max number of uses (0 = unlimited).
         if (!empty($coupon->maxnumber)) {
-            $timesused = $DB->count_records_select(
-                'local_shopping_cart_history',
-                "coupon = :couponid AND paymentstatus = :status",
-                ['couponid' => (string)$coupon->id, 'status' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS]
-            );
+            $timesused = self::count_usages((int) $coupon->id, $countmode);
             if ($timesused >= $coupon->maxnumber) {
                 return get_string('couponmaxusesreached', 'local_shopping_cart');
             }
         }
 
+        // Check max number of uses for this user (0 = unlimited).
+        if (!empty($coupon->maxnumberperuser)) {
+            $timesused = self::count_usages((int) $coupon->id, $countmode, $userid);
+            if ($timesused >= $coupon->maxnumberperuser) {
+                return get_string('couponmaxusesperuserreached', 'local_shopping_cart');
+            }
+        }
+
         return '';
+    }
+
+    /**
+     * Count how often a coupon has been used, based on the ledger.
+     *
+     * Only successful payments that were not cancelled count. A ledger record references the coupon
+     * only when the coupon actually reduced the price of that item, so in item mode every discounted
+     * item is one usage, while in checkout mode all items paid under the same identifier are one
+     * usage together.
+     *
+     * @param int $couponid
+     * @param string $countmode one of the COUNTMODE_* constants
+     * @param int|null $userid restrict the count to this user, null for all users
+     * @return int
+     */
+    public static function count_usages(int $couponid, string $countmode, ?int $userid = null): int {
+        global $DB;
+
+        // A cancelled purchase gives its usage back. The cancellation is a separate ledger record
+        // pointing to the same history entry. A checkout counts as long as one of its discounted
+        // items is still bought.
+        $params = [
+            'couponid' => (string) $couponid,
+            'status' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            'canceled' => LOCAL_SHOPPING_CART_PAYMENT_CANCELED,
+        ];
+        $where = "l.coupon = :couponid
+              AND l.paymentstatus = :status
+              AND NOT EXISTS (
+                    SELECT 1
+                      FROM {local_shopping_cart_ledger} c
+                     WHERE c.schistoryid = l.schistoryid
+                       AND c.paymentstatus = :canceled
+                  )";
+        if ($userid !== null) {
+            $where .= " AND l.userid = :userid";
+            $params['userid'] = $userid;
+        }
+
+        $count = $countmode === self::COUNTMODE_ITEM ? 'COUNT(1)' : 'COUNT(DISTINCT l.identifier)';
+
+        return (int) $DB->count_records_sql(
+            "SELECT $count FROM {local_shopping_cart_ledger} l WHERE $where",
+            $params
+        );
     }
 
     /**
@@ -202,6 +269,8 @@ class coupon {
      * @param int $endtime
      * @param int $usermodified
      * @param string $coupontype
+     * @param int $maxnumberperuser 0 is unlimited
+     * @param string $countmode one of the COUNTMODE_* constants
      * @return void
      *
      */
@@ -216,9 +285,15 @@ class coupon {
         int $starttime,
         int $endtime,
         int $usermodified,
-        string $coupontype
+        string $coupontype,
+        int $maxnumberperuser = 0,
+        string $countmode = self::COUNTMODE_CHECKOUT
     ): void {
         global $DB;
+
+        if (!in_array($countmode, [self::COUNTMODE_CHECKOUT, self::COUNTMODE_ITEM], true)) {
+            throw new moodle_exception('invalidcountmode', 'local_shopping_cart');
+        }
 
         $record = new stdClass();
         $record->id = $id;
@@ -227,6 +302,8 @@ class coupon {
         $record->discountabsolute = $discountabsolute;
         $record->currency = $currency;
         $record->maxnumber = $maxnumber;
+        $record->maxnumberperuser = $maxnumberperuser;
+        $record->countmode = $countmode;
         $record->active = $active;
         $record->coupontype = $coupontype;
         $record->starttime = $starttime;

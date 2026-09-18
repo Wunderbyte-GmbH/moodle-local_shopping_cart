@@ -91,6 +91,12 @@ abstract class coupon extends modifier_base {
         }
 
         foreach ($items as $key => $item) {
+            // The booking fee is independent of coupons: it is never discounted and never
+            // takes a share of an absolute coupon.
+            if (self::is_bookingfee($item)) {
+                continue;
+            }
+
             // Check coupon type eligibility.
             $ikey = ($item['componentname'] ?? '') . '-' . ($item['area'] ?? '') . '-' . ($item['itemid'] ?? '');
             $info = $iteminfos[$ikey] ?? null;
@@ -136,6 +142,17 @@ abstract class coupon extends modifier_base {
         $data['price'] = shopping_cart::calculate_total_price($items);
 
         return $data;
+    }
+
+    /**
+     * Whether the cart item is the booking fee.
+     *
+     * @param array $item
+     * @return bool
+     */
+    private static function is_bookingfee(array $item): bool {
+        return ($item['componentname'] ?? '') === 'local_shopping_cart'
+            && ($item['area'] ?? '') === 'bookingfee';
     }
 
     /**
