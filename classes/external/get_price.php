@@ -122,10 +122,10 @@ class get_price extends external_api {
         }
 
         // Before appliying the credit, we have to apply the coupon if any.
-        // This is only done when the request genuinely originates from a page that shows the
-        // coupon UI. Otherwise (e.g. cart.js refreshing the nav cart badge on a page without any
-        // coupon input, such as coupons.php) $couponvalue is always '', which would otherwise be
-        // misread as "the user cleared the coupon field" and silently remove an applied coupon.
+        // couponenabled is only set when the user explicitly applies the code (button or enter).
+        // Every other price refresh (item changes, credit or installment toggles, nav badge) leaves
+        // the coupon in the cart untouched; otherwise an empty or merely typed code in the input
+        // would silently remove or apply a coupon.
         $couponmessage = '';
         if ($params['couponenabled']) {
             $coupon = new coupon($userid);

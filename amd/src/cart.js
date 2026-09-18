@@ -411,8 +411,11 @@ function restorePendingFocus() {
  * Function to reload the cart. We can pass on the certain component if we need to make sure that not only the cart is reloaded.
  * This is the case when adding or deleting a certain item and a special button has to be reset.
  * @param {*} userid
+ * @param {Object} options
+ * @param {boolean} options.skippriceupdate The price label is already current (it was just rendered from the same
+ *                                          server state), so it is not requested and rendered a second time.
  */
-export const reinit = (userid = 0) => {
+export const reinit = (userid = 0, options = {}) => {
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_shopping_cart_items",
@@ -468,13 +471,14 @@ export const reinit = (userid = 0) => {
                 }
 
                 toggleActiveButtonState();
-                // eslint-disable-next-line no-console
-                console.log('reinit -> updateTotalPrice');
+
+                if (options.skippriceupdate) {
+                    return;
+                }
                 // We don't want to set the useinstallment and usecredit values; we just want to get the price information.
                 // To achieve this, we pass -1 for both usecredit and useinstallment.
-                // Read the current coupon input value so an already-applied coupon is not cleared by the reinit call.
-                const existingcoupon = document.querySelector(SELECTORS.COUPONINPUT);
-                updateTotalPrice(userid, -1, -1, existingcoupon ? existingcoupon.value : '');
+                // This refresh never applies or removes a coupon, the server keeps the one in the cart.
+                updateTotalPrice(userid, -1, -1);
 
                 return;
             }).catch(e => {
@@ -591,13 +595,16 @@ export const addItem = (itemid, component, area, userid) => {
  * @param {*} useinstallments 1 = enable it, 0 = disable it, -1 = no change
  * @param {*} couponvalue
  * @param {boolean} refreshItemsAfter When true, reinit cart items after price label renders (used after explicit coupon apply).
+ * @param {boolean} applycoupon Only an explicit apply by the user (button or enter) applies or removes a coupon.
+ *                              Every other price refresh leaves the coupon in the cart as it is.
  */
 export const updateTotalPrice = (
     userid = 0,
     usecredit = true,
     useinstallments = false,
     couponvalue = '',
-    refreshItemsAfter = false
+    refreshItemsAfter = false,
+    applycoupon = false
 ) => {
 
     // On cashier, update price must always be for cashier user.
@@ -637,7 +644,8 @@ export const updateTotalPrice = (
             useinstallments = useinstallments ? 1 : 0;
         }
     }
-    const couponenabled = document.querySelector(SELECTORS.COUPONINPUT) !== null;
+    // The web service parameter is called couponenabled, it means: apply or remove the coupon now.
+    const couponenabled = applycoupon && document.querySelector(SELECTORS.COUPONINPUT) !== null;
 
     Ajax.call([{
         methodname: "local_shopping_cart_get_price",
@@ -682,7 +690,9 @@ export const updateTotalPrice = (
                 });
 
                 if (refreshItemsAfter) {
-                    reinit(userid);
+                    // The price label was rendered from the current server state just now. Only the items
+                    // (e.g. their discounted prices) need a refresh, so the coupon message stays visible.
+                    reinit(userid, {skippriceupdate: true});
                 }
 
                 return true;
@@ -1297,7 +1307,7 @@ export function initPriceLabel(userid) {
         const checkboxchecked = checkbox ? checkbox.checked : null;
         const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
         const couponvalue = couponinput ? couponinput.value : '';
-        updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue, true);
+        updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue, true, true);
     };
 
     const applybtn = document.querySelector(SELECTORS.COUPONAPPLY);
@@ -1348,7 +1358,7 @@ function handlePriceRecalc(userid) {
     const installmentsvalue = installmentscheckbox ? installmentscheckbox.checked : false;
     const couponvalue = couponinput ? couponinput.value : '';
 
-    // Adapt this call if your updateTotalPrice supports coupon codes now
+    // Changing credits or installments never applies or removes a coupon, only the apply button does.
     updateTotalPrice(userid, checkboxchecked, installmentsvalue, couponvalue);
 }
 

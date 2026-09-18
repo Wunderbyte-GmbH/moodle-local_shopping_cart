@@ -154,6 +154,37 @@ class local_shopping_cart_generator extends testing_module_generator {
     }
 
     /**
+     * Function to create a coupon.
+     *
+     * @param array|stdClass $record
+     * @return int the coupon id
+     */
+    public function create_coupon($record) {
+        global $DB, $USER;
+
+        $record = (array) $record;
+        if (empty($record['coupon'])) {
+            throw new coding_exception('coupon must be present in create_coupon() $record');
+        }
+        \local_shopping_cart\local\coupon::add_edit_coupon(
+            0,
+            (string) $record['coupon'],
+            (float) ($record['discountpercentage'] ?? 0),
+            (float) ($record['discountabsolute'] ?? 0),
+            (string) ($record['currency'] ?? 'EUR'),
+            (int) ($record['maxnumber'] ?? 0),
+            (int) ($record['active'] ?? 1),
+            (int) ($record['starttime'] ?? 0),
+            (int) ($record['endtime'] ?? 0),
+            (int) $USER->id,
+            (string) ($record['coupontype'] ?? 'couponoptout'),
+            (int) ($record['maxnumberperuser'] ?? 0),
+            (string) ($record['countmode'] ?? \local_shopping_cart\local\coupon::COUNTMODE_CHECKOUT)
+        );
+        return (int) $DB->get_field('local_shopping_cart_coupons', 'id', ['coupon' => $record['coupon']], MUST_EXIST);
+    }
+
+    /**
      * Function to create a dummy user address record.
      *
      * @param array|stdClass $record

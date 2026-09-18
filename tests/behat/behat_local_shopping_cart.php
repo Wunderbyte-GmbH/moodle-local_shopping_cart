@@ -152,6 +152,10 @@ class behat_local_shopping_cart extends behat_base {
      */
     public function i_put_testitem_in_users_cart(int $itemid, string $username) {
         $userid = $this->get_user_id_by_identifier($username);
+        // The Behat process lives across page requests. Drop its in-memory copy of the carts,
+        // so that items bought in the browser meanwhile are not added back.
+        cartstore::reset();
+        \core_cache\factory::reset();
         // Put in a cart item.
         shopping_cart::buy_for_user($userid);
         $cartstore = cartstore::instance($userid);
