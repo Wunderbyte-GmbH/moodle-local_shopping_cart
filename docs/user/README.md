@@ -7,3 +7,4 @@ Index of the user and admin documentation chapters.
 | I want to… | Go to… |
 |------------|--------|
 | Understand the VAT number step in checkout (incl. non-European customers) | [VAT number check](vat_number_check.md) |
+| Know which currency setups are supported (incl. coupons) | [Currencies](currencies.md) |
