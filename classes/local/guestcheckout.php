@@ -238,15 +238,19 @@ class guestcheckout {
 
         $path = self::normalize_path(self::strip_wwwroot_prefix($url->get_path()));
 
-        // The whole login and auth areas must never be captured, no matter how
-        // broad the configured patterns are - not even by an explicit pattern:
-        // an auto-created guest is logged in and redirected, which locks
-        // anonymous visitors out of the login form, creates a fresh guest the
-        // moment somebody logs out, breaks self-registration (signup/confirm)
-        // and the anonymous token links of the password reset
+        // The whole login, auth and admin areas must never be captured, no
+        // matter how broad the configured patterns are - not even by an
+        // explicit pattern: an auto-created guest is logged in and redirected,
+        // which locks anonymous visitors out of the login form, creates a
+        // fresh guest the moment somebody logs out, breaks self-registration
+        // (signup/confirm) and the anonymous token links of the password reset
         // (forgot_password/set_password), and would tear down SSO handshakes
-        // on the auth callbacks (e.g. /auth/oauth2/login.php).
-        foreach (['/login', '/auth'] as $excludedarea) {
+        // on the auth callbacks (e.g. /auth/oauth2/login.php). The admin area
+        // includes tool_mfa's pending-factor page (/admin/tool/mfa/auth.php),
+        // where a half-authenticated user must finish their factor - creating
+        // a guest there replaces that session and aborts the MFA flow; no
+        // /admin page is ever a guest-checkout entry point.
+        foreach (['/login', '/auth', '/admin'] as $excludedarea) {
             if ($path === $excludedarea || strpos($path, $excludedarea . '/') === 0) {
                 return false;
             }
