@@ -153,6 +153,91 @@ class reservations {
     }
 
     /**
+     * Returns the cart of a checkout that is still running, if there is one.
+     *
+     * Once the checkout has started, the reservation carries the identifier of that cart, so a
+     * lookup by a missing identifier does not find it any more. While the reservation is still
+     * held and nothing was paid for it yet, that cart is the one the user is working on.
+     *
+     * @param int $userid
+     *
+     * @return ?array
+     *
+     */
+    public static function get_open_reservation(int $userid) {
+
+        global $DB;
+
+        $sql = "SELECT r.*
+                  FROM {local_shopping_cart_reserv} r
+                 WHERE r.userid = :userid
+                   AND r.expirationtime > :now
+                   AND NOT EXISTS (
+                       SELECT 1
+                         FROM {local_shopping_cart_history} h
+                        WHERE h.identifier = r.identifier
+                          AND h.paymentstatus >= :success
+                   )
+              ORDER BY r.timemodified DESC, r.id DESC";
+
+        $params = [
+            'userid' => $userid,
+            'now' => time(),
+            'success' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+        ];
+
+        $records = $DB->get_records_sql($sql, $params, 0, 1);
+        $record = reset($records);
+
+        return $record ? json_decode($record->json, true) : null;
+    }
+
+    /**
+     * Moves the stored expiration time of a reservation forward.
+     *
+     * The expiration time is prolonged while a payment is running, so it has to be stored and not
+     * only kept in the cart cache. It is never shortened here: a reservation that is already held
+     * longer stays held.
+     *
+     * @param int $userid
+     * @param int $expirationtime
+     *
+     * @return void
+     *
+     */
+    public static function update_expiration(int $userid, int $expirationtime) {
+
+        global $DB;
+
+        if (empty($expirationtime)) {
+            return;
+        }
+
+        $records = $DB->get_records('local_shopping_cart_reserv', ['userid' => $userid]);
+
+        foreach ($records as $record) {
+            if ((int) $record->expirationtime >= $expirationtime) {
+                continue;
+            }
+
+            $data = json_decode($record->json, true);
+
+            if (is_array($data)) {
+                $data['expirationtime'] = $expirationtime;
+                foreach ($data['items'] ?? [] as $key => $item) {
+                    $data['items'][$key]['expirationtime'] = $expirationtime;
+                }
+                $record->json = json_encode($data);
+            }
+
+            $record->expirationtime = $expirationtime;
+            $record->timemodified = time();
+
+            $DB->update_record('local_shopping_cart_reserv', $record);
+        }
+    }
+
+    /**
      * Method to check if the cart is different with the same identifier.
      * This will also write to db if the cart is not there.
      *
@@ -189,6 +274,8 @@ class reservations {
                         'checkboxid',
                         'historyitems',
                         'storedinhistory',
+                        // A cart that is held longer is still the same cart, see update_expiration.
+                        'expirationtime',
                     ]
                 )
             ) {

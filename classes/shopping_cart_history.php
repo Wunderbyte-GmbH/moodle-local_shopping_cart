@@ -949,7 +949,14 @@ class shopping_cart_history {
             $expirationtime = shopping_cart::get_expirationtime();
 
             // Add or reschedule all delete_item_tasks for all the items in the cart.
-            shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $USER->id);
+            // The returned value is the one that actually holds, write_to_db may have prolonged it further.
+            $expirationtime = shopping_cart::add_or_reschedule_addhoc_tasks($expirationtime, $USER->id);
+
+            // The cart we hand on has to carry the expiration time that holds, not the one it came with.
+            $shoppingcart['expirationtime'] = $expirationtime;
+            foreach ($shoppingcart['items'] ?? [] as $key => $item) {
+                $shoppingcart['items'][$key]['expirationtime'] = $expirationtime;
+            }
 
             $shoppingcart['storedinhistory'] = true;
             self::store_in_schistory_cache($shoppingcart);
