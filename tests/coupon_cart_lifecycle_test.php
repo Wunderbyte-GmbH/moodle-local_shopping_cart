@@ -170,6 +170,8 @@ final class coupon_cart_lifecycle_test extends advanced_testcase {
             'percentage 15' => [15.0, 0.0, [1 => 2.0, 2 => 3.0, 3 => 2.0]],
             // A whole absolute amount is spent exactly.
             'absolute 15' => [0.0, 15.0, [1 => 10.0, 2 => 5.0, 3 => 0.0]],
+            // 5.50 is floored to 5; the remaining 0.50 is below the precision and expires.
+            'absolute 5.50' => [0.0, 5.5, [1 => 5.0, 2 => 0.0, 3 => 0.0]],
         ];
     }
 

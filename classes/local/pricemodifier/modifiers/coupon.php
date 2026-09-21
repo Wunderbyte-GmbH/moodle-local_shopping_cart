@@ -122,8 +122,9 @@ abstract class coupon extends modifier_base {
             if ($percent > 0) {
                 $itemdiscount = round($baseprice * ($percent / 100), $discountprecision);
             } else if ($remainingabsolute > 0) {
-                $itemdiscount = min($baseprice, $remainingabsolute);
-                $itemdiscount = round($itemdiscount, $discountprecision);
+                // An absolute coupon is floored, never rounded up: rounding must never give away
+                // more than the value of the coupon. What does not fit the precision expires.
+                $itemdiscount = self::floor_to_precision(min($baseprice, $remainingabsolute), $discountprecision);
                 $remainingabsolute = max(0, $remainingabsolute - $itemdiscount);
             }
 
@@ -142,6 +143,19 @@ abstract class coupon extends modifier_base {
         $data['price'] = shopping_cart::calculate_total_price($items);
 
         return $data;
+    }
+
+    /**
+     * Floors a value to the given number of decimals.
+     *
+     * @param float $value
+     * @param int $precision
+     * @return float
+     */
+    private static function floor_to_precision(float $value, int $precision): float {
+        $factor = 10 ** $precision;
+        // Round off the binary representation error first, so that 2.03 does not floor to 2.02.
+        return floor(round($value * $factor, 6)) / $factor;
     }
 
     /**
