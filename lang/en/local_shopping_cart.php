@@ -532,6 +532,8 @@ in order to calculate the tax based on the gross value of the item';
 $string['lastname'] = 'Last name';
 $string['ledger'] = "Ledger";
 $string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
+$string['legacycheckout'] = 'Legacy checkout';
+$string['legacycheckout_desc'] = 'Renders the checkout the way it is rendered on the USI release line: the address, VAT number and terms steps use the former templates, the page shows the flat layout with the purchase history included instead of tabs, and the checkout has no coupon field. This is a frozen state, so the guest checkout, the non-European option in the VAT step and the export handling for Great Britain are not available while it is switched on.';
 $string['licenseactivated'] = 'PRO version activated. License valid until {$a}.';
 $string['licenseexpired'] = 'License key has expired on {$a}.';
 $string['licenseheading'] = 'PRO license';

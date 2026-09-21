@@ -531,6 +531,8 @@ deaktivieren Sie diese Checkbox, um die Steuer auf der Grundlage des Bruttowerte
 $string['lastname'] = 'Nachname';
 $string['ledger'] = "Zahlungsjournal";
 $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
+$string['legacycheckout'] = 'Klassischer Checkout';
+$string['legacycheckout_desc'] = 'Stellt den Checkout so dar wie in der USI-Release-Linie: Die Schritte Adresse, UID-Nummer und AGB verwenden die früheren Vorlagen, die Seite zeigt das flache Layout mit der Kaufhistorie statt der Registerkarten, und im Checkout gibt es kein Gutscheinfeld. Es handelt sich um einen eingefrorenen Stand, daher stehen der Gast-Checkout, die Nicht-EU-Option im UID-Schritt und die Behandlung von Großbritannien als Exportland nicht zur Verfügung, solange die Einstellung aktiv ist.';
 $string['licenseactivated'] = 'PRO-Version aktiviert. Lizenz gültig bis {$a}.';
 $string['licenseexpired'] = 'Der Lizenzschlüssel ist am {$a} abgelaufen.';
 $string['licenseheading'] = 'PRO-Lizenz';
