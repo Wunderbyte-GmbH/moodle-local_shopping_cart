@@ -662,7 +662,7 @@ class shopping_cart {
      *
      * @param int $expirationtime
      * @param int $userid
-     * @return void
+     * @return int the expiration time that actually holds, never earlier than the one already stored
      */
     public static function add_or_reschedule_addhoc_tasks(int $expirationtime, int $userid) {
 
@@ -699,6 +699,8 @@ class shopping_cart {
                 $expirationtime = $cartstore->set_expiration($storedexpirationtime);
             }
         }
+
+        return $expirationtime;
     }
 
     /**

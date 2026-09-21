@@ -477,9 +477,15 @@ class cartstore {
         global $DB, $USER;
 
         $now = time();
-        if (
-            $data = reservations::get_json_from_db($this->userid, $identifier)
-        ) {
+
+        $data = reservations::get_json_from_db($this->userid, $identifier);
+
+        if (empty($data) && $identifier === null) {
+            // A checkout that is still running stores its cart under its own identifier.
+            $data = reservations::get_open_reservation($this->userid);
+        }
+
+        if (!empty($data)) {
             $data['nowdate'] = $now;
             unset($data['identifier']);
             $this->set_cache($data);
@@ -583,6 +589,10 @@ class cartstore {
         }
 
         $this->set_cache($data);
+
+        // The cache can be lost or rebuilt from the database at any time, so a prolonged
+        // expiration time only holds the cart when it is stored as well.
+        reservations::update_expiration($this->userid, $expirationtime);
 
         return $expirationtime;
     }
