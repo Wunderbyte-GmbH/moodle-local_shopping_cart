@@ -302,7 +302,7 @@ $string['couponoptout'] = 'Opt-out';
 $string['couponoptoutitemsnotice'] = 'Only items who have been saved after this feature will appear even though the coupon might be valid for other items.';
 $string['couponremovedsuccessfully'] = 'Coupon code "{$a}" removed successfully.';
 $string['couponsheading'] = 'Coupons settings';
-$string['couponsheadingdescription'] = 'Coupon codes can be managed at /local/shopping_cart/coupons.php.';
+$string['couponsheadingdescription'] = 'Coupon codes can be managed on the <a href="{$a}">coupons page</a>.';
 $string['couponsprofeaturenotice'] = 'Coupons are a PRO feature. Please activate a valid Shopping Cart PRO license key to use them.';
 $string['coupontype'] = 'Coupon type';
 $string['coupontype_help'] = 'Opt-out: the coupon applies to every item in the cart unless an item explicitly excludes it in its item configuration. Opt-in: the coupon only applies to items that explicitly enable it in their item configuration — without any assigned items it has no effect.';

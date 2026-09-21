@@ -1065,7 +1065,11 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_heading(
         'local_shopping_cart/couponsheading',
         get_string('couponsheading', 'local_shopping_cart'),
-        get_string('couponsheadingdescription', 'local_shopping_cart')
+        get_string(
+            'couponsheadingdescription',
+            'local_shopping_cart',
+            (new moodle_url('/local/shopping_cart/coupons.php'))->out()
+        )
     ));
 
     // Setting to round percentage discounts to full integers.

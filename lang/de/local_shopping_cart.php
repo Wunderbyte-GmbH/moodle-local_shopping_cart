@@ -303,7 +303,7 @@ $string['couponoptout'] = 'Opt-out';
 $string['couponoptoutitemsnotice'] = 'Es werden nur Artikel angezeigt, die nach Einführung dieser Funktion gespeichert wurden – auch wenn der Gutschein für weitere Artikel gültig sein kann.';
 $string['couponremovedsuccessfully'] = 'Gutscheincode "{$a}" erfolgreich entfernt.';
 $string['couponsheading'] = 'Gutscheineinstellungen';
-$string['couponsheadingdescription'] = 'Gutscheincodes können auf /local/shopping_cart/coupons.php verwaltet werden.';
+$string['couponsheadingdescription'] = 'Gutscheincodes können auf der <a href="{$a}">Gutscheinseite</a> verwaltet werden.';
 $string['couponsprofeaturenotice'] = 'Gutscheine sind eine PRO-Funktion. Bitte aktivieren Sie einen gültigen Shopping Cart PRO-Lizenzschlüssel, um sie zu nutzen.';
 $string['coupontype'] = 'Gutscheintyp';
 $string['coupontype_help'] = 'Opt-out: Der Gutschein gilt für alle Artikel im Warenkorb, außer ein Artikel schließt ihn in seiner Artikel-Konfiguration explizit aus. Opt-in: Der Gutschein gilt nur für Artikel, die ihn in ihrer Artikel-Konfiguration explizit aktivieren – ohne zugeordnete Artikel hat er keine Wirkung.';
