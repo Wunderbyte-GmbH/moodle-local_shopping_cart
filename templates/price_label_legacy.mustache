@@ -1,0 +1,133 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_shopping_cart/price_label_legacy
+
+    This template will render the price label below the shopping cart items in the cashier and checkout page
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userid the logged in user id
+    * urls The URLs for the popover
+
+    Example context (json):
+    {
+        "userid": 3,
+        "credit": 10,
+        "initialtotal": 44.4,
+        "currency": "EUR",
+        "discount": 10,
+        "checkboxid": "cbid",
+        "usecredit": 1,
+        "installmentscheckboxid": "ichk",
+        "useinstallments": 0,
+        "deductible": 10,
+        "discount": 1,
+        "initialtotal": 10,
+        "price_net": 10,
+        "taxesenabled": 1
+    }
+}}
+
+<div>
+    {{#installmentscheckboxid}}
+        <div class="text-end me-3 sc_installments">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input useinstallments-checkbox" id="{{installmentscheckboxid}}" {{#useinstallments}} checked {{/useinstallments}}>
+                <label class="custom-control-label" for="{{installmentscheckboxid}}">
+                    {{#str}} useinstallments, local_shopping_cart {{/str}}
+                </label>
+            </div>
+            {{#installments}}
+                <div class="itemname font-weight-bold">
+                    {{#str}} downpayment, local_shopping_cart {{/str}} {{#str}}for, local_shopping_cart{{/str}} {{itemname}}:
+                </div>
+                <div class="firstpayment">
+                    {{initialpayment}} {{currency}} {{#str}} insteadof, local_shopping_cart {{/str}} {{originalprice}} {{currency}}
+                </div>
+                {{#installmentslinkeditems}}
+                <div class="itemname font-weight-bold">
+                    {{#str}} downpayment, local_shopping_cart {{/str}} {{#str}}for, local_shopping_cart{{/str}} {{itemname}}:
+                </div>
+                <div class="firstpayment">
+                    {{initialpayment}} {{currency}} {{#str}} insteadof, local_shopping_cart {{/str}} {{originalprice}} {{currency}}
+                </div>
+                {{/installmentslinkeditems}}
+                <div class="furtherpayments mt-1">
+                    <i>{{#str}} furtherpayments, local_shopping_cart {{/str}}</i>:
+                    {{#payments}}
+                        <div>{{price}} {{currency}} {{#str}} on, local_shopping_cart {{/str}} {{date}} </div>
+                    {{/payments}}
+                </div>
+            {{/installments}}
+        </div>
+    {{/installmentscheckboxid}}
+    {{#credit}}
+        <div class="text-end me-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+        {{#discount}}
+            <div class="text-end me-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
+        {{/discount}}
+        <div class="text-end me-3 sc_credit">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input usecredit-checkbox" id="{{checkboxid}}" {{#usecredit}} checked {{/usecredit}}>
+                <label class="custom-control-label" for="{{checkboxid}}">
+                    {{#str}} usecredit, local_shopping_cart {{/str}} {{credit}} {{currency}}
+                </label>
+            </div>
+        </div>
+        <div class="text-end me-3 sc_deductible">{{#str}} deductible, local_shopping_cart {{/str}} {{deductible}} {{currency}}</div>
+        <div class="text-end me-3 sc_remainingcredit">{{#str}} remainingcredit, local_shopping_cart {{/str}} {{remainingcredit}} {{currency}}</div>
+    {{/credit}}
+
+    {{^credit}}
+        <div class="text-end me-3 sc_initialtotal">{{#str}} initialtotal, local_shopping_cart {{/str}} {{initialtotal}} {{currency}}</div>
+        {{#discount}}
+            <div class="text-end me-3 sc_discount">{{#str}} discount, local_shopping_cart {{/str}}: -{{discount}} {{currency}}</div>
+        {{/discount}}
+    {{/credit}}
+
+    {{! prices have tax info}}
+    {{#taxesenabled}}
+        <div class="text-end me-3">
+            {{#price_net}}
+                <span>{{#str}} total_net, local_shopping_cart {{/str}}</span>
+                <span class="sc_totalprice_net">{{price_net}} {{currency}}</span>
+                <br>
+            {{/price_net}}
+            <span>{{#str}} total, local_shopping_cart {{/str}}</span>
+            <span class="sc_totalprice"><b>{{price}} {{currency}}</b></span>
+        </div>
+    {{/taxesenabled}}
+
+    {{! prices without tax information }}
+    {{^taxesenabled}}
+        <div class="text-end mt-1 me-3">
+            <span><b>{{#str}} total, local_shopping_cart {{/str}}</b></span>
+            <span class="sc_totalprice alert-success"><b>{{price}} {{currency}}</b></span>
+        </div>
+    {{/taxesenabled}}
+</div>
+{{#js}}
+    require(['local_shopping_cart/cart'], function(fn) {
+        fn.initPriceLabel({{userid}});
+    });
+{{/js}}

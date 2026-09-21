@@ -524,6 +524,8 @@ $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
 $string['itemid'] = 'ItemID';
 $string['itemname'] = 'Artikelname';
+$string['itemnotdelivered'] = 'Artikel nicht geliefert, gutgeschrieben';
+$string['itemnotdeliveredannotation'] = 'Der Artikel "{$a->itemname}" aus Bestellung {$a->identifier} wurde bezahlt, konnte aber nicht geliefert werden. Der Betrag wurde der Nutzerin oder dem Nutzer gutgeschrieben.';
 $string['itempriceisnet'] = 'Preise für Artikel sind Nettopreise: Addiere die Steuer';
 $string['itempriceisnet_desc'] = 'Wenn die an den Warenkorb übergebenen Preise Nettopreise sind, dann aktivieren Sie diese Checkbox,
 um die Steuern zu den Artikelpreisen hinzuzufügen. Wenn die Artikel die Steuer bereits enthalten und somit Bruttopreise sind,
@@ -531,6 +533,8 @@ deaktivieren Sie diese Checkbox, um die Steuer auf der Grundlage des Bruttowerte
 $string['lastname'] = 'Nachname';
 $string['ledger'] = "Zahlungsjournal";
 $string['ledgerinstallment'] = 'Folgende Ratenzahlung wurde geleistet: Zahlung Nummer {$a->id}, Fälligkeit {$a->date}';
+$string['legacycheckout'] = 'Klassischer Checkout';
+$string['legacycheckout_desc'] = 'Stellt den Checkout so dar wie in der USI-Release-Linie: Die Schritte Adresse, UID-Nummer und AGB verwenden die früheren Vorlagen, die Seite zeigt das flache Layout mit der Kaufhistorie statt der Registerkarten, und im Checkout gibt es kein Gutscheinfeld. Es handelt sich um einen eingefrorenen Stand, daher stehen der Gast-Checkout, die Nicht-EU-Option im UID-Schritt und die Behandlung von Großbritannien als Exportland nicht zur Verfügung, solange die Einstellung aktiv ist.';
 $string['licenseactivated'] = 'PRO-Version aktiviert. Lizenz gültig bis {$a}.';
 $string['licenseexpired'] = 'Der Lizenzschlüssel ist am {$a} abgelaufen.';
 $string['licenseheading'] = 'PRO-Lizenz';

@@ -188,6 +188,16 @@ if ($hassiteconfig) {
         )
     );
 
+    // Setting to render the checkout as it is rendered on the USI release line.
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/legacycheckout',
+            new lang_string('legacycheckout', 'local_shopping_cart'),
+            new lang_string('legacycheckout_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
     // Setting to round percentage discounts to full integers.
     $settings->add(
         new admin_setting_configcheckbox(

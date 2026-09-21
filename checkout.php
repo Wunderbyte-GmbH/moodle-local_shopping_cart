@@ -26,6 +26,7 @@
 use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\checkout_process\checkout_mode;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\create_invoice;
 use local_shopping_cart\addresses;
@@ -162,10 +163,13 @@ if (isset($success) && isset($historylist)) {
     /* The purchase history is not needed to pay, and rendering it here made the page slow for
     users with many purchases (GH-204). We only ask whether there is a history at all, so that the
     tab can be offered, and load its content when the user actually opens the tab. */
-    $cartstore->get_expanded_checkout_data($data, false);
+    /* The legacy rendering has no history tab: it prints the history below the checkout,
+    the way it did before the tabs were introduced, so it needs the expanded data here. */
+    $legacycheckout = checkout_mode::is_legacy();
+    $cartstore->get_expanded_checkout_data($data, $legacycheckout);
 
     $data['has_historyitems'] = $cartstore->has_history();
-    $data['lazyhistory'] = $data['has_historyitems'];
+    $data['lazyhistory'] = $legacycheckout ? false : $data['has_historyitems'];
 
     if ($data['has_historyitems']) {
         $cancelationfee = get_config('local_shopping_cart', 'cancelationfee');
@@ -191,7 +195,8 @@ if (isset($cartstore)) {
     // one, as this code path also runs on plain page reloads (e.g. when a background tab regains
     // focus), and calling apply_coupon_code('') would silently clear the applied coupon.
     $data['couponenabled'] = get_config('local_shopping_cart', 'couponenabled')
-        && wb_payment::pro_version_is_activated();
+        && wb_payment::pro_version_is_activated()
+        && !checkout_mode::is_legacy();
 
     if ($data['couponenabled']) {
         $couponmanager = new cart_coupon_manager($cartstore);
@@ -305,6 +310,9 @@ if (empty($jsononly)) {
     }
     // Output the header.
     echo $OUTPUT->header();
-    echo $OUTPUT->render_from_template('local_shopping_cart/checkout', $data);
+    echo $OUTPUT->render_from_template(
+        checkout_mode::is_legacy() ? 'local_shopping_cart/checkout_legacy' : 'local_shopping_cart/checkout',
+        $data
+    );
     echo $OUTPUT->footer();
 }

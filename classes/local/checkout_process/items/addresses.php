@@ -28,6 +28,7 @@ namespace local_shopping_cart\local\checkout_process\items;
 use core_auth\output\login as login_renderable;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
+use local_shopping_cart\local\checkout_process\checkout_mode;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\guestcheckout;
 
@@ -94,13 +95,81 @@ class addresses extends checkout_base_item {
     }
 
     /**
-     * This step is implemented as dynamic form (phase 3 of the forms migration).
-     * Remove this override to roll back to the legacy render_body/check_status path.
+     * This step is implemented as dynamic form. In the legacy rendering it falls
+     * back to render_body()/check_status(), which the manager uses for every step
+     * without a form classname.
      *
      * @return string
      */
     public static function get_form_classname(): string {
+        if (checkout_mode::is_legacy()) {
+            return '';
+        }
         return \local_shopping_cart\local\checkout_process\steps\addresses_form::class;
+    }
+
+    /**
+     * Renders the step in the legacy rendering. The legacy template carries the
+     * add, edit and delete buttons itself, which the current rendering places
+     * around the form through render_form_surroundings().
+     *
+     * @param array $cachedata
+     * @return array
+     */
+    public static function render_body($cachedata): array {
+        global $PAGE;
+
+        $data = self::get_template_render_data();
+        $data['required_addresses'] = self::set_data_from_cache(
+            $data['required_addresses'],
+            $cachedata['data'] ?? []
+        );
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template('local_shopping_cart/address_legacy', $data);
+        return [
+            'template' => $template,
+        ];
+    }
+
+    /**
+     * Validates the step in the legacy rendering. Validation and persistence are
+     * the ones of the form step, so both renderings behave identically.
+     *
+     * @param mixed $managercachestep
+     * @param mixed $validationdata
+     * @return array
+     */
+    public function check_status(
+        $managercachestep,
+        $validationdata
+    ): array {
+        return $this->evaluate_step($this->parse_changed_input($validationdata));
+    }
+
+    /**
+     * Marks the address the user selected before as selected.
+     *
+     * @param array $requiredaddresses
+     * @param array $cachedata
+     * @return array
+     */
+    public static function set_data_from_cache(&$requiredaddresses, $cachedata) {
+        foreach ($requiredaddresses as &$requiredaddress) {
+            $newsavedaddresses = [];
+            foreach ($requiredaddress['saved_addresses'] as $savedaddress) {
+                $savedaddresscopy = clone $savedaddress;
+                if (
+                    $savedaddresscopy->id == ($cachedata['selectedaddress_' . $requiredaddress['addresskey']] ?? 0)
+                ) {
+                    $savedaddresscopy->selected = true;
+                } else {
+                    unset($savedaddresscopy->selected);
+                }
+                $newsavedaddresses[] = $savedaddresscopy;
+            }
+            $requiredaddress['saved_addresses'] = $newsavedaddresses;
+        }
+        return $requiredaddresses;
     }
 
     /**

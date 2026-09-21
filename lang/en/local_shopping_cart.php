@@ -525,6 +525,8 @@ $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
 $string['itemid'] = 'ItemID';
 $string['itemname'] = 'Item name';
+$string['itemnotdelivered'] = 'Item not delivered, credited';
+$string['itemnotdeliveredannotation'] = 'The item "{$a->itemname}" of order {$a->identifier} was paid but could not be delivered. The amount was credited to the user.';
 $string['itempriceisnet'] = 'Prices for items are net prices: Add the tax';
 $string['itempriceisnet_desc'] = 'If the prices passed to the shopping cart are net prices, then check this checkbox in order
 to add the taxes on top of the item prices. If the items already include the tax and thus are gross prices uncheck this checkbox
@@ -532,6 +534,8 @@ in order to calculate the tax based on the gross value of the item';
 $string['lastname'] = 'Last name';
 $string['ledger'] = "Ledger";
 $string['ledgerinstallment'] = 'The following installment payment was registered: Number {$a->id}, due date {$a->date}';
+$string['legacycheckout'] = 'Legacy checkout';
+$string['legacycheckout_desc'] = 'Renders the checkout the way it is rendered on the USI release line: the address, VAT number and terms steps use the former templates, the page shows the flat layout with the purchase history included instead of tabs, and the checkout has no coupon field. This is a frozen state, so the guest checkout, the non-European option in the VAT step and the export handling for Great Britain are not available while it is switched on.';
 $string['licenseactivated'] = 'PRO version activated. License valid until {$a}.';
 $string['licenseexpired'] = 'License key has expired on {$a}.';
 $string['licenseheading'] = 'PRO license';
