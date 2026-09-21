@@ -25,6 +25,7 @@
 
 namespace local_shopping_cart;
 use local_shopping_cart\event\payment_confirmed;
+use local_shopping_cart\local\openorders;
 use local_shopping_cart\local\taskmanager;
 use local_shopping_cart\output\shoppingcart_history_list;
 
@@ -411,6 +412,13 @@ class shopping_cart {
         global $USER;
 
         $userid = $userid == 0 ? $USER->id : $userid;
+
+        // Unloading means giving the reservation back to the component. While a payment of this
+        // user is still waiting for the answer of the provider, that must not happen - neither
+        // through the expiration clean-up nor because the user emptied the cart.
+        if ($unload && openorders::has_pending_order($userid)) {
+            return false;
+        }
 
         $cartstore = cartstore::instance($userid);
         $cartstore->delete_item($component, $area, $itemid);

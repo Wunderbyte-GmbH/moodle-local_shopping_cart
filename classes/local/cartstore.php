@@ -708,6 +708,9 @@ class cartstore {
             isset($data['expirationtime'])
             && !is_null($data['expirationtime'])
             && $data['expirationtime'] < time()
+            // As long as the payment provider has not answered, the reservation is kept, even
+            // beyond the prolonged payment time. The money may still be on its way.
+            && !openorders::has_pending_order($this->userid)
         ) {
                 self::delete_all_items();
                 $data = self::get_cache();
