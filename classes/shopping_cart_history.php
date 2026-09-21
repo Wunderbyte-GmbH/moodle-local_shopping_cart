@@ -766,10 +766,17 @@ class shopping_cart_history {
     /**
      * Sets the payment to success if the payment went successfully through.
      *
+     * The ledger always records a success, because the money has arrived. The history can carry a
+     * different status, for an item that was paid but could not be delivered.
+     *
      * @param array $records
+     * @param int $historystatus
      * @return bool
      */
-    public static function set_success_in_db(array $records): bool {
+    public static function set_success_in_db(
+        array $records,
+        int $historystatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS
+    ): bool {
 
         global $DB, $USER;
 
@@ -778,7 +785,7 @@ class shopping_cart_history {
         $now = time();
         foreach ($records as $record) {
             $identifier = $record->identifier;
-            $record->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+            $record->paymentstatus = $historystatus;
             $record->timemodified = $now;
 
             $areaarray = explode('-', $record->area);
@@ -792,7 +799,7 @@ class shopping_cart_history {
                 // GH-94: Fix paymentstatus for installments in shopping cart history.
                 $updaterecord = new stdClass();
                 $updaterecord->id = $record->id ?? $record->itemid;
-                $updaterecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+                $updaterecord->paymentstatus = $historystatus;
                 $updaterecord->timemodified = $record->timemodified;
                 $DB->update_record('local_shopping_cart_history', $updaterecord);
 
@@ -855,8 +862,16 @@ class shopping_cart_history {
                 // Only on payment success, we add a new record to the ledger table!
                 unset($ledgerrecord->id);
 
-                // We always use this function to add a new record to the ledger table!
-                shopping_cart::add_record_to_ledger_table($ledgerrecord);
+                // The money has arrived, whether the item could be delivered or not. What the user
+                // did not get is given back as credit, in a record of its own.
+                $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+
+                // An order can be delivered more than once, for example by the gateway callback and
+                // by the check for ongoing payments. It must only be booked once.
+                if (!self::ledger_record_exists($ledgerrecord)) {
+                    // We always use this function to add a new record to the ledger table!
+                    shopping_cart::add_record_to_ledger_table($ledgerrecord);
+                }
             }
         }
 
@@ -865,6 +880,31 @@ class shopping_cart_history {
         $cache->delete('schistorycache');
 
         return $success;
+    }
+
+    /**
+     * Tells whether this exact item of this exact order is already booked in the ledger.
+     *
+     * @param stdClass $ledgerrecord
+     *
+     * @return bool
+     *
+     */
+    public static function ledger_record_exists(stdClass $ledgerrecord): bool {
+
+        global $DB;
+
+        if (empty($ledgerrecord->identifier)) {
+            return false;
+        }
+
+        return $DB->record_exists('local_shopping_cart_ledger', [
+            'identifier' => $ledgerrecord->identifier,
+            'userid' => $ledgerrecord->userid,
+            'itemid' => $ledgerrecord->itemid,
+            'componentname' => $ledgerrecord->componentname,
+            'area' => $ledgerrecord->area,
+        ]);
     }
 
     /**

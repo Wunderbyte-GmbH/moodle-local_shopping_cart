@@ -555,8 +555,23 @@ class shopping_cart {
 
         global $USER;
 
+        $providerclass = static::get_service_provider_classname($component);
+
+        $delivered = component_class_callback(
+            $providerclass,
+            'successful_checkout',
+            [$area, $itemid,
+            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER,
+            $userid]
+        );
+
+        if (!$delivered) {
+            // An item that was not delivered must not be reported as bought.
+            return false;
+        }
+
         $context = context_system::instance();
-        // Trigger item deleted event.
+        // Trigger item bought event.
         $event = item_bought::create([
             'context' => $context,
             'userid' => $USER->id,
@@ -569,15 +584,7 @@ class shopping_cart {
 
         $event->trigger();
 
-        $providerclass = static::get_service_provider_classname($component);
-
-        return component_class_callback(
-            $providerclass,
-            'successful_checkout',
-            [$area, $itemid,
-            LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER,
-            $userid]
-        );
+        return true;
     }
 
     /**
@@ -679,6 +686,61 @@ class shopping_cart {
         }
 
         return $expirationtime;
+    }
+
+    /**
+     * Gives the price of an item back as credit, because it was paid but could not be delivered.
+     *
+     * The money has arrived, so the item keeps its ledger entry. What the user did not get is
+     * returned as credit, which keeps the sum of the ledger equal to what the provider collected
+     * and leaves the decision (pay back or rebook) to the organisation.
+     *
+     * @param array $item
+     * @param int $userid
+     * @return void
+     */
+    public static function refund_undelivered_item_as_credit(array $item, int $userid) {
+
+        global $USER;
+
+        $price = (float) ($item['price'] ?? 0);
+
+        if ($price <= 0) {
+            return;
+        }
+
+        $currency = $item['currency'] ?? (get_config('local_shopping_cart', 'globalcurrency') ?: 'EUR');
+        $costcenter = $item['costcenter'] ?? '';
+
+        shopping_cart_credits::add_credit($userid, $price, $currency, $costcenter);
+
+        $now = time();
+
+        $ledgerrecord = new stdClass();
+        $ledgerrecord->userid = $userid;
+        $ledgerrecord->itemid = 0;
+        $ledgerrecord->itemname = get_string('itemnotdelivered', 'local_shopping_cart');
+        $ledgerrecord->price = 0;
+        $ledgerrecord->credits = $price;
+        $ledgerrecord->currency = $currency;
+        $ledgerrecord->costcenter = $costcenter;
+        $ledgerrecord->componentname = 'local_shopping_cart';
+        $ledgerrecord->identifier = $item['identifier'] ?? 0;
+        $ledgerrecord->payment = LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION;
+        $ledgerrecord->paymentstatus = LOCAL_SHOPPING_CART_PAYMENT_SUCCESS;
+        $ledgerrecord->usermodified = $USER->id;
+        $ledgerrecord->timemodified = $now;
+        $ledgerrecord->timecreated = $now;
+        $ledgerrecord->annotation = get_string(
+            'itemnotdeliveredannotation',
+            'local_shopping_cart',
+            (object) [
+                'itemname' => $item['itemname'] ?? '',
+                'identifier' => $item['identifier'] ?? '',
+            ]
+        );
+
+        self::add_record_to_ledger_table($ledgerrecord);
     }
 
     /**
@@ -840,6 +902,10 @@ class shopping_cart {
 
         // Run through all items still in the cart and confirm payment.
         foreach ($data['items'] as $item) {
+            // Whether this single item could be delivered. It is reset for every item, while
+            // $success keeps track of the order as a whole.
+            $itemsuccess = true;
+
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
             $item = (array) $item;
 
@@ -872,6 +938,9 @@ class shopping_cart {
                     $userid,
                 );
             } else if (!self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid)) {
+                // Only this item could not be delivered. The money for the whole order has arrived,
+                // so every other item of it still has to be booked, see the order flag below.
+                $itemsuccess = false;
                 $success = false;
                 $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
 
@@ -889,87 +958,94 @@ class shopping_cart {
                 $event->trigger();
             }
 
-            if ($success == true) {
-                // Delete Item from cache.
-                // Here, we don't need to unload the component, so the last parameter is false.
-                self::delete_item_from_cart($item['componentname'], $item['area'], $item['itemid'], $userid, false);
+            // The money for this item has arrived in any case, so it is booked in any case. An item
+            // that could not be delivered is given back as credit further down.
+            // Delete Item from cache.
+            // Here, we don't need to unload the component, so the last parameter is false.
+            self::delete_item_from_cart($item['componentname'], $item['area'], $item['itemid'], $userid, false);
 
-                // We create this entry only for cash payment, that is when there is no datafromhistory yet.
-                if (!$datafromhistory) {
-                    $paymentmethod = $paymenttype;
+            // We create this entry only for cash payment, that is when there is no datafromhistory yet.
+            if (!$datafromhistory) {
+                $paymentmethod = $paymenttype;
 
-                    // Make sure we can pass on a valid value.
-                    $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
-                    $item['identifier'] = $identifier;
-                    $item['annotation'] = $annotation ?? '';
-                    $item['payment'] = $paymentmethod;
-                    $item['usermodified'] = $USER->id;
-                    $item['address_billing'] = $data['address_billing'] ?? 0;
-                    $item['address_shipping'] = $data['address_shipping'] ?? 0;
-                    $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
-                    $item['vatnumber'] = $data['vatnrnumber'] ?? '';
-                    if (
-                        ($item['componentname'] === 'local_shopping_cart')
-                        && ($item['area'] === 'rebookitem')
-                    ) {
-                            $historyitem = shopping_cart_history::return_item_from_history($item['itemid']);
+                // Make sure we can pass on a valid value.
+                $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
+                $item['identifier'] = $identifier;
+                $item['annotation'] = $annotation ?? '';
+                $item['payment'] = $paymentmethod;
+                $item['usermodified'] = $USER->id;
+                $item['address_billing'] = $data['address_billing'] ?? 0;
+                $item['address_shipping'] = $data['address_shipping'] ?? 0;
+                $item['taxcountrycode'] = $data['taxcountrycode'] ?? 0;
+                $item['vatnumber'] = $data['vatnrnumber'] ?? '';
+                if (
+                    ($item['componentname'] === 'local_shopping_cart')
+                    && ($item['area'] === 'rebookitem')
+                ) {
+                        $historyitem = shopping_cart_history::return_item_from_history($item['itemid']);
 
-                            $item['schistoryid'] = $item['itemid'];
-                            $item['itemid'] = $historyitem->itemid;
-                    }
+                        $item['schistoryid'] = $item['itemid'];
+                        $item['itemid'] = $historyitem->itemid;
+                }
 
-                    $id = shopping_cart_history::create_entry_in_history(
-                        $userid,
-                        $item['itemid'],
-                        $item['itemname'],
-                        $item['price'],
-                        $item['discount'],
-                        $item['currency'],
-                        $item['componentname'],
-                        $item['area'],
-                        $item['identifier'],
-                        $item['payment'],
-                        LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
-                        $item['canceluntil'] ?? null,
-                        $item['serviceperiodstart'] ?? 0,
-                        $item['serviceperiodend'] ?? 0,
-                        $item['tax'] ?? null,
-                        $item['taxpercentage'] ?? null,
-                        $item['taxcategory'] ?? null,
-                        $item['costcenter'] ?? null,
-                        $item['annotation'],
-                        $item['usermodified'],
-                        $item['schistoryid'] ?? null,
-                        $item['installments'] ?? 0,
-                        $item['json'] ?? '',
-                        $item['address_billing'],
-                        $item['address_shipping'],
-                        $item['taxcountrycode'],
-                        $item['vatnumber'],
-                    );
+                $id = shopping_cart_history::create_entry_in_history(
+                    $userid,
+                    $item['itemid'],
+                    $item['itemname'],
+                    $item['price'],
+                    $item['discount'],
+                    $item['currency'],
+                    $item['componentname'],
+                    $item['area'],
+                    $item['identifier'],
+                    $item['payment'],
+                    LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+                    $item['canceluntil'] ?? null,
+                    $item['serviceperiodstart'] ?? 0,
+                    $item['serviceperiodend'] ?? 0,
+                    $item['tax'] ?? null,
+                    $item['taxpercentage'] ?? null,
+                    $item['taxcategory'] ?? null,
+                    $item['costcenter'] ?? null,
+                    $item['annotation'],
+                    $item['usermodified'],
+                    $item['schistoryid'] ?? null,
+                    $item['installments'] ?? 0,
+                    $item['json'] ?? '',
+                    $item['address_billing'],
+                    $item['address_shipping'],
+                    $item['taxcountrycode'],
+                    $item['vatnumber'],
+                );
 
+                $item['id'] = $id;
+                // If we just paid for an installment, we need a very special treatment.
+                if (
+                    $item['componentname'] === 'local_shopping_cart'
+                    && strpos($item['area'], 'installment') !== false
+                ) {
                     $item['id'] = $id;
-                    // If we just paid for an installment, we need a very special treatment.
-                    if (
-                        $item['componentname'] === 'local_shopping_cart'
-                        && strpos($item['area'], 'installment') !== false
-                    ) {
-                        $item['id'] = $id;
-                    }
                 }
-                if ($datafromhistory) {
-                    $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
-                }
-                // The coupon is recorded on an item only if it actually reduced that item's price.
-                // Items that opted out, were not opted in or got nothing from an already used up
-                // absolute coupon must not count as a coupon usage in the ledger.
-                if (!empty($data['coupon']) && !empty($item['coupondiscount'])) {
-                    $couponrecord = $DB->get_record('local_shopping_cart_coupons', ['coupon' => $data['coupon']], 'id');
-                    $item['coupon'] = $couponrecord ? (string)$couponrecord->id : null;
-                } else {
-                    $item['coupon'] = null;
-                }
-                shopping_cart_history::set_success_in_db([(object)$item]);
+            }
+            if ($datafromhistory) {
+                $item['discount'] = ($item['discount'] ?? 0) + ($item['coupondiscount'] ?? 0);
+            }
+            // The coupon is recorded on an item only if it actually reduced that item's price.
+            // Items that opted out, were not opted in or got nothing from an already used up
+            // absolute coupon must not count as a coupon usage in the ledger.
+            if (!empty($data['coupon']) && !empty($item['coupondiscount'])) {
+                $couponrecord = $DB->get_record('local_shopping_cart_coupons', ['coupon' => $data['coupon']], 'id');
+                $item['coupon'] = $couponrecord ? (string)$couponrecord->id : null;
+            } else {
+                $item['coupon'] = null;
+            }
+            shopping_cart_history::set_success_in_db(
+                [(object)$item],
+                $itemsuccess ? LOCAL_SHOPPING_CART_PAYMENT_SUCCESS : LOCAL_SHOPPING_CART_PAYMENT_CANCELED
+            );
+
+            if (!$itemsuccess) {
+                self::refund_undelivered_item_as_credit($item, $userid);
             }
         }
 

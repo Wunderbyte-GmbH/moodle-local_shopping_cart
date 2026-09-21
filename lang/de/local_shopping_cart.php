@@ -524,6 +524,8 @@ $string['itemcouldntbebought'] = 'Artikel {$a} konnte nicht gekauft werden.';
 $string['itemexpired'] = 'Aritkel {$a->itemid} {$a->component} für die Nutzer/in mit der id {$a->relateduserid} ist abgelaufen';
 $string['itemid'] = 'ItemID';
 $string['itemname'] = 'Artikelname';
+$string['itemnotdelivered'] = 'Artikel nicht geliefert, gutgeschrieben';
+$string['itemnotdeliveredannotation'] = 'Der Artikel "{$a->itemname}" aus Bestellung {$a->identifier} wurde bezahlt, konnte aber nicht geliefert werden. Der Betrag wurde der Nutzerin oder dem Nutzer gutgeschrieben.';
 $string['itempriceisnet'] = 'Preise für Artikel sind Nettopreise: Addiere die Steuer';
 $string['itempriceisnet_desc'] = 'Wenn die an den Warenkorb übergebenen Preise Nettopreise sind, dann aktivieren Sie diese Checkbox,
 um die Steuern zu den Artikelpreisen hinzuzufügen. Wenn die Artikel die Steuer bereits enthalten und somit Bruttopreise sind,

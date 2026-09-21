@@ -525,6 +525,8 @@ $string['itemcouldntbebought'] = 'Item {$a} couldn\'t be bought';
 $string['itemexpired'] = 'Item {$a->itemid} {$a->component} for the user with the id {$a->relateduserid} expired';
 $string['itemid'] = 'ItemID';
 $string['itemname'] = 'Item name';
+$string['itemnotdelivered'] = 'Item not delivered, credited';
+$string['itemnotdeliveredannotation'] = 'The item "{$a->itemname}" of order {$a->identifier} was paid but could not be delivered. The amount was credited to the user.';
 $string['itempriceisnet'] = 'Prices for items are net prices: Add the tax';
 $string['itempriceisnet_desc'] = 'If the prices passed to the shopping cart are net prices, then check this checkbox in order
 to add the taxes on top of the item prices. If the items already include the tax and thus are gross prices uncheck this checkbox
