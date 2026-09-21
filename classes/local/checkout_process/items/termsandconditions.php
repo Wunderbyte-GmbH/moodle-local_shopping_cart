@@ -27,6 +27,7 @@ namespace local_shopping_cart\local\checkout_process\items;
 
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
+use local_shopping_cart\local\checkout_process\checkout_mode;
 
 /**
  * Class checkout
@@ -61,13 +62,67 @@ class termsandconditions extends checkout_base_item {
     }
 
     /**
-     * This step is implemented as dynamic form (pilot of the forms migration).
-     * Remove this override to roll back to the legacy render_body/check_status path.
+     * This step is implemented as dynamic form. In the legacy rendering it falls
+     * back to render_body()/check_status(), which the manager uses for every step
+     * without a form classname.
      *
      * @return string
      */
     public static function get_form_classname(): string {
+        if (checkout_mode::is_legacy()) {
+            return '';
+        }
         return \local_shopping_cart\local\checkout_process\steps\termsandconditions_form::class;
+    }
+
+    /**
+     * Renders the step in the legacy rendering.
+     *
+     * @param mixed $cachedata
+     * @return array
+     */
+    public static function render_body($cachedata): array {
+        global $PAGE;
+
+        $data = [];
+        self::set_data_from_cache($data, $cachedata['data'] ?? []);
+
+        foreach (self::get_active_conditions() as $fieldname => $conditions) {
+            $data[$fieldname === 'accepttermsandconditions' ? 'termsandconditions' : 'additionalconditions']
+                = $conditions;
+        }
+
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template('local_shopping_cart/termsandconditions', $data);
+        return [
+            'template' => $template,
+        ];
+    }
+
+    /**
+     * Validates the step in the legacy rendering. The validation itself is the
+     * one of the form step, so both renderings accept exactly the same input.
+     *
+     * @param mixed $managercachestep
+     * @param mixed $validationdata
+     * @return array
+     */
+    public function check_status(
+        $managercachestep,
+        $validationdata
+    ): array {
+        return $this->evaluate_step($this->parse_changed_input($validationdata));
+    }
+
+    /**
+     * Fills the template data with what the user already ticked.
+     *
+     * @param array $termsandconditions
+     * @param array $cachedata
+     * @return void
+     */
+    public static function set_data_from_cache(&$termsandconditions, $cachedata): void {
+        $termsandconditions = array_merge($termsandconditions, (array) ($cachedata ?? []));
     }
 
     /**

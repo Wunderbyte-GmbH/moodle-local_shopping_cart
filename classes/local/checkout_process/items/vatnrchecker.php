@@ -27,6 +27,7 @@ namespace local_shopping_cart\local\checkout_process\items;
 
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\checkout_base_item;
+use local_shopping_cart\local\checkout_process\checkout_mode;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 
 /**
@@ -98,13 +99,99 @@ class vatnrchecker extends checkout_base_item {
     }
 
     /**
-     * This step is implemented as dynamic form (phase 2 of the forms migration).
-     * Remove this override to roll back to the legacy render_body/check_status path.
+     * This step is implemented as dynamic form. In the legacy rendering it falls
+     * back to render_body()/check_status(), which the manager uses for every step
+     * without a form classname.
      *
      * @return string
      */
     public static function get_form_classname(): string {
+        if (checkout_mode::is_legacy()) {
+            return '';
+        }
         return \local_shopping_cart\local\checkout_process\steps\vatnrchecker_form::class;
+    }
+
+    /**
+     * Renders the step in the legacy rendering.
+     *
+     * @param mixed $cachedata
+     * @return array
+     */
+    public static function render_body($cachedata): array {
+        global $PAGE;
+
+        $data = [];
+        $data['countries'] = self::get_country_code_name();
+        self::set_data_from_cache($data, $cachedata['data'] ?? []);
+        $template = $PAGE->get_renderer('local_shopping_cart')
+            ->render_from_template('local_shopping_cart/vatnrchecker', $data);
+        return [
+            'template' => $template,
+        ];
+    }
+
+    /**
+     * Validates the step in the legacy rendering. The check against the VAT
+     * service and the persistence in the cart store are the ones of the form
+     * step, so both renderings behave identically.
+     *
+     * @param mixed $managercachestep
+     * @param mixed $changedinput
+     * @return array
+     */
+    public function check_status(
+        $managercachestep,
+        $changedinput
+    ): array {
+        return $this->evaluate_step($this->parse_changed_input($changedinput));
+    }
+
+    /**
+     * Fills the template data with the country and number already entered.
+     *
+     * @param array $vatnrcheckerdata
+     * @param array $cachedata
+     * @return void
+     */
+    public static function set_data_from_cache(&$vatnrcheckerdata, $cachedata): void {
+        $cacheddata = self::get_input_data($cachedata);
+        self::set_cached_selected_country($vatnrcheckerdata, $cacheddata['country']);
+        $vatnrcheckerdata['vatnumber'] = $cacheddata['vatnumber'];
+    }
+
+    /**
+     * Marks the country the user selected before as selected.
+     *
+     * @param array $vatnrcheckerdata
+     * @param string $countrycode
+     * @return void
+     */
+    public static function set_cached_selected_country(&$vatnrcheckerdata, $countrycode): void {
+        foreach ($vatnrcheckerdata['countries'] as &$country) {
+            if ($country['code'] == $countrycode) {
+                $country['selected'] = true;
+            } else {
+                unset($country['selected']);
+            }
+        }
+    }
+
+    /**
+     * The country codes for the select of the legacy template.
+     *
+     * @return array
+     */
+    public static function get_country_code_name(): array {
+        $countries = vatnumberhelper::get_countrycodes_array();
+        $formattedcountrycodes = [];
+        foreach ($countries as $code => $name) {
+            $formattedcountrycodes[] = [
+                'code' => $code,
+                'name' => $name,
+            ];
+        }
+        return $formattedcountrycodes;
     }
 
     /**
