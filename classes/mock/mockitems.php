@@ -38,6 +38,42 @@ require_once($CFG->dirroot . '/local/shopping_cart/lib.php');
  */
 class mockitems {
     /**
+     * Itemids whose checkout is made to fail. Test seam, empty in production.
+     *
+     * @var int[]
+     */
+    private static $failingitemids = [];
+
+    /**
+     * Defines which items must fail on checkout, so the partial delivery path can be tested.
+     *
+     * @param int[] $itemids
+     * @return void
+     */
+    public static function set_failing_itemids(array $itemids): void {
+        self::$failingitemids = array_map('intval', $itemids);
+    }
+
+    /**
+     * Tells whether the checkout of this item has to fail.
+     *
+     * @param int $itemid
+     * @return bool
+     */
+    public static function checkout_must_fail(int $itemid): bool {
+        return in_array($itemid, self::$failingitemids, true);
+    }
+
+    /**
+     * Forgets all items that were made to fail.
+     *
+     * @return void
+     */
+    public static function reset_failing_itemids(): void {
+        self::$failingitemids = [];
+    }
+
+    /**
      * Transformas item data for testing.
      *
      * @param int $itemid

@@ -422,6 +422,10 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
      * @return bool
      */
     public static function successful_checkout(string $area, int $itemid, int $paymentid, int $userid): bool {
+        // Test seam: mockitems can declare items that have to fail here, see mockitems::set_failing_itemids.
+        if (mockitems::checkout_must_fail($itemid)) {
+            return false;
+        }
         // phpcs:ignore moodle.Commenting.TodoComment.MissingInfoInline
         // TODO: Set booking_answer to 1.
         return true;
