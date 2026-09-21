@@ -47,8 +47,10 @@ use local_shopping_cart\event\payment_rebooked;
 use local_shopping_cart\task\delete_item_task;
 use moodle_exception;
 use Exception;
+use local_shopping_cart\event\duplicate_purchase;
 use local_shopping_cart\event\item_notbought;
 use local_shopping_cart\interfaces\interface_transaction_complete;
+use local_shopping_cart\local\callback\service_provider as callback_service_provider;
 use local_shopping_cart\local\cart_coupon_manager;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\payment\service_provider;
@@ -559,7 +561,7 @@ class shopping_cart {
      * @param int $userid
      * @param int $identifier the purchase this checkout belongs to, handed to the component so it
      *                        can tell several purchases of the same item apart later
-     * @return local\entities\cartitem
+     * @return int one of the callback service_provider DELIVERY_* constants
      */
     public static function successful_checkout(
         string $component,
@@ -567,7 +569,7 @@ class shopping_cart {
         int $itemid,
         int $userid,
         int $identifier = 0
-    ): bool {
+    ): int {
 
         global $USER;
 
@@ -576,18 +578,32 @@ class shopping_cart {
         // The identifier is passed as a trailing argument on purpose: it is NOT part of the
         // service_provider interface, so implementations that do not declare it simply ignore it
         // (PHP drops surplus arguments on user-defined methods) and no third-party provider breaks.
-        $delivered = component_class_callback(
+        $delivered = self::normalize_delivery_result(component_class_callback(
             $providerclass,
             'successful_checkout',
             [$area, $itemid,
             LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER,
             $userid,
             $identifier]
-        );
+        ));
 
-        if (!$delivered) {
-            // An item that was not delivered must not be reported as bought.
-            return false;
+        if ($delivered !== callback_service_provider::DELIVERY_DELIVERED) {
+            // Nothing was delivered, so this must not be announced as a sale.
+            return $delivered;
+        }
+
+        // The component reported a success. It can still be a success in which nothing reached the
+        // user, because they already owned the item - two paid checkouts of the same cart do that.
+        // Only the component can tell that apart from a legitimate repeated purchase, so we ask.
+        // Components without that callback answer null and keep the behaviour they always had.
+        if (
+            component_class_callback(
+                $providerclass,
+                'delivery_was_already_owned',
+                [$area, $itemid, $userid]
+            ) === true
+        ) {
+            return callback_service_provider::DELIVERY_ALREADY_OWNED;
         }
 
         $context = context_system::instance();
@@ -604,7 +620,43 @@ class shopping_cart {
 
         $event->trigger();
 
-        return true;
+        return $delivered;
+    }
+
+    /**
+     * Brings the answer of a component callback into one of the DELIVERY_* constants.
+     *
+     * A component answers with a plain bool: true delivered the item, false did not. A component
+     * without the callback at all answers null, which delivers nothing either. Whether a delivery
+     * reached the user is asked separately, see successful_checkout().
+     *
+     * @param mixed $result what the component callback returned
+     * @return int one of the callback service_provider DELIVERY_* constants
+     */
+    public static function normalize_delivery_result($result): int {
+
+        if ($result === true) {
+            return callback_service_provider::DELIVERY_DELIVERED;
+        }
+
+        if ($result === false || $result === null) {
+            return callback_service_provider::DELIVERY_FAILED;
+        }
+
+        $result = (int) $result;
+
+        if (
+            !in_array($result, [
+                callback_service_provider::DELIVERY_FAILED,
+                callback_service_provider::DELIVERY_DELIVERED,
+                callback_service_provider::DELIVERY_ALREADY_OWNED,
+            ], true)
+        ) {
+            // An answer we do not know must not be read as a delivery.
+            return callback_service_provider::DELIVERY_FAILED;
+        }
+
+        return $result;
     }
 
     /**
@@ -727,9 +779,11 @@ class shopping_cart {
      *
      * @param array $item
      * @param int $userid
+     * @param bool $isduplicate true when the user already owned the item, which reads differently
+     *                          in the cash report than an item that could not be delivered at all
      * @return void
      */
-    public static function refund_undelivered_item_as_credit(array $item, int $userid) {
+    public static function refund_undelivered_item_as_credit(array $item, int $userid, bool $isduplicate = false) {
 
         global $USER;
 
@@ -749,7 +803,10 @@ class shopping_cart {
         $ledgerrecord = new stdClass();
         $ledgerrecord->userid = $userid;
         $ledgerrecord->itemid = 0;
-        $ledgerrecord->itemname = get_string('itemnotdelivered', 'local_shopping_cart');
+        $ledgerrecord->itemname = get_string(
+            $isduplicate ? 'itemalreadyowned' : 'itemnotdelivered',
+            'local_shopping_cart'
+        );
         $ledgerrecord->price = 0;
         $ledgerrecord->credits = $price;
         $ledgerrecord->currency = $currency;
@@ -762,7 +819,7 @@ class shopping_cart {
         $ledgerrecord->timemodified = $now;
         $ledgerrecord->timecreated = $now;
         $ledgerrecord->annotation = get_string(
-            'itemnotdeliveredannotation',
+            $isduplicate ? 'itemalreadyownedannotation' : 'itemnotdeliveredannotation',
             'local_shopping_cart',
             (object) [
                 'itemname' => $item['itemname'] ?? '',
@@ -935,6 +992,7 @@ class shopping_cart {
             // Whether this single item could be delivered. It is reset for every item, while
             // $success keeps track of the order as a whole.
             $itemsuccess = true;
+            $isduplicate = false;
 
             // We might retrieve the items from history or via cache. From history, they come as stdClass.
             $item = (array) $item;
@@ -967,27 +1025,59 @@ class shopping_cart {
                     $item['itemid'],
                     $userid,
                 );
-            } else if (
-                !self::successful_checkout($item['componentname'], $item['area'], $item['itemid'], $userid, (int)$identifier)
-            ) {
-                // Only this item could not be delivered. The money for the whole order has arrived,
-                // so every other item of it still has to be booked, see the order flag below.
-                $itemsuccess = false;
-                $success = false;
-                $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
+            } else {
+                $delivered = self::successful_checkout(
+                    $item['componentname'],
+                    $item['area'],
+                    $item['itemid'],
+                    $userid,
+                    (int)$identifier
+                );
 
-                $context = context_system::instance();
-                // Trigger item deleted event.
-                $event = item_notbought::create([
-                    'context' => $context,
-                    'userid' => $USER->id,
-                    'relateduserid' => $userid,
-                    'other' => [
-                        'itemid' => $item['itemid'],
-                        'component' => $item['componentname'],
-                    ],
-                ]);
-                $event->trigger();
+                if ($delivered === callback_service_provider::DELIVERY_ALREADY_OWNED) {
+                    // The user has paid for something they already own. This happens when two
+                    // checkouts of the same cart are paid - one identifier per call of
+                    // checkout.php is intended, so this is a legitimate state, not an error.
+                    // The item must not be sold a second time, so it is credited below, but the
+                    // order itself is fine and the buyer must not see a failure.
+                    $itemsuccess = false;
+                    $isduplicate = true;
+
+                    $context = context_system::instance();
+                    $event = duplicate_purchase::create([
+                        'context' => $context,
+                        'userid' => $USER->id,
+                        'relateduserid' => $userid,
+                        'other' => [
+                            'itemid' => $item['itemid'],
+                            'component' => $item['componentname'],
+                            'area' => $item['area'],
+                            'identifier' => $identifier,
+                            'price' => $item['price'] ?? 0,
+                        ],
+                    ]);
+                    $event->trigger();
+                } else if ($delivered !== callback_service_provider::DELIVERY_DELIVERED) {
+                    // Only this item could not be delivered. The money for the whole order has
+                    // arrived, so every other item of it still has to be booked, see the order
+                    // flag below.
+                    $itemsuccess = false;
+                    $success = false;
+                    $error[] = get_string('itemcouldntbebought', 'local_shopping_cart', $item['itemname']);
+
+                    $context = context_system::instance();
+                    // Trigger item deleted event.
+                    $event = item_notbought::create([
+                        'context' => $context,
+                        'userid' => $USER->id,
+                        'relateduserid' => $userid,
+                        'other' => [
+                            'itemid' => $item['itemid'],
+                            'component' => $item['componentname'],
+                        ],
+                    ]);
+                    $event->trigger();
+                }
             }
 
             // The money for this item has arrived in any case, so it is booked in any case. An item
@@ -1077,7 +1167,7 @@ class shopping_cart {
             );
 
             if (!$itemsuccess) {
-                self::refund_undelivered_item_as_credit($item, $userid);
+                self::refund_undelivered_item_as_credit($item, $userid, $isduplicate);
             }
         }
 

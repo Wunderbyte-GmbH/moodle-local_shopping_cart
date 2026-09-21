@@ -74,6 +74,42 @@ class mockitems {
     }
 
     /**
+     * Itemids the user already owns on checkout. Test seam, empty in production.
+     *
+     * @var int[]
+     */
+    private static $alreadyowneditemids = [];
+
+    /**
+     * Defines which items the user already owns, so the duplicate purchase path can be tested.
+     *
+     * @param int[] $itemids
+     * @return void
+     */
+    public static function set_already_owned_itemids(array $itemids): void {
+        self::$alreadyowneditemids = array_map('intval', $itemids);
+    }
+
+    /**
+     * Tells whether the user already owns this item, so nothing is delivered for it.
+     *
+     * @param int $itemid
+     * @return bool
+     */
+    public static function checkout_is_already_owned(int $itemid): bool {
+        return in_array($itemid, self::$alreadyowneditemids, true);
+    }
+
+    /**
+     * Forgets all items the user was made to own already.
+     *
+     * @return void
+     */
+    public static function reset_already_owned_itemids(): void {
+        self::$alreadyowneditemids = [];
+    }
+
+    /**
      * Transformas item data for testing.
      *
      * @param int $itemid

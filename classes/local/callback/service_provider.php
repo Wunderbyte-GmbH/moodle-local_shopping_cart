@@ -35,6 +35,21 @@ use local_shopping_cart\local\entities\cartitem;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface service_provider {
+    /** The item could not be delivered to the user. */
+    public const DELIVERY_FAILED = 0;
+
+    /** The item was delivered to the user. */
+    public const DELIVERY_DELIVERED = 1;
+
+    /**
+     * Nothing was delivered because the user already owns this item.
+     *
+     * The money for it has arrived nevertheless, which happens when a user pays two checkouts of
+     * the same cart. Only the component can tell this apart from a legitimate repeated purchase,
+     * so it is the component that reports it, through the optional callback described below.
+     */
+    public const DELIVERY_ALREADY_OWNED = 2;
+
     /**
      * Callback function that returns the price and description of the given item in the specified area
      *
@@ -76,6 +91,20 @@ interface service_provider {
      * @return bool Whether successful or not
      */
     public static function successful_checkout(string $area, int $itemid, int $paymentid, int $userid): bool;
+
+    /*
+     * Optional callback: delivery_was_already_owned(string $area, int $itemid, int $userid): bool
+     *
+     * It is deliberately not part of this interface, so that a component can be older or newer
+     * than the cart without breaking. The cart asks for it right after a successful checkout of
+     * the item, and a component that does not have it simply keeps the behaviour it always had.
+     *
+     * A component answers true when that checkout delivered nothing because the user already owned
+     * the item - which happens when two checkouts of the same cart are paid. The cart then does not
+     * record a sale: the amount is given back as credit and the duplicate_purchase event is
+     * triggered. Only the component can tell this apart from a legitimate repeated purchase, which
+     * is why the cart has to ask instead of guessing.
+     */
 
     /**
      * Callback function that cancels an already bought item.

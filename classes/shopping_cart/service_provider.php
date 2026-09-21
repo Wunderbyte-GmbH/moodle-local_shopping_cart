@@ -432,6 +432,20 @@ class service_provider implements \local_shopping_cart\local\callback\service_pr
     }
 
     /**
+     * Optional callback: tells whether the checkout delivered nothing because the user owned it.
+     *
+     * @param string $area
+     * @param int $itemid
+     * @param int $userid
+     * @return bool
+     */
+    public static function delivery_was_already_owned(string $area, int $itemid, int $userid): bool {
+        // Test seam: mockitems can declare items the user already owns,
+        // see mockitems::set_already_owned_itemids.
+        return mockitems::checkout_is_already_owned($itemid);
+    }
+
+    /**
      * Callback function that handles cancelation after purchase.
      * @param string $area
      * @param int $itemid
