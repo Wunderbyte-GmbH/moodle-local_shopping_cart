@@ -250,6 +250,27 @@ final class partial_checkout_ledger_test extends \advanced_testcase {
     }
 
     /**
+     * An order with an item that failed is still a finished checkout.
+     *
+     * @covers \local_shopping_cart\shopping_cart_history::has_successful_checkout
+     * @return void
+     */
+    public function test_an_order_with_a_failing_item_counts_as_checked_out(): void {
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // The last item of the cart is the one that cannot be delivered.
+        mockitems::set_failing_itemids([3]);
+
+        $identifier = $this->buy_three_items($user->id);
+
+        $this->assertTrue(
+            shopping_cart_history::has_successful_checkout($identifier),
+            'The user has paid, so the checkout has to be reported as finished.'
+        );
+    }
+
+    /**
      * Delivering the same order twice must not double the book keeping.
      *
      * @covers \local_shopping_cart\payment\service_provider::deliver_order

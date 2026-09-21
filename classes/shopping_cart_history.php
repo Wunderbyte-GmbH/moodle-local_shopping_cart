@@ -1261,18 +1261,16 @@ class shopping_cart_history {
      * @return bool
      */
     public static function has_successful_checkout(int $identifier) {
-        // Make sure we actually have a success.
-        $success = false;
+        // Make sure we actually have a success. One item of the order is enough: an item that was
+        // paid but could not be delivered is canceled right away, the checkout still took place.
         if ($records = self::return_data_via_identifier($identifier)) {
             foreach ($records as $record) {
-                if (LOCAL_SHOPPING_CART_PAYMENT_SUCCESS == $record->paymentstatus) {
-                    $success = true;
-                } else {
-                    $success = false;
+                if ($record->paymentstatus >= LOCAL_SHOPPING_CART_PAYMENT_SUCCESS) {
+                    return true;
                 }
             }
         }
-        return $success;
+        return false;
     }
 
     /**
