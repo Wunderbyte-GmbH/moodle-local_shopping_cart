@@ -58,10 +58,9 @@ Feature: The checkout renders as on the USI release line when the legacy checkou
     And Testitem "1" has been put in shopping cart of user "user1"
     And I visit "/local/shopping_cart/checkout.php"
     And I wait until the page is ready
-    When I press "Checkout"
-    And I wait until the page is ready
     Then "#accepttermsandconditions" "css_element" should exist
     And I should see "Our terms"
-    And I click on "#accepttermsandconditions" "css_element"
+    And the "disabled" attribute of ".shopping_cart_payment_region button" "css_element" should be set
+    When I click on "#accepttermsandconditions" "css_element"
     And I wait "1" seconds
-    And the "disabled" attribute of ".shopping-cart-checkout-manager-nextbutton" "css_element" should not be set
+    Then the "disabled" attribute of ".shopping_cart_payment_region button" "css_element" should not be set
