@@ -252,5 +252,50 @@
                 <INDEX NAME="coupon_idx" UNIQUE="true" FIELDS="coupon" COMMENT="Index for coupon"/>
 			</INDEXES>
         </TABLE>
+        <TABLE NAME="local_shopping_cart_gwwebhooks" COMMENT="Webhook endpoints the cart registered at a payment provider, one per payment account.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="accountid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Moodle payment account id."/>
+                <FIELD NAME="gateway" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Payment gateway plugin name, e.g. stripe."/>
+                <FIELD NAME="webhookid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Endpoint id at the provider."/>
+                <FIELD NAME="secret" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Endpoint signing secret."/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="accountgateway" UNIQUE="true" FIELDS="accountid, gateway"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="local_shopping_cart_renewals" COMMENT="Recurring payments the payment provider collected for subscriptions bought through the cart.">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="identifier" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Cart identifier of the original purchase."/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="accountid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Moodle payment account id."/>
+                <FIELD NAME="gateway" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="subscriptionid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Subscription id at the provider."/>
+                <FIELD NAME="externalinvoiceid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Invoice id at the provider; the idempotency key."/>
+                <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2" COMMENT="Gross amount collected."/>
+                <FIELD NAME="currency" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="periodstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="periodend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="paid or failed."/>
+                <FIELD NAME="invoicestatus" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="State of the invoice at the invoicing platform: pending, created, held, failed."/>
+                <FIELD NAME="erpinvoiceid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Invoice name at the invoicing platform."/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="externalinvoice" UNIQUE="true" FIELDS="gateway, externalinvoiceid"/>
+                <INDEX NAME="identifier" UNIQUE="false" FIELDS="identifier"/>
+                <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+            </INDEXES>
+        </TABLE>
     </TABLES>
 </XMLDB>

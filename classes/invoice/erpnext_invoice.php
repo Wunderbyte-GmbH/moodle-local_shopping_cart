@@ -310,6 +310,7 @@ class erpnext_invoice implements invoice {
      *  ->grosscheck      float   amount actually paid (net+VAT); optional reconciliation target
      *  ->taxtemplate     string  ERPNext template to force; optional (else auto-selected)
      *  ->vatnumber       string  customer VAT id; optional
+     *  ->markpaid        bool    also book a Payment Entry for the grand total; optional
      *  ->user            object  {id, email, firstname, lastname}
      *  ->billing         object  {company, name, state(ISO2 country), address, city, zip, id}
      *  ->items           array   of {itemname, net, serviceperiodstart, serviceperiodend}
@@ -396,7 +397,19 @@ class erpnext_invoice implements invoice {
             }
         }
 
-        return $this->submit_invoice($this->invoiceid);
+        if (!$this->submit_invoice($this->invoiceid)) {
+            return false;
+        }
+
+        // The provider already collected the money: book the payment so the invoice is paid in ERPNext.
+        if (!empty($data->markpaid)) {
+            if (!$this->create_payment($responsedata['data'], $this->invoiceid) || !$this->submit_payment_entry()) {
+                // The invoice exists and is submitted; only the payment entry is missing. A retry would
+                // find the invoice by reference and not book the payment either, so report and go on.
+                mtrace("ERROR: Payment for {$this->invoiceid} was not saved in ERPNext: {$this->errormessage}");
+            }
+        }
+        return true;
     }
 
     /**
@@ -801,8 +814,9 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['posting_date'] = $date;
         $this->invoicedata['set_posting_time'] = 1;
         $this->invoicedata['due_date'] = $date;
-        $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
-        $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
+        // ERPNext's Sales Invoice carries the service period in from_date / to_date.
+        $this->invoicedata['from_date'] = date('Y-m-d', $serviceperiodstart);
+        $this->invoicedata['to_date'] = date('Y-m-d', $serviceperiodend);
         $this->invoicedata['terms'] = 'Thank you for your online payment and your trust in our services.';
         $this->invoicedata['customer_address'] = $this->billingaddressname;
         // Multi-currency support: only emit when explicitly set, so the existing EUR cart flow is unchanged.

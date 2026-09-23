@@ -303,6 +303,15 @@ if ($hassiteconfig) {
     );
 
     $settings->add(
+        new admin_setting_configcheckbox(
+            'local_shopping_cart/enablesubscriptionrenewals',
+            get_string('enablesubscriptionrenewals', 'local_shopping_cart'),
+            get_string('enablesubscriptionrenewals_desc', 'local_shopping_cart'),
+            0
+        )
+    );
+
+    $settings->add(
         new admin_setting_confightmleditor(
             'local_shopping_cart/additonalcashiersection',
             new lang_string('additonalcashiersection', 'local_shopping_cart'),

@@ -2284,6 +2284,12 @@ class shopping_cart {
                     $dailysumrecord->paymentmethod = get_string('paymentmethodpartialrefund', 'local_shopping_cart');
                     $dailysumsdata['partialrefund'] = $dailysumrecord->dailysumformatted;
                     break;
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_SUBSCRIPTION_RENEWAL:
+                    // Collected online by the provider: it raises the day's total but is not cash.
+                    $total += (float)$dailysumrecord->dailysum;
+                    $dailysumrecord->paymentmethod = get_string('paymentmethodsubscriptionrenewal', 'local_shopping_cart');
+                    $dailysumsdata['subscriptionrenewal'] = $dailysumrecord->dailysumformatted;
+                    break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                     $total += (float)$dailysumrecord->dailysum;
                     $totalcash += (float)$dailysumrecord->dailysum;
@@ -2361,6 +2367,10 @@ class shopping_cart {
                         $dailysumrecord->dailysumformatted = format_float((float)$dailysumrecord->dailysum, 2);
                         $dailysumrecord->paymentmethod = get_string('paymentmethodpartialrefund', 'local_shopping_cart');
                         $dailysumsdata['currentcashier:partialrefund'] = $dailysumrecord->dailysumformatted;
+                        break;
+                    case LOCAL_SHOPPING_CART_PAYMENT_METHOD_SUBSCRIPTION_RENEWAL:
+                        $dailysumrecord->paymentmethod = get_string('paymentmethodsubscriptionrenewal', 'local_shopping_cart');
+                        $dailysumsdata['currentcashier:subscriptionrenewal'] = $dailysumrecord->dailysumformatted;
                         break;
                     case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                         $dailysumrecord->paymentmethod = get_string('paymentmethodcashier:cash', 'local_shopping_cart');

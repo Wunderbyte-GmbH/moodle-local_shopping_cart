@@ -409,6 +409,9 @@ class shoppingcart_history_list implements renderable, templatable {
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND:
                     $item->paymentstring = get_string('paymentmethodpartialrefund', 'local_shopping_cart');
                     break;
+                case LOCAL_SHOPPING_CART_PAYMENT_METHOD_SUBSCRIPTION_RENEWAL:
+                    $item->paymentstring = get_string('paymentmethodsubscriptionrenewal', 'local_shopping_cart');
+                    break;
                 case LOCAL_SHOPPING_CART_PAYMENT_METHOD_CASHIER_CASH:
                     $item->paymentstring = get_string('paymentcashier:cash', 'local_shopping_cart');
                     break;

@@ -137,6 +137,17 @@ class provider implements
         );
 
         $collection->add_database_table(
+            'local_shopping_cart_renewals',
+            [
+                'userid' => 'privacy:metadata:local_shopping_cart_renewals:userid',
+                'identifier' => 'privacy:metadata:local_shopping_cart_renewals:identifier',
+                'amount' => 'privacy:metadata:local_shopping_cart_renewals:amount',
+                'timecreated' => 'privacy:metadata:local_shopping_cart_renewals:timecreated',
+            ],
+            'privacy:metadata:local_shopping_cart_renewals'
+        );
+
+        $collection->add_database_table(
             'local_shopping_cart_guestusers',
             [
                 'userid' => 'privacy:metadata:local_shopping_cart_guestusers:userid',
@@ -225,6 +236,7 @@ class provider implements
         $DB->delete_records('local_shopping_cart_ledger');
         $DB->delete_records('local_shopping_cart_invoices');
         $DB->delete_records('local_shopping_cart_guestusers');
+        $DB->delete_records('local_shopping_cart_renewals');
     }
 
     /**
@@ -251,6 +263,7 @@ class provider implements
             $DB->delete_records('local_shopping_cart_history', ['userid' => $user->id]);
             $DB->delete_records('local_shopping_cart_credits', ['userid' => $user->id]);
             $DB->delete_records('local_shopping_cart_guestusers', ['userid' => $user->id]);
+            $DB->delete_records('local_shopping_cart_renewals', ['userid' => $user->id]);
 
             // The cached answer to "did this user ever buy something" is wrong now.
             cartstore::purge_has_history((int) $user->id);
@@ -316,6 +329,7 @@ class provider implements
         $DB->delete_records_list('local_shopping_cart_history', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_credits', 'userid', $userids);
         $DB->delete_records_list('local_shopping_cart_guestusers', 'userid', $userids);
+        $DB->delete_records_list('local_shopping_cart_renewals', 'userid', $userids);
 
         // The cached answer to "did this user ever buy something" is wrong now.
         foreach ($userids as $userid) {

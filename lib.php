@@ -53,6 +53,8 @@ define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_CREDITS_CORRECTION', 9); // Credits r
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_REBOOKING_CREDITS_CORRECTION', 10); // Credits payed back during rebooking.
 // Partial refund granted as credit without cancelling the purchase (e.g. slot move to a cheaper slot).
 define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_PARTIAL_REFUND', 11);
+// A recurring payment collected by the payment provider for a subscription bought through the cart.
+define('LOCAL_SHOPPING_CART_PAYMENT_METHOD_SUBSCRIPTION_RENEWAL', 12);
 
 // Cart success params.
 define('LOCAL_SHOPPING_CART_CARTPARAM_ERROR', -1); // General error.
