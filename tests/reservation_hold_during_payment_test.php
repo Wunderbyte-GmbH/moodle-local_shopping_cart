@@ -129,7 +129,7 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
      * @param int $status
      * @return int
      */
-    private function create_open_order(int $userid, int $identifier, int $status): int {
+    private function create_open_order(int $userid, int $identifier, int $status, string $table = 'paygw_payone_openorders'): int {
         global $DB;
 
         $record = new stdClass();
@@ -141,7 +141,40 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
         $record->timecreated = time();
         $record->timemodified = time();
 
-        return (int) $DB->insert_record('paygw_payone_openorders', $record);
+        return (int) $DB->insert_record($table, $record);
+    }
+
+    /**
+     * Builds the clean-up task for test item 1 of the user, the way the checkout schedules it.
+     *
+     * @param int $userid
+     * @return \local_shopping_cart\task\delete_item_task
+     */
+    private function cleanup_task(int $userid): \local_shopping_cart\task\delete_item_task {
+        $task = new \local_shopping_cart\task\delete_item_task();
+        $task->set_userid($userid);
+        $task->set_custom_data([
+            'itemid' => 1,
+            'userid' => $userid,
+            'componentname' => 'local_shopping_cart',
+            'area' => 'testitem',
+        ]);
+        return $task;
+    }
+
+    /**
+     * Runs the clean-up task and tells whether test item 1 is still in the cart afterwards.
+     *
+     * @param \local_shopping_cart\task\delete_item_task $task
+     * @param int $userid
+     * @return bool
+     */
+    private function run_task_and_item_is_kept(\local_shopping_cart\task\delete_item_task $task, int $userid): bool {
+        ob_start();
+        $task->execute();
+        ob_end_clean();
+        $data = cartstore::instance($userid)->get_data();
+        return array_key_exists('local_shopping_cart-testitem-1', $data['items'] ?? []);
     }
 
     /**
@@ -349,5 +382,81 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
         ob_end_clean();
         $data = cartstore::instance($user->id)->get_data();
         $this->assertArrayNotHasKey('local_shopping_cart-testitem-1', $data['items'] ?? []);
+    }
+    /**
+     * Once the check window has closed, the task releases the item although the order is still open.
+     *
+     * A provider that never answers must not hold a seat forever: after 24 hours the open order is
+     * not asked about any more and the clean-up runs as it always did.
+     *
+     * @covers \local_shopping_cart\task\delete_item_task::execute
+     * @covers \local_shopping_cart\local\openorders::is_payment_ongoing
+     * @return void
+     */
+    public function test_the_cleanup_task_releases_the_item_once_the_check_window_has_closed(): void {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $identifier = $this->start_payment($user->id);
+        $ooid = $this->create_open_order($user->id, $identifier, 0);
+        $asked = 0;
+        openorders::set_status_check_for_testing(function () use (&$asked) {
+            // The provider never resolves the order.
+            $asked++;
+        });
+
+        $task = $this->cleanup_task($user->id);
+        $this->assertTrue(
+            $this->run_task_and_item_is_kept($task, $user->id),
+            'The item was released while the payment was running.'
+        );
+        $this->assertSame(1, $asked);
+
+        // 24 hours later the order is still open, but nobody asks any more.
+        $DB->set_field('paygw_payone_openorders', 'timecreated', time() - 24 * 60 * 60 - 1, ['id' => $ooid]);
+
+        $this->assertFalse($this->run_task_and_item_is_kept($task, $user->id), 'The item was kept beyond the check window.');
+        $this->assertSame(1, $asked, 'An order outside the check window was asked about.');
+        $this->assertSame(0, (int) $DB->get_field('paygw_payone_openorders', 'status', ['id' => $ooid]));
+    }
+
+    /**
+     * An open order of a gateway without a status check never delays the release.
+     *
+     * Nobody can ask such a provider whether the user is still there, so the task must not wait:
+     * otherwise every abandoned checkout through such a gateway would keep its items until the
+     * window closes. paygw_aau has an open order table, but its transaction_complete does not
+     * implement the interface.
+     *
+     * @covers \local_shopping_cart\task\delete_item_task::execute
+     * @covers \local_shopping_cart\local\openorders::can_ask
+     * @return void
+     */
+    public function test_a_gateway_without_status_check_never_delays_the_release(): void {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $identifier = $this->start_payment($user->id);
+        $this->create_open_order($user->id, $identifier, 0, 'paygw_aau_openorders');
+        $this->assertFalse(openorders::can_ask('aau'));
+        $asked = 0;
+        openorders::set_status_check_for_testing(function () use (&$asked) {
+            $asked++;
+        });
+
+        $before = $DB->count_records('task_adhoc', ['classname' => '\\local_shopping_cart\\task\\delete_item_task']);
+        $task = $this->cleanup_task($user->id);
+
+        $this->assertFalse($this->run_task_and_item_is_kept($task, $user->id), 'A gateway without status check held the item.');
+        $this->assertSame(0, $asked, 'A gateway without status check was asked.');
+        $this->assertSame(
+            $before,
+            $DB->count_records('task_adhoc', ['classname' => '\\local_shopping_cart\\task\\delete_item_task']),
+            'The task queued itself again although nothing was running.'
+        );
     }
 }
