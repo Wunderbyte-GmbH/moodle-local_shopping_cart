@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests that a reservation is only released on a final answer of the payment provider.
+ * Tests that the automatic release of a reservation waits for a running payment.
  *
  * @package    local_shopping_cart
  * @category   test
@@ -34,9 +34,9 @@ use tool_mocktesttime\time_mock;
 /**
  * Tests that a reservation is only released on a final answer of the payment provider.
  *
- * As long as an open order of this user is neither completed nor definitively failed, the seat
- * stays reserved. Neither the expiration clean-up nor the user may give it away, because the money
- * may still be on its way.
+ * The provider is asked live through the gateway's status check. Only an order that is still open
+ * after that question holds the reservation, and only against the automatic clean-up - the user
+ * may always remove items by hand. Orders nobody can ask about never hold anything.
  *
  * @package    local_shopping_cart
  * @category   test
@@ -95,6 +95,8 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
      */
     public function tearDown(): void {
         parent::tearDown();
+        openorders::set_status_check_for_testing(null);
+        openorders::reset_tables();
         cartstore::reset();
         \cache_helper::purge_by_definition('local_shopping_cart', 'cacheshopping');
     }
@@ -143,75 +145,209 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
     }
 
     /**
-     * While the provider has not answered, the cart must not be cleaned up.
+     * Writes a pending checkout for the cart identifier, the way the checkout page does.
      *
-     * @covers \local_shopping_cart\local\openorders::has_pending_order
+     * @param int $userid
+     * @param int $identifier
+     * @return void
+     */
+    private function assert_history_pending(int $userid, int $identifier): void {
+        global $DB;
+        $this->assertTrue(
+            $DB->record_exists_select(
+                'local_shopping_cart_history',
+                'userid = :userid AND identifier = :identifier AND paymentstatus IN (0, 1)',
+                ['userid' => $userid, 'identifier' => $identifier]
+            ),
+            'The checkout is not waiting for its payment.'
+        );
+    }
+
+    /**
+     * Only a gateway with a status check can be asked; payone is one, core paypal and stripe are not.
+     *
+     * @covers \local_shopping_cart\local\openorders::can_ask
+     * @covers \local_shopping_cart\local\openorders::get_tables
+     * @return void
+     */
+    public function test_gateways_with_a_status_check_are_recognised(): void {
+        $this->assertTrue(openorders::can_ask('payone'));
+        $this->assertFalse(openorders::can_ask('paypal'));
+        $this->assertFalse(openorders::can_ask('stripe'));
+
+        $tables = openorders::get_tables();
+        $this->assertSame('paygw_payone_openorders', $tables['payone']);
+    }
+
+    /**
+     * The clean-up keeps the cart while the provider, asked right now, says the payment is running.
+     *
+     * @covers \local_shopping_cart\local\openorders::is_payment_ongoing
      * @covers \local_shopping_cart\local\cartstore::get_data
      * @return void
      */
-    public function test_cart_is_held_while_the_provider_has_not_answered(): void {
+    public function test_cart_is_held_while_the_provider_reports_a_running_payment(): void {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
         $starttime = time();
         $identifier = $this->start_payment($user->id);
+        $this->assert_history_pending($user->id, $identifier);
         $this->create_open_order($user->id, $identifier, 0);
 
-        $this->assertTrue(openorders::has_pending_order($user->id));
+        // The provider is asked and leaves the order open: still running.
+        $asked = 0;
+        openorders::set_status_check_for_testing(function ($gateway, $openorder) use (&$asked) {
+            $asked++;
+        });
 
-        // Even beyond the prolonged payment time the seat is not given away.
+        $this->assertTrue(openorders::is_payment_ongoing($user->id));
+        $this->assertSame(1, $asked, 'The provider was not asked.');
+
+        // Beyond the prolonged payment time the expiration clean-up would release the seat,
+        // but the payment is running, so the cart is kept.
         time_mock::set_mock_time($starttime + (self::PROLONGEDTIME + 10) * 60);
 
         $data = cartstore::instance($user->id)->get_data();
 
-        $this->assertCount(2, $data['items'], 'The reservation was released while the payment was still open.');
+        $this->assertCount(2, $data['items'], 'The reservation was released while the payment was still running.');
     }
 
     /**
-     * A definitive failure of the provider releases the seat.
+     * A definitive answer of the provider - completed or failed - releases the hold.
      *
-     * @covers \local_shopping_cart\local\openorders::has_pending_order
-     * @covers \local_shopping_cart\local\cartstore::get_data
+     * @covers \local_shopping_cart\local\openorders::is_payment_ongoing
      * @return void
      */
-    public function test_cart_is_released_when_the_provider_reports_a_failure(): void {
+    public function test_a_resolved_payment_does_not_hold_the_cart(): void {
         global $DB;
 
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        $starttime = time();
         $identifier = $this->start_payment($user->id);
         $ooid = $this->create_open_order($user->id, $identifier, 0);
 
-        // The provider has rejected the payment.
-        $DB->set_field('paygw_payone_openorders', 'status', 2, ['id' => $ooid]);
+        // The provider answers "failed" when asked; the gateway writes that to the open order.
+        openorders::set_status_check_for_testing(function ($gateway, $openorder) use ($DB, $ooid) {
+            $DB->set_field('paygw_payone_openorders', 'status', 2, ['id' => $ooid]);
+        });
 
-        $this->assertFalse(openorders::has_pending_order($user->id));
-
-        time_mock::set_mock_time($starttime + (self::PROLONGEDTIME + 10) * 60);
-
-        $data = cartstore::instance($user->id)->get_data();
-
-        $this->assertCount(0, $data['items'], 'A rejected payment has to release the reservation.');
+        $this->assertFalse(openorders::is_payment_ongoing($user->id));
     }
 
     /**
-     * The user must not be able to give the seat away while the payment is on its way.
+     * An open order that is not asked about does not hold the cart.
+     *
+     * Orders older than the check window, orders of a checkout that is not waiting for its payment
+     * any more, and orders of gateways without a status check are never a running payment - the
+     * user walked away, and nobody could tell otherwise. Otherwise a closed payment window would
+     * keep the items in the cart forever (moodle-local_shopping_cart#213).
+     *
+     * @covers \local_shopping_cart\local\openorders::is_payment_ongoing
+     * @return void
+     */
+    public function test_an_abandoned_payment_does_not_hold_the_cart_forever(): void {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $asked = 0;
+        openorders::set_status_check_for_testing(function () use (&$asked) {
+            $asked++;
+        });
+
+        $identifier = $this->start_payment($user->id);
+        $ooid = $this->create_open_order($user->id, $identifier, 0);
+
+        // Older than the check window: not asked, not running.
+        $DB->set_field('paygw_payone_openorders', 'timecreated', time() - 25 * 60 * 60, ['id' => $ooid]);
+        $this->assertFalse(openorders::is_payment_ongoing($user->id));
+
+        // Recent, but the checkout it belongs to is not waiting for its payment: not running.
+        $DB->set_field('paygw_payone_openorders', 'timecreated', time(), ['id' => $ooid]);
+        $DB->set_field('local_shopping_cart_history', 'paymentstatus', 3, ['identifier' => $identifier]);
+        $this->assertFalse(openorders::is_payment_ongoing($user->id));
+
+        $this->assertSame(0, $asked, 'An order outside the window or of a finished checkout was asked about.');
+
+        // An order of a gateway without a status check (stripe, paypal) is never asked about, see
+        // test_gateways_with_a_status_check_are_recognised: only the tables listed there are read.
+    }
+
+    /**
+     * Removing an item by hand always works, even while a payment is running.
      *
      * @covers \local_shopping_cart\shopping_cart::delete_item_from_cart
      * @return void
      */
-    public function test_items_are_not_deleted_while_a_payment_is_pending(): void {
+    public function test_the_user_can_always_remove_an_item_by_hand(): void {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
         $identifier = $this->start_payment($user->id);
         $this->create_open_order($user->id, $identifier, 0);
+        openorders::set_status_check_for_testing(function () {
+            // The provider says: still running.
+        });
+        $this->assertTrue(openorders::is_payment_ongoing($user->id));
 
-        shopping_cart::delete_item_from_cart('local_shopping_cart', 'testitem', 1, $user->id);
+        $this->assertTrue(
+            shopping_cart::delete_item_from_cart('local_shopping_cart', 'testitem', 1, $user->id),
+            'The user could not remove an item by hand.'
+        );
+        $data = cartstore::instance($user->id)->get_data();
+        $this->assertCount(1, $data['items']);
+        $this->assertArrayNotHasKey('local_shopping_cart-testitem-1', $data['items']);
+    }
+
+    /**
+     * The clean-up task keeps the item and asks again later while the payment is running.
+     *
+     * @covers \local_shopping_cart\task\delete_item_task::execute
+     * @return void
+     */
+    public function test_the_cleanup_task_keeps_the_item_while_the_payment_is_running(): void {
+        global $DB;
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $identifier = $this->start_payment($user->id);
+        $ooid = $this->create_open_order($user->id, $identifier, 0);
+        openorders::set_status_check_for_testing(function () {
+            // Still running.
+        });
+
+        $task = new \local_shopping_cart\task\delete_item_task();
+        $task->set_userid($user->id);
+        $task->set_custom_data([
+            'itemid' => 1,
+            'userid' => $user->id,
+            'componentname' => 'local_shopping_cart',
+            'area' => 'testitem',
+        ]);
+        $before = $DB->count_records('task_adhoc', ['classname' => '\\' . get_class($task)]);
+
+        ob_start();
+        $task->execute();
+        ob_end_clean();
 
         $data = cartstore::instance($user->id)->get_data();
-        $this->assertCount(2, $data['items'], 'An item was released while the payment was still open.');
+        $this->assertArrayHasKey('local_shopping_cart-testitem-1', $data['items'], 'The task released a running payment.');
+        $this->assertSame(
+            $before + 1,
+            $DB->count_records('task_adhoc', ['classname' => '\\' . get_class($task)]),
+            'The task did not queue itself again.'
+        );
+
+        // Once the provider has answered, the task removes the item.
+        $DB->set_field('paygw_payone_openorders', 'status', 2, ['id' => $ooid]);
+        ob_start();
+        $task->execute();
+        ob_end_clean();
+        $data = cartstore::instance($user->id)->get_data();
+        $this->assertArrayNotHasKey('local_shopping_cart-testitem-1', $data['items'] ?? []);
     }
 }

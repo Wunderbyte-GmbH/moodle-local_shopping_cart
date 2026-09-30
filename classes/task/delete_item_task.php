@@ -26,6 +26,7 @@ namespace local_shopping_cart\task;
 
 use context_system;
 use local_shopping_cart\event\item_deleted;
+use local_shopping_cart\local\openorders;
 use local_shopping_cart\shopping_cart;
 
 defined('MOODLE_INTERNAL') || die();
@@ -63,6 +64,23 @@ class delete_item_task extends \core\task\adhoc_task {
         $userid = $this->get_userid();
 
         if (!isset($taskdata->area)) {
+            return;
+        }
+
+        // While the provider says a payment of this user is still running, the reservation must
+        // not be given away by the clean-up - the money may still arrive. The task asks again
+        // after the expiration time; the answer is only ever "running" for a short while, because
+        // the provider resolves the order or the check window closes.
+        if (openorders::is_payment_ongoing($userid)) {
+            // A fresh task: this one is removed by the task manager once it returns.
+            $delay = (int) get_config('local_shopping_cart', 'expirationtime');
+            $retry = new self();
+            $retry->set_userid($userid);
+            $retry->set_custom_data($taskdata);
+            $retry->set_next_run_time(time() + max(1, $delay) * 60);
+            \core\task\manager::queue_adhoc_task($retry);
+            mtrace('Payment of user ' . $userid . ' still running, item ' . $taskdata->itemid
+                . ' in area "' . $taskdata->area . '" from ' . $taskdata->componentname . ' is kept for now');
             return;
         }
 
