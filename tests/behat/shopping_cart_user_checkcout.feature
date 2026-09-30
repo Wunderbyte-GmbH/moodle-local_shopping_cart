@@ -73,3 +73,23 @@ Feature: User cancellation after cash payment on the checkout page.
       | Paid  | Item name      | E-Mail                     | Status  |
       | 10.00 | Test item 1 | toolgenerator1@example.com | Success |
     And I log out
+
+  @javascript
+  Scenario: User with a purchase history removes an item from the cart on the checkout page
+    ## The purchase history makes the checkout page load the history tab lazily. The script that
+    ## does so also initialises the cart buttons, so a broken history module took the delete
+    ## buttons with it (GH-204, stale AMD build with GH-2316). A user without history never
+    ## triggers that path, which is why the scenario above stayed green.
+    Given Testitem "1" has been purchased by user "user1"
+    And Shopping cart has been cleaned for user "user1"
+    And Testitem "2" has been put in shopping cart of user "user1"
+    And Testitem "3" has been put in shopping cart of user "user1"
+    And I log in as "user1"
+    And I visit "/local/shopping_cart/checkout.php"
+    And I wait until the page is ready
+    And I should see "Test item 2" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-2" "css_element"
+    And I should see "Test item 3" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3" "css_element"
+    When I click on ".checkoutgrid [data-itemid=\"3\"] button.delete-button.fa-trash-o" "css_element"
+    And I wait "1" seconds
+    Then I should not see "Test item 3" in the "div.shopping-cart-items" "css_element"
+    And I should see "Test item 2" in the "div.shopping-cart-items" "css_element"
