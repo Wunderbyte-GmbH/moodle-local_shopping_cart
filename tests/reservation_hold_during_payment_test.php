@@ -439,7 +439,7 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
         global $DB;
 
         if (!$DB->get_manager()->table_exists('paygw_aau_openorders')) {
-            $this->markTestSkipped('paygw_aau is not installed.');
+            $this->markTestSkipped('paygw_aau is not installed, no gateway without status check available.');
         }
 
         $user = $this->getDataGenerator()->create_user();
