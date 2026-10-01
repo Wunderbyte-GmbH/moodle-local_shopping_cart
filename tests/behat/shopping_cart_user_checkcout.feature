@@ -91,5 +91,6 @@ Feature: User cancellation after cash payment on the checkout page.
     And I should see "Test item 3" in the ".checkoutgrid.checkout #item-local_shopping_cart-main-3" "css_element"
     When I click on ".checkoutgrid [data-itemid=\"3\"] button.delete-button.fa-trash-o" "css_element"
     And I wait "1" seconds
-    Then I should not see "Test item 3" in the "div.shopping-cart-items" "css_element"
-    And I should see "Test item 2" in the "div.shopping-cart-items" "css_element"
+    ## The navbar popover carries a hidden div.shopping-cart-items of its own, so the checkout grid is addressed explicitly.
+    Then I should not see "Test item 3" in the ".checkoutgrid.checkout div.shopping-cart-items" "css_element"
+    And I should see "Test item 2" in the ".checkoutgrid.checkout div.shopping-cart-items" "css_element"

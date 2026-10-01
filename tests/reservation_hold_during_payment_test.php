@@ -127,6 +127,7 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
      * @param int $userid
      * @param int $identifier
      * @param int $status
+     * @param string $table
      * @return int
      */
     private function create_open_order(int $userid, int $identifier, int $status, string $table = 'paygw_payone_openorders'): int {
@@ -436,6 +437,10 @@ final class reservation_hold_during_payment_test extends \advanced_testcase {
      */
     public function test_a_gateway_without_status_check_never_delays_the_release(): void {
         global $DB;
+
+        if (!$DB->get_manager()->table_exists('paygw_aau_openorders')) {
+            $this->markTestSkipped('paygw_aau is not installed, no gateway without status check available.');
+        }
 
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
