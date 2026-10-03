@@ -814,9 +814,10 @@ class erpnext_invoice implements invoice {
         $this->invoicedata['posting_date'] = $date;
         $this->invoicedata['set_posting_time'] = 1;
         $this->invoicedata['due_date'] = $date;
-        // ERPNext's Sales Invoice carries the service period in from_date / to_date.
-        $this->invoicedata['from_date'] = date('Y-m-d', $serviceperiodstart);
-        $this->invoicedata['to_date'] = date('Y-m-d', $serviceperiodend);
+        // The service period goes into the mandatory custom Sales Invoice fields from / to.
+        // ERPNext rejects the insert without them.
+        $this->invoicedata['from'] = date('Y-m-d', $serviceperiodstart);
+        $this->invoicedata['to'] = date('Y-m-d', $serviceperiodend);
         $this->invoicedata['terms'] = 'Thank you for your online payment and your trust in our services.';
         $this->invoicedata['customer_address'] = $this->billingaddressname;
         // Multi-currency support: only emit when explicitly set, so the existing EUR cart flow is unchanged.

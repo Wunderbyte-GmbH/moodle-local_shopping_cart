@@ -20,12 +20,13 @@ use advanced_testcase;
 use local_shopping_cart\invoice\erpnext_invoice;
 
 /**
- * Tests for the ERPNext tax-template selection reused by other plugins.
+ * Tests for the ERPNext tax-template selection reused by other plugins and for the invoice payload.
  *
  * @package    local_shopping_cart
  * @copyright  2026 Wunderbyte GmbH <info@wunderbyte.at>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::select_tax_template
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::prepare_json_invoice_data
  */
 final class erpnext_invoice_test extends advanced_testcase {
     /** @var array Available ERPNext template names for the tests. */
@@ -76,5 +77,56 @@ final class erpnext_invoice_test extends advanced_testcase {
         set_config('owncountrycode', 'AT', 'local_shopping_cart');
         $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('GB', true, $this->templates));
         $this->assertSame('Export VAT', erpnext_invoice::select_tax_template('GB', false, $this->templates));
+    }
+
+    /**
+     * The service period travels in the mandatory Sales Invoice fields from / to (Wunderbyte-GmbH/Wunderbyte-GmbH#2548).
+     *
+     * ERPNext rejects the insert with a MandatoryError when either field is missing.
+     */
+    public function test_service_period_is_sent_in_from_and_to(): void {
+        $this->resetAfterTest();
+        $start = strtotime('2026-10-01 12:00:00');
+        $end = strtotime('2026-12-31 12:00:00');
+
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['item_exists', 'get_erp_billing_address_name'])
+            ->getMock();
+        $invoice->method('item_exists')->willReturn(true);
+        $invoice->method('get_erp_billing_address_name')->willReturn('Customer-Billing');
+
+        $item = (object) [
+            'itemname' => 'Test item',
+            'vatnumber' => '',
+            'price' => 120,
+            'tax' => 20,
+            'serviceperiodstart' => $start,
+            'serviceperiodend' => $end,
+            'timecreated' => $start,
+            'address_billing' => 0,
+        ];
+        $this->set_private($invoice, 'invoiceitems', [$item]);
+        $this->set_private($invoice, 'billingaddress', (object) ['state' => 'AT']);
+        $this->set_private($invoice, 'customername', 'Customer');
+        $this->set_private($invoice, 'forcedtaxtemplate', 'Austria Tax');
+        // The tax template lookup is the only HTTP request that is not mocked away.
+        \curl::mock_response(json_encode(['data' => ['taxes' => []]]));
+
+        $this->assertTrue($invoice->prepare_json_invoice_data());
+
+        $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
+        $this->assertSame(date('Y-m-d', $start), $payload['from'] ?? null);
+        $this->assertSame(date('Y-m-d', $end), $payload['to'] ?? null);
+    }
+
+    /**
+     * Set a private property of the invoice.
+     *
+     * @param erpnext_invoice $invoice
+     * @param string $name
+     * @param mixed $value
+     */
+    private function set_private(erpnext_invoice $invoice, string $name, $value): void {
+        (new \ReflectionProperty(erpnext_invoice::class, $name))->setValue($invoice, $value);
     }
 }
