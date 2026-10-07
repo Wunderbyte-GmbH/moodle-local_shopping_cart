@@ -1010,13 +1010,10 @@ class erpnext_invoice implements invoice {
         $callhistory = var_export($backtrace, true);
 
         // Check if the response contains an error message.
-        if (isset($resparray['exc_type'])) {
-            $this->errormessage = $resparray['exc_type'] . ' - ' . $url;
-            mtrace("API response: {$this->errormessage} | Called by: {$callhistory}");
-            return false; // Entry does not exist (error).
-        }
-        if (isset($resparray['exception'])) {
-            $this->errormessage = $resparray['exception'] . ' - ' . $url;
+        if (isset($resparray['exc_type']) || isset($resparray['exception'])) {
+            $type = $resparray['exc_type'] ?? $resparray['exception'];
+            $details = self::extract_error_details($resparray);
+            $this->errormessage = $type . ($details !== '' ? ': ' . $details : '') . ' - ' . $url;
             mtrace("API response: {$this->errormessage} | Called by: {$callhistory}");
             return false; // Entry does not exist (error).
         }
@@ -1024,6 +1021,32 @@ class erpnext_invoice implements invoice {
         // Log a generic error message if no specific error is found.
         mtrace("API response: Unknown issue with response from URL: {$url} | Called by: {$callhistory}");
         return false;
+    }
+
+    /**
+     * Extract the human readable reason from an ERPNext (Frappe) error response.
+     *
+     * Frappe puts the validation message into _server_messages (a JSON list of JSON objects)
+     * and the exception line ("frappe.exceptions.ValidationError: ...") into exception.
+     *
+     * @param array $resparray decoded error response
+     * @return string the messages, '' if there are none
+     */
+    public static function extract_error_details(array $resparray): string {
+        $messages = [];
+        $servermessages = json_decode((string) ($resparray['_server_messages'] ?? ''), true);
+        foreach (is_array($servermessages) ? $servermessages : [] as $servermessage) {
+            $decoded = json_decode((string) $servermessage, true);
+            $text = is_array($decoded) ? (string) ($decoded['message'] ?? '') : (string) $servermessage;
+            $text = trim(html_entity_decode(strip_tags($text)));
+            if ($text !== '') {
+                $messages[] = $text;
+            }
+        }
+        if (empty($messages) && !empty($resparray['exception'])) {
+            $messages[] = trim(strip_tags((string) $resparray['exception']));
+        }
+        return implode(' | ', array_unique($messages));
     }
 
     /**
