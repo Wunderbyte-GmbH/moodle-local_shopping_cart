@@ -28,6 +28,7 @@ use local_shopping_cart\invoice\erpnext_invoice;
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::select_tax_template
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::prepare_json_invoice_data
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::extract_error_details
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::get_receivable_account
  */
 final class erpnext_invoice_test extends advanced_testcase {
     /** @var array Available ERPNext template names for the tests. */
@@ -118,6 +119,75 @@ final class erpnext_invoice_test extends advanced_testcase {
         $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
         $this->assertSame(date('Y-m-d', $start), $payload['from'] ?? null);
         $this->assertSame(date('Y-m-d', $end), $payload['to'] ?? null);
+    }
+
+    /**
+     * Mock an invoice ready for prepare_json_invoice_data() in the given currency.
+     *
+     * @param string|null $receivableaccount what get_receivable_account() returns
+     * @return erpnext_invoice
+     */
+    private function currency_invoice(?string $receivableaccount): erpnext_invoice {
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['item_exists', 'get_erp_billing_address_name', 'get_receivable_account'])
+            ->getMock();
+        $invoice->method('item_exists')->willReturn(true);
+        $invoice->method('get_erp_billing_address_name')->willReturn('Customer-Billing');
+        $invoice->method('get_receivable_account')->with('USD')->willReturn($receivableaccount);
+        $item = (object) [
+            'itemname' => 'Test item',
+            'vatnumber' => '',
+            'price' => 400,
+            'tax' => 0,
+            'serviceperiodstart' => time(),
+            'serviceperiodend' => time(),
+            'timecreated' => time(),
+            'address_billing' => 0,
+        ];
+        $this->set_private($invoice, 'invoiceitems', [$item]);
+        $this->set_private($invoice, 'billingaddress', (object) ['state' => 'ZA']);
+        $this->set_private($invoice, 'customername', 'Customer');
+        $this->set_private($invoice, 'forcedtaxtemplate', 'Export VAT');
+        $this->set_private($invoice, 'currency', 'USD');
+        \curl::mock_response(json_encode(['data' => ['taxes' => []]]));
+        return $invoice;
+    }
+
+    /**
+     * A foreign-currency invoice is booked to the receivable account in that currency.
+     */
+    public function test_foreign_currency_sets_receivable_account(): void {
+        $this->resetAfterTest();
+        $invoice = $this->currency_invoice('Schuldner WB in USD - WB');
+
+        $this->assertTrue($invoice->prepare_json_invoice_data());
+
+        $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
+        $this->assertSame('USD', $payload['currency']);
+        $this->assertSame('Schuldner WB in USD - WB', $payload['debit_to']);
+    }
+
+    /**
+     * Without a receivable account in the invoice currency, nothing is sent to ERPNext.
+     */
+    public function test_foreign_currency_without_receivable_account(): void {
+        $this->resetAfterTest();
+        $invoice = $this->currency_invoice(null);
+
+        $this->assertFalse($invoice->prepare_json_invoice_data());
+    }
+
+    /**
+     * The company currency keeps ERPNext's default receivable account.
+     */
+    public function test_company_currency_keeps_default_account(): void {
+        $this->resetAfterTest();
+        $invoice = $this->currency_invoice('');
+
+        $this->assertTrue($invoice->prepare_json_invoice_data());
+
+        $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
+        $this->assertArrayNotHasKey('debit_to', $payload);
     }
 
     /**
