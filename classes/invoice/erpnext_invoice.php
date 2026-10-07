@@ -310,13 +310,14 @@ class erpnext_invoice implements invoice {
      *  ->grosscheck      float   amount actually paid (net+VAT); optional reconciliation target
      *  ->taxtemplate     string  ERPNext template to force; optional (else auto-selected)
      *  ->vatnumber       string  customer VAT id; optional
-     *  ->markpaid        bool    also book a Payment Entry for the grand total; optional
+     *  ->submit          bool    submit the invoice; optional, default true. false leaves it as draft
+     *  ->markpaid        bool    also book a Payment Entry for the grand total (submitted invoices only); optional
      *  ->user            object  {id, email, firstname, lastname}
      *  ->billing         object  {company, name, state(ISO2 country), address, city, zip, id}
      *  ->items           array   of {itemname, net, serviceperiodstart, serviceperiodend}
      *
      * @param stdClass $data
-     * @return bool true when a Sales Invoice was created (or already existed) and submitted
+     * @return bool true when a Sales Invoice was created (or already existed), submitted unless ->submit is false
      */
     public function create_invoice_from_data(stdClass $data): bool {
         $this->injected = true;
@@ -355,11 +356,16 @@ class erpnext_invoice implements invoice {
             $this->invoiceitems[] = $item;
         }
 
-        // Idempotency: reuse an already-submitted invoice for this reference.
+        $submit = !isset($data->submit) || !empty($data->submit);
+
+        // Idempotency: reuse an invoice for this reference; a draft left by an earlier run is submitted now.
         if ($this->reference !== '') {
-            $existing = $this->find_invoice_by_reference($this->reference);
-            if (!empty($existing)) {
-                $this->invoiceid = $existing;
+            $existing = $this->find_open_invoice_by_reference($this->reference);
+            if ($existing['name'] !== '') {
+                $this->invoiceid = $existing['name'];
+                if ($submit && (int) $existing['docstatus'] === 0) {
+                    return $this->submit_invoice($this->invoiceid);
+                }
                 return true;
             }
         }
@@ -397,6 +403,10 @@ class erpnext_invoice implements invoice {
             }
         }
 
+        if (!$submit) {
+            return true; // Left as draft for review in ERPNext.
+        }
+
         if (!$this->submit_invoice($this->invoiceid)) {
             return false;
         }
@@ -419,15 +429,35 @@ class erpnext_invoice implements invoice {
      * @return string the ERPNext invoice name, or '' if none
      */
     public function find_invoice_by_reference(string $reference): string {
-        $filters = '[["Sales Invoice","po_no","=","' . addslashes($reference) . '"],'
-            . '["Sales Invoice","docstatus","=",1]]';
-        $url = str_replace(' ', '%20', $this->baseurl . '/api/resource/Sales Invoice?filters=' . $filters);
+        $invoice = $this->find_open_invoice_by_reference($reference);
+        return $invoice['docstatus'] === 1 ? $invoice['name'] : '';
+    }
+
+    /**
+     * Find a draft or submitted (not cancelled) Sales Invoice by its external reference (po_no).
+     *
+     * A submitted invoice wins over a draft, e.g. one left by an earlier failed run.
+     *
+     * @param string $reference
+     * @return array ['name' => string, 'docstatus' => int (0 draft, 1 submitted)]; name '' if none
+     */
+    public function find_open_invoice_by_reference(string $reference): array {
+        $none = ['name' => '', 'docstatus' => 0];
+        $filters = json_encode([
+            ['Sales Invoice', 'po_no', '=', $reference],
+            ['Sales Invoice', 'docstatus', '<', 2],
+        ]);
+        $url = $this->baseurl . '/api/resource/Sales%20Invoice?filters=' . rawurlencode($filters)
+            . '&fields=' . rawurlencode('["name","docstatus"]') . '&order_by=' . rawurlencode('docstatus desc');
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
-            return '';
+            return $none;
         }
-        $data = json_decode($response, true);
-        return $data['data'][0]['name'] ?? '';
+        $first = json_decode($response, true)['data'][0] ?? [];
+        if (empty($first['name'])) {
+            return $none;
+        }
+        return ['name' => (string) $first['name'], 'docstatus' => (int) ($first['docstatus'] ?? 0)];
     }
 
     /**

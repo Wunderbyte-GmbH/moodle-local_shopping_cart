@@ -29,6 +29,7 @@ use local_shopping_cart\invoice\erpnext_invoice;
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::prepare_json_invoice_data
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::extract_error_details
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::get_receivable_account
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::create_invoice_from_data
  */
 final class erpnext_invoice_test extends advanced_testcase {
     /** @var array Available ERPNext template names for the tests. */
@@ -188,6 +189,84 @@ final class erpnext_invoice_test extends advanced_testcase {
 
         $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
         $this->assertArrayNotHasKey('debit_to', $payload);
+    }
+
+    /**
+     * An injected invoice DTO.
+     *
+     * @param bool|null $submit the submit flag, null to leave it unset
+     * @return \stdClass
+     */
+    private function invoice_dto(?bool $submit): \stdClass {
+        $data = (object) [
+            'reference' => '632',
+            'currency' => 'USD',
+            'user' => (object) ['id' => 4, 'email' => 'buyer@example.org', 'firstname' => 'Jane', 'lastname' => 'Doe'],
+            'billing' => (object) ['company' => 'Example Ltd', 'name' => 'Jane Doe', 'state' => 'ZA', 'id' => 4],
+            'items' => [(object) ['itemname' => 'Test item', 'net' => 400]],
+        ];
+        if ($submit !== null) {
+            $data->submit = $submit;
+        }
+        return $data;
+    }
+
+    /**
+     * Mock the ERPNext calls of create_invoice_from_data().
+     *
+     * @param array $existing what find_open_invoice_by_reference() returns
+     * @param int $submits how often submit_invoice() must be called
+     * @return erpnext_invoice
+     */
+    private function flow_invoice(array $existing, int $submits): erpnext_invoice {
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['find_open_invoice_by_reference', 'prepare_json_invoice_data', 'customer_exists', 'submit_invoice'])
+            ->getMock();
+        $invoice->method('find_open_invoice_by_reference')->willReturn($existing);
+        $invoice->method('prepare_json_invoice_data')->willReturn(true);
+        $invoice->method('customer_exists')->willReturn(true);
+        $invoice->expects($this->exactly($submits))->method('submit_invoice')->willReturn(true);
+        $this->set_private($invoice, 'jsoninvoice', '{}');
+        return $invoice;
+    }
+
+    /**
+     * With submit = false the new invoice stays a draft.
+     */
+    public function test_invoice_can_stay_draft(): void {
+        $this->resetAfterTest();
+        $invoice = $this->flow_invoice(['name' => '', 'docstatus' => 0], 0);
+        \curl::mock_response(json_encode(['data' => ['name' => 'INV-1', 'grand_total' => 400]]));
+
+        $this->assertTrue($invoice->create_invoice_from_data($this->invoice_dto(false)));
+        $this->assertSame('INV-1', $invoice->invoiceid);
+    }
+
+    /**
+     * Without the flag the invoice is submitted, as before.
+     */
+    public function test_invoice_is_submitted_by_default(): void {
+        $this->resetAfterTest();
+        $invoice = $this->flow_invoice(['name' => '', 'docstatus' => 0], 1);
+        \curl::mock_response(json_encode(['data' => ['name' => 'INV-1', 'grand_total' => 400]]));
+
+        $this->assertTrue($invoice->create_invoice_from_data($this->invoice_dto(null)));
+    }
+
+    /**
+     * A draft from an earlier run is reused instead of creating a second invoice, and submitted if wanted.
+     */
+    public function test_existing_draft_is_reused(): void {
+        $this->resetAfterTest();
+        $draft = ['name' => 'INV-OLD', 'docstatus' => 0];
+
+        $invoice = $this->flow_invoice($draft, 0);
+        $this->assertTrue($invoice->create_invoice_from_data($this->invoice_dto(false)));
+        $this->assertSame('INV-OLD', $invoice->invoiceid);
+
+        $invoice = $this->flow_invoice($draft, 1);
+        $this->assertTrue($invoice->create_invoice_from_data($this->invoice_dto(true)));
+        $this->assertSame('INV-OLD', $invoice->invoiceid);
     }
 
     /**
