@@ -27,6 +27,7 @@ use local_shopping_cart\invoice\erpnext_invoice;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::select_tax_template
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::prepare_json_invoice_data
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::extract_error_details
  */
 final class erpnext_invoice_test extends advanced_testcase {
     /** @var array Available ERPNext template names for the tests. */
@@ -128,5 +129,27 @@ final class erpnext_invoice_test extends advanced_testcase {
      */
     private function set_private(erpnext_invoice $invoice, string $name, $value): void {
         (new \ReflectionProperty(erpnext_invoice::class, $name))->setValue($invoice, $value);
+    }
+
+    /**
+     * The validation message of an ERPNext error response is kept, not only its type.
+     */
+    public function test_extract_error_details(): void {
+        $response = [
+            'exc_type' => 'ValidationError',
+            'exception' => 'frappe.exceptions.ValidationError: Exchange Rate is mandatory',
+            '_server_messages' => json_encode([
+                json_encode(['message' => 'Row #1: <strong>Exchange Rate</strong> is mandatory', 'indicator' => 'red']),
+            ]),
+        ];
+        $this->assertSame('Row #1: Exchange Rate is mandatory', erpnext_invoice::extract_error_details($response));
+
+        // Without server messages the exception line is used.
+        unset($response['_server_messages']);
+        $this->assertSame(
+            'frappe.exceptions.ValidationError: Exchange Rate is mandatory',
+            erpnext_invoice::extract_error_details($response)
+        );
+        $this->assertSame('', erpnext_invoice::extract_error_details(['exc_type' => 'ValidationError']));
     }
 }
