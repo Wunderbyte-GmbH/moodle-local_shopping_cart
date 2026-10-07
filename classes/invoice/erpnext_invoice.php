@@ -826,6 +826,15 @@ class erpnext_invoice implements invoice {
             if (!empty($this->conversionrate)) {
                 $this->invoicedata['conversion_rate'] = $this->conversionrate;
             }
+            // ERPNext books the invoice to the company's default receivable account, which is in the
+            // company currency. An invoice in another currency needs a receivable account in that currency.
+            $receivableaccount = $this->get_receivable_account($this->currency);
+            if ($receivableaccount === null) {
+                return false;
+            }
+            if ($receivableaccount !== '') {
+                $this->invoicedata['debit_to'] = $receivableaccount;
+            }
         }
         // External idempotency reference (e.g. Stripe order id); only set for injected callers.
         if (!empty($this->reference)) {
@@ -1021,6 +1030,48 @@ class erpnext_invoice implements invoice {
         // Log a generic error message if no specific error is found.
         mtrace("API response: Unknown issue with response from URL: {$url} | Called by: {$callhistory}");
         return false;
+    }
+
+    /**
+     * The receivable account to book an invoice in the given currency to.
+     *
+     * @param string $currency ISO currency code of the invoice
+     * @return string|null the account name; '' for the company currency (ERPNext uses its default);
+     *  null when no account exists for a foreign currency (errormessage says why)
+     */
+    public function get_receivable_account(string $currency): ?string {
+        $currency = strtoupper($currency);
+        $company = $this->get_default_company();
+        $url = $this->baseurl . '/api/resource/Company/' . rawurlencode($company);
+        $response = $this->client->get(str_replace(' ', '%20', $url));
+        if (!$this->validate_response($response, $url)) {
+            return null;
+        }
+        $companycurrency = strtoupper((string) (json_decode($response, true)['data']['default_currency'] ?? ''));
+        if ($companycurrency === '' || $companycurrency === $currency) {
+            return '';
+        }
+
+        $filters = json_encode([
+            ['account_type', '=', 'Receivable'],
+            ['account_currency', '=', $currency],
+            ['company', '=', $company],
+            ['is_group', '=', 0],
+            ['disabled', '=', 0],
+        ]);
+        $url = $this->baseurl . '/api/resource/Account?filters=' . rawurlencode($filters) . '&order_by=name%20asc';
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return null;
+        }
+        $account = (string) (json_decode($response, true)['data'][0]['name'] ?? '');
+        if ($account === '') {
+            $this->errormessage = "ERPNext has no receivable account in {$currency} for company {$company}; "
+                . "create one (account type Receivable, currency {$currency}) to invoice in {$currency}.";
+            mtrace($this->errormessage);
+            return null;
+        }
+        return $account;
     }
 
     /**
