@@ -25,6 +25,9 @@
 
 namespace local_shopping_cart\local\checkout_process\items_helper;
 
+use local_shopping_cart\local\cartstore;
+use local_shopping_cart\local\checkout_process\checkout_manager;
+use local_shopping_cart\local\checkout_process\items\addresses;
 use moodle_exception;
 
 /**
@@ -35,6 +38,31 @@ use moodle_exception;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class address_operations {
+    /**
+     * Request cache of single addresses, keyed by address id (false for missing ones).
+     * @var array
+     */
+    private static $addresscache = [];
+
+    /**
+     * Request cache of all addresses of a user, keyed by user id.
+     * @var array
+     */
+    private static $useraddresscache = [];
+
+    /**
+     * Forgets everything read from the address table in this request.
+     *
+     * Called after every write, so the same request never serves an address
+     * that was just deleted or the old data of an address that was just edited.
+     *
+     * @return void
+     */
+    public static function reset_request_cache(): void {
+        self::$addresscache = [];
+        self::$useraddresscache = [];
+    }
+
     /**
      * Saves a new Address in the database for the current $USER.
      *
@@ -48,7 +76,9 @@ class address_operations {
         $address->company = $address->company ?? '';
         $address->name = $address->name ?? '';
         $address->userid = $USER->id;
-        return $DB->insert_record('local_shopping_cart_address', $address, true);
+        $id = $DB->insert_record('local_shopping_cart_address', $address, true);
+        self::reset_request_cache();
+        return $id;
     }
 
     /**
@@ -76,17 +106,120 @@ class address_operations {
         $address->company = $address->company ?? '';
 
         // Update the record in the database.
-        return $DB->update_record('local_shopping_cart_address', $address);
+        $result = $DB->update_record('local_shopping_cart_address', $address);
+        self::reset_request_cache();
+
+        // The country of the selected billing address decides the tax country.
+        self::sync_checkout_caches((int)$USER->id);
+
+        return $result;
     }
 
     /**
-     * Function to return an array of localized country codes.
+     * Deletes an address and forgets it in the checkout caches of its owner.
+     *
      * @param int $addressid
-     * @return bool
+     * @return bool false when the address does not exist (any more)
      */
     public static function delete_user_address(int $addressid): bool {
         global $DB;
-        return $DB->delete_records('local_shopping_cart_address', ['id' => $addressid]);
+
+        $address = $DB->get_record('local_shopping_cart_address', ['id' => $addressid], 'id, userid', IGNORE_MISSING);
+        if (!$address) {
+            return false;
+        }
+
+        $DB->delete_records('local_shopping_cart_address', ['id' => $addressid]);
+        self::reset_request_cache();
+
+        // The owner may have selected this address in a running checkout. Both the
+        // cartstore and the checkout manager cache keep its id, so they are cleaned
+        // here, otherwise the checkout continues with a dangling address id.
+        self::sync_checkout_caches((int)$address->userid);
+
+        return true;
+    }
+
+    /**
+     * Drops address ids that no longer resolve from the checkout caches of a user.
+     *
+     * The cartstore cache keeps the selected ids (address_billing, address_shipping)
+     * and the tax country derived from the billing address, the checkout manager
+     * cache keeps the selection of the addresses step together with its validity.
+     * A selected address can disappear (deleted in the checkout, by a cashier or by
+     * the privacy API) or change its country, so this re-derives both caches from the
+     * database. Only writes when something actually changed.
+     *
+     * The checkout manager cache lives in the session, so for another user's
+     * checkout only the cartstore part can be repaired here; the owner's next page
+     * load runs this again in her own session.
+     *
+     * @param int $userid
+     * @return bool true when a selected address was dropped
+     */
+    public static function sync_checkout_caches(int $userid): bool {
+        if (empty($userid)) {
+            return false;
+        }
+
+        $resolves = function ($addressid): bool {
+            return !empty($addressid) && is_numeric($addressid)
+                && self::get_specific_user_address((int)$addressid) !== false;
+        };
+
+        $dropped = false;
+
+        // Cartstore cache: selected ids and the tax country of the billing address.
+        $cartstore = cartstore::instance($userid);
+        $cartdata = $cartstore->get_cache();
+        $cartchanged = false;
+        foreach (['address_billing', 'address_shipping'] as $key) {
+            if (isset($cartdata[$key]) && !$resolves($cartdata[$key])) {
+                unset($cartdata[$key]);
+                $cartchanged = true;
+                $dropped = true;
+                if ($key === 'address_billing') {
+                    // The tax country was derived from this address.
+                    $cartdata['taxcountrycode'] = null;
+                }
+            }
+        }
+        if (isset($cartdata['address_billing'])) {
+            // The billing address may have been edited: keep the tax country in line with it.
+            $taxcountrycode = self::get_specific_user_address((int)$cartdata['address_billing'])->state;
+            if (($cartdata['taxcountrycode'] ?? null) !== $taxcountrycode) {
+                $cartdata['taxcountrycode'] = $taxcountrycode;
+                $cartchanged = true;
+            }
+        }
+        if ($cartchanged) {
+            $cartstore->set_cache($cartdata);
+        }
+
+        // Checkout manager cache: selection and validity of the addresses step.
+        $managercache = checkout_manager::get_cache($userid);
+        $stepdata = $managercache['steps']['addresses']['data'] ?? null;
+        if (is_array($stepdata)) {
+            $stepchanged = false;
+            foreach ($stepdata as $key => $value) {
+                if (strpos($key, 'selectedaddress_') === 0 && !empty($value) && !$resolves($value)) {
+                    unset($stepdata[$key]);
+                    $stepchanged = true;
+                    $dropped = true;
+                }
+            }
+            if ($stepchanged) {
+                $item = new addresses($userid);
+                $managercache['steps']['addresses'] = $item->evaluate_step($stepdata);
+                if (!$managercache['steps']['addresses']['valid']) {
+                    $managercache['checkout_validation'] = false;
+                    $managercache['feedback'] = ['errormessage' => addresses::get_error_feedback()];
+                }
+                checkout_manager::write_cache($userid, $managercache);
+            }
+        }
+
+        return $dropped;
     }
 
     /**
@@ -103,17 +236,15 @@ class address_operations {
     public static function get_specific_user_address(int $addressid) {
         global $DB;
 
-        // Define a static variable to hold the cache for all addresses queried in this request.
-        static $addresscache = [];
-        // Check if the specific address ID is already in the cache.
-        if (array_key_exists($addressid, $addresscache)) {
+        // Check if the specific address ID is already in the request cache.
+        if (array_key_exists($addressid, self::$addresscache)) {
             // Return the cached result immediately.
-            return $addresscache[$addressid];
+            return self::$addresscache[$addressid];
         }
         // If not in cache, execute the database query.
         $record = $DB->get_record('local_shopping_cart_address', ['id' => $addressid], '*', IGNORE_MISSING);
         // Save the result to the cache for future calls within this request.
-        $addresscache[$addressid] = $record;
+        self::$addresscache[$addressid] = $record;
         return $record;
     }
 
@@ -125,13 +256,10 @@ class address_operations {
     public static function get_all_user_addresses(int $userid): array {
         global $DB;
 
-        // Define a static variable to hold the cache for all user addresses queried in this request.
-        static $useraddresscache = [];
-
-        // 1. Check if the specific user ID is already in the cache.
-        if (isset($useraddresscache[$userid])) {
+        // 1. Check if the specific user ID is already in the request cache.
+        if (isset(self::$useraddresscache[$userid])) {
             // Return the cached result immediately.
-            return $useraddresscache[$userid];
+            return self::$useraddresscache[$userid];
         }
 
         // 2. If not in cache, execute the database query.
@@ -139,7 +267,7 @@ class address_operations {
 
         // 3. Save the result to the cache for future calls within this request.
         // get_records returns an object array, which is cast to an array by the function signature.
-        $useraddresscache[$userid] = $records;
+        self::$useraddresscache[$userid] = $records;
 
         // 4. Return the result.
         return $records;

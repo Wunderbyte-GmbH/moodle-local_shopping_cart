@@ -54,6 +54,10 @@ class checkout_page_data {
      * @return array Template data for local_shopping_cart/checkout.
      */
     public static function build_cart_checkout(int $userid): array {
+        // A selected address may have been deleted meanwhile: drop dangling ids
+        // from the checkout caches before anything reads them.
+        address_operations::sync_checkout_caches($userid);
+
         $cartstore = cartstore::instance($userid);
         $data = $cartstore->get_localized_data();
 

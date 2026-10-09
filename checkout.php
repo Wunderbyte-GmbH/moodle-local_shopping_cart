@@ -153,6 +153,10 @@ if (isset($success) && isset($historylist)) {
     }
     $data["userid"] = $USER->id;
 } else {
+    // A selected address may have been deleted meanwhile: drop dangling ids
+    // from the checkout caches before anything reads them.
+    address_operations::sync_checkout_caches($userid);
+
     $cartstore = cartstore::instance($userid);
     $data = $cartstore->get_localized_data();
 

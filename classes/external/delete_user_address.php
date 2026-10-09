@@ -77,7 +77,11 @@ class delete_user_address extends external_api {
         self::validate_context($context);
 
         // Security: Check that the address belongs to the current user.
-        $address = $DB->get_record('local_shopping_cart_address', ['id' => $params['addressid']], '*', MUST_EXIST);
+        // An address deleted meanwhile (e.g. double click) is no error, just nothing to do.
+        $address = $DB->get_record('local_shopping_cart_address', ['id' => $params['addressid']], '*', IGNORE_MISSING);
+        if (!$address) {
+            return ['success' => false];
+        }
 
         // Only allow deletion if the address belongs to the user or user is a cashier.
         if ($address->userid != $USER->id && !has_capability('local/shopping_cart:cashier', $context)) {
