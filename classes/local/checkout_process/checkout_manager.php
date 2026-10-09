@@ -494,6 +494,21 @@ class checkout_manager {
     }
 
     /**
+     * Writes a manager cache for a user without instantiating a manager.
+     *
+     * Used where the checkout state has to be corrected outside of a checkout
+     * request, e.g. when a selected address is deleted.
+     *
+     * @param int $identifier
+     * @param array $managercache
+     * @return void
+     */
+    public static function write_cache(int $identifier, array $managercache): void {
+        $cache = cache::make('local_shopping_cart', 'cachebookingpreprocess');
+        $cache->set($identifier, $managercache);
+    }
+
+    /**
      * Applies the given price modifiers on the cached data.
      *
      * @param mixed $itemlist
