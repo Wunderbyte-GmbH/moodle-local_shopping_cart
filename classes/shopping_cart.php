@@ -906,6 +906,28 @@ class shopping_cart {
             // Now the user either has enough credit to pay for herself, or she is a cashier.
             $identifier = shopping_cart_history::create_unique_cart_identifier($userid);
         } else {
+            // A gateway may deliver the same order more than once (webhook plus return url, retries).
+            // If every record of this identifier is already confirmed, there is nothing left to book.
+            if (!empty($data['identifier'])) {
+                $records = $DB->get_records('local_shopping_cart_history', ['identifier' => (int) $data['identifier']]);
+                $alreadyconfirmed = !empty($records);
+                foreach ($records as $record) {
+                    if ((int) $record->paymentstatus !== LOCAL_SHOPPING_CART_PAYMENT_SUCCESS) {
+                        $alreadyconfirmed = false;
+                        break;
+                    }
+                }
+                if ($alreadyconfirmed) {
+                    [$balance] = shopping_cart_credits::get_balance($userid);
+                    return [
+                        'status' => 1,
+                        'error' => '',
+                        'credit' => (float) $balance,
+                        'identifier' => (int) $data['identifier'],
+                    ];
+                }
+            }
+
             // phpcs:ignore moodle.Commenting.TodoComment.MissingInfoInline
             // TODO: Migrate everything to the cartstore & pricemodifiers.
 
