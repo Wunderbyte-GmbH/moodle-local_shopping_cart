@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Generate PDF of daily sums from shopping cart for a specific day.
+ * Generate PDF of daily sums from shopping cart for a specific day or period (from - to).
  *
  * The document itself is built by {@see \local_shopping_cart\local\daily_sums_pdf}
  * (PDF/A-2b); this script only handles access control and output.
@@ -33,7 +33,8 @@ require_once($CFG->libdir . '/pdflib.php');
 
 require_login();
 
-$date = required_param('date', PARAM_TEXT);
+$from = required_param('from', PARAM_INT);
+$to = required_param('to', PARAM_INT);
 
 $context = context_system::instance();
 
@@ -49,8 +50,8 @@ $PAGE->set_heading('Daily sums');
 
 // Discard any stray output, so the PDF stream stays intact.
 ob_start();
-$pdf = daily_sums_pdf::create($date);
+$pdf = daily_sums_pdf::create($from, $to);
 ob_end_clean();
 
 // Close and output PDF document.
-$pdf->Output('daily_sums_' . $date . '.pdf', 'I');
+$pdf->Output(daily_sums_pdf::filename($from, $to), 'I');

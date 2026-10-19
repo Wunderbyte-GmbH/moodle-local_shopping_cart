@@ -22,6 +22,7 @@ use local_shopping_cart\external\confirm_cash_payment;
 use local_shopping_cart\external\get_history_item;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\create_invoice;
+use local_shopping_cart\form\daily_sums_date_selector_form;
 use local_shopping_cart\local\daily_sums_pdf;
 
 /**
@@ -193,10 +194,10 @@ final class pdfa_documents_test extends advanced_testcase {
     public function test_daily_sums_pdf_is_pdfa(): void {
         $this->buy_test_item();
         $this->setAdminUser();
-        $date = date('Y-m-d');
+        [$from, $to] = daily_sums_date_selector_form::default_period();
 
         set_config('dailysumspdfhtml', '', 'local_shopping_cart');
-        $pdf = daily_sums_pdf::create($date)->Output('daily_sums.pdf', 'S');
+        $pdf = daily_sums_pdf::create($from, $to)->Output('daily_sums.pdf', 'S');
         $this->assert_pdfa2b($pdf);
 
         set_config(
@@ -205,7 +206,7 @@ final class pdfa_documents_test extends advanced_testcase {
             . 'cash & cards: [[cashandcards]]</p><pre>printed [[printdate]]</pre>',
             'local_shopping_cart'
         );
-        $pdf = daily_sums_pdf::create($date)->Output('daily_sums.pdf', 'S');
+        $pdf = daily_sums_pdf::create($from, $to)->Output('daily_sums.pdf', 'S');
         $this->assert_pdfa2b($pdf);
         $this->assertStringContainsString('FreeSans', $pdf);
         $this->assertStringContainsString('FreeMono', $pdf);
@@ -253,7 +254,8 @@ final class pdfa_documents_test extends advanced_testcase {
             'local_shopping_cart'
         );
 
-        $doc = daily_sums_pdf::create(date('Y-m-d'));
+        [$from, $to] = daily_sums_date_selector_form::default_period();
+        $doc = daily_sums_pdf::create($from, $to);
         $this->assertSame(\TCPDF::class, get_class($doc));
         $pdf = $doc->Output('daily_sums.pdf', 'S');
         $this->assertStringNotContainsString('pdfaid:part', $pdf);

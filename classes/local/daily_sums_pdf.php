@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/pdflib.php');
 
 /**
- * Builds the daily sums PDF (cash report of one day) from the configured HTML template.
+ * Builds the daily sums PDF (cash report of a day or a period) from the configured HTML template.
  *
  * The template comes from the setting local_shopping_cart/dailysumspdfhtml; when it is
  * empty the mustache template local_shopping_cart/report_daily_sums_pdf is used. With the
@@ -39,15 +39,16 @@ require_once($CFG->libdir . '/pdflib.php');
  */
 class daily_sums_pdf {
     /**
-     * Creates the daily sums document for the given day.
+     * Creates the daily sums document for the given period.
      *
      * The returned document is complete; the caller decides how to output it
      * (e.g. $pdf->Output('daily_sums_2026-01-01.pdf', 'I') or 'S' for the string).
      *
-     * @param string $date the day, as accepted by strtotime() (e.g. Y-m-d)
+     * @param int $from start of the period (timestamp)
+     * @param int $to end of the period (timestamp, the selected minute is included)
      * @return TCPDF plain TCPDF, or the PDF/A-2b variant when the setting is on
      */
-    public static function create(string $date): TCPDF {
+    public static function create(int $from, int $to): TCPDF {
         global $USER;
 
         // Create new PDF document.
@@ -59,13 +60,13 @@ class daily_sums_pdf {
         }
 
         // Get the daily sums data.
-        $data = shopping_cart::get_daily_sums_data($date);
+        $data = shopping_cart::get_daily_sums_data($from, $to);
         $html = self::render_html($data);
 
         // Set document information.
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor("$USER->firstname $USER->lastname");
-        $pdf->SetTitle('daily_sums_' . $date);
+        $pdf->SetTitle(self::filename($from, $to, false));
         $pdf->SetSubject('Daily sums');
         $pdf->SetKeywords('daily sums');
 
@@ -99,6 +100,21 @@ class daily_sums_pdf {
         $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
         return $pdf;
+    }
+
+    /**
+     * The file name of the document: daily_sums_<day> for one day, daily_sums_<from>_<to> for a period.
+     *
+     * @param int $from start of the period (timestamp)
+     * @param int $to end of the period (timestamp)
+     * @param bool $withextension append ".pdf"
+     * @return string
+     */
+    public static function filename(int $from, int $to, bool $withextension = true): string {
+        $fromday = userdate($from, '%Y-%m-%d');
+        $today = userdate($to, '%Y-%m-%d');
+        $name = 'daily_sums_' . $fromday . ($fromday === $today ? '' : '_' . $today);
+        return $withextension ? $name . '.pdf' : $name;
     }
 
     /**

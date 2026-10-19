@@ -335,9 +335,11 @@ $string['currency'] = 'Währung';
 $string['cy'] = "Zypern";
 $string['cz'] = "Tschechien";
 $string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
+$string['dailysums:from'] = 'Von';
+$string['dailysums:to'] = 'Bis';
 $string['dailysumspdfhtml'] = 'HTML-Vorlage für die Erstellung des Tagessumen-PDFs';
 $string['dailysumspdfhtml:description'] = 'Geben Sie HTML-Code ein, der als Vorlage für die Erstellung des Tagessumen-PDFs verwendet werden soll.
-Sie können die folgenden Platzhalter verwenden: [[title]], [[date]], [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+Sie können die folgenden Platzhalter verwenden: [[title]], [[date]] (der Tag bzw. der gewählte Zeitraum), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Lassen Sie das Feld leer, um die Standard-Vorlage zu verwenden.';
 $string['de'] = "Deutschland";
@@ -412,6 +414,7 @@ $string['error:cashiercapabilitymissing'] = 'FEHLER: Ihnen fehlt die Berechtigun
 $string['error:choosevalue'] = 'Sie müssen hier einen Wert auswählen.';
 $string['error:costcentersdonotmatch'] = 'Diese Kurse können nicht gemeinsam gebucht werden.';
 $string['error:costcentertitle'] = 'Andere Kostenstelle';
+$string['error:dailysums:rangeinvalid'] = 'Das Ende des Zeitraums darf nicht vor dem Beginn liegen.';
 $string['error:fullybooked'] = 'Sie können nicht mehr buchen, da bereits alle Plätze belegt sind.';
 $string['error:fullybookedtitle'] = 'Ausgebucht';
 $string['error:gatewaymissingornotsupported'] = 'Sie haben entweder noch kein Zahlungs-Gateway eingerichtet
