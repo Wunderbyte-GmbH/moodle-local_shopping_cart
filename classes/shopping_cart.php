@@ -2386,31 +2386,81 @@ class shopping_cart {
     }
 
     /**
-     * Helper function to create daily sums.
+     * The last second of the minute the timestamp lies in.
      *
-     * @param string $date date in the form 'YYYY-MM-DD'
-     * @param string $selectorformoutput the HTML of the date selector form
-     * @param bool $fromform submitted by form
-     * @return array array containing the data needed to render daily sums
+     * The period of the daily sums is chosen with minute precision; its end is meant inclusive,
+     * so a period ending at 23:59 covers the whole day.
+     *
+     * @param int $timestamp
+     * @return int
      */
-    public static function get_daily_sums_data(string $date, string $selectorformoutput = '', bool $fromform = false): array {
-        global $DB, $USER;
+    public static function end_of_minute(int $timestamp): int {
+        return $timestamp - ($timestamp % 60) + 59;
+    }
 
-        // Get the current date and daily sums date.
-        $now = time();
-        $dailysumstimestamp = strtotime($date);
+    /**
+     * Formats the period of the daily sums for display.
+     *
+     * A period that covers exactly one day (00:00 - 23:59) is shown as the date only, as before;
+     * any other period as "from - to" with the time of day.
+     *
+     * @param int $from start of the period (timestamp)
+     * @param int $to end of the period (timestamp, minute inclusive)
+     * @return string
+     */
+    public static function format_daily_sums_period(int $from, int $to): string {
         switch (current_language()) {
             case 'de':
-                $currentdate = date('d.m.Y', $now);
-                $dailysumsdate = date('d.m.Y', $dailysumstimestamp);
+                $dateformat = '%d.%m.%Y';
+                $datetimeformat = '%d.%m.%Y %H:%M';
                 break;
             default:
-                $currentdate = date('M d, Y', $now);
-                $dailysumsdate = date('M d, Y', $dailysumstimestamp);
+                $dateformat = '%b %d, %Y';
+                $datetimeformat = '%b %d, %Y %H:%M';
                 break;
         }
 
-        $dailysumsdata['date'] = $dailysumsdate; // Date.
+        $fromdate = usergetdate($from);
+        $todate = usergetdate($to);
+        $sameday = $fromdate['year'] == $todate['year']
+            && $fromdate['mon'] == $todate['mon']
+            && $fromdate['mday'] == $todate['mday'];
+        $wholeday = $sameday
+            && $fromdate['hours'] == 0 && $fromdate['minutes'] == 0
+            && $todate['hours'] == 23 && $todate['minutes'] == 59;
+
+        if ($wholeday) {
+            return userdate($from, $dateformat);
+        }
+        return userdate($from, $datetimeformat) . ' - ' . userdate($to, $datetimeformat);
+    }
+
+    /**
+     * Helper function to create daily sums for a period.
+     *
+     * @param int $from start of the period (timestamp)
+     * @param int $to end of the period (timestamp, the selected minute is included)
+     * @param string $selectorformoutput the HTML of the period selector form
+     * @param bool $fromform submitted by form
+     * @return array array containing the data needed to render daily sums
+     */
+    public static function get_daily_sums_data(int $from, int $to, string $selectorformoutput = '', bool $fromform = false): array {
+        global $DB, $USER;
+
+        // Get the current date and the period of the daily sums.
+        $now = time();
+        $to = self::end_of_minute($to);
+        switch (current_language()) {
+            case 'de':
+                $currentdate = date('d.m.Y', $now);
+                break;
+            default:
+                $currentdate = date('M d, Y', $now);
+                break;
+        }
+        $dailysumsdate = self::format_daily_sums_period($from, $to);
+
+        $dailysumsdata['date'] = $dailysumsdate; // Date or period.
         $dailysumsdata['printdate'] = $currentdate; // Actual date of today, might be needed in PDF.
         $dailysumsdata['currency'] = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
         $dailysumsdata['title'] = get_string('titledailysums', 'local_shopping_cart');
@@ -2424,8 +2474,8 @@ class shopping_cart {
 
         // SQL params.
         $dailysumsparams = [
-            'startofday' => strtotime($date . ' 00:00'),
-            'endofday' => strtotime($date . ' 24:00'),
+            'startofday' => $from,
+            'endofday' => $to,
             'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
         ];
 
@@ -2524,8 +2574,8 @@ class shopping_cart {
 
             // SQL params.
             $dailysumsparamscurrent = [
-                'startofday' => strtotime($date . ' 00:00'),
-                'endofday' => strtotime($date . ' 24:00'),
+                'startofday' => $from,
+                'endofday' => $to,
                 'paymentsuccess' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
                 'userid' => $USER->id,
             ];
@@ -2603,9 +2653,10 @@ class shopping_cart {
         }
 
         // Add download URL.
-        if (!empty($date)) {
-            $dailysumsdata['dailysumspdfurl'] = new moodle_url('/local/shopping_cart/daily_sums_pdf.php', ['date' => $date]);
-        }
+        $dailysumsdata['dailysumspdfurl'] = new moodle_url(
+            '/local/shopping_cart/daily_sums_pdf.php',
+            ['from' => $from, 'to' => $to]
+        );
         if ($fromform) {
             $dailysumsdata['open'] = true;
         }

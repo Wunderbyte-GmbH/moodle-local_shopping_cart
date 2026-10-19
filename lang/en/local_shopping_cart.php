@@ -333,9 +333,11 @@ $string['currency'] = 'Currency';
 $string['cy'] = "Cyprus";
 $string['cz'] = "Czech Republic";
 $string['dailysums:downloadpdf'] = 'Download daily sums as PDF';
+$string['dailysums:from'] = 'From';
+$string['dailysums:to'] = 'To';
 $string['dailysumspdfhtml'] = 'HTML template for the daily sums PDF';
 $string['dailysumspdfhtml:description'] = 'Enter HTML to create the daily sums PDF. You can use the following placeholders:
-[[title]], [[date]], [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+[[title]], [[date]] (the day or the selected period), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Leave this empty to use the default template.';
 $string['de'] = "Germany";
@@ -411,6 +413,7 @@ $string['error:choosevalue'] = 'Please enter a value.';
 $string['error:costcentersdonotmatch'] = 'You already have an item with a different cost center in your cart.
 You have to buy this item separately!';
 $string['error:costcentertitle'] = 'Different cost center';
+$string['error:dailysums:rangeinvalid'] = 'The end of the period must not lie before its start.';
 $string['error:fullybooked'] = 'You cannot book this item anymore because it is already fully booked.';
 $string['error:fullybookedtitle'] = 'Fully booked';
 $string['error:gatewaymissingornotsupported'] = 'Note: Your current payment gateway is either not supported or you still need

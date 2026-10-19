@@ -36,7 +36,6 @@ global $DB;
 
 $dbman = $DB->get_manager();
 
-$date = optional_param('date', date('Y-m-d'), PARAM_TEXT); // Default: today.
 $download = optional_param('download', '', PARAM_ALPHA);
 
 // Optional debug param.
@@ -47,6 +46,11 @@ $debug = optional_param('debug', 0, PARAM_INT);
 
 // No guest autologin.
 require_login(0, false);
+
+// Period of the daily sums. Default: today, from 00:00 to 23:59 (timezone of the user).
+[$defaultfrom, $defaultto] = daily_sums_date_selector_form::default_period();
+$dailysumsfrom = optional_param('from', $defaultfrom, PARAM_INT);
+$dailysumsto = optional_param('to', $defaultto, PARAM_INT);
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -490,17 +494,17 @@ if ($debug != 1 && $debug != 3) {
 
         // Form processing and displaying is done here.
         if ($fromform = $mform->get_data()) {
-            $dailysumsdate = $fromform->dailysumsdate;
-            $date = date('Y-m-d', $dailysumsdate);
+            $dailysumsfrom = (int)$fromform->dailysumsfrom;
+            $dailysumsto = (int)$fromform->dailysumsto;
             echo $OUTPUT->render_from_template(
                 'local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($date, $selectorformoutput, true)
+                shopping_cart::get_daily_sums_data($dailysumsfrom, $dailysumsto, $selectorformoutput, true)
             );
         } else {
             // Show daily sums.
             echo $OUTPUT->render_from_template(
                 'local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($date, $selectorformoutput, false)
+                shopping_cart::get_daily_sums_data($dailysumsfrom, $dailysumsto, $selectorformoutput, false)
             );
         }
     }
@@ -527,9 +531,9 @@ if ($debug != 1 && $debug != 3) {
 // Debug-mode 2 and 3 we do not output the table.
 if ($debug != 2 && $debug != 3) {
     // Apply filter from the submission of daily sums, if given.
-    if ($fromform && !empty($dailysumsdate)) {
-        $starting = strtotime("midnight", $dailysumsdate);
-        $ending = strtotime("23:59", $dailysumsdate);
+    if ($fromform && !empty($dailysumsfrom) && !empty($dailysumsto)) {
+        $starting = $dailysumsfrom;
+        $ending = shopping_cart::end_of_minute($dailysumsto);
         $string = get_string('timemodified', 'local_shopping_cart');
         $filterstring = '{"timemodified":{"' . $string . '":{">=":' . $starting . ',"<=":' . $ending . '}}}';
         $table->apply_filter($filterstring);

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle form for booking option cohort and group subscription.
+ * Moodle form to select the period for the daily sums in the cash report.
  *
  * @package   local_shopping_cart
  * @copyright 2022 Wunderbyte GmbH {@link http://www.wunderbyte.at}
@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/formslib.php');
 use moodleform;
 
 /**
- * Moodle form to select date for daily sums in cash report.
+ * Moodle form to select the period (from - to, with time of day) for daily sums in cash report.
  *
  * @package   local_shopping_cart
  * @copyright 2022 Wunderbyte GmbH {@link http://www.wunderbyte.at}
@@ -47,9 +47,27 @@ class daily_sums_date_selector_form extends moodleform {
 
         $mform = $this->_form;
 
-        // Cohort subscription header.
-        $mform->addElement('date_selector', 'dailysumsdate', get_string('date'));
-        $mform->setType('dailysumsdate', PARAM_INT);
+        // Default: the current day, from midnight to 23:59 (in the timezone of the user).
+        [$defaultfrom, $defaultto] = self::default_period();
+
+        $mform->addElement(
+            'date_time_selector',
+            'dailysumsfrom',
+            get_string('dailysums:from', 'local_shopping_cart'),
+            ['step' => 1]
+        );
+        $mform->setType('dailysumsfrom', PARAM_INT);
+        $mform->setDefault('dailysumsfrom', $defaultfrom);
+
+        $mform->addElement(
+            'date_time_selector',
+            'dailysumsto',
+            get_string('dailysums:to', 'local_shopping_cart'),
+            ['step' => 1]
+        );
+        $mform->setType('dailysumsto', PARAM_INT);
+        $mform->setDefault('dailysumsto', $defaultto);
+
         $mform->addElement('hidden', 'wbtfilter', ''); // We don't really need this here, values will be appended later.
         $mform->setType('wbtfilter', PARAM_RAW);
 
@@ -57,12 +75,29 @@ class daily_sums_date_selector_form extends moodleform {
     }
 
     /**
-     * Custom validation can be added here.
+     * The default period: today from 00:00 to 23:59 in the timezone of the current user.
+     *
+     * @return int[] [from, to] as timestamps
+     */
+    public static function default_period(): array {
+        $today = usergetdate(time());
+        $from = make_timestamp($today['year'], $today['mon'], $today['mday'], 0, 0);
+        $to = make_timestamp($today['year'], $today['mon'], $today['mday'], 23, 59);
+        return [$from, $to];
+    }
+
+    /**
+     * The end of the period must not lie before its start.
+     *
      * @param array $data
      * @param array $files
      * @return array
      */
     public function validation($data, $files) {
-        return [];
+        $errors = [];
+        if (!empty($data['dailysumsfrom']) && !empty($data['dailysumsto']) && $data['dailysumsto'] < $data['dailysumsfrom']) {
+            $errors['dailysumsto'] = get_string('error:dailysums:rangeinvalid', 'local_shopping_cart');
+        }
+        return $errors;
     }
 }
