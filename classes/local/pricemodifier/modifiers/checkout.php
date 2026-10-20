@@ -112,7 +112,10 @@ abstract class checkout extends modifier_base {
         $data['successurl'] = $sp->get_success_url('shopping_cart', (int)$identifier)->out(false);
         $data['usecreditvalue'] = $data['usecredit'] == 1 ? 'checked' : '';
 
-        $users = user_get_users_by_id([$userid]);
+        // Moodle 5.3 deprecated user_get_users_by_id() (MDL-82650); 4.5-5.2 have no \core\user::get_users_by_id() yet.
+        $users = method_exists(\core\user::class, 'get_users_by_id')
+            ? \core\user::get_users_by_id([$userid])
+            : user_get_users_by_id([$userid]);
         $user = reset($users);
 
         $data['name'] = "$user->firstname $user->lastname";
