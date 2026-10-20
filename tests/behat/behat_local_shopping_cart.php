@@ -178,6 +178,10 @@ class behat_local_shopping_cart extends behat_base {
             throw new \moodle_exception('No guest checkout user found - was the auto-create page visited?');
         }
         $userid = (int)reset($guestrecords)->userid;
+        // The Behat process outlives the scenario. Drop its in-memory copy of the carts, the guest user
+        // of this scenario can carry the id of a guest user from an earlier one.
+        cartstore::reset();
+        \core_cache\factory::reset();
         shopping_cart::buy_for_user($userid);
         $area = $itemid < 6 ? 'main' : 'option';
         shopping_cart::add_item_to_cart('local_shopping_cart', $area, $itemid, $userid);
