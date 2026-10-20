@@ -83,11 +83,12 @@ final class erpnext_invoice_test extends advanced_testcase {
     }
 
     /**
-     * The service period travels in the mandatory Sales Invoice fields from / to (Wunderbyte-GmbH/Wunderbyte-GmbH#2548).
+     * The service period travels in the mandatory Sales Invoice fields from_date / to_date (Wunderbyte-GmbH/Wunderbyte-GmbH#2548).
      *
-     * ERPNext rejects the insert with a MandatoryError when either field is missing.
+     * ERPNext rejects the insert with a MandatoryError when either field is missing. The legacy custom
+     * fields from / to are still filled for older reports.
      */
-    public function test_service_period_is_sent_in_from_and_to(): void {
+    public function test_service_period_is_sent_in_from_date_and_to_date(): void {
         $this->resetAfterTest();
         $start = strtotime('2026-10-01 12:00:00');
         $end = strtotime('2026-12-31 12:00:00');
@@ -118,6 +119,8 @@ final class erpnext_invoice_test extends advanced_testcase {
         $this->assertTrue($invoice->prepare_json_invoice_data());
 
         $payload = json_decode((new \ReflectionProperty(erpnext_invoice::class, 'jsoninvoice'))->getValue($invoice), true);
+        $this->assertSame(date('Y-m-d', $start), $payload['from_date'] ?? null);
+        $this->assertSame(date('Y-m-d', $end), $payload['to_date'] ?? null);
         $this->assertSame(date('Y-m-d', $start), $payload['from'] ?? null);
         $this->assertSame(date('Y-m-d', $end), $payload['to'] ?? null);
     }
