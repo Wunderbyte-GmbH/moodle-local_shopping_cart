@@ -17,6 +17,7 @@
 namespace local_shopping_cart\output;
 
 use advanced_testcase;
+use core_payment\account;
 use local_shopping_cart\local\cartstore;
 use stdClass;
 
@@ -83,11 +84,12 @@ final class shoppingcart_history_list_performance_test extends advanced_testcase
                 . "$readsforfive. The difference means the list queries the database per entry again."
         );
 
-        // Absolute budget, so that a constant but expensive addition is noticed as well.
+        /* Absolute budget, so that a constant but expensive addition is noticed as well. It only
+        covers the reads of this plugin, see count_reads_for_history_list(). */
         $this->assertLessThanOrEqual(
-            15,
+            10,
             $readsforfifty,
-            "Building the history list needed $readsforfifty reads, which is above the budget of 15."
+            "Building the history list needed $readsforfifty reads, which is above the budget of 10."
         );
     }
 
@@ -206,6 +208,9 @@ final class shoppingcart_history_list_performance_test extends advanced_testcase
      * The list is built twice and only the second run is counted, so that caches which are filled
      * once per request (configuration, capabilities) do not distort the number.
      *
+     * Loading the payment account and its gateways is left out. Core reads every installed paygw
+     * plugin on its own, so that part depends on the site and not on this plugin.
+     *
      * @param int $userid
      * @return int
      */
@@ -218,8 +223,12 @@ final class shoppingcart_history_list_performance_test extends advanced_testcase
         new shoppingcart_history_list($userid);
 
         $before = $DB->perf_get_reads();
+        (new account((int) get_config('local_shopping_cart', 'accountid')))->get_gateways();
+        $accountreads = $DB->perf_get_reads() - $before;
+
+        $before = $DB->perf_get_reads();
         new shoppingcart_history_list($userid);
 
-        return $DB->perf_get_reads() - $before;
+        return $DB->perf_get_reads() - $before - $accountreads;
     }
 }
