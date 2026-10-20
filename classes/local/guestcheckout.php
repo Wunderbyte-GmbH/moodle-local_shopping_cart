@@ -87,7 +87,10 @@ class guestcheckout {
         // having no local_shopping_cart_guestusers row, could never be cleaned up afterwards.
         $transaction = $DB->start_delegated_transaction();
         try {
-            $userid = user_create_user($user, false, false);
+            // Moodle 5.3 deprecated user_create_user() (MDL-82650); 4.5-5.2 have no \core\user::create_user() yet.
+            $userid = method_exists(\core\user::class, 'create_user')
+                ? \core\user::create_user($user, false, false)
+                : user_create_user($user, false, false);
             $user->id = $userid;
 
             // Map the guest user to the configured system role. Defaults to the "Authenticated
@@ -468,7 +471,12 @@ class guestcheckout {
             $user->username = 'checkout_' . md5($email . time());
         }
 
-        user_update_user($user, false, false);
+        // Moodle 5.3 deprecated user_update_user() (MDL-82650); 4.5-5.2 have no \core\user::update_user() yet.
+        if (method_exists(\core\user::class, 'update_user')) {
+            \core\user::update_user($user, false, false);
+        } else {
+            user_update_user($user, false, false);
+        }
 
         // Remove the guest-user record so the cleanup task silently skips.
         $DB->delete_records('local_shopping_cart_guestusers', ['userid' => $userid]);
