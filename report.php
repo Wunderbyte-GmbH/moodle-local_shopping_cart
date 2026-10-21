@@ -487,26 +487,23 @@ if ($debug != 1 && $debug != 3) {
         // Initialize the Moodle form for filtering the table.
         $mform = new daily_sums_date_selector_form();
 
+        // Process the form before it is displayed, so validation errors are part of the output.
+        $fromform = $mform->get_data();
+        if ($fromform) {
+            $dailysumsfrom = (int)$fromform->dailysumsfrom;
+            $dailysumsto = (int)$fromform->dailysumsto;
+        }
+
         ob_start();
         $mform->display();
         $selectorformoutput = ob_get_contents();
         ob_end_clean();
 
-        // Form processing and displaying is done here.
-        if ($fromform = $mform->get_data()) {
-            $dailysumsfrom = (int)$fromform->dailysumsfrom;
-            $dailysumsto = (int)$fromform->dailysumsto;
-            echo $OUTPUT->render_from_template(
-                'local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($dailysumsfrom, $dailysumsto, $selectorformoutput, true)
-            );
-        } else {
-            // Show daily sums.
-            echo $OUTPUT->render_from_template(
-                'local_shopping_cart/report_daily_sums',
-                shopping_cart::get_daily_sums_data($dailysumsfrom, $dailysumsto, $selectorformoutput, false)
-            );
-        }
+        // Show daily sums. The form stays open after a submission, also when it was not valid.
+        echo $OUTPUT->render_from_template(
+            'local_shopping_cart/report_daily_sums',
+            shopping_cart::get_daily_sums_data($dailysumsfrom, $dailysumsto, $selectorformoutput, $mform->is_submitted())
+        );
     }
 
     // Dismissible alert containing the description of the report.

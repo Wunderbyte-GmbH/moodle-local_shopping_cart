@@ -18,6 +18,7 @@ namespace local_shopping_cart\local;
 
 use local_shopping_cart\shopping_cart;
 use local_wunderbyte_table\local\pdf\pdfa_pdf;
+use core_date;
 use TCPDF;
 
 defined('MOODLE_INTERNAL') || die();
@@ -111,8 +112,9 @@ class daily_sums_pdf {
      * @return string
      */
     public static function filename(int $from, int $to, bool $withextension = true): string {
-        $fromday = userdate($from, '%Y-%m-%d');
-        $today = userdate($to, '%Y-%m-%d');
+        $timezone = core_date::get_server_timezone();
+        $fromday = userdate($from, '%Y-%m-%d', $timezone);
+        $today = userdate($to, '%Y-%m-%d', $timezone);
         $name = 'daily_sums_' . $fromday . ($fromday === $today ? '' : '_' . $today);
         return $withextension ? $name . '.pdf' : $name;
     }
