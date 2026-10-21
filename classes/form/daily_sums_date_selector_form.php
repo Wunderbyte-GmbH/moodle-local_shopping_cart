@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
+use core_date;
 use moodleform;
 
 /**
@@ -47,14 +48,16 @@ class daily_sums_date_selector_form extends moodleform {
 
         $mform = $this->_form;
 
-        // Default: the current day, from midnight to 23:59 (in the timezone of the user).
+        // Default: the current day, from midnight to 23:59. The daily sums always use the
+        // timezone of the server, no matter which timezone the user has set.
         [$defaultfrom, $defaultto] = self::default_period();
+        $timezone = core_date::get_server_timezone();
 
         $mform->addElement(
             'date_time_selector',
             'dailysumsfrom',
             get_string('dailysums:from', 'local_shopping_cart'),
-            ['step' => 1]
+            ['step' => 1, 'timezone' => $timezone]
         );
         $mform->setType('dailysumsfrom', PARAM_INT);
         $mform->setDefault('dailysumsfrom', $defaultfrom);
@@ -63,7 +66,7 @@ class daily_sums_date_selector_form extends moodleform {
             'date_time_selector',
             'dailysumsto',
             get_string('dailysums:to', 'local_shopping_cart'),
-            ['step' => 1]
+            ['step' => 1, 'timezone' => $timezone]
         );
         $mform->setType('dailysumsto', PARAM_INT);
         $mform->setDefault('dailysumsto', $defaultto);
@@ -75,14 +78,15 @@ class daily_sums_date_selector_form extends moodleform {
     }
 
     /**
-     * The default period: today from 00:00 to 23:59 in the timezone of the current user.
+     * The default period: today from 00:00 to 23:59 in the timezone of the server.
      *
      * @return int[] [from, to] as timestamps
      */
     public static function default_period(): array {
-        $today = usergetdate(time());
-        $from = make_timestamp($today['year'], $today['mon'], $today['mday'], 0, 0);
-        $to = make_timestamp($today['year'], $today['mon'], $today['mday'], 23, 59);
+        $timezone = core_date::get_server_timezone();
+        $today = usergetdate(time(), $timezone);
+        $from = make_timestamp($today['year'], $today['mon'], $today['mday'], 0, 0, 0, $timezone);
+        $to = make_timestamp($today['year'], $today['mon'], $today['mday'], 23, 59, 0, $timezone);
         return [$from, $to];
     }
 

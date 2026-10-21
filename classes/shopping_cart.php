@@ -33,6 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../lib.php');
 
 use cache_helper;
+use core_date;
 use coding_exception;
 use context_system;
 use dml_exception;
@@ -2402,7 +2403,7 @@ class shopping_cart {
      * Formats the period of the daily sums for display.
      *
      * A period that covers exactly one day (00:00 - 23:59) is shown as the date only, as before;
-     * any other period as "from - to" with the time of day.
+     * any other period as "from - to" with the time of day. The timezone of the server is used.
      *
      * @param int $from start of the period (timestamp)
      * @param int $to end of the period (timestamp, minute inclusive)
@@ -2420,8 +2421,9 @@ class shopping_cart {
                 break;
         }
 
-        $fromdate = usergetdate($from);
-        $todate = usergetdate($to);
+        $timezone = core_date::get_server_timezone();
+        $fromdate = usergetdate($from, $timezone);
+        $todate = usergetdate($to, $timezone);
         $sameday = $fromdate['year'] == $todate['year']
             && $fromdate['mon'] == $todate['mon']
             && $fromdate['mday'] == $todate['mday'];
@@ -2430,9 +2432,9 @@ class shopping_cart {
             && $todate['hours'] == 23 && $todate['minutes'] == 59;
 
         if ($wholeday) {
-            return userdate($from, $dateformat);
+            return userdate($from, $dateformat, $timezone);
         }
-        return userdate($from, $datetimeformat) . ' - ' . userdate($to, $datetimeformat);
+        return userdate($from, $datetimeformat, $timezone) . ' - ' . userdate($to, $datetimeformat, $timezone);
     }
 
     /**
