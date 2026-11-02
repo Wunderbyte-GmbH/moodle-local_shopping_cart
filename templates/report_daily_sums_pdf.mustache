@@ -35,7 +35,7 @@
     }
 }}
 <div style="width: fit-content;">
-  <div style="font-weight: bold; font-size: xx-large;">{{#str}} titledailysums, local_shopping_cart {{/str}} ({{date}})</div>
+  <div style="font-weight: bold; font-size: xx-large;">{{#str}} titledailysums, local_shopping_cart {{/str}} ({{date}}{{#periodhint}}, {{periodhint}}{{/periodhint}})</div>
   <div style="background-color: #DBF9DB; border: 1px dashed #000; width: fit-content; padding: 10px; font-weight: bold; font-size: x-large;">
     {{#str}}titledailysums:total, local_shopping_cart{{/str}}: {{currency}} {{totalsum}}
   </div>

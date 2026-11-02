@@ -334,10 +334,13 @@ $string['cy'] = "Cyprus";
 $string['cz'] = "Czech Republic";
 $string['dailysums:downloadpdf'] = 'Download daily sums as PDF';
 $string['dailysums:from'] = 'From';
+$string['dailysums:periodhint'] = 'selected minutes each up to the 59th second';
 $string['dailysums:to'] = 'To';
+$string['dailysums:to_help'] = 'The selected minute is always included completely, i.e. up to its 59th second. A query until 14:30 therefore covers all bookings up to and including 14:30:59.';
+$string['dailysums:wholedayhint'] = 'up to and including 23:59:59';
 $string['dailysumspdfhtml'] = 'HTML template for the daily sums PDF';
 $string['dailysumspdfhtml:description'] = 'Enter HTML to create the daily sums PDF. You can use the following placeholders:
-[[title]], [[date]] (the day or the selected period), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+[[title]], [[date]] (the day or the selected period, including the note that the selected minutes count up to the 59th second, e.g. "up to and including 23:59:59"), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Leave this empty to use the default template.';
 $string['de'] = "Germany";

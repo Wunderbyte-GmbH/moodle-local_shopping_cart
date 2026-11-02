@@ -336,10 +336,13 @@ $string['cy'] = "Zypern";
 $string['cz'] = "Tschechien";
 $string['dailysums:downloadpdf'] = 'Tageseinnahmen als PDF herunterladen';
 $string['dailysums:from'] = 'Von';
+$string['dailysums:periodhint'] = 'gewählte Minuten jeweils bis zur 59. Sekunde';
 $string['dailysums:to'] = 'Bis';
+$string['dailysums:to_help'] = 'Die gewählte Minute wird immer vollständig berücksichtigt, also bis zur 59. Sekunde. Eine Abfrage bis 14:30 umfasst damit alle Buchungen bis einschließlich 14:30:59.';
+$string['dailysums:wholedayhint'] = 'bis einschließlich 23:59:59';
 $string['dailysumspdfhtml'] = 'HTML-Vorlage für die Erstellung des Tagessumen-PDFs';
 $string['dailysumspdfhtml:description'] = 'Geben Sie HTML-Code ein, der als Vorlage für die Erstellung des Tagessumen-PDFs verwendet werden soll.
-Sie können die folgenden Platzhalter verwenden: [[title]], [[date]] (der Tag bzw. der gewählte Zeitraum), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
+Sie können die folgenden Platzhalter verwenden: [[title]], [[date]] (der Tag bzw. der gewählte Zeitraum, inklusive Hinweis, dass die gewählten Minuten jeweils bis zur 59. Sekunde zählen, z. B. "bis einschließlich 23:59:59"), [[totalsum]], [[totalcash]], [[printdate]], [[currency]], [[online]], [[cash]], [[creditcard]], [[debitcard]],
 [[manual]], [[creditspaidbackcash]], [[creditspaidbacktransfer]].<br>
 Lassen Sie das Feld leer, um die Standard-Vorlage zu verwenden.';
 $string['de'] = "Deutschland";
