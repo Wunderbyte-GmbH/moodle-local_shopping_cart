@@ -2422,19 +2422,29 @@ class shopping_cart {
         }
 
         $timezone = core_date::get_server_timezone();
+        if (self::daily_sums_period_is_whole_day($from, $to)) {
+            return userdate($from, $dateformat, $timezone);
+        }
+        return userdate($from, $datetimeformat, $timezone) . ' - ' . userdate($to, $datetimeformat, $timezone);
+    }
+
+    /**
+     * Whether the period of the daily sums covers exactly one day (00:00 - 23:59, timezone of the server).
+     *
+     * @param int $from start of the period (timestamp)
+     * @param int $to end of the period (timestamp, minute inclusive)
+     * @return bool
+     */
+    public static function daily_sums_period_is_whole_day(int $from, int $to): bool {
+        $timezone = core_date::get_server_timezone();
         $fromdate = usergetdate($from, $timezone);
         $todate = usergetdate($to, $timezone);
         $sameday = $fromdate['year'] == $todate['year']
             && $fromdate['mon'] == $todate['mon']
             && $fromdate['mday'] == $todate['mday'];
-        $wholeday = $sameday
+        return $sameday
             && $fromdate['hours'] == 0 && $fromdate['minutes'] == 0
             && $todate['hours'] == 23 && $todate['minutes'] == 59;
-
-        if ($wholeday) {
-            return userdate($from, $dateformat, $timezone);
-        }
-        return userdate($from, $datetimeformat, $timezone) . ' - ' . userdate($to, $datetimeformat, $timezone);
     }
 
     /**
@@ -2463,6 +2473,11 @@ class shopping_cart {
         $dailysumsdate = self::format_daily_sums_period($from, $to);
 
         $dailysumsdata['date'] = $dailysumsdate; // Date or period.
+        // The PDF heading notes that the selected end minute is included up to its 59th
+        // second (end_of_minute()): "up to and including 23:59:59" for a whole day.
+        $dailysumsdata['periodhint'] = self::daily_sums_period_is_whole_day($from, $to)
+            ? get_string('dailysums:wholedayhint', 'local_shopping_cart')
+            : get_string('dailysums:periodhint', 'local_shopping_cart');
         $dailysumsdata['printdate'] = $currentdate; // Actual date of today, might be needed in PDF.
         $dailysumsdata['currency'] = get_config('local_shopping_cart', 'globalcurrency') ?? 'EUR';
         $dailysumsdata['title'] = get_string('titledailysums', 'local_shopping_cart');

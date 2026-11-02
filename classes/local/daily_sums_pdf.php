@@ -143,7 +143,11 @@ class daily_sums_pdf {
         // Only if HTML template is defined in settings, we use it.
         // At first, replace all placeholders.
         $html = str_replace("[[title]]", $data['title'] ?? '', $html);
-        $html = str_replace("[[date]]", $data['date'] ?? '', $html);
+        $date = $data['date'] ?? '';
+        if (!empty($data['periodhint'])) {
+            $date .= ', ' . $data['periodhint'];
+        }
+        $html = str_replace("[[date]]", $date, $html);
         $html = str_replace("[[printdate]]", $data['printdate'] ?? '', $html);
         $html = str_replace("[[totalsum]]", $data['totalsum'] ?? '0.00', $html);
         $html = str_replace("[[totalcash]]", $data['totalcash'] ?? '0.00', $html);
