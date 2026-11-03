@@ -918,6 +918,12 @@ function xmldb_local_shopping_cart_upgrade($oldversion) {
     }
 
     if ($oldversion < 2026082700) {
+        /* A site whose plugin version was already above 2026073001 when the coupons were introduced
+        (the USI release line, 2026081802) never ran the step that creates the coupon and guest
+        tables. Create them first, idempotently, so that the field change below finds its table
+        instead of failing with a ddl_table_missing_exception. */
+        local_shopping_cart_create_coupon_and_guest_tables();
+
         // The coupons table was created with discountpercentage as number(3, 1), which caps the
         // value at 99.9. A 100 % coupon (booking becomes free) therefore could not be stored.
         // Widen the precision to (4, 1). The field carries no index, so it can be changed directly.
