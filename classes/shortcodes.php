@@ -32,6 +32,9 @@ use local_shopping_cart\shopping_cart;
 use local_shopping_cart\output\shoppingcart_history_list;
 use local_shopping_cart\output\userinfocard;
 use local_wunderbyte_table\local\helper\actforuser;
+use moodle_exception;
+use moodle_url;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -78,11 +81,29 @@ class shortcodes {
             }
         }
 
-        if (!$historylist = new shoppingcart_history_list($userid)) {
-            return '';
-        }
         /** @var renderer $output */
         $output = $PAGE->get_renderer('local_shopping_cart');
+
+        try {
+            $historylist = new shoppingcart_history_list($userid);
+        } catch (moodle_exception $e) {
+            if ($e->errorcode !== 'nopaymentaccounts') {
+                throw $e;
+            }
+            // No payment account is configured. The shortcode is embedded in pages that have
+            // already started (e.g. mod_booking's mybookings.php), so we must not render a
+            // page of our own here. Admins get a hint how to fix it, everybody else sees
+            // nothing instead of a broken page.
+            if (!has_capability('moodle/site:config', context_system::instance())) {
+                return '';
+            }
+            $urlobject = new stdClass();
+            $urlobject->link = (new moodle_url('/payment/accounts.php'))->out(false);
+            $errmsg = get_string('nopaymentaccounts', 'local_shopping_cart')
+                . ' ' . get_string('nopaymentaccountsdesc', 'local_shopping_cart', $urlobject);
+            return $output->notification($errmsg, 'notifyproblem');
+        }
+
         $out = $output->render_history_card($historylist);
         if (empty($out)) {
             $out = '';

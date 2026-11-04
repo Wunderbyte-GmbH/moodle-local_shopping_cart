@@ -140,11 +140,16 @@ class shopping_cart_history {
             // Outside a regular browser page (PHPUnit, CLI, webservices), we must not
             // print output and exit: exit() terminates the whole process with code 0,
             // which lets an aborted PHPUnit run look green in CI. Throw instead.
+            // The same applies when the page has already started (the history is embedded
+            // via shortcode, e.g. in mod_booking's mybookings.php): $OUTPUT->header() would
+            // throw "Cannot call moodle_page::add_body_class after output has been started".
+            // The caller (shortcodes::shoppingcarthistory) turns the exception into a notification.
             if (
                 (defined('PHPUNIT_TEST') && PHPUNIT_TEST)
                 || (defined('CLI_SCRIPT') && CLI_SCRIPT)
                 || (defined('AJAX_SCRIPT') && AJAX_SCRIPT)
                 || (defined('WS_SERVER') && WS_SERVER)
+                || $OUTPUT->has_started()
             ) {
                 throw new moodle_exception('nopaymentaccounts', 'local_shopping_cart');
             }
