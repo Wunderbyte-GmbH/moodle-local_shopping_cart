@@ -29,7 +29,7 @@ $plugin->release = '2.2.0';
 $plugin->version = 2026110500;
 $plugin->requires = 2024100700; // Requires this Moodle version. Current: Moodle 4.5.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->supported = [405, 502];
+$plugin->supported = [405, 503];
 $plugin->dependencies = [
     'local_wunderbyte_table' => 2026102200,
 ];

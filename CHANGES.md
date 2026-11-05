@@ -1,3 +1,5 @@
+* Improvement: Added support for Moodle 5.3: the supported range in version.php is now 4.5 to 5.3, and the automated tests (PHPUnit, Behat, code checks) also run against Moodle 5.3.
+
 ## Version 2.2.0 (2026110500)
 * Bugfix: A page that embeds the purchase history via shortcode (for example mod_booking's "My bookings" page with the setting "Display shopping cart history") no longer crashes with "Cannot call moodle_page::add_body_class after output has been started" when no payment account is configured in the shopping cart settings. Without an account, the history tried to render an error page of its own although the page had already started. The history now throws instead once output has started, and the shortcode shows admins a notification with the link to the payment accounts while all other users just see the page without the history. A PHPUnit test covers both cases.
 

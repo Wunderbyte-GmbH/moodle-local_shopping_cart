@@ -10,7 +10,7 @@ jobs:
   ci:
     uses: Wunderbyte-GmbH/catalyst-moodle-workflows/.github/workflows/ci.yml@main
     with:
-      #moodle_branches: "MOODLE_405_STABLE MOODLE_500_STABLE MOODLE_501_STABLE MOODLE_502_STABLE"  # Optional: Only test specific Moodle versions
+      #moodle_branches: "MOODLE_405_STABLE MOODLE_500_STABLE MOODLE_501_STABLE MOODLE_502_STABLE MOODLE_503_STABLE"  # Optional: Only test specific Moodle versions
 
       # If you need to install additional plugins as dependencies
       extra_plugin_runners: |
