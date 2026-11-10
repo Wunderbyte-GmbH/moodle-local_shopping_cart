@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adhoc Task to remove expired items from the shopping cart.
+ * Adhoc Task to create the invoice of a cart purchase at the invoicing platform.
  *
  * @package    local_shopping_cart
  * @copyright  2023 David Bogner <info@wunderbyte.at>
@@ -24,13 +24,13 @@
 
 namespace local_shopping_cart\task;
 
-use context_system;
-use local_shopping_cart\interfaces\invoice;
-use local_shopping_cart\invoice\erpnext_invoice;
-use local_shopping_cart\shopping_cart;
+use local_shopping_cart\event\invoice_creation_failed;
 
 /**
- * Adhoc Task to remove expired items from the shopping cart.
+ * Adhoc Task to create the invoice of a cart purchase at the invoicing platform.
+ *
+ * Failures throw so the ad-hoc queue retries with backoff; every failed attempt is logged as
+ * invoice_creation_failed with the reason.
  *
  * @package    local_shopping_cart
  * @copyright  2022 Georg Maißer <info@wunderbyte.at>
@@ -56,33 +56,48 @@ class create_invoice_task extends \core\task\adhoc_task {
      * @see \core\task\task_base::execute()
      */
     public function execute() {
-        $anyexception = false;
         $taskdata = $this->get_custom_data();
-        $userid = $this->get_userid();
+        $userid = (int) $this->get_userid();
+        $identifier = (int) $taskdata->identifier;
         $classname = $taskdata->classname;
-        $success = false;
-        mtrace('Try to create invoice for user ' . $userid . ' with identifier ' . $taskdata->identifier);
+        mtrace('Try to create invoice for user ' . $userid . ' with identifier ' . $identifier);
+
+        $invoiceprovider = null;
+        $exception = null;
         try {
             $invoiceprovider = new $classname();
-            $success = $invoiceprovider->create_invoice($taskdata->identifier);
-            mtrace('Invoice creation success: ' . $success);
+            // Safe to retry: an invoice created by an earlier attempt is reused, only missing steps are done.
+            $success = $invoiceprovider->create_invoice($identifier);
+            $error = (string) ($invoiceprovider->errormessage ?? '');
         } catch (\Throwable $e) {
             mtrace_exception($e);
-            $anyexception = $e;
+            $exception = $e;
+            $success = false;
+            $error = $e->getMessage() . (!empty($e->debuginfo) ? ' ' . $e->debuginfo : '');
         }
-        if ($anyexception) {
-            // If there was any error, ensure the task fails.
-            throw $anyexception;
+
+        if ($success) {
+            mtrace('Invoice ' . ($invoiceprovider->invoiceid ?? '') . ' created for user ' . $userid
+                . ' with identifier ' . $identifier);
+            return;
         }
-        if (!$success) {
-            throw new \moodle_exception(
-                'serverconnection',
-                'local_shopping_cart',
-                '',
-                null,
-                $invoiceprovider->errormessage
-            );
+
+        // The attempt counter is decreased after a failure, so 1 means no retry follows.
+        $attemptsleft = max(0, $this->get_attempts_available() - 1);
+        if ($error === '') {
+            $error = 'Invoice creation failed without an error message, see the task log.';
         }
-        mtrace('Invoice created for user ' . $userid . ' with identifier ' . $taskdata->identifier);
+        invoice_creation_failed::log(
+            $userid,
+            $identifier,
+            0,
+            (string) ($invoiceprovider->invoiceid ?? ''),
+            $error,
+            $attemptsleft
+        );
+        if ($exception) {
+            throw $exception;
+        }
+        throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $error);
     }
 }

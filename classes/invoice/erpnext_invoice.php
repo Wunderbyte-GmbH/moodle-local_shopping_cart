@@ -172,6 +172,22 @@ class erpnext_invoice implements invoice {
     public bool $reconciliationfailed = false;
 
     /**
+     * @var bool True when the invoice exists in ERPNext but its payment could not be booked (a retry books it).
+     */
+    public bool $paymentfailed = false;
+
+    /**
+     * @var string Reference of the payment at the provider (e.g. a Stripe invoice id), used as Payment Entry reference_no.
+     */
+    private string $paymentreference = '';
+
+    /** @var string ERPNext account payments are booked to when the setting was never saved. */
+    public const DEFAULT_PAYMENT_ACCOUNT = '2820 - Stripe - WB';
+
+    /** @var int Seconds to wait for another run working on the same invoice. */
+    private const LOCK_TIMEOUT = 60;
+
+    /**
      * Set up curl to be able to connect to ERPNext using config settings.
      */
     public function __construct() {
@@ -213,8 +229,39 @@ class erpnext_invoice implements invoice {
      * @return bool true if invoice was created, false if not
      */
     public function create_invoice(int $identifier): bool {
+        $lock = $this->get_lock('cart-' . $identifier);
+        try {
+            return $this->create_invoice_locked($identifier);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /**
+     * Create, submit and pay the invoice for a cart purchase; the caller holds the lock.
+     *
+     * Safe to retry: when an earlier run already created the invoice, only the missing steps
+     * (submit, payment) are done, so a failed payment never leads to a second invoice.
+     *
+     * @param int $identifier
+     * @return bool true when the invoice is submitted and paid
+     */
+    private function create_invoice_locked(int $identifier): bool {
         global $DB;
         $this->identifier = $identifier;
+
+        // The identifier is unique in this table: one cart purchase, one invoice.
+        $existing = $DB->get_field('local_shopping_cart_invoices', 'invoiceid', ['identifier' => $identifier]);
+        if (!empty($existing)) {
+            $this->invoiceid = (string) $existing;
+            mtrace("Invoice {$this->invoiceid} already exists for identifier {$identifier}, completing it.");
+            $invoice = $this->get_invoice($this->invoiceid);
+            if ($invoice === null) {
+                return false;
+            }
+            return $this->complete_invoice($this->invoiceid, (int) ($invoice['docstatus'] ?? 0), true);
+        }
+
         $url = $this->baseurl . '/api/resource/Sales Invoice';
         // Set up invoice creation.
         $this->invoiceitems = shopping_cart_history::return_data_via_identifier($identifier);
@@ -271,37 +318,84 @@ class erpnext_invoice implements invoice {
 
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
         mtrace(is_string($response) ? $response : json_encode($response));
-        $success = $this->validate_response($response, $url);
-        if ($success) {
-            $invoice = new stdClass();
-            $invoice->identifier = $identifier;
-            $invoice->timecreated = time();
-            $responsedata = json_decode($response, true);
-            $invoice->invoiceid = $responsedata['data']['name'];
-            $DB->insert_record('local_shopping_cart_invoices', $invoice);
-
-            // Submit the invoice.
-            $submitresponse = $this->submit_invoice($invoice->invoiceid);
-            if ($submitresponse) {
-                // Mark the invoice as paid.
-                $paymentsuccess = $this->create_payment($responsedata['data'], $invoice->invoiceid);
-                if ($paymentsuccess && $this->submit_payment_entry()) {
-                    return true;
-                } else {
-                    mtrace("ERROR: Payment was not saved in ERPNext.");
-                }
-            }
+        if (!$this->validate_response($response, $url, $this->jsoninvoice)) {
+            return false;
         }
-        return false;
+        $responsedata = json_decode($response, true);
+        $this->invoiceid = (string) $responsedata['data']['name'];
+        // Recorded right away, so a retry after a failed submit or payment finds the invoice and does not create a second one.
+        $DB->insert_record('local_shopping_cart_invoices', (object) [
+            'identifier' => $identifier,
+            'timecreated' => time(),
+            'invoiceid' => $this->invoiceid,
+        ]);
+        return $this->complete_invoice($this->invoiceid, 0, true);
+    }
+
+    /**
+     * Submit a Sales Invoice if it is still a draft and, if wanted, book its payment.
+     *
+     * @param string $invoiceid ERPNext Sales Invoice name
+     * @param int $docstatus its current docstatus (0 draft, 1 submitted, 2 cancelled)
+     * @param bool $markpaid book a Payment Entry so the invoice shows as paid
+     * @return bool true when the invoice is submitted (and paid, if wanted)
+     */
+    private function complete_invoice(string $invoiceid, int $docstatus, bool $markpaid): bool {
+        if ($docstatus === 2) {
+            // Cancelled by accounting: never recreate or pay it from here.
+            mtrace("Invoice {$invoiceid} is cancelled in ERPNext, nothing more to do.");
+            return true;
+        }
+        if ($docstatus === 0 && !$this->submit_invoice($invoiceid)) {
+            return false;
+        }
+        if ($markpaid && !$this->book_payment($invoiceid)) {
+            $this->paymentfailed = true;
+            mtrace("ERROR: Payment for {$invoiceid} was not saved in ERPNext: {$this->errormessage}");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Fetch a Sales Invoice.
+     *
+     * @param string $invoiceid
+     * @return array|null the invoice document, null on failure (errormessage says why)
+     */
+    public function get_invoice(string $invoiceid): ?array {
+        $url = $this->baseurl . '/api/resource/Sales%20Invoice/' . rawurlencode($invoiceid);
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return null;
+        }
+        return json_decode($response, true)['data'];
+    }
+
+    /**
+     * A lock per invoice, so two runs (e.g. a retry and a manual re-queue) never create the same invoice twice.
+     *
+     * @param string $key
+     * @return \core\lock\lock
+     */
+    private function get_lock(string $key): \core\lock\lock {
+        $factory = \core\lock\lock_config::get_lock_factory('local_shopping_cart_erpnext');
+        $lock = $factory->get_lock('invoice_' . sha1($key), self::LOCK_TIMEOUT);
+        if (!$lock) {
+            $this->errormessage = "Another run is creating the ERPNext invoice for {$key}.";
+            throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $this->errormessage);
+        }
+        return $lock;
     }
 
     /**
      * Create a Sales Invoice from explicit data, without any shopping-cart tables.
      *
      * Reuses the same ERPNext helpers as {@see create_invoice()} but takes all data from a plain DTO,
-     * so callers outside the cart (e.g. a Stripe webhook) can invoice. v1 creates and submits the Sales
-     * Invoice only (no Payment Entry). A reconciliation guard refuses to submit an invoice whose ERPNext
-     * grand total does not match the amount actually paid.
+     * so callers outside the cart (e.g. a Stripe webhook) can invoice. With ->markpaid a Payment Entry
+     * is booked as well. A reconciliation guard refuses to submit an invoice whose ERPNext grand total
+     * does not match the amount actually paid. Safe to retry when ->reference is set: an existing invoice
+     * for the reference is reused and only the missing steps (submit, payment) are done.
      *
      * Expected $data shape:
      *  ->reference       string  external idempotency key (stored as po_no)
@@ -318,6 +412,7 @@ class erpnext_invoice implements invoice {
      *
      * @param stdClass $data
      * @return bool true when a Sales Invoice was created (or already existed), submitted unless ->submit is false
+     *  and paid if ->markpaid; false otherwise (errormessage says why, paymentfailed tells if only the payment is missing)
      */
     public function create_invoice_from_data(stdClass $data): bool {
         $this->injected = true;
@@ -357,19 +452,39 @@ class erpnext_invoice implements invoice {
         }
 
         $submit = !isset($data->submit) || !empty($data->submit);
+        // The provider already collected the money: book the payment so the invoice is paid in ERPNext.
+        $markpaid = $submit && !empty($data->markpaid);
+        $this->paymentreference = $this->reference;
 
-        // Idempotency: reuse an invoice for this reference; a draft left by an earlier run is submitted now.
-        if ($this->reference !== '') {
+        if ($this->reference === '') {
+            return $this->create_injected_invoice($data, $submit, $markpaid);
+        }
+        $lock = $this->get_lock('ref-' . $this->reference);
+        try {
+            // Idempotency: reuse the invoice for this reference and only do what an earlier run left undone.
             $existing = $this->find_open_invoice_by_reference($this->reference);
             if ($existing['name'] !== '') {
                 $this->invoiceid = $existing['name'];
-                if ($submit && (int) $existing['docstatus'] === 0) {
-                    return $this->submit_invoice($this->invoiceid);
+                if (!$submit) {
+                    return true;
                 }
-                return true;
+                return $this->complete_invoice($this->invoiceid, (int) $existing['docstatus'], $markpaid);
             }
+            return $this->create_injected_invoice($data, $submit, $markpaid);
+        } finally {
+            $lock->release();
         }
+    }
 
+    /**
+     * Create, check and (if wanted) submit and pay an injected invoice that does not exist yet.
+     *
+     * @param stdClass $data see create_invoice_from_data()
+     * @param bool $submit submit the invoice
+     * @param bool $markpaid book a Payment Entry for it
+     * @return bool
+     */
+    private function create_injected_invoice(stdClass $data, bool $submit, bool $markpaid): bool {
         if (!$this->prepare_json_invoice_data()) {
             return false;
         }
@@ -383,7 +498,7 @@ class erpnext_invoice implements invoice {
         // Create the Sales Invoice (draft).
         $url = $this->baseurl . '/api/resource/Sales Invoice';
         $response = $this->client->post(str_replace(' ', '%20', $url), $this->jsoninvoice);
-        if (!$this->validate_response($response, $url)) {
+        if (!$this->validate_response($response, $url, $this->jsoninvoice)) {
             return false;
         }
         $responsedata = json_decode($response, true);
@@ -396,7 +511,11 @@ class erpnext_invoice implements invoice {
                 $this->errormessage = "ERPNext gross {$grandtotal} does not match paid amount "
                     . "{$data->grosscheck} for reference {$this->reference}; invoice left as draft.";
                 mtrace($this->errormessage);
-                $this->delete_invoice($this->invoiceid);
+                $message = $this->errormessage;
+                if (!$this->delete_invoice($this->invoiceid)) {
+                    $message .= " Deleting draft {$this->invoiceid} failed, delete it in ERPNext: {$this->errormessage}";
+                }
+                $this->errormessage = $message;
                 $this->invoiceid = '';
                 $this->reconciliationfailed = true;
                 return false;
@@ -406,20 +525,7 @@ class erpnext_invoice implements invoice {
         if (!$submit) {
             return true; // Left as draft for review in ERPNext.
         }
-
-        if (!$this->submit_invoice($this->invoiceid)) {
-            return false;
-        }
-
-        // The provider already collected the money: book the payment so the invoice is paid in ERPNext.
-        if (!empty($data->markpaid)) {
-            if (!$this->create_payment($responsedata['data'], $this->invoiceid) || !$this->submit_payment_entry()) {
-                // The invoice exists and is submitted; only the payment entry is missing. A retry would
-                // find the invoice by reference and not book the payment either, so report and go on.
-                mtrace("ERROR: Payment for {$this->invoiceid} was not saved in ERPNext: {$this->errormessage}");
-            }
-        }
-        return true;
+        return $this->complete_invoice($this->invoiceid, 0, $markpaid);
     }
 
     /**
@@ -451,7 +557,8 @@ class erpnext_invoice implements invoice {
             . '&fields=' . rawurlencode('["name","docstatus"]') . '&order_by=' . rawurlencode('docstatus desc');
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
-            return $none;
+            // Never report "none" when we could not look: that would create a second invoice.
+            throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $this->errormessage);
         }
         $first = json_decode($response, true)['data'][0] ?? [];
         if (empty($first['name'])) {
@@ -517,55 +624,182 @@ class erpnext_invoice implements invoice {
     }
 
     /**
-     * Submit payment entry in ERPNext.
+     * Book the payment of a submitted Sales Invoice, so it shows as paid in ERPNext.
      *
-     * @return bool true if invoice was submitted, false if not
+     * Safe to retry: a paid invoice is left alone and a draft Payment Entry from an earlier run is
+     * submitted instead of creating a second one.
+     *
+     * @param string $invoiceid ERPNext Sales Invoice name
+     * @return bool true when the invoice has no outstanding amount left
      */
-    public function submit_payment_entry(): bool {
-        $paymententryid = $this->paymententry['data']['name'];
-        $submiturl = $this->baseurl . '/api/resource/Payment Entry/' . $paymententryid;
-        $data = ['status' => 'Submitted', 'docstatus' => '1'];
-        $submitdata = json_encode($data);
-        $submitresponse = $this->client->put(str_replace(' ', '%20', $submiturl), $submitdata);
-        return $this->validate_response($submitresponse, $submiturl);
+    public function book_payment(string $invoiceid): bool {
+        $invoice = $this->get_invoice($invoiceid);
+        if ($invoice === null) {
+            return false;
+        }
+        if ((int) ($invoice['docstatus'] ?? 0) !== 1) {
+            $this->errormessage = "Sales Invoice {$invoiceid} is not submitted, no payment booked.";
+            return false;
+        }
+        if ((float) ($invoice['outstanding_amount'] ?? 0) <= 0) {
+            mtrace("Sales Invoice {$invoiceid} has nothing outstanding, no payment needed.");
+            return true;
+        }
+        $draft = $this->find_draft_payment_entry($invoiceid);
+        if ($draft === null) {
+            return false;
+        }
+        if ($draft !== '') {
+            mtrace("Submitting draft Payment Entry {$draft} left by an earlier run for {$invoiceid}.");
+            return $this->submit_payment_entry($draft);
+        }
+        $entry = $this->build_payment_entry($invoiceid);
+        if ($entry === null) {
+            return false;
+        }
+        $url = $this->baseurl . '/api/resource/Payment%20Entry';
+        $payload = json_encode($entry);
+        $response = $this->client->post($url, $payload);
+        if (!$this->validate_response($response, $url, $payload)) {
+            return false;
+        }
+        $this->paymententry = json_decode($response, true);
+        $name = (string) ($this->paymententry['data']['name'] ?? '');
+        mtrace("Created Payment Entry {$name} for {$invoiceid} on {$entry['paid_to']}.");
+        return $this->submit_payment_entry($name);
     }
 
     /**
-     * Create payment
+     * Let ERPNext build the Payment Entry for the outstanding amount of an invoice (not saved yet).
      *
-     * @param array $invoicedata
-     * @param string $invoiceid
+     * ERPNext fills party account, amounts and exchange rates correctly for any invoice currency.
+     * Only the account the money went to and the payment reference are set here.
      *
-     * @return bool true if invoice was submitted, false if not
+     * @param string $invoiceid ERPNext Sales Invoice name
+     * @return array|null the Payment Entry document ready to insert, null on failure (errormessage says why)
      */
-    public function create_payment(array $invoicedata, string $invoiceid): bool {
-        $paymententryurl = $this->baseurl . '/api/resource/Payment Entry';
-        $paymententrydata = json_encode([
-            'payment_type' => 'Receive',
-            'party_type' => 'Customer',
-            'party' => $this->customername,
-            'paid_amount' => $invoicedata['grand_total'],
-            'received_amount' => $invoicedata['grand_total'],
-            'target_exchange_rate' => 1.0,
-            'paid_to' => 'Erste Bank - WB',
-            'paid_to_account_currency' => 'EUR',
-            'reference_no' => $invoicedata['name'] . '-' . $invoicedata['posting_date'],
-            'reference_date' => date('Y-m-d'),
-            'references' => [
-                [
-                    'reference_doctype' => 'Sales Invoice',
-                    'reference_name' => $invoiceid,
-                    'total_amount' => $invoicedata['grand_total'],
-                    'outstanding_amount' => $invoicedata['grand_total'],
-                    'allocated_amount' => $invoicedata['grand_total'],
-                ],
-            ],
-        ]);
-        $paymentresponse = $this->client->post(str_replace(' ', '%20', $paymententryurl), $paymententrydata);
-        if (!empty($paymentresponse)) {
-            $this->paymententry = json_decode($paymentresponse, true);
+    public function build_payment_entry(string $invoiceid): ?array {
+        $url = $this->baseurl . '/api/method/erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry'
+            . '?dt=' . rawurlencode('Sales Invoice') . '&dn=' . rawurlencode($invoiceid);
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return null;
         }
-        return $this->validate_response($paymentresponse, $paymententryurl);
+        $entry = json_decode($response, true)['message'] ?? null;
+        if (!is_array($entry) || empty($entry['references'])) {
+            $this->errormessage = "ERPNext returned no Payment Entry for {$invoiceid} - {$url}";
+            mtrace($this->errormessage);
+            return null;
+        }
+
+        $account = self::get_payment_account();
+        if ($account !== '' && $account !== ($entry['paid_to'] ?? '')) {
+            $currency = $this->get_account_currency($account);
+            if ($currency === null) {
+                return null;
+            }
+            if ($currency !== ($entry['paid_to_account_currency'] ?? '')) {
+                $this->errormessage = "Payment account {$account} is in {$currency}, but ERPNext calculated the payment "
+                    . "of {$invoiceid} for an account in {$entry['paid_to_account_currency']}.";
+                mtrace($this->errormessage);
+                return null;
+            }
+            $entry['paid_to'] = $account;
+            // The default company bank account belongs to the default bank GL account, not to this one.
+            $entry['bank_account'] = null;
+            $entry['bank'] = null;
+        }
+        $date = date('Y-m-d');
+        $entry['reference_no'] = $this->paymentreference !== '' ? $this->paymentreference : $invoiceid . '-' . $date;
+        $entry['reference_date'] = $date;
+        return self::strip_unsaved_fields($entry);
+    }
+
+    /**
+     * The ERPNext account payments are booked to; '' lets ERPNext use the company's default bank account.
+     *
+     * @return string
+     */
+    public static function get_payment_account(): string {
+        $account = get_config('local_shopping_cart', 'erpnextpaymentaccount');
+        return $account === false ? self::DEFAULT_PAYMENT_ACCOUNT : trim((string) $account);
+    }
+
+    /**
+     * Remove the client-side markers and temporary names of an unsaved document and its rows.
+     *
+     * @param array $doc
+     * @return array
+     */
+    private static function strip_unsaved_fields(array $doc): array {
+        foreach ($doc as $key => $value) {
+            if ($key === 'name' || strpos((string) $key, '__') === 0) {
+                unset($doc[$key]);
+            } else if (is_array($value) && array_is_list($value)) {
+                foreach ($value as $i => $row) {
+                    if (is_array($row)) {
+                        $doc[$key][$i] = self::strip_unsaved_fields($row);
+                    }
+                }
+            }
+        }
+        return $doc;
+    }
+
+    /**
+     * The currency of an ERPNext account.
+     *
+     * @param string $account
+     * @return string|null currency code, null when the account is unknown (errormessage says why)
+     */
+    private function get_account_currency(string $account): ?string {
+        $url = $this->baseurl . '/api/resource/Account/' . rawurlencode($account);
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            $this->errormessage = "Payment account \"{$account}\" (setting erpnextpaymentaccount) cannot be used: "
+                . $this->errormessage;
+            return null;
+        }
+        return (string) (json_decode($response, true)['data']['account_currency'] ?? '');
+    }
+
+    /**
+     * A draft Payment Entry for the invoice, e.g. left by an earlier run whose submit failed.
+     *
+     * @param string $invoiceid
+     * @return string|null its name, '' if there is none, null on failure
+     */
+    private function find_draft_payment_entry(string $invoiceid): ?string {
+        $filters = json_encode([
+            ['Payment Entry Reference', 'reference_name', '=', $invoiceid],
+            ['Payment Entry', 'docstatus', '=', 0],
+        ]);
+        $url = $this->baseurl . '/api/resource/Payment%20Entry?filters=' . rawurlencode($filters);
+        $response = $this->client->get($url);
+        if (!$this->validate_response($response, $url)) {
+            return null;
+        }
+        return (string) (json_decode($response, true)['data'][0]['name'] ?? '');
+    }
+
+    /**
+     * Submit a Payment Entry in ERPNext.
+     *
+     * @param string $paymententryid its name; '' for the one created last by this object
+     * @return bool true if the payment entry was submitted
+     */
+    public function submit_payment_entry(string $paymententryid = ''): bool {
+        if ($paymententryid === '') {
+            $paymententryid = (string) ($this->paymententry['data']['name'] ?? '');
+        }
+        if ($paymententryid === '') {
+            $this->errormessage = 'No Payment Entry to submit.';
+            return false;
+        }
+        $submiturl = $this->baseurl . '/api/resource/Payment%20Entry/' . rawurlencode($paymententryid);
+        $submitdata = json_encode(['docstatus' => 1]);
+        $submitresponse = $this->client->put($submiturl, $submitdata);
+        return $this->validate_response($submitresponse, $submiturl);
     }
 
     /**
@@ -589,7 +823,7 @@ class erpnext_invoice implements invoice {
                 'local_shopping_cart',
                 '',
                 null,
-                'There was a problem fetching tax templates from ERPNext: ' . $response
+                'There was a problem fetching tax templates from ERPNext: ' . $this->errormessage
             );
         }
         return $templates;
@@ -664,16 +898,15 @@ class erpnext_invoice implements invoice {
      * @return array An array of address titles.
      */
     private function get_all_customer_addresses(string $customername): array {
-        $filters = str_replace(
-            ' ',
-            '%20',
-            '[["Address","address_type","=","Billing"],["Address","name","like","%' . $customername . '%"]]'
-        );
-        $url = $this->baseurl .
-                '/api/resource/Address?filters=' . $filters;
+        $filters = json_encode([
+            ['Address', 'address_type', '=', 'Billing'],
+            ['Address', 'name', 'like', '%' . $customername . '%'],
+        ]);
+        $url = $this->baseurl . '/api/resource/Address?filters=' . rawurlencode($filters);
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
-            return [];
+            // Reporting "no address" here would create a duplicate address in ERPNext.
+            throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $this->errormessage);
         }
         $data = json_decode($response, true);
         return array_column($data['data'], 'name');
@@ -733,8 +966,9 @@ class erpnext_invoice implements invoice {
         $address['pincode'] = $addressrecord->zip;
         $address['country'] = $this->get_country_name_by_code($addressrecord->state);
         $address['customer'] = $addressrecord->name;
-        $response = $this->client->post($url, json_encode($address));
-        $success = $this->validate_response($response, $url);
+        $payload = json_encode($address);
+        $response = $this->client->post($url, $payload);
+        $success = $this->validate_response($response, $url, $payload);
         if ($success) {
             $responsedata = json_decode($response, true);
             // Extract address name from response.
@@ -752,7 +986,7 @@ class erpnext_invoice implements invoice {
                 'local_shopping_cart',
                 '',
                 null,
-                'There was a problem with retrieving the address from ERPNext: ' . $response
+                'There was a problem with retrieving the address from ERPNext: ' . $this->errormessage
             );
         }
     }
@@ -764,7 +998,7 @@ class erpnext_invoice implements invoice {
      * @return string|null The country name (e.g. 'Austria'), or null if not found.
      */
     protected function get_country_name_by_code(string $code): ?string {
-        $url = $this->baseurl . '/api/resource/Country?filters=[["code","=","' . $code . '"]]';
+        $url = $this->baseurl . '/api/resource/Country?filters=' . rawurlencode(json_encode([['code', '=', $code]]));
         $response = $this->client->get($url);
         if (!$this->validate_response($response, $url)) {
             throw new \moodle_exception(
@@ -772,7 +1006,7 @@ class erpnext_invoice implements invoice {
                 'local_shopping_cart',
                 '',
                 null,
-                'There was a problem with retrieving the country from ERPNext: ' . $response
+                'There was a problem with retrieving the country from ERPNext: ' . $this->errormessage
             );
         }
         $data = json_decode($response);
@@ -882,14 +1116,19 @@ class erpnext_invoice implements invoice {
      * If we pass the same customer name again to ERPNext, a new customer with a digit attached to the
      * currently used customer is created. That is what we want to avoid.
      *
-     * @return bool
+     * @return bool true if the customer exists, false if it does not
+     * @throws \moodle_exception when ERPNext could not be asked
      */
     public function customer_exists(): bool {
         $uncleanedurl = $this->baseurl . "/api/resource/Customer/" . rawurlencode($this->customername) . "/";
         $url = str_replace(' ', '%20', $uncleanedurl);
         $response = $this->client->get($url);
-        if (!$this->validate_response($response, $url)) {
+        if (self::is_not_found($response)) {
             return false;
+        }
+        if (!$this->validate_response($response, $url)) {
+            // Only "does not exist" may lead to creating the customer, anything else would duplicate it.
+            throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $this->errormessage);
         } else {
             $responsetaxid = json_decode($response);
             if (
@@ -965,8 +1204,9 @@ class erpnext_invoice implements invoice {
         if (isset($this->invoicedata['vatid'])) {
             $customer['tax_id'] = $this->invoicedata['vatid'];
         }
-        $response = $this->client->post($url, json_encode($customer));
-        $success = $this->validate_response($response, $url);
+        $payload = json_encode($customer);
+        $response = $this->client->post($url, $payload);
+        $success = $this->validate_response($response, $url, $payload);
         if (!$success) {
             return false;
         }
@@ -1020,49 +1260,79 @@ class erpnext_invoice implements invoice {
      * TODO: Create item if it does not exist.
      *
      * @param string $itemname
-     * @return bool
+     * @return bool true if the item exists, false if it does not
+     * @throws \moodle_exception when ERPNext could not be asked
      */
     public function item_exists(string $itemname): bool {
-        $url = $this->baseurl . '/api/resource/Item/' . $itemname . "/";
-        $response = $this->client->get(str_replace(' ', '%20', $url));
-        if (!$response) {
+        $url = $this->baseurl . '/api/resource/Item/' . rawurlencode($itemname);
+        $response = $this->client->get($url);
+        if (self::is_not_found($response)) {
+            $this->errormessage = "Item \"{$itemname}\" does not exist in ERPNext - {$url}";
+            mtrace($this->errormessage);
             return false;
         }
-        return $this->validate_response($response, $url);
+        if (!$this->validate_response($response, $url)) {
+            // A network or server error must not be mistaken for a missing item (that would not be retried).
+            throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $this->errormessage);
+        }
+        return true;
     }
 
     /**
-     * Check if entry exists in the JSON response.
+     * Check whether an ERPNext request succeeded; on failure set errormessage and log what went wrong.
      *
-     * @param string $response The JSON response from ERPNext.
-     * @param string $url of the request response from ERPNext.
-     * @return bool True if the entry exists, false otherwise.
+     * The error keeps everything needed to find the cause later: HTTP status, cURL error, ERPNext's
+     * own message (or the start of an unexpected body, e.g. a proxy error page), the URL, the calling
+     * function and the payload that was sent.
+     *
+     * @param mixed $response the response body from the curl client
+     * @param string $url of the request
+     * @param string $payload the request body that was sent, logged on failure
+     * @return bool true if the request succeeded
      */
-    public function validate_response(string $response, string $url): bool {
-        // Decode the JSON response into an associative array.
+    public function validate_response($response, string $url, string $payload = ''): bool {
+        $response = is_string($response) ? $response : (string) json_encode($response);
         $resparray = json_decode($response, true);
-
-        // Check if the response contains data.
-        if (isset($resparray['data']) || isset($resparray['message'])) {
-            return true; // Entry exists or entry was successfully created.
+        $httpcode = (int) ($this->client->get_info()['http_code'] ?? 0);
+        $haspayload = is_array($resparray) && (isset($resparray['data']) || isset($resparray['message']));
+        $haserror = is_array($resparray) && (isset($resparray['exc_type']) || isset($resparray['exception']));
+        if ($haspayload && !$haserror && $httpcode < 400) {
+            return true;
         }
 
-        // Capture the calling function name for debugging.
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $callhistory = var_export($backtrace, true);
-
-        // Check if the response contains an error message.
-        if (isset($resparray['exc_type']) || isset($resparray['exception'])) {
-            $type = $resparray['exc_type'] ?? $resparray['exception'];
+        $parts = [];
+        if ($httpcode) {
+            $parts[] = 'HTTP ' . $httpcode;
+        }
+        if ($this->client->get_errno()) {
+            $parts[] = 'cURL error ' . $this->client->get_errno() . ': ' . ($this->client->error ?? '');
+        }
+        if ($haserror) {
             $details = self::extract_error_details($resparray);
-            $this->errormessage = $type . ($details !== '' ? ': ' . $details : '') . ' - ' . $url;
-            mtrace("API response: {$this->errormessage} | Called by: {$callhistory}");
-            return false; // Entry does not exist (error).
+            $parts[] = ($resparray['exc_type'] ?? 'Exception') . ($details !== '' ? ': ' . $details : '');
+        } else {
+            $body = trim(preg_replace('/\s+/', ' ', strip_tags($response)));
+            $parts[] = $body === '' ? 'empty response' : 'unexpected response: ' . \core_text::substr($body, 0, 500);
         }
+        $this->errormessage = implode(', ', $parts) . ' - ' . $url;
 
-        // Log a generic error message if no specific error is found.
-        mtrace("API response: Unknown issue with response from URL: {$url} | Called by: {$callhistory}");
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'] ?? '';
+        mtrace("ERPNext API error in {$caller}(): {$this->errormessage}");
+        if ($payload !== '') {
+            mtrace("ERPNext request payload: {$payload}");
+        }
         return false;
+    }
+
+    /**
+     * Whether ERPNext answered that the requested document does not exist (as opposed to any other failure).
+     *
+     * @param mixed $response
+     * @return bool
+     */
+    private static function is_not_found($response): bool {
+        $resparray = is_string($response) ? json_decode($response, true) : null;
+        return is_array($resparray) && ($resparray['exc_type'] ?? '') === 'DoesNotExistError';
     }
 
     /**

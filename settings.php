@@ -950,6 +950,15 @@ if ($hassiteconfig) {
         PARAM_TEXT
     ));
 
+    // ERPNext account the payments of shop invoices are booked to (where the payment provider pays out).
+    $settings->add(new admin_setting_configtext(
+        'local_shopping_cart/erpnextpaymentaccount',
+        get_string('erpnextpaymentaccount', 'local_shopping_cart'),
+        get_string('erpnextpaymentaccount_desc', 'local_shopping_cart'),
+        \local_shopping_cart\invoice\erpnext_invoice::DEFAULT_PAYMENT_ACCOUNT,
+        PARAM_TEXT
+    ));
+
     $countries = get_string_manager()->get_list_of_countries(true, 'en');
     $newcountries = [];
     // English language string should also be the array key. Not the language code.

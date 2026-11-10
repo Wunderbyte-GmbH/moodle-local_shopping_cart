@@ -30,10 +30,22 @@ use local_shopping_cart\invoice\erpnext_invoice;
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::extract_error_details
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::get_receivable_account
  * @covers     \local_shopping_cart\invoice\erpnext_invoice::create_invoice_from_data
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::create_invoice
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::book_payment
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::build_payment_entry
+ * @covers     \local_shopping_cart\invoice\erpnext_invoice::validate_response
  */
 final class erpnext_invoice_test extends advanced_testcase {
     /** @var array Available ERPNext template names for the tests. */
     private array $templates = ['Austria Tax', 'EU Reverse Charge', 'Export VAT'];
+
+    /**
+     * The invoice class reports progress and errors with mtrace() for the task log.
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        $this->expectOutputRegex('/.*/s');
+    }
 
     /**
      * Own country (AT) with a VAT id uses the domestic tax template.
@@ -303,5 +315,255 @@ final class erpnext_invoice_test extends advanced_testcase {
             erpnext_invoice::extract_error_details($response)
         );
         $this->assertSame('', erpnext_invoice::extract_error_details(['exc_type' => 'ValidationError']));
+    }
+
+    /**
+     * ERPNext builds the Payment Entry; it is booked to the configured account with the provider's reference.
+     */
+    public function test_payment_entry_goes_to_configured_account(): void {
+        $this->resetAfterTest();
+        set_config('erpnextpaymentaccount', '2820 - Stripe - WB', 'local_shopping_cart');
+        $invoice = new erpnext_invoice();
+        $this->set_private($invoice, 'paymentreference', 'in_123');
+
+        // Mocked responses are returned last in, first out.
+        \curl::mock_response(json_encode(['data' => ['name' => '2820 - Stripe - WB', 'account_currency' => 'EUR']]));
+        \curl::mock_response(json_encode(['message' => [
+            'doctype' => 'Payment Entry',
+            '__islocal' => 1,
+            '__unsaved' => 1,
+            'name' => null,
+            'paid_from' => '2002 - Lieferforderungen USD - WB',
+            'paid_to' => '2800 - Erste Bank - WB',
+            'paid_to_account_currency' => 'EUR',
+            'bank_account' => 'Erste Bank Konto',
+            'bank' => 'Erste Bank',
+            'paid_amount' => 400.0,
+            'received_amount' => 357.37,
+            'source_exchange_rate' => 0.89342,
+            'references' => [[
+                'reference_doctype' => 'Sales Invoice',
+                'reference_name' => 'INV-1',
+                'allocated_amount' => 400.0,
+                'doctype' => 'Payment Entry Reference',
+                '__islocal' => 1,
+            ]],
+        ]]));
+
+        $entry = $invoice->build_payment_entry('INV-1');
+
+        $this->assertSame('2820 - Stripe - WB', $entry['paid_to']);
+        $this->assertNull($entry['bank_account']);
+        $this->assertNull($entry['bank']);
+        $this->assertSame('in_123', $entry['reference_no']);
+        $this->assertSame(date('Y-m-d'), $entry['reference_date']);
+        // ERPNext's amounts and exchange rates are kept.
+        $this->assertSame(357.37, $entry['received_amount']);
+        $this->assertSame(0.89342, $entry['source_exchange_rate']);
+        // Client-side markers of the unsaved document are removed, also from its rows.
+        $this->assertArrayNotHasKey('__islocal', $entry);
+        $this->assertArrayNotHasKey('name', $entry);
+        $this->assertArrayNotHasKey('__islocal', $entry['references'][0]);
+        $this->assertSame('INV-1', $entry['references'][0]['reference_name']);
+    }
+
+    /**
+     * Without a saved setting payments go to the Stripe account; an empty setting keeps ERPNext's default.
+     */
+    public function test_payment_account_setting(): void {
+        $this->resetAfterTest();
+        unset_config('erpnextpaymentaccount', 'local_shopping_cart');
+        $this->assertSame('2820 - Stripe - WB', erpnext_invoice::get_payment_account());
+        set_config('erpnextpaymentaccount', '', 'local_shopping_cart');
+        $this->assertSame('', erpnext_invoice::get_payment_account());
+
+        // The default account is kept as calculated by ERPNext, without asking for its currency.
+        $invoice = new erpnext_invoice();
+        \curl::mock_response(json_encode(['message' => [
+            'paid_to' => '2800 - Erste Bank - WB',
+            'paid_to_account_currency' => 'EUR',
+            'bank_account' => 'Erste Bank Konto',
+            'references' => [['reference_name' => 'INV-1']],
+        ]]));
+        $entry = $invoice->build_payment_entry('INV-1');
+        $this->assertSame('2800 - Erste Bank - WB', $entry['paid_to']);
+        $this->assertSame('Erste Bank Konto', $entry['bank_account']);
+        $this->assertSame('INV-1-' . date('Y-m-d'), $entry['reference_no']);
+    }
+
+    /**
+     * A payment account in another currency than ERPNext calculated with is refused.
+     */
+    public function test_payment_account_in_other_currency_is_refused(): void {
+        $this->resetAfterTest();
+        set_config('erpnextpaymentaccount', 'Stripe USD - WB', 'local_shopping_cart');
+        $invoice = new erpnext_invoice();
+        \curl::mock_response(json_encode(['data' => ['account_currency' => 'USD']]));
+        \curl::mock_response(json_encode(['message' => [
+            'paid_to' => '2800 - Erste Bank - WB',
+            'paid_to_account_currency' => 'EUR',
+            'references' => [['reference_name' => 'INV-1']],
+        ]]));
+        $this->assertNull($invoice->build_payment_entry('INV-1'));
+        $this->assertStringContainsString('Stripe USD - WB', $invoice->errormessage);
+    }
+
+    /**
+     * A paid invoice gets no second payment.
+     */
+    public function test_paid_invoice_is_not_paid_again(): void {
+        $this->resetAfterTest();
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['get_invoice', 'build_payment_entry', 'submit_payment_entry'])
+            ->getMock();
+        $invoice->method('get_invoice')->willReturn(['docstatus' => 1, 'outstanding_amount' => 0]);
+        $invoice->expects($this->never())->method('build_payment_entry');
+        $invoice->expects($this->never())->method('submit_payment_entry');
+
+        $this->assertTrue($invoice->book_payment('INV-1'));
+    }
+
+    /**
+     * A draft Payment Entry left by an earlier run is submitted instead of creating a second one.
+     */
+    public function test_draft_payment_entry_is_reused(): void {
+        $this->resetAfterTest();
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['get_invoice', 'build_payment_entry', 'submit_payment_entry'])
+            ->getMock();
+        $invoice->method('get_invoice')->willReturn(['docstatus' => 1, 'outstanding_amount' => 400]);
+        $invoice->expects($this->never())->method('build_payment_entry');
+        $invoice->expects($this->once())->method('submit_payment_entry')->with('ACC-PAY-1')->willReturn(true);
+        \curl::mock_response(json_encode(['data' => [['name' => 'ACC-PAY-1']]]));
+
+        $this->assertTrue($invoice->book_payment('INV-1'));
+    }
+
+    /**
+     * An unpaid invoice gets a new Payment Entry, which is submitted.
+     */
+    public function test_payment_is_created_and_submitted(): void {
+        $this->resetAfterTest();
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['get_invoice', 'build_payment_entry', 'submit_payment_entry'])
+            ->getMock();
+        $invoice->method('get_invoice')->willReturn(['docstatus' => 1, 'outstanding_amount' => 400]);
+        $invoice->method('build_payment_entry')->willReturn(['paid_to' => '2820 - Stripe - WB']);
+        $invoice->expects($this->once())->method('submit_payment_entry')->with('ACC-PAY-2')->willReturn(true);
+        // Last in, first out: the draft lookup finds nothing, then the insert returns the new entry.
+        \curl::mock_response(json_encode(['data' => ['name' => 'ACC-PAY-2', 'docstatus' => 0]]));
+        \curl::mock_response(json_encode(['data' => []]));
+
+        $this->assertTrue($invoice->book_payment('INV-1'));
+    }
+
+    /**
+     * A retried cart task completes the invoice of the first attempt instead of creating a second one.
+     */
+    public function test_cart_retry_reuses_invoice(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $DB->insert_record('local_shopping_cart_invoices', (object) [
+            'identifier' => 4711,
+            'invoiceid' => 'INV-OLD',
+            'timecreated' => time(),
+        ]);
+
+        foreach ([0 => 1, 1 => 0] as $docstatus => $submits) {
+            $invoice = $this->getMockBuilder(erpnext_invoice::class)
+                ->onlyMethods(['get_invoice', 'submit_invoice', 'book_payment', 'prepare_json_invoice_data'])
+                ->getMock();
+            $invoice->method('get_invoice')->willReturn(['docstatus' => $docstatus]);
+            $invoice->expects($this->exactly($submits))->method('submit_invoice')->willReturn(true);
+            $invoice->expects($this->once())->method('book_payment')->with('INV-OLD')->willReturn(true);
+            $invoice->expects($this->never())->method('prepare_json_invoice_data');
+
+            $this->assertTrue($invoice->create_invoice(4711));
+            $this->assertSame('INV-OLD', $invoice->invoiceid);
+        }
+        $this->assertSame(1, $DB->count_records('local_shopping_cart_invoices', ['identifier' => 4711]));
+    }
+
+    /**
+     * A failed payment is reported, not hidden, and the invoice is kept for the retry.
+     */
+    public function test_failed_payment_is_reported(): void {
+        $this->resetAfterTest();
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['find_open_invoice_by_reference', 'submit_invoice', 'book_payment'])
+            ->getMock();
+        $invoice->method('find_open_invoice_by_reference')->willReturn(['name' => 'INV-1', 'docstatus' => 1]);
+        $invoice->expects($this->never())->method('submit_invoice');
+        $invoice->expects($this->once())->method('book_payment')->willReturn(false);
+
+        $data = $this->invoice_dto(true);
+        $data->markpaid = true;
+        $this->assertFalse($invoice->create_invoice_from_data($data));
+        $this->assertTrue($invoice->paymentfailed);
+        $this->assertSame('INV-1', $invoice->invoiceid);
+    }
+
+    /**
+     * Without markpaid an existing submitted invoice is left alone (the marketplace flow).
+     */
+    public function test_existing_invoice_without_markpaid_is_not_paid(): void {
+        $this->resetAfterTest();
+        $invoice = $this->getMockBuilder(erpnext_invoice::class)
+            ->onlyMethods(['find_open_invoice_by_reference', 'submit_invoice', 'book_payment'])
+            ->getMock();
+        $invoice->method('find_open_invoice_by_reference')->willReturn(['name' => 'INV-1', 'docstatus' => 1]);
+        $invoice->expects($this->never())->method('submit_invoice');
+        $invoice->expects($this->never())->method('book_payment');
+
+        $this->assertTrue($invoice->create_invoice_from_data($this->invoice_dto(true)));
+    }
+
+    /**
+     * When ERPNext cannot be asked for an existing invoice, no second invoice is created.
+     */
+    public function test_failed_reference_lookup_throws(): void {
+        $this->resetAfterTest();
+        $invoice = new erpnext_invoice();
+        \curl::mock_response('<html><body>502 Bad Gateway</body></html>');
+
+        $this->expectException(\moodle_exception::class);
+        $invoice->find_open_invoice_by_reference('in_123');
+    }
+
+    /**
+     * A missing customer is reported as missing; any other failure throws instead of creating a duplicate.
+     */
+    public function test_customer_exists_distinguishes_missing_from_failure(): void {
+        $this->resetAfterTest();
+        $invoice = new erpnext_invoice();
+        $this->set_private($invoice, 'customername', 'Jane Doe - 4');
+
+        \curl::mock_response(json_encode(['exc_type' => 'DoesNotExistError']));
+        $this->assertFalse($invoice->customer_exists());
+
+        \curl::mock_response('');
+        $this->expectException(\moodle_exception::class);
+        $invoice->customer_exists();
+    }
+
+    /**
+     * Unexpected responses keep their content in the error message, not only "unknown issue".
+     */
+    public function test_validate_response_keeps_unexpected_body(): void {
+        $this->resetAfterTest();
+        $invoice = new erpnext_invoice();
+
+        $this->assertFalse($invoice->validate_response('<html><h1>502 Bad Gateway</h1></html>', 'https://erp/x'));
+        $this->assertStringContainsString('unexpected response: 502 Bad Gateway', $invoice->errormessage);
+        $this->assertStringContainsString('https://erp/x', $invoice->errormessage);
+
+        $error = json_encode([
+            'exc_type' => 'LinkValidationError',
+            '_server_messages' => json_encode([json_encode(['message' => 'Could not find Paid To: Erste Bank - WB'])]),
+        ]);
+        $this->assertFalse($invoice->validate_response($error, 'https://erp/pe'));
+        $this->assertStringContainsString('LinkValidationError: Could not find Paid To: Erste Bank - WB', $invoice->errormessage);
+
+        $this->assertTrue($invoice->validate_response(json_encode(['data' => ['name' => 'X']]), 'https://erp/ok'));
     }
 }

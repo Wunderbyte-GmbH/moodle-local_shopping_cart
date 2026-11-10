@@ -19,6 +19,7 @@ namespace local_shopping_cart\task;
 use core\task\adhoc_task;
 use core\task\manager;
 use core_user;
+use local_shopping_cart\event\invoice_creation_failed;
 use local_shopping_cart\invoice\erpnext_invoice;
 use local_shopping_cart\local\checkout_process\items_helper\address_operations;
 use local_shopping_cart\local\subscriptions\renewal_handler;
@@ -85,7 +86,7 @@ class create_renewal_invoice_task extends adhoc_task {
             mtrace('Renewal ' . (int) $data->renewalid . ' not found, nothing to invoice.');
             return;
         }
-        if (!empty($renewal->erpinvoiceid)) {
+        if (!empty($renewal->erpinvoiceid) && $renewal->invoicestatus === renewal_handler::INVOICE_CREATED) {
             mtrace('Renewal ' . $renewal->id . ' already invoiced as ' . $renewal->erpinvoiceid);
             return;
         }
@@ -113,18 +114,25 @@ class create_renewal_invoice_task extends adhoc_task {
         }
 
         $invoice = new erpnext_invoice();
-
-        // An unknown item is a configuration problem that no retry can fix.
-        foreach ($ledgerrows as $row) {
-            if (!$invoice->item_exists((string) $row->itemname)) {
-                $this->set_status($renewal, renewal_handler::INVOICE_FAILED);
-                mtrace('Renewal ' . $renewal->id . ': item "' . $row->itemname . '" does not exist at the invoicing platform.');
-                return;
+        try {
+            // An unknown item is a configuration problem that no retry can fix.
+            foreach ($ledgerrows as $row) {
+                if (!$invoice->item_exists((string) $row->itemname)) {
+                    $this->set_status($renewal, renewal_handler::INVOICE_FAILED);
+                    $this->log_failure($renewal, $invoice->errormessage, 0);
+                    mtrace('Renewal ' . $renewal->id . ': item "' . $row->itemname . '" does not exist at the invoicing platform.');
+                    return;
+                }
             }
-        }
 
-        $dto = renewal_invoice_builder::build($renewal, array_values($ledgerrows), $user, $billing);
-        $success = $invoice->create_invoice_from_data($dto);
+            $dto = renewal_invoice_builder::build($renewal, array_values($ledgerrows), $user, $billing);
+            // Safe to retry: the invoice is found by the provider's invoice id, only missing steps are done.
+            $success = $invoice->create_invoice_from_data($dto);
+        } catch (\Throwable $e) {
+            // ERPNext could not be reached or answered with an error: keep pending and let the queue retry.
+            $this->log_failure($renewal, $e->getMessage() . (!empty($e->debuginfo) ? ' ' . $e->debuginfo : ''));
+            throw $e;
+        }
 
         if ($success) {
             $renewal->erpinvoiceid = $invoice->invoiceid;
@@ -134,11 +142,42 @@ class create_renewal_invoice_task extends adhoc_task {
         }
         if (!empty($invoice->reconciliationfailed)) {
             $this->set_status($renewal, renewal_handler::INVOICE_HELD);
+            $this->log_failure($renewal, $invoice->errormessage, 0);
             mtrace('Renewal ' . $renewal->id . ' held: ' . $invoice->errormessage);
             return;
         }
+        if ($invoice->invoiceid !== '') {
+            // The invoice exists, only submitting or paying it failed: remember it, the retry completes it.
+            $renewal->erpinvoiceid = $invoice->invoiceid;
+            $this->set_status($renewal, renewal_handler::INVOICE_PENDING);
+        }
         // Anything else is treated as transient: keep pending and let the queue retry.
-        throw new \moodle_exception('serverconnection', 'local_shopping_cart', '', null, $invoice->errormessage);
+        $error = $invoice->errormessage !== '' ? $invoice->errormessage : 'Invoice creation failed, see the task log.';
+        $this->log_failure($renewal, $error);
+        throw new \moodle_exception('erpnextrequestfailed', 'local_shopping_cart', '', $error);
+    }
+
+    /**
+     * Log a failed attempt with its reason in the site log.
+     *
+     * @param stdClass $renewal
+     * @param string $error
+     * @param int|null $attemptsleft attempts still to come; null to take them from the task queue
+     * @return void
+     */
+    private function log_failure(stdClass $renewal, string $error, ?int $attemptsleft = null): void {
+        if ($attemptsleft === null) {
+            // The attempt counter is decreased after a failure, so 1 means no retry follows.
+            $attemptsleft = max(0, $this->get_attempts_available() - 1);
+        }
+        invoice_creation_failed::log(
+            (int) $renewal->userid,
+            (int) $renewal->identifier,
+            (int) $renewal->id,
+            (string) ($renewal->erpinvoiceid ?? ''),
+            $error,
+            $attemptsleft
+        );
     }
 
     /**
