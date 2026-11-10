@@ -388,7 +388,15 @@ final class subscription_renewal_test extends advanced_testcase {
         $this->assertSame(29.00, $dto->items[0]->net);
         $this->assertSame(49.00, $dto->items[1]->net);
         $this->assertSame(1760000000, $dto->items[0]->serviceperiodstart);
-        $this->assertSame(1762678400, $dto->items[0]->serviceperiodend);
+        // The service ends the day before the next period starts.
+        $this->assertSame(strtotime('-1 day', 1762678400), $dto->items[0]->serviceperiodend);
+
+        // A yearly period 10.10.2025 - 10.10.2026 at the provider is invoiced as 10.10.2025 - 09.10.2026.
+        $renewal->periodstart = strtotime('2025-10-10 14:00');
+        $renewal->periodend = strtotime('2026-10-10 14:00');
+        $dto = renewal_invoice_builder::build($renewal, $rows, $user, $billing);
+        $this->assertSame('2025-10-10', date('Y-m-d', $dto->items[0]->serviceperiodstart));
+        $this->assertSame('2026-10-09', date('Y-m-d', $dto->items[0]->serviceperiodend));
     }
 
     /**

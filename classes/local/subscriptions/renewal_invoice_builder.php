@@ -48,7 +48,11 @@ class renewal_invoice_builder {
             $item->itemname = $row->itemname;
             $item->net = round((float) $row->price - (float) $row->tax, 2);
             $item->serviceperiodstart = (int) $renewal->periodstart ?: (int) $renewal->timecreated;
-            $item->serviceperiodend = (int) $renewal->periodend ?: (int) $renewal->timecreated;
+            // The provider's period end is the start of the next period, the service ends the day before
+            // (e.g. 10.10.2025 - 09.10.2026, not 10.10.2026).
+            $item->serviceperiodend = (int) $renewal->periodend
+                ? max($item->serviceperiodstart, strtotime('-1 day', (int) $renewal->periodend))
+                : (int) $renewal->timecreated;
             $items[] = $item;
         }
 
