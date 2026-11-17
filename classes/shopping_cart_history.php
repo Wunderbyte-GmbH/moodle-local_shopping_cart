@@ -36,6 +36,7 @@ use coding_exception;
 use context_system;
 use dml_exception;
 use Exception;
+use local_shopping_cart\event\canceluntil_changed;
 use local_shopping_cart\event\payment_added;
 use local_shopping_cart\local\cartstore;
 use moodle_exception;
@@ -1362,5 +1363,92 @@ class shopping_cart_history {
             return [];
         }
         return (array) $data->installments;
+    }
+
+    /**
+     * Returns the purchases of an item whose cancellation deadline would be extended by the given date.
+     *
+     * These are the paid and the pending purchases (a payment that is just running must not end up with
+     * the old deadline) that have a deadline earlier than the given one. Purchases without a deadline can
+     * be cancelled without a time limit already, so no date can extend them. Canceled and aborted
+     * purchases are never returned.
+     *
+     * @param string $componentname e.g. mod_booking
+     * @param string $area e.g. option
+     * @param int $itemid
+     * @param int $canceluntil the new deadline, 0 for no deadline
+     * @return array records of local_shopping_cart_history, indexed by id
+     */
+    public static function get_purchases_with_earlier_canceluntil(
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $canceluntil
+    ): array {
+        global $DB;
+
+        $params = [
+            'componentname' => $componentname,
+            'area' => $area,
+            'itemid' => $itemid,
+            'success' => LOCAL_SHOPPING_CART_PAYMENT_SUCCESS,
+            'pending' => LOCAL_SHOPPING_CART_PAYMENT_PENDING,
+        ];
+        $where = "componentname = :componentname
+                  AND area = :area
+                  AND itemid = :itemid
+                  AND paymentstatus IN (:success, :pending)
+                  AND canceluntil > 0";
+        // No deadline at all (0) is later than every date.
+        if (!empty($canceluntil)) {
+            $where .= " AND canceluntil < :canceluntil";
+            $params['canceluntil'] = $canceluntil;
+        }
+
+        return $DB->get_records_select('local_shopping_cart_history', $where, $params, 'id ASC');
+    }
+
+    /**
+     * Extends the cancellation deadline of the existing purchases of an item.
+     *
+     * The deadline is stored with every purchase at checkout and is binding from then on, so a component
+     * that changes the deadline of its item has to call this explicitly to pass it on to the buyers.
+     * Deadlines are only ever extended: a purchase that already has a later deadline (or none) keeps it.
+     * Every changed purchase is logged with the event canceluntil_changed. The ledger is not touched,
+     * no money is moved.
+     *
+     * @param string $componentname e.g. mod_booking
+     * @param string $area e.g. option
+     * @param int $itemid
+     * @param int $canceluntil the new deadline, 0 for no deadline
+     * @return int number of changed purchases
+     * @throws \required_capability_exception if the current user is no cashier
+     */
+    public static function extend_canceluntil_for_item(
+        string $componentname,
+        string $area,
+        int $itemid,
+        int $canceluntil
+    ): int {
+        global $DB;
+
+        // The check lives here and not in the calling form, so that every caller is covered.
+        require_capability('local/shopping_cart:cashier', context_system::instance());
+
+        $records = self::get_purchases_with_earlier_canceluntil($componentname, $area, $itemid, $canceluntil);
+        if (empty($records)) {
+            return 0;
+        }
+
+        // All or nothing: the log must not report purchases a failed run did not change.
+        $transaction = $DB->start_delegated_transaction();
+        foreach ($records as $record) {
+            // Only this one field. The fields usermodified and timemodified document the payment.
+            $DB->set_field('local_shopping_cart_history', 'canceluntil', $canceluntil, ['id' => $record->id]);
+            canceluntil_changed::log($record, $canceluntil);
+        }
+        $transaction->allow_commit();
+
+        return count($records);
     }
 }
