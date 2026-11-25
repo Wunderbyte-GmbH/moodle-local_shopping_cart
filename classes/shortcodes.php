@@ -23,6 +23,7 @@
  * @copyright 2022 Georg Maißer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_shopping_cart;
 
 use context_system;

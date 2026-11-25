@@ -24,6 +24,7 @@
  */
 
 namespace local_shopping_cart;
+
 use local_shopping_cart\event\payment_confirmed;
 use local_shopping_cart\local\taskmanager;
 use local_shopping_cart\output\shoppingcart_history_list;
@@ -1493,7 +1494,8 @@ class shopping_cart {
         if (
             !has_capability('local/shopping_cart:cashier', $context)
             || $userid == $USER->id
-        ) { // If the cashier is cancelling her own booking, whe also gets normal credit.
+        ) {
+            // If the cashier is cancelling her own booking, she also gets normal credit.
             if (empty($customcredit)) {
                 $customcredit = $credit;
             }

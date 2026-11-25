@@ -22,6 +22,7 @@
  * @author     Thomas Winkler
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_shopping_cart\privacy;
 
 use coding_exception;

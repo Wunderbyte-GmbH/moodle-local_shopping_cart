@@ -29,6 +29,7 @@ use advanced_testcase;
 use local_shopping_cart\local\cartstore;
 use local_shopping_cart\local\checkout_process\items_helper\vatnumberhelper;
 use local_shopping_cart\tests\SoapClientMock;
+
 /**
  * Test for taxcategories
  * @covers \local_shopping_cart\taxcategories

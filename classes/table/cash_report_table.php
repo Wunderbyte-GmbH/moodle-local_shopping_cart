@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_shopping_cart\table;
+
 use html_writer;
 use moodle_url;
 

@@ -24,6 +24,7 @@
  */
 
 namespace local_shopping_cart\local;
+
 use Exception;
 use local_shopping_cart\price;
 

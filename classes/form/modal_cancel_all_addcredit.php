@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace local_shopping_cart\form;
+
 use mod_booking\singleton_service;
 
 defined('MOODLE_INTERNAL') || die();

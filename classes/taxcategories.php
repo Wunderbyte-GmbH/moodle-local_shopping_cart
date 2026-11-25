@@ -186,10 +186,12 @@ class taxcategories {
      * @return array
      */
     private static function extract_categories(string $rawcategories): array {
-        if ($rawcategories === "") { // Special case of empty line.
+        if ($rawcategories === "") {
+            // Special case of empty line.
             return []; // No categories.
         }
-        if (is_numeric(trim($rawcategories))) { // Special case of value only.
+        if (is_numeric(trim($rawcategories))) {
+            // Special case of value only.
             return [self::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY]; // Just one category which is default.
         }
         $rows = preg_split('/\n/', trim($rawcategories));
@@ -236,7 +238,8 @@ class taxcategories {
         $trimmedrawline = trim($rawline);
         $linevalues = explode(' ', $trimmedrawline);
         if ($linevalues === false || count($linevalues) < 2) {
-            if (is_numeric($trimmedrawline)) { // This might be a single value row.
+            if (is_numeric($trimmedrawline)) {
+                // This might be a single value row.
                 return [
                     self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX => [
                         self::LOCAL_SHOPPING_CART_DEFAULT_CATEGORY_KEY => floatval($trimmedrawline) / 100,
@@ -246,7 +249,8 @@ class taxcategories {
             // Lines with no data are invalid.
             return null;
         }
-        if (!str_contains($linevalues[0], ':')) { // Assume first value is country code.
+        if (!str_contains($linevalues[0], ':')) {
+            // Assume first value is country code.
             $countrycode = array_shift($linevalues);
         } else {
             $countrycode = self::LOCAL_SHOPPING_CART_DEFAULT_COUNTRY_INDEX;

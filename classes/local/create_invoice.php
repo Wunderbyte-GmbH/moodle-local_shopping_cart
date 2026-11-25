@@ -255,7 +255,8 @@ class create_invoice {
                 // If it's not empty, we use it instead of the default HTML template.
                 $cfghtml = $extrareceiptshtml;
             }
-        } else if ($paymentstatus == 3) { // 3 means LOCAL_SHOPPING_CART_PAYMENT_CANCELED.
+        } else if ($paymentstatus == 3) {
+            // 3 means LOCAL_SHOPPING_CART_PAYMENT_CANCELED.
             // For cancel confirmations we have an identifier and a payment status of 3.
             if (!empty(trim(strip_tags($cancelconfirmationshtml)))) {
                 $cfghtml = $cancelconfirmationshtml;
