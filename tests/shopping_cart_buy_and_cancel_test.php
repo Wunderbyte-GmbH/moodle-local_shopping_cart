@@ -295,4 +295,33 @@ final class shopping_cart_buy_and_cancel_test extends advanced_testcase {
         $this->assertEqualsWithDelta($expectedrefund, (float) $ledger->credits, 0.001, 'Ledger credits should equal net refund.');
         $this->assertEqualsWithDelta($cancelationfee, (float) $ledger->fee, 0.001, 'Ledger fee should equal cancelation fee.');
     }
+
+    /**
+     * The cancel dialog reads the rounding flags from get_history_item. With rounding switched off
+     * both flags must be 0 (the call used to read properties that were never set), and each flag
+     * must follow its own setting.
+     *
+     * @covers \local_shopping_cart\external\get_history_item::execute
+     * @covers \local_shopping_cart\output\shoppingcart_history_list::add_round_config
+     * @runInSeparateProcess
+     * @return void
+     */
+    public function test_get_history_item_returns_round_flags_from_settings(): void {
+        $user = $this->getDataGenerator()->create_user();
+        $this->buy_cancellable_item($user, 1);
+
+        set_config('rounddiscounts', 0, 'local_shopping_cart');
+        set_config('roundrefundamount', 0, 'local_shopping_cart');
+
+        $item = get_history_item::execute('local_shopping_cart', 'main', 1, $user->id);
+        $this->assertEquals(1, $item['success']);
+        $this->assertSame(0, $item['round'], 'Round discounts is off, so round must be 0.');
+        $this->assertSame(0, $item['roundrefundamount'], 'Round the refund amount is off, so the flag must be 0.');
+
+        set_config('roundrefundamount', 1, 'local_shopping_cart');
+
+        $item = get_history_item::execute('local_shopping_cart', 'main', 1, $user->id);
+        $this->assertSame(0, $item['round'], 'Round discounts is still off.');
+        $this->assertSame(1, $item['roundrefundamount'], 'Round the refund amount is on, so the flag must be 1.');
+    }
 }

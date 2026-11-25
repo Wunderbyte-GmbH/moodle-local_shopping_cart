@@ -475,7 +475,9 @@ export async function confirmCancelModal(button, cancelationFee) {
     params.cancelationfee = cancelationFee.toFixed(2);
     params.deducedvalue = deducedvalue.toFixed(2);
 
-    const roundrefundamount = button.dataset.roundrefundamount;
+    // Dataset values are strings: "0" from the get_history_item call is truthy in JS,
+    // so only the explicit "1" means the refund amount is rounded.
+    const roundrefundamount = button.dataset.roundrefundamount === '1';
     if (roundrefundamount) {
         params.credit = Math.round(credit);
         params.credit = params.credit.toFixed(2);

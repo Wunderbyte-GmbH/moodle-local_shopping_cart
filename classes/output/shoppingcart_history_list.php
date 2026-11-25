@@ -1044,14 +1044,9 @@ class shoppingcart_history_list implements renderable, templatable {
      * @return void
      */
     public static function add_round_config(stdClass &$item): void {
-
-        if ($round = get_config('local_shopping_cart', 'rounddiscounts')) {
-            $item->round = $round == 1 ? true : false;
-        }
-
-        if ($roundrefund = get_config('local_shopping_cart', 'roundrefundamount')) {
-            $item->roundrefundamount = $roundrefund == 1 ? true : false;
-        }
+        // Always set both flags: callers like get_history_item read them, also when rounding is off.
+        $item->round = get_config('local_shopping_cart', 'rounddiscounts') == 1;
+        $item->roundrefundamount = get_config('local_shopping_cart', 'roundrefundamount') == 1;
     }
 
     /**
