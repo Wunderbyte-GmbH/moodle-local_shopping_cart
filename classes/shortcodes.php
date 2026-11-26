@@ -60,7 +60,8 @@ class shortcodes {
 
         global $USER, $PAGE;
 
-        $foruserid = actforuser::get_foruserid($args);
+        // Only cashiers may act for another user, the helper checks this before it accepts an id from the url.
+        $foruserid = actforuser::get_foruserid($args, 0, ['local/shopping_cart:cashier']);
         $hascashiercapability = has_capability('local/shopping_cart:cashier', context_system::instance());
 
         // Important security check.
@@ -133,7 +134,7 @@ class shortcodes {
         $context = context_system::instance();
         if (empty($userid) && has_capability('local/shopping_cart:cashier', $context)) {
             // Check if rendering is for another user id.
-            $userid = actforuser::get_foruserid($args, $USER->id);
+            $userid = actforuser::get_foruserid($args, $USER->id, ['local/shopping_cart:cashier']);
         } else if (!has_capability('local/shopping_cart:cashier', $context)) {
             $userid = $USER->id;
         }
