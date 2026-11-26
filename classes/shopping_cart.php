@@ -1811,7 +1811,16 @@ class shopping_cart {
             // ...then we have to check, if the item itself allows cancellation.
             $providerclass = static::get_service_provider_classname($item->componentname);
             try {
-                $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [$area, $item->itemid]);
+                // For a history record we also hand over the user and the purchase identifier, so the
+                // provider can check exactly this purchase (a user can buy the same item more than once).
+                // Both are 0 when the item is not a history record. Providers that only take
+                // ($area, $itemid) are not affected, PHP ignores the additional arguments.
+                $itemallowedtocancel = component_class_callback($providerclass, 'allowed_to_cancel', [
+                    $area,
+                    $item->itemid,
+                    (int)($item->userid ?? 0),
+                    (int)($item->identifier ?? 0),
+                ]);
             } catch (Exception $e) {
                 $itemallowedtocancel = false;
             }

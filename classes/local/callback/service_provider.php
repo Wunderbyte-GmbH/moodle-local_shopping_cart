@@ -138,6 +138,10 @@ interface service_provider {
     /**
      * Callback function to check if an item can be cancelled.
      *
+     * When a concrete purchase is checked, local_shopping_cart also passes two more arguments:
+     * int $userid (the buyer) and int $identifier (the purchase identifier of the history record).
+     * Both are 0 if they are not known. A provider may add them as optional parameters.
+     *
      * @param string $area
      * @param int $itemid An identifier that is known to the plugin
      *
